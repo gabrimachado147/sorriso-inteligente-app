@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +12,7 @@ import { animations } from "@/lib/animations";
 import { Calendar, Clock, MapPin, MessageCircle, Phone, Heart, Star, Users, Award } from "lucide-react";
 
 const Index = () => {
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const { scheduleAppointment, loading: schedulingLoading } = useAppointmentScheduler();
   const { sendMessage, sendWhatsAppMessage, loading: chatLoading } = useChatHandler();
@@ -60,9 +62,7 @@ const Index = () => {
       icon: Calendar,
       action: async () => {
         toastAppointment("Redirecionando...", "Abrindo página de agendamento");
-        // Simular navegação para página de agendamento
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        toastSuccess("Agendamento", "Página de agendamento carregada!");
+        navigate('/schedule');
       }
     },
     {
@@ -71,9 +71,7 @@ const Index = () => {
       icon: MapPin,
       action: async () => {
         toastInfo("Redirecionando...", "Abrindo mapa de clínicas");
-        // Simular carregamento de clínicas
-        await new Promise(resolve => setTimeout(resolve, 800));
-        toastInfo("Clínicas", "5 clínicas encontradas próximas a você!");
+        navigate('/clinics');
       }
     },
     {
@@ -81,12 +79,8 @@ const Index = () => {
       description: "Fale com nosso assistente",
       icon: MessageCircle,
       action: async () => {
-        try {
-          await sendMessage("Olá! Preciso de ajuda com agendamento.", "general");
-          toastInfo("Chat iniciado", "Nosso assistente está pronto para ajudar!");
-        } catch (error) {
-          toastInfo("Chat", "Iniciando chat com assistente...");
-        }
+        toastInfo("Redirecionando...", "Abrindo chat");
+        navigate('/chat');
       }
     },
     {
@@ -94,18 +88,8 @@ const Index = () => {
       description: "Atendimento urgente",
       icon: Phone,
       action: async () => {
-        try {
-          const emergencyNumber = import.meta.env.VITE_WA_BUSINESS_JID || '553171147487@s.whatsapp.net';
-          await sendWhatsAppMessage(
-            emergencyNumber,
-            'URGÊNCIA DENTAL: Preciso de atendimento de emergência imediato!'
-          );
-          toastCall("Emergência", "Conectando com atendimento de emergência...");
-        } catch (error) {
-          // Fallback para chamada telefônica
-          window.open('tel:+551199999-0000', '_self');
-          toastCall("Emergência", "Discando para emergência...");
-        }
+        toastCall("Redirecionando...", "Abrindo página de emergência");
+        navigate('/emergency');
       }
     }
   ];
@@ -130,10 +114,8 @@ const Index = () => {
 
   const handleReschedule = async (appointmentId: number) => {
     try {
-      toastInfo("Reagendamento", "Processando reagendamento...");
-      // Simular chamada à API
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      toastSuccess("Reagendado", "Consulta reagendada com sucesso!");
+      toastInfo("Reagendamento", "Redirecionando para reagendamento...");
+      navigate(`/schedule?reschedule=${appointmentId}`);
     } catch (error) {
       console.error('Erro ao reagendar:', error);
     }
@@ -151,48 +133,23 @@ const Index = () => {
   };
 
   const handleNewAppointment = async () => {
-    try {
-      const mockAppointment = {
-        service: "Consulta de Avaliação",
-        clinic: "Clínica Centro",
-        date: "25/06/2024",
-        time: "10:00",
-        userInfo: {
-          name: "Usuário Teste",
-          phone: "11999999999",
-          email: "teste@email.com"
-        }
-      };
-
-      await scheduleAppointment(mockAppointment);
-    } catch (error) {
-      console.error('Erro ao agendar:', error);
-    }
+    toastAppointment("Agendamento", "Redirecionando para nova consulta...");
+    navigate('/schedule');
   };
 
   const handleViewHistory = () => {
-    toastInfo("Histórico", "Carregando histórico completo de atividades...");
+    toastInfo("Histórico", "Redirecionando para perfil...");
+    navigate('/profile');
   };
 
   const handleStartChat = async () => {
-    try {
-      await sendMessage("Olá! Preciso de ajuda com meus agendamentos.", "general");
-      toastInfo("Chat", "Conectando com suporte...");
-    } catch (error) {
-      toastInfo("Chat", "Iniciando chat...");
-    }
+    toastInfo("Chat", "Redirecionando para chat...");
+    navigate('/chat');
   };
 
   const handleCallNow = async () => {
-    try {
-      const phoneNumber = import.meta.env.VITE_WA_BUSINESS_JID || '553171147487@s.whatsapp.net';
-      await sendWhatsAppMessage(phoneNumber, 'Gostaria de falar com um atendente. Estou com dúvidas sobre meus agendamentos.');
-      toastCall("Ligação", "Conectando via WhatsApp...");
-    } catch (error) {
-      // Fallback para chamada telefônica
-      window.open('tel:+5511999999999', '_self');
-      toastCall("Ligação", "Discando para (11) 99999-9999...");
-    }
+    toastCall("Emergência", "Redirecionando para emergência...");
+    navigate('/emergency');
   };
 
   const whatsappKey = import.meta.env.VITE_N8N_WEBHOOK_URL;

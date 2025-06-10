@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar } from '@/components/ui/calendar';
@@ -59,6 +60,10 @@ const mockAppointments: Appointment[] = [
 ];
 
 const AppointmentScheduler = () => {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const rescheduleId = searchParams.get('reschedule');
+  
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [selectedTime, setSelectedTime] = useState<string>('');
   const [selectedClinic, setSelectedClinic] = useState<string>('');
@@ -122,16 +127,22 @@ const AppointmentScheduler = () => {
       const selectedClinicName = availableClinics.find(c => c.id === selectedClinic)?.name;
       const selectedServiceName = availableServices.find(s => s.id === selectedService)?.name;
       
+      const actionText = rescheduleId ? 'Consulta reagendada' : 'Consulta agendada';
+      
       toastAppointment(
-        'Consulta agendada com sucesso!',
+        `${actionText} com sucesso!`,
         `${selectedServiceName} em ${selectedClinicName} no dia ${format(selectedDate!, 'dd/MM/yyyy')} às ${selectedTime}`
       );
       
-      // Reset form
+      // Reset form and navigate back
       setSelectedTime('');
       setSelectedClinic('');
       setSelectedService('');
       setSelectedDate(new Date());
+      
+      setTimeout(() => {
+        navigate('/');
+      }, 2000);
       
     } catch (error) {
       toastError(
@@ -153,6 +164,10 @@ const AppointmentScheduler = () => {
     setShowConfirmModal(true);
   };
 
+  const handleGoBack = () => {
+    navigate('/');
+  };
+
   if (isLoading) {
     return (
       <div className={`p-6 space-y-6 ${animations.fadeIn}`}>
@@ -166,9 +181,22 @@ const AppointmentScheduler = () => {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold flex items-center gap-2">
           <CalendarIcon className="h-6 w-6 text-primary" />
-          Agendar Consulta
+          {rescheduleId ? 'Reagendar Consulta' : 'Agendar Consulta'}
         </h1>
+        <Button variant="outline" onClick={handleGoBack} className={animations.buttonHover}>
+          Voltar
+        </Button>
       </div>
+
+      {rescheduleId && (
+        <Card className="border-blue-200 bg-blue-50">
+          <CardContent className="p-4">
+            <p className="text-blue-800">
+              <strong>Reagendamento:</strong> Você está alterando a consulta #{rescheduleId}
+            </p>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Filtros */}
       <Card className={animations.fadeIn}>
@@ -357,3 +385,5 @@ const AppointmentScheduler = () => {
 };
 
 export default AppointmentScheduler;
+
+}
