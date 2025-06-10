@@ -58,7 +58,10 @@ export const Filters: React.FC<FiltersProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const updateFilter = (key: keyof FilterState, value: any) => {
+  const updateFilter = (
+    key: keyof FilterState,
+    value: string | Date | undefined
+  ) => {
     // Convert "all" back to empty string for filtering logic
     const actualValue = value === "all" ? "" : value;
     onFiltersChange({ ...filters, [key]: actualValue });

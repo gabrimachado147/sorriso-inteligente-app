@@ -1,15 +1,17 @@
 
 // Mock API service para simular integrações futuras
+export interface ChatAction {
+  type: 'schedule' | 'call' | 'location';
+  label: string;
+  data?: Record<string, unknown>;
+}
+
 export interface ChatMessage {
   id: string;
   type: 'user' | 'bot';
   content: string;
   timestamp: Date;
-  actions?: Array<{
-    type: 'schedule' | 'call' | 'location';
-    label: string;
-    data?: any;
-  }>;
+  actions?: ChatAction[];
 }
 
 export interface AppointmentData {
@@ -206,7 +208,15 @@ export const apiService = {
       return baseSlots.filter(() => Math.random() > 0.3); // Remove alguns aleatoriamente
     },
 
-    getUserAppointments: async (userId: string): Promise<any[]> => {
+    getUserAppointments: async (userId: string): Promise<Array<{
+      id: string;
+      service: string;
+      clinic: string;
+      doctor: string;
+      date: string;
+      time: string;
+      status: 'confirmed' | 'pending' | 'cancelled';
+    }>> => {
       await delay(600);
       return [
         {
