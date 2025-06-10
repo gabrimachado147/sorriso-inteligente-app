@@ -1,5 +1,4 @@
 {
-  "$schema": "https://json.schemastore.org/vercel",
   "name": "sorriso-inteligente-app",
   "version": 2,
   "framework": "vite",
