@@ -20,7 +20,7 @@ const EmergencyPage = () => {
       toastCall("Emergência", "Conectando com atendimento 24h...");
     } catch (error) {
       // Fallback para chamada telefônica
-      window.open('tel:+5511999999999', '_self');
+      window.open('tel:+5535998695479', '_self');
       toastCall("Emergência", "Discando para emergência...");
     }
   };
@@ -67,7 +67,7 @@ const EmergencyPage = () => {
               {loading ? 'Conectando...' : 'Ligar para Emergência'}
             </Button>
             <p className="text-sm text-red-600 mt-2 text-center">
-              (11) 99999-9999
+              (35) 99869-5479
             </p>
           </CardContent>
         </Card>
@@ -98,7 +98,7 @@ const EmergencyPage = () => {
         </Card>
       </div>
 
-      {/* Unidades com Plantão */}
+      {/* Unidades com Plantão - ENDEREÇOS CORRIGIDOS */}
       <Card className={animations.fadeIn}>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -109,22 +109,32 @@ const EmergencyPage = () => {
         <CardContent>
           <div className="space-y-4">
             <div className="p-4 border rounded-lg">
-              <h3 className="font-semibold">Clínica Centro - Plantão</h3>
-              <p className="text-sm text-gray-600">Av. Paulista, 1000 - São Paulo/SP</p>
-              <p className="text-sm text-gray-600">Atendimento 24h para emergências</p>
+              <h3 className="font-semibold">Campo Belo - MG</h3>
+              <p className="text-sm text-gray-600">Av. Afonso Pena, 151, Centro - Campo Belo/MG</p>
+              <p className="text-sm text-gray-600">CEP: 37270-000 | Tel: (35) 99869-5479</p>
               <div className="flex items-center gap-2 mt-2">
                 <Clock className="h-4 w-4 text-green-600" />
-                <span className="text-sm text-green-600 font-medium">Aberto agora</span>
+                <span className="text-sm text-green-600 font-medium">Plantão 24h disponível</span>
               </div>
             </div>
 
             <div className="p-4 border rounded-lg">
-              <h3 className="font-semibold">Clínica Zona Sul - Plantão</h3>
-              <p className="text-sm text-gray-600">R. dos Jardins, 500 - São Paulo/SP</p>
-              <p className="text-sm text-gray-600">Atendimento 24h para emergências</p>
+              <h3 className="font-semibold">Formiga - MG</h3>
+              <p className="text-sm text-gray-600">R. Barão de Piumhy, 198, Centro - Formiga/MG</p>
+              <p className="text-sm text-gray-600">CEP: 35570-128 | Tel: (35) 9969-5479</p>
               <div className="flex items-center gap-2 mt-2">
                 <Clock className="h-4 w-4 text-green-600" />
-                <span className="text-sm text-green-600 font-medium">Aberto agora</span>
+                <span className="text-sm text-green-600 font-medium">Plantão 24h disponível</span>
+              </div>
+            </div>
+
+            <div className="p-4 border rounded-lg">
+              <h3 className="font-semibold">Itararé - SP</h3>
+              <p className="text-sm text-gray-600">R. São Pedro, 1348 (Loja), Centro - Itararé/SP</p>
+              <p className="text-sm text-gray-600">CEP: 18460-009 | Tel: (35) 99969-5479</p>
+              <div className="flex items-center gap-2 mt-2">
+                <Clock className="h-4 w-4 text-green-600" />
+                <span className="text-sm text-green-600 font-medium">Plantão 24h disponível</span>
               </div>
             </div>
           </div>

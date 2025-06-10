@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -175,7 +176,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         </Card>
       </div>
 
-      {/* Nossas Unidades */}
+      {/* Nossas Unidades - ENDEREÇOS CORRIGIDOS */}
       <Card className={animations.slideInLeft}>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
@@ -247,7 +248,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
             <div className={`flex items-center justify-between p-3 bg-blue-50 rounded-lg ${animations.cardHover}`}>
               <div>
                 <p className="font-medium">Limpeza Dental</p>
-                <p className="text-sm text-gray-600">Clínica Centro - Dr. Silva</p>
+                <p className="text-sm text-gray-600">Campo Belo - Dr. Silva</p>
                 <p className="text-xs text-gray-500">15/06/2024 às 14:00</p>
               </div>
               <Button 
