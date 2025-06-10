@@ -6,526 +6,584 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
-export type Database = {
+export interface Database {
   public: {
     Tables: {
-      BDR_PROSPECÇÃO: {
+      users: {
         Row: {
+          id: string
+          email: string
+          phone: string | null
+          full_name: string | null
+          avatar_url: string | null
+          user_type: 'patient' | 'dentist' | 'admin'
           created_at: string
-          "Data de cadastro": string | null
-          id: number
-          lead_name: string | null
-          number: string | null
-          SessionId: string | null
-          thread_id: string | null
-          timeout: string | null
+          updated_at: string
+          is_active: boolean
         }
         Insert: {
+          id?: string
+          email: string
+          phone?: string | null
+          full_name?: string | null
+          avatar_url?: string | null
+          user_type?: 'patient' | 'dentist' | 'admin'
           created_at?: string
-          "Data de cadastro"?: string | null
-          id?: number
-          lead_name?: string | null
-          number?: string | null
-          SessionId?: string | null
-          thread_id?: string | null
-          timeout?: string | null
+          updated_at?: string
+          is_active?: boolean
         }
         Update: {
+          id?: string
+          email?: string
+          phone?: string | null
+          full_name?: string | null
+          avatar_url?: string | null
+          user_type?: 'patient' | 'dentist' | 'admin'
           created_at?: string
-          "Data de cadastro"?: string | null
-          id?: number
-          lead_name?: string | null
-          number?: string | null
-          SessionId?: string | null
-          thread_id?: string | null
-          timeout?: string | null
+          updated_at?: string
+          is_active?: boolean
         }
         Relationships: []
       }
-      "BDR_PROSPECÇÃO [SENHOR SORRISO]": {
+      clinics: {
         Row: {
+          id: string
+          name: string
+          description: string | null
+          address: string
+          city: string
+          state: string
+          postal_code: string
+          phone: string
+          email: string | null
+          website_url: string | null
+          google_maps_url: string | null
+          latitude: number | null
+          longitude: number | null
+          opening_hours: Json | null
+          image_url: string | null
           created_at: string
-          Historico_conversas: string | null
-          Hora_desejada: string | null
-          id: number
-          lead_name: string | null
-          number: string | null
-          thread_id: string | null
-          timeout: string | null
-          whatsappid: string | null
+          updated_at: string
+          is_active: boolean
         }
         Insert: {
+          id?: string
+          name: string
+          description?: string | null
+          address: string
+          city: string
+          state: string
+          postal_code: string
+          phone: string
+          email?: string | null
+          website_url?: string | null
+          google_maps_url?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          opening_hours?: Json | null
+          image_url?: string | null
           created_at?: string
-          Historico_conversas?: string | null
-          Hora_desejada?: string | null
-          id?: number
-          lead_name?: string | null
-          number?: string | null
-          thread_id?: string | null
-          timeout?: string | null
-          whatsappid?: string | null
+          updated_at?: string
+          is_active?: boolean
         }
         Update: {
+          id?: string
+          name?: string
+          description?: string | null
+          address?: string
+          city?: string
+          state?: string
+          postal_code?: string
+          phone?: string
+          email?: string | null
+          website_url?: string | null
+          google_maps_url?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          opening_hours?: Json | null
+          image_url?: string | null
           created_at?: string
-          Historico_conversas?: string | null
-          Hora_desejada?: string | null
-          id?: number
-          lead_name?: string | null
-          number?: string | null
-          thread_id?: string | null
-          timeout?: string | null
-          whatsappid?: string | null
+          updated_at?: string
+          is_active?: boolean
         }
         Relationships: []
+      }
+      services: {
+        Row: {
+          id: string
+          clinic_id: string
+          name: string
+          description: string | null
+          category: Database['public']['Enums']['service_category']
+          price_min: number | null
+          price_max: number | null
+          duration_minutes: number | null
+          image_url: string | null
+          created_at: string
+          updated_at: string
+          is_active: boolean
+        }
+        Insert: {
+          id?: string
+          clinic_id: string
+          name: string
+          description?: string | null
+          category: Database['public']['Enums']['service_category']
+          price_min?: number | null
+          price_max?: number | null
+          duration_minutes?: number | null
+          image_url?: string | null
+          created_at?: string
+          updated_at?: string
+          is_active?: boolean
+        }
+        Update: {
+          id?: string
+          clinic_id?: string
+          name?: string
+          description?: string | null
+          category?: Database['public']['Enums']['service_category']
+          price_min?: number | null
+          price_max?: number | null
+          duration_minutes?: number | null
+          image_url?: string | null
+          created_at?: string
+          updated_at?: string
+          is_active?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "services_clinic_id_fkey"
+            columns: ["clinic_id"]
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      dentists: {
+        Row: {
+          id: string
+          user_id: string
+          clinic_id: string
+          cro_number: string
+          specialties: string[] | null
+          bio: string | null
+          experience_years: number | null
+          education: Json | null
+          languages: string[] | null
+          created_at: string
+          updated_at: string
+          is_active: boolean
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          clinic_id: string
+          cro_number: string
+          specialties?: string[] | null
+          bio?: string | null
+          experience_years?: number | null
+          education?: Json | null
+          languages?: string[] | null
+          created_at?: string
+          updated_at?: string
+          is_active?: boolean
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          clinic_id?: string
+          cro_number?: string
+          specialties?: string[] | null
+          bio?: string | null
+          experience_years?: number | null
+          education?: Json | null
+          languages?: string[] | null
+          created_at?: string
+          updated_at?: string
+          is_active?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dentists_clinic_id_fkey"
+            columns: ["clinic_id"]
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dentists_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      appointments: {
+        Row: {
+          id: string
+          patient_id: string
+          dentist_id: string
+          clinic_id: string
+          service_id: string | null
+          appointment_date: string
+          duration_minutes: number | null
+          status: Database['public']['Enums']['appointment_status']
+          appointment_type: Database['public']['Enums']['appointment_type']
+          notes: string | null
+          payment_status: Database['public']['Enums']['payment_status']
+          total_amount: number | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          patient_id: string
+          dentist_id: string
+          clinic_id: string
+          service_id?: string | null
+          appointment_date: string
+          duration_minutes?: number | null
+          status?: Database['public']['Enums']['appointment_status']
+          appointment_type?: Database['public']['Enums']['appointment_type']
+          notes?: string | null
+          payment_status?: Database['public']['Enums']['payment_status']
+          total_amount?: number | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          patient_id?: string
+          dentist_id?: string
+          clinic_id?: string
+          service_id?: string | null
+          appointment_date?: string
+          duration_minutes?: number | null
+          status?: Database['public']['Enums']['appointment_status']
+          appointment_type?: Database['public']['Enums']['appointment_type']
+          notes?: string | null
+          payment_status?: Database['public']['Enums']['payment_status']
+          total_amount?: number | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointments_clinic_id_fkey"
+            columns: ["clinic_id"]
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_dentist_id_fkey"
+            columns: ["dentist_id"]
+            referencedRelation: "dentists"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_patient_id_fkey"
+            columns: ["patient_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_service_id_fkey"
+            columns: ["service_id"]
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      reviews: {
+        Row: {
+          id: string
+          patient_id: string
+          dentist_id: string | null
+          clinic_id: string
+          appointment_id: string | null
+          rating: number
+          comment: string | null
+          created_at: string
+          updated_at: string
+          is_verified: boolean
+        }
+        Insert: {
+          id?: string
+          patient_id: string
+          dentist_id?: string | null
+          clinic_id: string
+          appointment_id?: string | null
+          rating: number
+          comment?: string | null
+          created_at?: string
+          updated_at?: string
+          is_verified?: boolean
+        }
+        Update: {
+          id?: string
+          patient_id?: string
+          dentist_id?: string | null
+          clinic_id?: string
+          appointment_id?: string | null
+          rating?: number
+          comment?: string | null
+          created_at?: string
+          updated_at?: string
+          is_verified?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_appointment_id_fkey"
+            columns: ["appointment_id"]
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_clinic_id_fkey"
+            columns: ["clinic_id"]
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_dentist_id_fkey"
+            columns: ["dentist_id"]
+            referencedRelation: "dentists"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_patient_id_fkey"
+            columns: ["patient_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      pwa_installations: {
+        Row: {
+          id: string
+          user_id: string | null
+          installation_id: string
+          device_info: Json | null
+          installed_at: string
+          last_active: string | null
+          referrer: string | null
+          is_active: boolean
+        }
+        Insert: {
+          id?: string
+          user_id?: string | null
+          installation_id: string
+          device_info?: Json | null
+          installed_at?: string
+          last_active?: string | null
+          referrer?: string | null
+          is_active?: boolean
+        }
+        Update: {
+          id?: string
+          user_id?: string | null
+          installation_id?: string
+          device_info?: Json | null
+          installed_at?: string
+          last_active?: string | null
+          referrer?: string | null
+          is_active?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pwa_installations_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      push_subscriptions: {
+        Row: {
+          id: string
+          user_id: string | null
+          endpoint: string
+          p256dh_key: string
+          auth_key: string
+          created_at: string
+          is_active: boolean
+        }
+        Insert: {
+          id?: string
+          user_id?: string | null
+          endpoint: string
+          p256dh_key: string
+          auth_key: string
+          created_at?: string
+          is_active?: boolean
+        }
+        Update: {
+          id?: string
+          user_id?: string | null
+          endpoint?: string
+          p256dh_key?: string
+          auth_key?: string
+          created_at?: string
+          is_active?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "push_subscriptions_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      sync_queue: {
+        Row: {
+          id: string
+          table_name: string
+          record_id: string
+          operation: 'INSERT' | 'UPDATE' | 'DELETE'
+          data: Json | null
+          created_at: string
+          processed_at: string | null
+          error_message: string | null
+          retry_count: number
+        }
+        Insert: {
+          id?: string
+          table_name: string
+          record_id: string
+          operation: 'INSERT' | 'UPDATE' | 'DELETE'
+          data?: Json | null
+          created_at?: string
+          processed_at?: string | null
+          error_message?: string | null
+          retry_count?: number
+        }
+        Update: {
+          id?: string
+          table_name?: string
+          record_id?: string
+          operation?: 'INSERT' | 'UPDATE' | 'DELETE'
+          data?: Json | null
+          created_at?: string
+          processed_at?: string | null
+          error_message?: string | null
+          retry_count?: number
+        }
+        Relationships: []
+      }
+      chat_sessions: {
+        Row: {
+          id: string
+          patient_id: string
+          dentist_id: string | null
+          clinic_id: string
+          subject: string | null
+          status: 'active' | 'closed' | 'archived'
+          created_at: string
+          updated_at: string
+          last_message_at: string | null
+        }
+        Insert: {
+          id?: string
+          patient_id: string
+          dentist_id?: string | null
+          clinic_id: string
+          subject?: string | null
+          status?: 'active' | 'closed' | 'archived'
+          created_at?: string
+          updated_at?: string
+          last_message_at?: string | null
+        }
+        Update: {
+          id?: string
+          patient_id?: string
+          dentist_id?: string | null
+          clinic_id?: string
+          subject?: string | null
+          status?: 'active' | 'closed' | 'archived'
+          created_at?: string
+          updated_at?: string
+          last_message_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_sessions_clinic_id_fkey"
+            columns: ["clinic_id"]
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_sessions_dentist_id_fkey"
+            columns: ["dentist_id"]
+            referencedRelation: "dentists"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_sessions_patient_id_fkey"
+            columns: ["patient_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       chat_messages: {
         Row: {
-          active: boolean | null
-          bot_message: string | null
-          created_at: string | null
-          id: number
-          message_type: string | null
-          nomewpp: string | null
-          phone: string | null
-          user_message: string | null
-        }
-        Insert: {
-          active?: boolean | null
-          bot_message?: string | null
-          created_at?: string | null
-          id?: number
-          message_type?: string | null
-          nomewpp?: string | null
-          phone?: string | null
-          user_message?: string | null
-        }
-        Update: {
-          active?: boolean | null
-          bot_message?: string | null
-          created_at?: string | null
-          id?: number
-          message_type?: string | null
-          nomewpp?: string | null
-          phone?: string | null
-          user_message?: string | null
-        }
-        Relationships: []
-      }
-      chats: {
-        Row: {
-          created_at: string | null
-          id: number
-          phone: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          id?: number
-          phone?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          id?: number
-          phone?: string | null
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
-      click_id: {
-        Row: {
-          click_id: string | null
-          created_at: string | null
           id: string
-        }
-        Insert: {
-          click_id?: string | null
-          created_at?: string | null
-          id?: string
-        }
-        Update: {
-          click_id?: string | null
-          created_at?: string | null
-          id?: string
-        }
-        Relationships: []
-      }
-      contacts: {
-        Row: {
-          click_id: string | null
-          created_at: string | null
-          email: string | null
-          empresa: string | null
-          id: string
-          nome: string | null
-          objetivo: string | null
-          stage: string | null
-          telefone: string | null
-        }
-        Insert: {
-          click_id?: string | null
-          created_at?: string | null
-          email?: string | null
-          empresa?: string | null
-          id?: string
-          nome?: string | null
-          objetivo?: string | null
-          stage?: string | null
-          telefone?: string | null
-        }
-        Update: {
-          click_id?: string | null
-          created_at?: string | null
-          email?: string | null
-          empresa?: string | null
-          id?: string
-          nome?: string | null
-          objetivo?: string | null
-          stage?: string | null
-          telefone?: string | null
-        }
-        Relationships: []
-      }
-      dados_cliente: {
-        Row: {
-          atendimento_ia: string | null
-          created_at: string | null
-          id: number
-          nomewpp: string | null
-          telefone: string | null
-        }
-        Insert: {
-          atendimento_ia?: string | null
-          created_at?: string | null
-          id?: number
-          nomewpp?: string | null
-          telefone?: string | null
-        }
-        Update: {
-          atendimento_ia?: string | null
-          created_at?: string | null
-          id?: number
-          nomewpp?: string | null
-          telefone?: string | null
-        }
-        Relationships: []
-      }
-      "Data de cadastro": {
-        Row: {
-          created_at: string
-          id: number
-        }
-        Insert: {
-          created_at?: string
-          id?: number
-        }
-        Update: {
-          created_at?: string
-          id?: number
-        }
-        Relationships: []
-      }
-      documents: {
-        Row: {
-          content: string | null
-          embedding: string | null
-          id: number
-          metadata: Json | null
-        }
-        Insert: {
-          content?: string | null
-          embedding?: string | null
-          id?: number
-          metadata?: Json | null
-        }
-        Update: {
-          content?: string | null
-          embedding?: string | null
-          id?: number
-          metadata?: Json | null
-        }
-        Relationships: []
-      }
-      LEADS: {
-        Row: {
-          created_at: string
-          "Data de cadastro": string | null
-          id: number
-          lead_name: string | null
-          name: string | null
-          number: string | null
-          SessionId: string | null
-          thread_id: string | null
-          timeout: string | null
-          Whastapp: string | null
-        }
-        Insert: {
-          created_at?: string
-          "Data de cadastro"?: string | null
-          id?: number
-          lead_name?: string | null
-          name?: string | null
-          number?: string | null
-          SessionId?: string | null
-          thread_id?: string | null
-          timeout?: string | null
-          Whastapp?: string | null
-        }
-        Update: {
-          created_at?: string
-          "Data de cadastro"?: string | null
-          id?: number
-          lead_name?: string | null
-          name?: string | null
-          number?: string | null
-          SessionId?: string | null
-          thread_id?: string | null
-          timeout?: string | null
-          Whastapp?: string | null
-        }
-        Relationships: []
-      }
-      Leads_dr_fitness: {
-        Row: {
-          created_at: string
-          id: number
-          number: string | null
-          thread_id: string | null
-          timeout: string | null
-        }
-        Insert: {
-          created_at?: string
-          id?: number
-          number?: string | null
-          thread_id?: string | null
-          timeout?: string | null
-        }
-        Update: {
-          created_at?: string
-          id?: number
-          number?: string | null
-          thread_id?: string | null
-          timeout?: string | null
-        }
-        Relationships: []
-      }
-      leads_whatsapp: {
-        Row: {
-          chatInput: string | null
-          created_at: string
-          data_de_cadastro: string | null
-          id: number
-          lead_name: string | null
-          name: string | null
-          number: string | null
-          phone: string | null
-          sessionId: string | null
-          thread_id: string | null
-          timeout: string | null
-          Whastapp: string | null
-        }
-        Insert: {
-          chatInput?: string | null
-          created_at?: string
-          data_de_cadastro?: string | null
-          id?: number
-          lead_name?: string | null
-          name?: string | null
-          number?: string | null
-          phone?: string | null
-          sessionId?: string | null
-          thread_id?: string | null
-          timeout?: string | null
-          Whastapp?: string | null
-        }
-        Update: {
-          chatInput?: string | null
-          created_at?: string
-          data_de_cadastro?: string | null
-          id?: number
-          lead_name?: string | null
-          name?: string | null
-          number?: string | null
-          phone?: string | null
-          sessionId?: string | null
-          thread_id?: string | null
-          timeout?: string | null
-          Whastapp?: string | null
-        }
-        Relationships: []
-      }
-      n8n_chat_histories: {
-        Row: {
-          id: number
-          message: Json
           session_id: string
+          sender_id: string
+          message: string
+          message_type: 'text' | 'image' | 'file' | 'system'
+          attachment_url: string | null
+          created_at: string
+          read_at: string | null
         }
         Insert: {
-          id?: number
-          message: Json
+          id?: string
           session_id: string
+          sender_id: string
+          message: string
+          message_type?: 'text' | 'image' | 'file' | 'system'
+          attachment_url?: string | null
+          created_at?: string
+          read_at?: string | null
         }
         Update: {
-          id?: number
-          message?: Json
+          id?: string
           session_id?: string
-        }
-        Relationships: []
-      }
-      SessionID: {
-        Row: {
-          created_at: string
-          id: number
-        }
-        Insert: {
+          sender_id?: string
+          message?: string
+          message_type?: 'text' | 'image' | 'file' | 'system'
+          attachment_url?: string | null
           created_at?: string
-          id?: number
+          read_at?: string | null
         }
-        Update: {
-          created_at?: string
-          id?: number
-        }
-        Relationships: []
-      }
-      SUPORTE: {
-        Row: {
-          created_at: string
-          "Data de cadastro": string | null
-          id: number
-          number: string | null
-          SessionId: string | null
-          thread_id: string | null
-          timeout: string | null
-        }
-        Insert: {
-          created_at?: string
-          "Data de cadastro"?: string | null
-          id?: number
-          number?: string | null
-          SessionId?: string | null
-          thread_id?: string | null
-          timeout?: string | null
-        }
-        Update: {
-          created_at?: string
-          "Data de cadastro"?: string | null
-          id?: number
-          number?: string | null
-          SessionId?: string | null
-          thread_id?: string | null
-          timeout?: string | null
-        }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_sender_id_fkey"
+            columns: ["sender_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_messages_session_id_fkey"
+            columns: ["session_id"]
+            referencedRelation: "chat_sessions"
+            referencedColumns: ["id"]
+          }
+        ]
       }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      binary_quantize: {
-        Args: { "": string } | { "": unknown }
-        Returns: unknown
-      }
-      halfvec_avg: {
-        Args: { "": number[] }
-        Returns: unknown
-      }
-      halfvec_out: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      halfvec_send: {
-        Args: { "": unknown }
-        Returns: string
-      }
-      halfvec_typmod_in: {
-        Args: { "": unknown[] }
-        Returns: number
-      }
-      hnsw_bit_support: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      hnsw_halfvec_support: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      hnsw_sparsevec_support: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      hnswhandler: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      ivfflat_bit_support: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      ivfflat_halfvec_support: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      ivfflathandler: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      l2_norm: {
-        Args: { "": unknown } | { "": unknown }
-        Returns: number
-      }
-      l2_normalize: {
-        Args: { "": string } | { "": unknown } | { "": unknown }
-        Returns: unknown
-      }
-      match_documents: {
-        Args: { query_embedding: string; match_count?: number; filter?: Json }
-        Returns: {
-          id: number
-          content: string
-          metadata: Json
-          similarity: number
-        }[]
-      }
-      sparsevec_out: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      sparsevec_send: {
-        Args: { "": unknown }
-        Returns: string
-      }
-      sparsevec_typmod_in: {
-        Args: { "": unknown[] }
-        Returns: number
-      }
-      vector_avg: {
-        Args: { "": number[] }
-        Returns: string
-      }
-      vector_dims: {
-        Args: { "": string } | { "": unknown }
-        Returns: number
-      }
-      vector_norm: {
-        Args: { "": string }
-        Returns: number
-      }
-      vector_out: {
-        Args: { "": string }
-        Returns: unknown
-      }
-      vector_send: {
-        Args: { "": string }
-        Returns: string
-      }
-      vector_typmod_in: {
-        Args: { "": unknown[] }
-        Returns: number
-      }
+      [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      service_category: 'general' | 'cosmetic' | 'orthodontics' | 'implants' | 'periodontics' | 'endodontics' | 'oral_surgery' | 'pediatric' | 'emergency'
+      appointment_status: 'scheduled' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled' | 'no_show'
+      appointment_type: 'consultation' | 'treatment' | 'follow_up' | 'emergency' | 'cleaning'
+      payment_status: 'pending' | 'paid' | 'partial' | 'overdue' | 'cancelled'
     }
     CompositeTypes: {
       [_ in never]: never
@@ -533,113 +591,53 @@ export type Database = {
   }
 }
 
-type DefaultSchema = Database[Extract<keyof Database, "public">]
+// Helper types for easier access
+export type Tables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Row']
+export type TablesInsert<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Insert']
+export type TablesUpdate<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Update']
+export type Enums<T extends keyof Database['public']['Enums']> = Database['public']['Enums'][T]
 
-export type Tables<
-  DefaultSchemaTableNameOrOptions extends
-    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
-    | { schema: keyof Database },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
-  }
-    ? keyof (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-        Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-      Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
-      Row: infer R
-    }
-    ? R
-    : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])
-    ? (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
-        Row: infer R
-      }
-      ? R
-      : never
-    : never
+// Table type shortcuts
+export type User = Tables<'users'>
+export type Clinic = Tables<'clinics'>
+export type Service = Tables<'services'>
+export type Dentist = Tables<'dentists'>
+export type Appointment = Tables<'appointments'>
+export type Review = Tables<'reviews'>
+export type PWAInstallation = Tables<'pwa_installations'>
+export type PushSubscription = Tables<'push_subscriptions'>
+export type SyncQueueItem = Tables<'sync_queue'>
+export type ChatSession = Tables<'chat_sessions'>
+export type ChatMessage = Tables<'chat_messages'>
 
-export type TablesInsert<
-  DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
-    | { schema: keyof Database },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
-  }
-    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Insert: infer I
-    }
-    ? I
-    : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Insert: infer I
-      }
-      ? I
-      : never
-    : never
+// Insert type shortcuts
+export type UserInsert = TablesInsert<'users'>
+export type ClinicInsert = TablesInsert<'clinics'>
+export type ServiceInsert = TablesInsert<'services'>
+export type DentistInsert = TablesInsert<'dentists'>
+export type AppointmentInsert = TablesInsert<'appointments'>
+export type ReviewInsert = TablesInsert<'reviews'>
+export type PWAInstallationInsert = TablesInsert<'pwa_installations'>
+export type PushSubscriptionInsert = TablesInsert<'push_subscriptions'>
+export type SyncQueueItemInsert = TablesInsert<'sync_queue'>
+export type ChatSessionInsert = TablesInsert<'chat_sessions'>
+export type ChatMessageInsert = TablesInsert<'chat_messages'>
 
-export type TablesUpdate<
-  DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
-    | { schema: keyof Database },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
-  }
-    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Update: infer U
-    }
-    ? U
-    : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Update: infer U
-      }
-      ? U
-      : never
-    : never
+// Update type shortcuts
+export type UserUpdate = TablesUpdate<'users'>
+export type ClinicUpdate = TablesUpdate<'clinics'>
+export type ServiceUpdate = TablesUpdate<'services'>
+export type DentistUpdate = TablesUpdate<'dentists'>
+export type AppointmentUpdate = TablesUpdate<'appointments'>
+export type ReviewUpdate = TablesUpdate<'reviews'>
+export type PWAInstallationUpdate = TablesUpdate<'pwa_installations'>
+export type PushSubscriptionUpdate = TablesUpdate<'push_subscriptions'>
+export type SyncQueueItemUpdate = TablesUpdate<'sync_queue'>
+export type ChatSessionUpdate = TablesUpdate<'chat_sessions'>
+export type ChatMessageUpdate = TablesUpdate<'chat_messages'>
 
-export type Enums<
-  DefaultSchemaEnumNameOrOptions extends
-    | keyof DefaultSchema["Enums"]
-    | { schema: keyof Database },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof Database
-  }
-    ? keyof Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
-> = DefaultSchemaEnumNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
-  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
-    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
-    : never
-
-export type CompositeTypes<
-  PublicCompositeTypeNameOrOptions extends
-    | keyof DefaultSchema["CompositeTypes"]
-    | { schema: keyof Database },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof Database
-  }
-    ? keyof Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
-> = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
-    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
-    : never
-
-export const Constants = {
-  public: {
-    Enums: {},
-  },
-} as const
+// Enum type shortcuts
+export type ServiceCategory = Enums<'service_category'>
+export type AppointmentStatus = Enums<'appointment_status'>
+export type AppointmentType = Enums<'appointment_type'>
+export type PaymentStatus = Enums<'payment_status'>

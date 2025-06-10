@@ -1,8 +1,8 @@
 
 import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react-swc";
+import { VitePWA } from 'vite-plugin-pwa';
 import path from "path";
-import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -16,7 +16,61 @@ export default defineConfig(({ mode }) => {
     },
     plugins: [
       react(),
-      mode === 'development' && componentTagger(),
+      VitePWA({
+        registerType: 'autoUpdate',
+        workbox: {
+          globPatterns: ['**/*.{js,css,html,ico,png,svg,json,woff2}'],
+          runtimeCaching: [
+            {
+              urlPattern: /^https:\/\/api\.sorriso-inteligente\.com\/.*/i,
+              handler: 'NetworkFirst',
+              options: {
+                cacheName: 'api-cache',
+                expiration: {
+                  maxEntries: 100,
+                  maxAgeSeconds: 60 * 60 * 24 // 24 hours
+                },
+                networkTimeoutSeconds: 10
+              }
+            },
+            {
+              urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp|ico)$/,
+              handler: 'CacheFirst',
+              options: {
+                cacheName: 'images-cache',
+                expiration: {
+                  maxEntries: 100,
+                  maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
+                }
+              }
+            }
+          ]
+        },
+        includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
+        manifest: {
+          name: 'Sorriso Inteligente',
+          short_name: 'Sorriso',
+          description: 'Aplicativo inteligente para agendamento de consultas odontológicas',
+          theme_color: '#0ea5e9',
+          background_color: '#ffffff',
+          display: 'standalone',
+          orientation: 'portrait',
+          scope: '/',
+          start_url: '/',
+          icons: [
+            {
+              src: 'icons/icon-192x192.png',
+              sizes: '192x192',
+              type: 'image/png'
+            },
+            {
+              src: 'icons/icon-512x512.png',
+              sizes: '512x512',
+              type: 'image/png'
+            }
+          ]
+        }
+      })
     ].filter(Boolean),
     resolve: {
       alias: {
@@ -32,19 +86,46 @@ export default defineConfig(({ mode }) => {
       outDir: mode === 'staging' ? 'dist-staging' : 'dist',
       sourcemap: mode !== 'production',
       minify: mode === 'production' ? 'esbuild' : false,
+      target: 'esnext',
+      cssCodeSplit: true,
       rollupOptions: {
         output: {
           manualChunks: {
             vendor: ['react', 'react-dom'],
-            ui: ['@radix-ui/react-dialog', '@radix-ui/react-popover'],
+            router: ['react-router-dom'],
+            ui: ['@radix-ui/react-dialog', '@radix-ui/react-popover', '@radix-ui/react-select'],
             icons: ['lucide-react'],
+            query: ['@tanstack/react-query'],
+            utils: ['clsx', 'tailwind-merge', 'date-fns'],
           },
+          chunkFileNames: 'assets/[name]-[hash].js',
+          entryFileNames: 'assets/[name]-[hash].js',
+          assetFileNames: 'assets/[name]-[hash].[ext]',
         },
       },
+      // Performance optimizations
+      chunkSizeWarningLimit: 1000,
+      assetsInlineLimit: 4096,
     },
     // Environment-specific optimizations
     optimizeDeps: {
-      include: ['react', 'react-dom', 'lucide-react'],
+      include: [
+        'react', 
+        'react-dom', 
+        'react-router-dom',
+        'lucide-react',
+        '@tanstack/react-query',
+        'clsx',
+        'tailwind-merge'
+      ],
+      exclude: ['lovable-tagger'],
+    },
+    // Enable CSS optimization
+    css: {
+      devSourcemap: mode === 'development',
+      modules: {
+        localsConvention: 'camelCase',
+      },
     },
   };
 });

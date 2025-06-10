@@ -1,0 +1,35 @@
+<svg width="96" height="96" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ef4444;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#dc2626;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="96" height="96" rx="12" fill="url(#bg-gradient)"/>
+  
+  <!-- Emergency icon -->
+  <g transform="translate(48,48)">
+    <!-- Cross/Plus -->
+    <g fill="white">
+      <rect x="-3" y="-18" width="6" height="36" rx="3"/>
+      <rect x="-18" y="-3" width="36" height="6" rx="3"/>
+    </g>
+    
+    <!-- Emergency circle -->
+    <circle cx="0" cy="0" r="24" fill="none" stroke="white" stroke-width="3" opacity="0.3"/>
+    
+    <!-- Pulse lines -->
+    <g stroke="white" stroke-width="2" fill="none" opacity="0.6">
+      <path d="M-32 0 L-28 0 L-26 -8 L-24 8 L-22 -12 L-20 12 L-18 0"/>
+      <path d="M18 0 L20 12 L22 -12 L24 8 L26 -8 L28 0 L32 0"/>
+    </g>
+    
+    <!-- Small indicators -->
+    <circle cx="-16" cy="-16" r="2" fill="white" opacity="0.8"/>
+    <circle cx="16" cy="-16" r="2" fill="white" opacity="0.8"/>
+    <circle cx="-16" cy="16" r="2" fill="white" opacity="0.8"/>
+    <circle cx="16" cy="16" r="2" fill="white" opacity="0.8"/>
+  </g>
+</svg>

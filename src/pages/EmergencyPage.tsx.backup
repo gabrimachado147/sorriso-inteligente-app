@@ -1,0 +1,330 @@
+
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
+import { Phone, MessageCircle, MapPin, Clock, AlertTriangle, Send } from 'lucide-react';
+import { toastCall, toastSuccess, toastError } from '@/components/ui/custom-toast';
+import { useChatHandler } from '@/hooks/useChatHandler';
+import { animations } from '@/lib/animations';
+
+const EmergencyPage = () => {
+  const { sendWhatsAppMessage, loading } = useChatHandler();
+  const [emergencyForm, setEmergencyForm] = useState({
+    name: '',
+    phone: '',
+    description: '',
+    severity: 'moderate'
+  });
+
+  const handleEmergencyCall = async () => {
+    try {
+      const emergencyNumber = '+5535998695479';
+      window.open(`tel:${emergencyNumber}`, '_self');
+      toastCall("Emergência", "Ligando para o atendimento 24h...");
+    } catch (error) {
+      toastError("Erro", "Não foi possível realizar a ligação");
+    }
+  };
+
+  const handleWhatsAppContact = async () => {
+    try {
+      const emergencyNumber = '5535998695479';
+      const message = emergencyForm.description 
+        ? `URGÊNCIA DENTAL\nNome: ${emergencyForm.name}\nTelefone: ${emergencyForm.phone}\nDescrição: ${emergencyForm.description}\nNível: ${emergencyForm.severity}`
+        : 'URGÊNCIA DENTAL: Preciso de atendimento de emergência imediato!';
+      
+      // Abrir WhatsApp Web/App
+      const whatsappUrl = `https://wa.me/${emergencyNumber}?text=${encodeURIComponent(message)}`;
+      window.open(whatsappUrl, '_blank');
+      
+      toastSuccess("WhatsApp", "Abrindo conversa de emergência...");
+    } catch (error) {
+      toastError("Erro", "Não foi possível abrir WhatsApp");
+    }
+  };
+
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!emergencyForm.name || !emergencyForm.phone) {
+      toastError("Erro", "Por favor, preencha nome e telefone");
+      return;
+    }
+    handleWhatsAppContact();
+  };
+
+  const handleInputChange = (field: string, value: string) => {
+    setEmergencyForm(prev => ({ ...prev, [field]: value }));
+  };
+
+  return (
+    <div className={`p-6 space-y-6 ${animations.pageEnter}`}>
+      <div className={`${animations.fadeIn}`}>
+        <h1 className="text-3xl font-bold text-red-600 mb-2">🚨 Atendimento de Emergência</h1>
+        <p className="text-gray-600">Estamos aqui para ajudar em situações urgentes 24 horas por dia</p>
+      </div>
+
+      {/* Contatos de Emergência */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card className={`border-red-200 bg-red-50 ${animations.slideInLeft}`}>
+          <CardHeader>
+            <CardTitle className="flex items-center text-red-700">
+              <Phone className="h-6 w-6 mr-2" />
+              Ligação Direta
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-red-600 mb-4">
+              Para emergências graves, ligue imediatamente
+            </p>
+            <Button 
+              onClick={handleEmergencyCall}
+              className="w-full bg-red-600 hover:bg-red-700 text-white"
+              size="lg"
+            >
+              <Phone className="h-5 w-5 mr-2" />
+              Ligar Agora: (35) 99869-5479
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card className={`border-green-200 bg-green-50 ${animations.slideInRight}`}>
+          <CardHeader>
+            <CardTitle className="flex items-center text-green-700">
+              <MessageCircle className="h-6 w-6 mr-2" />
+              WhatsApp 24h
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-green-600 mb-4">
+              Descreva sua situação por mensagem
+            </p>
+            <Button 
+              onClick={handleWhatsAppContact}
+              className="w-full bg-green-600 hover:bg-green-700 text-white"
+              size="lg"
+            >
+              <MessageCircle className="h-5 w-5 mr-2" />
+              Abrir WhatsApp
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Formulário de Emergência */}
+      <Card className={animations.slideInBottom}>
+        <CardHeader>
+          <CardTitle className="flex items-center">
+            <AlertTriangle className="h-6 w-6 mr-2 text-amber-600" />
+            Formulário de Emergência
+          </CardTitle>
+          <p className="text-sm text-gray-600">
+            Preencha para receber atendimento mais rápido
+          </p>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleFormSubmit} className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium mb-2 block">Nome Completo *</label>
+                <Input
+                  placeholder="Seu nome"
+                  value={emergencyForm.name}
+                  onChange={(e) => handleInputChange('name', e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-2 block">Telefone *</label>
+                <Input
+                  placeholder="(xx) xxxxx-xxxx"
+                  value={emergencyForm.phone}
+                  onChange={(e) => handleInputChange('phone', e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+            
+            <div>
+              <label className="text-sm font-medium mb-2 block">Nível de Urgência</label>
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant={emergencyForm.severity === 'low' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => handleInputChange('severity', 'low')}
+                >
+                  <Badge variant="secondary" className="mr-1">Leve</Badge>
+                  Desconforto
+                </Button>
+                <Button
+                  type="button"
+                  variant={emergencyForm.severity === 'moderate' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => handleInputChange('severity', 'moderate')}
+                >
+                  <Badge variant="destructive" className="mr-1">Moderada</Badge>
+                  Dor forte
+                </Button>
+                <Button
+                  type="button"
+                  variant={emergencyForm.severity === 'high' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => handleInputChange('severity', 'high')}
+                >
+                  <Badge variant="destructive" className="mr-1">Grave</Badge>
+                  Insuportável
+                </Button>
+              </div>
+            </div>
+
+            <div>
+              <label className="text-sm font-medium mb-2 block">Descrição dos Sintomas</label>
+              <Textarea
+                placeholder="Descreva sua dor ou problema dental..."
+                value={emergencyForm.description}
+                onChange={(e) => handleInputChange('description', e.target.value)}
+                rows={3}
+              />
+            </div>
+
+            <Button 
+              type="submit" 
+              className="w-full bg-blue-600 hover:bg-blue-700"
+              disabled={loading}
+            >
+              <Send className="h-4 w-4 mr-2" />
+              Enviar Solicitação de Emergência
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+
+      {/* Direct Call Card */}
+      <Card className="border-red-200 bg-red-50">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-red-800">
+            <Phone className="h-6 w-6" />
+            Ligação Direta
+          </CardTitle>
+        </CardHeader>
+          <CardContent>
+            <p className="text-red-700 mb-4">
+              Para emergências imediatas, ligue diretamente para nossa central 24h
+            </p>
+            <Button 
+              className={`w-full bg-red-600 hover:bg-red-700 ${animations.buttonHover}`}
+              onClick={handleEmergencyCall}
+              disabled={loading}
+            >
+              <Phone className="h-4 w-4 mr-2" />
+              {loading ? 'Conectando...' : 'Ligar para Emergência'}
+            </Button>
+            <p className="text-sm text-red-600 mt-2 text-center">
+              (35) 99869-5479
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className={`border-green-200 bg-green-50 ${animations.slideInRight}`}>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-green-800">
+              <MessageCircle className="h-6 w-6" />
+              WhatsApp 24h
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-green-700 mb-4">
+              Envie uma mensagem via WhatsApp para orientação rápida
+            </p>
+            <Button 
+              className={`w-full bg-green-600 hover:bg-green-700 ${animations.buttonHover}`}
+              onClick={handleWhatsAppContact}
+              disabled={loading}
+            >
+              <MessageCircle className="h-4 w-4 mr-2" />
+              {loading ? 'Conectando...' : 'Contatar via WhatsApp'}
+            </Button>
+            <p className="text-sm text-green-600 mt-2 text-center">
+              Resposta em até 5 minutos
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Unidades com Plantão - ENDEREÇOS CORRIGIDOS */}
+      <Card className={animations.fadeIn}>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <MapPin className="h-5 w-5" />
+            Unidades com Plantão 24h
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="p-4 border rounded-lg">
+              <h3 className="font-semibold">Campo Belo - MG</h3>
+              <p className="text-sm text-gray-600">Av. Afonso Pena, 151, Centro - Campo Belo/MG</p>
+              <p className="text-sm text-gray-600">CEP: 37270-000 | Tel: (35) 99869-5479</p>
+              <div className="flex items-center gap-2 mt-2">
+                <Clock className="h-4 w-4 text-green-600" />
+                <span className="text-sm text-green-600 font-medium">Plantão 24h disponível</span>
+              </div>
+            </div>
+
+            <div className="p-4 border rounded-lg">
+              <h3 className="font-semibold">Formiga - MG</h3>
+              <p className="text-sm text-gray-600">R. Barão de Piumhy, 198, Centro - Formiga/MG</p>
+              <p className="text-sm text-gray-600">CEP: 35570-128 | Tel: (35) 9969-5479</p>
+              <div className="flex items-center gap-2 mt-2">
+                <Clock className="h-4 w-4 text-green-600" />
+                <span className="text-sm text-green-600 font-medium">Plantão 24h disponível</span>
+              </div>
+            </div>
+
+            <div className="p-4 border rounded-lg">
+              <h3 className="font-semibold">Itararé - SP</h3>
+              <p className="text-sm text-gray-600">R. São Pedro, 1348 (Loja), Centro - Itararé/SP</p>
+              <p className="text-sm text-gray-600">CEP: 18460-009 | Tel: (35) 99969-5479</p>
+              <div className="flex items-center gap-2 mt-2">
+                <Clock className="h-4 w-4 text-green-600" />
+                <span className="text-sm text-green-600 font-medium">Plantão 24h disponível</span>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Orientações */}
+      <Card className={`border-yellow-200 bg-yellow-50 ${animations.fadeIn}`}>
+        <CardHeader>
+          <CardTitle className="text-yellow-800">Orientações para Emergências</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3 text-yellow-700">
+            <div>
+              <h4 className="font-medium">🦷 Dor de dente intensa</h4>
+              <p className="text-sm">Enxágue com água morna e aplique compressa fria do lado externo</p>
+            </div>
+            <div>
+              <h4 className="font-medium">🩸 Sangramento</h4>
+              <p className="text-sm">Aplique pressão com gaze limpa e procure atendimento imediato</p>
+            </div>
+            <div>
+              <h4 className="font-medium">🦷 Dente quebrado/perdido</h4>
+              <p className="text-sm">Guarde o fragmento em leite e procure atendimento em até 1 hora</p>
+            </div>
+            <div>
+              <h4 className="font-medium">😷 Inchaço facial</h4>
+              <p className="text-sm">Aplique gelo e procure atendimento urgente - pode ser infecção</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+export default EmergencyPage;

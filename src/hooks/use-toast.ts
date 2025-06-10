@@ -1,9 +1,14 @@
 import * as React from "react"
+// Correct the import to match the actual export
+import { Toast } from "../components/ui/toast"
 
-import type {
-  ToastActionElement,
-  ToastProps,
-} from "@/components/ui/toast"
+// Define or import missing types
+type ToastProps = {
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
+}
+
+type ToastActionElement = React.ReactNode
 
 const TOAST_LIMIT = 1
 const TOAST_REMOVE_DELAY = 1000000
@@ -155,7 +160,7 @@ function toast({ ...props }: Toast) {
       ...props,
       id,
       open: true,
-      onOpenChange: (open) => {
+      onOpenChange: (open: boolean) => { // Explicitly type 'open' as boolean
         if (!open) dismiss()
       },
     },

@@ -59,7 +59,9 @@ export const Filters: React.FC<FiltersProps> = ({
   const [isOpen, setIsOpen] = useState(false);
 
   const updateFilter = (key: keyof FilterState, value: any) => {
-    onFiltersChange({ ...filters, [key]: value });
+    // Convert "all" back to empty string for filtering logic
+    const actualValue = value === "all" ? "" : value;
+    onFiltersChange({ ...filters, [key]: actualValue });
   };
 
   const clearFilters = () => {
@@ -145,14 +147,14 @@ export const Filters: React.FC<FiltersProps> = ({
                     Clínica
                   </Label>
                   <Select 
-                    value={filters.clinic} 
+                    value={filters.clinic || "all"} 
                     onValueChange={(value) => updateFilter('clinic', value)}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Selecione uma clínica" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Todas as clínicas</SelectItem>
+                      <SelectItem value="all">Todas as clínicas</SelectItem>
                       {availableClinics.map((clinic) => (
                         <SelectItem key={clinic.id} value={clinic.id}>
                           {clinic.name}
@@ -171,14 +173,14 @@ export const Filters: React.FC<FiltersProps> = ({
                     Tipo de Serviço
                   </Label>
                   <Select 
-                    value={filters.service} 
+                    value={filters.service || "all"} 
                     onValueChange={(value) => updateFilter('service', value)}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Selecione um serviço" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Todos os serviços</SelectItem>
+                      <SelectItem value="all">Todos os serviços</SelectItem>
                       {availableServices.map((service) => (
                         <SelectItem key={service.id} value={service.id}>
                           {service.name}
@@ -194,14 +196,14 @@ export const Filters: React.FC<FiltersProps> = ({
                 <div className="space-y-2">
                   <Label>Status</Label>
                   <Select 
-                    value={filters.status} 
+                    value={filters.status || "all"} 
                     onValueChange={(value) => updateFilter('status', value)}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Selecione um status" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Todos os status</SelectItem>
+                      <SelectItem value="all">Todos os status</SelectItem>
                       {availableStatuses.map((status) => (
                         <SelectItem key={status.id} value={status.id}>
                           {status.name}
