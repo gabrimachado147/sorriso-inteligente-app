@@ -20,7 +20,7 @@ interface ConfirmationModalProps {
   type: 'appointment' | 'cancel' | 'personal-data' | 'emergency';
   title?: string;
   description?: string;
-  data?: any;
+  data?: unknown;
 }
 
 export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
