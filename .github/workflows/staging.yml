@@ -9,6 +9,7 @@ permissions:
   pull-requests: write # para comentar no PR
 
 env:
+  # Ensure these secrets are defined in the repository settings under "Settings > Secrets and variables > Actions"
   VITE_API_BASE_URL:    ${{ secrets.STAGING_API_BASE_URL }}
   VITE_N8N_WEBHOOK_URL: ${{ secrets.STAGING_N8N_WEBHOOK_URL }}
   VITE_EVOLUTION_API_URL: ${{ secrets.STAGING_EVOLUTION_API_URL }}
@@ -31,6 +32,21 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Debug Secrets
+        run: |
+          echo "STAGING_API_BASE_URL=${{ secrets.STAGING_API_BASE_URL }}"
+          echo "STAGING_N8N_WEBHOOK_URL=${{ secrets.STAGING_N8N_WEBHOOK_URL }}"
+          echo "STAGING_EVOLUTION_API_URL=${{ secrets.STAGING_EVOLUTION_API_URL }}"
+          echo "STAGING_SUPABASE_URL=${{ secrets.STAGING_SUPABASE_URL }}"
+          echo "STAGING_SUPABASE_ANON_KEY=${{ secrets.STAGING_SUPABASE_ANON_KEY }}"
+          echo "LHCI_GITHUB_APP_TOKEN=${{ secrets.LHCI_GITHUB_APP_TOKEN }}"
+          echo "STAGING_HOST=${{ secrets.STAGING_HOST }}"
+          echo "STAGING_USERNAME=${{ secrets.STAGING_USERNAME }}"
+          echo "STAGING_SSH_KEY=${{ secrets.STAGING_SSH_KEY }}"
+        env:
+          # Mask secrets to avoid exposing them in logs
+          MASK_SECRETS: true
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -76,11 +92,13 @@ jobs:
           npm install -g @lhci/cli@0.12.x
           lhci autorun
         env:
+          # Ensure this secret is defined in the repository settings
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
 
       - name: Deploy to Staging Server
         uses: appleboy/ssh-action@v1.0.0
         with:
+          # Ensure these secrets are defined in the repository settings
           host: ${{ secrets.STAGING_HOST }}
           username: ${{ secrets.STAGING_USERNAME }}
           key: ${{ secrets.STAGING_SSH_KEY }}
