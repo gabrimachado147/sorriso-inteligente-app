@@ -27,8 +27,7 @@
     "useUnknownInCatchVariables": false
   },
   "include": [
-    "src/types/env.d.ts",
-    "vite-env.d.ts",
+    "src/env.d.ts",
     "src/**/*"
   ],
   "exclude": ["node_modules", "dist"]
