@@ -19,8 +19,8 @@
     ]
   },
   "include": [
-    "src",
-    "declarations.d.ts"
+    "src/types/env.d.ts",
+    "src/**/*"
   ],
   "exclude": ["node_modules", "dist"]
 }
