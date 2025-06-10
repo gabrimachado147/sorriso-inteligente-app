@@ -1,12 +1,17 @@
 // Supabase service for managing clinics
 import { supabase } from '../../integrations/supabase/client'
-import type { 
-  Clinic, 
-  ClinicInsert, 
+import type {
+  Clinic,
+  ClinicInsert,
   ClinicUpdate,
   Service,
-  Dentist
+  Dentist,
+  Review
 } from '../../integrations/supabase/types'
+
+interface WorkingHours {
+  [day: string]: { open: string; close: string }
+}
 
 export class ClinicService {
   /**
@@ -196,7 +201,7 @@ export class ClinicService {
       throw new Error(error.message)
     }
 
-    const workingHours = data.opening_hours as any
+    const workingHours = data.opening_hours as WorkingHours
     return workingHours?.[dayOfWeek] || null
   }
 
@@ -221,12 +226,12 @@ export class ClinicService {
    * Get clinic reviews
    */
   static async getReviews(
-    clinicId: string, 
+    clinicId: string,
     options?: {
       limit?: number
       rating?: number
     }
-  ): Promise<any[]> {
+  ): Promise<Review[]> {
     let query = supabase
       .from('reviews')
       .select(`

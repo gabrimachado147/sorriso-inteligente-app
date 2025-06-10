@@ -94,7 +94,7 @@ const ChatBot = () => {
           text: response.reply,
           sender: 'bot',
           timestamp: new Date(),
-          type: context as any
+          type: context as Message['type']
         };
       }
     } catch (error) {

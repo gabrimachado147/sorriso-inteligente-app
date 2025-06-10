@@ -1,11 +1,16 @@
 // Supabase service for managing appointments
 import { supabase } from '../../integrations/supabase/client'
-import type { 
-  Appointment, 
-  AppointmentInsert, 
+import type {
+  Appointment,
+  AppointmentInsert,
   AppointmentUpdate,
-  Database 
+  AppointmentStatus,
+  Database
 } from '../../integrations/supabase/types'
+
+interface WorkingHours {
+  [day: string]: { open: string; close: string }
+}
 
 export class AppointmentService {
   /**
@@ -35,9 +40,9 @@ export class AppointmentService {
    * Get user appointments
    */
   static async getUserAppointments(
-    userId: string, 
+    userId: string,
     options?: {
-      status?: string[]
+      status?: AppointmentStatus[]
       limit?: number
       upcoming?: boolean
     }
@@ -53,7 +58,7 @@ export class AppointmentService {
       .eq('patient_id', userId)
 
     if (options?.status) {
-      query = query.in('status', options.status as any)
+      query = query.in('status', options.status)
     }
 
     if (options?.upcoming) {
@@ -200,7 +205,7 @@ export class AppointmentService {
 
     // Generate available slots based on working hours and existing appointments
     const dayOfWeek = new Date(date).toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase()
-    const workingHours = clinic.opening_hours as any
+    const workingHours = clinic.opening_hours as WorkingHours
     
     if (!workingHours || !workingHours[dayOfWeek]) {
       return [] // Clinic closed on this day

@@ -105,7 +105,7 @@ export const useClinics = () => {
   const queryClient = useQueryClient()
 
   // Get all clinics with filters
-  const getClinics = (filters?: {
+  const useClinicsQuery = (filters?: {
     specialty?: string
     city?: string
     emergencyOnly?: boolean
@@ -160,7 +160,7 @@ export const useClinics = () => {
   })
 
   // Get clinic by ID
-  const getClinicById = (clinicId: string) => {
+  const useClinicByIdQuery = (clinicId: string) => {
     return useQuery({
       queryKey: ['clinic', clinicId],
       queryFn: () => ClinicService.getById(clinicId),
@@ -182,7 +182,7 @@ export const useClinics = () => {
   }
 
   return {
-    getClinics,
+    useClinicsQuery,
     featuredClinics,
     emergencyClinics,
     specialties,
@@ -191,7 +191,7 @@ export const useClinics = () => {
     isLoadingEmergency,
     isLoadingSpecialties,
     isLoadingCities,
-    getClinicById,
+    useClinicByIdQuery,
     searchClinics
   }
 }
