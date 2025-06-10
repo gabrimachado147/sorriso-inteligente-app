@@ -61,7 +61,7 @@ async function askQuestion(question) {
 
 async function verifySetup() {
   console.log("📋 Supabase Setup Checklist:");
-  console.log("=" .repeat(30));
+  console.log("=".repeat(30));
   
   for (let i = 0; i < questions.length; i++) {
     const { question, action } = questions[i];
