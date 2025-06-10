@@ -8,7 +8,7 @@ export interface ChatMessage {
   actions?: Array<{
     type: 'schedule' | 'call' | 'location';
     label: string;
-    data?: any;
+    data?: unknown;
   }>;
 }
 
@@ -37,6 +37,16 @@ export interface UserProfile {
     time: string;
     status: 'confirmed' | 'pending' | 'cancelled';
   }>;
+}
+
+export interface UserAppointment {
+  id: string;
+  service: string;
+  clinic: string;
+  doctor: string;
+  date: string;
+  time: string;
+  status: 'confirmed' | 'pending' | 'cancelled';
 }
 
 // Simulação de delay de rede
@@ -206,7 +216,7 @@ export const apiService = {
       return baseSlots.filter(() => Math.random() > 0.3); // Remove alguns aleatoriamente
     },
 
-    getUserAppointments: async (userId: string): Promise<any[]> => {
+    getUserAppointments: async (userId: string): Promise<UserAppointment[]> => {
       await delay(600);
       return [
         {
