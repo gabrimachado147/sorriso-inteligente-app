@@ -98,11 +98,11 @@ export const SupabaseIntegrationExample: React.FC = () => {
       
       const appointmentData = {
         patient_id: user.id,
+        dentist_id: 'default-dentist-id', // This should come from selected dentist
         clinic_id: clinicId,
         service_id: 'cleaning-service', // This should come from selected service
-        appointment_date: new Date('2024-12-31').toISOString(),
-        appointment_time: '14:00',
-        status: 'pending' as const,
+        appointment_date: new Date('2024-12-31T14:00:00').toISOString(),
+        status: 'scheduled' as const,
         notes: 'Regular checkup appointment'
       };
 

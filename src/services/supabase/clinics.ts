@@ -187,7 +187,7 @@ export class ClinicService {
   ): Promise<{ open: string; close: string } | null> {
     const { data, error } = await supabase
       .from('clinics')
-      .select('working_hours')
+      .select('opening_hours')
       .eq('id', clinicId)
       .single()
 
@@ -196,7 +196,7 @@ export class ClinicService {
       throw new Error(error.message)
     }
 
-    const workingHours = data.working_hours as any
+    const workingHours = data.opening_hours as any
     return workingHours?.[dayOfWeek] || null
   }
 
@@ -265,7 +265,7 @@ export class ClinicService {
     specialtyCount: number
     dentistCount: number
   }> {
-    const [appointments, reviews, clinic, dentists] = await Promise.all([
+    const [appointments, reviews, dentists] = await Promise.all([
       supabase
         .from('appointments')
         .select('id', { count: 'exact' })
@@ -277,23 +277,25 @@ export class ClinicService {
         .eq('clinic_id', clinicId),
       
       supabase
-        .from('clinics')
-        .select('specialties, total_reviews, rating')
-        .eq('id', clinicId)
-        .single(),
-      
-      supabase
         .from('dentists')
-        .select('id', { count: 'exact' })
+        .select('id, specialties', { count: 'exact' })
         .eq('clinic_id', clinicId)
-        .eq('active', true)
+        .eq('is_active', true)
     ])
+
+    // Calculate average rating from reviews
+    const avgRating = reviews.data?.length ? 
+      reviews.data.reduce((sum, review) => sum + review.rating, 0) / reviews.data.length : 0
+
+    // Get unique specialties from dentists
+    const allSpecialties = dentists.data?.flatMap(dentist => dentist.specialties || []) || []
+    const uniqueSpecialties = [...new Set(allSpecialties)]
 
     return {
       totalAppointments: appointments.count || 0,
-      totalReviews: clinic.data?.total_reviews || 0,
-      averageRating: clinic.data?.rating || 0,
-      specialtyCount: clinic.data?.specialties?.length || 0,
+      totalReviews: reviews.data?.length || 0,
+      averageRating: Math.round(avgRating * 10) / 10,
+      specialtyCount: uniqueSpecialties.length,
       dentistCount: dentists.count || 0
     }
   }
@@ -303,9 +305,9 @@ export class ClinicService {
    */
   static async getSpecialties(): Promise<string[]> {
     const { data, error } = await supabase
-      .from('clinics')
+      .from('dentists')
       .select('specialties')
-      .eq('verified', true)
+      .eq('is_active', true)
 
     if (error) {
       console.error('Error fetching specialties:', error)
@@ -313,7 +315,7 @@ export class ClinicService {
     }
 
     // Flatten and deduplicate specialties
-    const allSpecialties = data?.flatMap(clinic => clinic.specialties || []) || []
+    const allSpecialties = data?.flatMap(dentist => dentist.specialties || []) || []
     return [...new Set(allSpecialties)].sort()
   }
 
@@ -337,21 +339,12 @@ export class ClinicService {
 
   /**
    * Get clinic insurance providers
+   * TODO: Add insurance_providers and accepts_insurance fields to clinics table
    */
   static async getInsuranceProviders(): Promise<string[]> {
-    const { data, error } = await supabase
-      .from('clinics')
-      .select('insurance_providers')
-      .eq('verified', true)
-      .eq('accepts_insurance', true)
-
-    if (error) {
-      console.error('Error fetching insurance providers:', error)
-      throw new Error(error.message)
-    }
-
-    const allProviders = data?.flatMap(clinic => clinic.insurance_providers || []) || []
-    return [...new Set(allProviders)].sort()
+    // For now, return empty array since insurance fields don't exist in schema
+    console.log('Insurance providers feature not yet implemented - missing schema fields')
+    return []
   }
 }
 

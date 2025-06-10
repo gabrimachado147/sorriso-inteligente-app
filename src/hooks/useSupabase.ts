@@ -372,10 +372,15 @@ export const useUserProfile = (userId?: string) => {
     }) => {
       if (!userId) throw new Error('User ID required')
       
+      // Generate a unique installation ID
+      const installationId = `${userId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+      
       const { data, error } = await supabase
         .from('pwa_installations')
         .insert({
           user_id: userId,
+          installation_id: installationId,
+          device_info: installData,
           ...installData
         })
 

@@ -95,7 +95,7 @@ export class AppointmentService {
       `)
       .eq('clinic_id', clinicId)
       .eq('appointment_date', date)
-      .in('status', ['pending', 'confirmed', 'in_progress'])
+      .in('status', ['scheduled', 'confirmed', 'in_progress'])
       .order('appointment_time', { ascending: true })
 
     if (error) {
@@ -145,8 +145,7 @@ export class AppointmentService {
   ): Promise<Appointment> {
     return this.update(appointmentId, {
       status: 'cancelled',
-      cancelled_at: new Date().toISOString(),
-      cancellation_reason: reason
+      notes: reason ? `Cancelled: ${reason}` : 'Cancelled'
     })
   }
 
@@ -155,8 +154,7 @@ export class AppointmentService {
    */
   static async confirm(appointmentId: string): Promise<Appointment> {
     return this.update(appointmentId, {
-      status: 'confirmed',
-      confirmed_at: new Date().toISOString()
+      status: 'confirmed'
     })
   }
 
@@ -172,10 +170,10 @@ export class AppointmentService {
     // First get existing appointments for the date
     let query = supabase
       .from('appointments')
-      .select('appointment_time, duration')
+      .select('appointment_date, duration_minutes')
       .eq('clinic_id', clinicId)
-      .eq('appointment_date', date)
-      .in('status', ['pending', 'confirmed', 'in_progress'])
+      .like('appointment_date', `${date}%`)
+      .in('status', ['scheduled', 'confirmed', 'in_progress'])
 
     if (dentistId) {
       query = query.eq('dentist_id', dentistId)
@@ -191,7 +189,7 @@ export class AppointmentService {
     // Get clinic working hours for the day
     const { data: clinic, error: clinicError } = await supabase
       .from('clinics')
-      .select('working_hours')
+      .select('opening_hours')
       .eq('id', clinicId)
       .single()
 
@@ -202,7 +200,7 @@ export class AppointmentService {
 
     // Generate available slots based on working hours and existing appointments
     const dayOfWeek = new Date(date).toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase()
-    const workingHours = clinic.working_hours as any
+    const workingHours = clinic.opening_hours as any
     
     if (!workingHours || !workingHours[dayOfWeek]) {
       return [] // Clinic closed on this day
@@ -221,8 +219,9 @@ export class AppointmentService {
       
       // Check if this slot conflicts with existing appointments
       const hasConflict = existingAppointments?.some(apt => {
-        const aptStart = new Date(`${date}T${apt.appointment_time}`)
-        const aptEnd = new Date(aptStart.getTime() + (apt.duration * 60000))
+        const aptStart = new Date(apt.appointment_date)
+        const aptDuration = apt.duration_minutes || 60
+        const aptEnd = new Date(aptStart.getTime() + (aptDuration * 60000))
         const slotStart = new Date(`${date}T${timeStr}`)
         const slotEnd = new Date(slotStart.getTime() + (duration * 60000))
         
@@ -273,11 +272,8 @@ export class AppointmentService {
         // Here you would call your notification service
         console.log(`Sending reminder for appointment ${appointment.id}`)
         
-        // Mark reminder as sent
-        await supabase
-          .from('appointments')
-          .update({ reminder_sent_at: new Date().toISOString() })
-          .eq('id', appointment.id)
+        // Note: reminder tracking would need to be added to the database schema
+        // await supabase.from('appointments').update({ reminder_sent_at: new Date().toISOString() }).eq('id', appointment.id)
           
       } catch (error) {
         console.error(`Failed to send reminder for appointment ${appointment.id}:`, error)
