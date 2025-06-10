@@ -1,0 +1,101 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Design system customizado para Senhor Sorriso */
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    /* Cores principais da Senhor Sorriso */
+    --primary: 210 100% 30%; /* Azul profissional */
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 200 20% 96%;
+    --secondary-foreground: 210 100% 30%;
+
+    --accent: 150 60% 50%; /* Verde para confirmações */
+    --accent-foreground: 210 40% 98%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 210 100% 30%;
+
+    --radius: 0.75rem;
+
+    /* Cores específicas para odontologia */
+    --dental-blue: 210 100% 30%;
+    --dental-green: 150 60% 50%;
+    --dental-gray: 210 20% 90%;
+    --urgent-red: 0 84.2% 60.2%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --primary: 210 100% 50%;
+    --accent: 150 60% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+
+  /* Animações customizadas */
+  .chat-message {
+    animation: slideInUp 0.3s ease-out;
+  }
+
+  .appointment-card {
+    transition: all 0.2s ease-in-out;
+  }
+
+  .appointment-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px -8px rgba(30, 58, 138, 0.2);
+  }
+
+  .floating-action {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Cores específicas para especialidades */
+.specialty-ortodontia { @apply bg-blue-100 text-blue-800; }
+.specialty-implante { @apply bg-green-100 text-green-800; }
+.specialty-estetica { @apply bg-purple-100 text-purple-800; }
+.specialty-limpeza { @apply bg-cyan-100 text-cyan-800; }
+.specialty-urgencia { @apply bg-red-100 text-red-800; }
+.specialty-pediatria { @apply bg-yellow-100 text-yellow-800; }
