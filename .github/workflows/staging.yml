@@ -97,7 +97,6 @@ jobs:
         with:
           status: ${{ job.status }}
           channel: '#deployments'
-          webhook-url: ${{ secrets.SLACK_WEBHOOK }}
 
   lighthouse:
     name: 🔍 Lighthouse Audit
