@@ -83,8 +83,12 @@ const ChatBot = () => {
     
     try {
       // Tentar processar via n8n primeiro
-      const context = lowerMessage.includes('agendar') ? 'appointment' : 
-                    lowerMessage.includes('emergência') ? 'emergency' : 'general';
+      const context: 'appointment' | 'emergency' | 'general' =
+        lowerMessage.includes('agendar')
+          ? 'appointment'
+          : lowerMessage.includes('emergência')
+            ? 'emergency'
+            : 'general';
       
       const response = await sendMessage(userMessage, context);
       
@@ -94,7 +98,7 @@ const ChatBot = () => {
           text: response.reply,
           sender: 'bot',
           timestamp: new Date(),
-          type: context as any
+          type: context
         };
       }
     } catch (error) {
