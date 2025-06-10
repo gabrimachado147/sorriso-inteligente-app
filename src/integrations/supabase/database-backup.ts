@@ -320,7 +320,7 @@ export async function getDentistAppointments(dentistId: string) {
 // Get available appointment slots
 export async function getAvailableSlots(dentistId: string, date: string) {
   try {
-    const slots: { time: string; available: boolean }[] = []
+    const slots = []
     const workingHours = ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00', '17:00']
     
     // Get existing appointments for the date - simplified version
