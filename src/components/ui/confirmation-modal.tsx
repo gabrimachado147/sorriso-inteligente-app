@@ -13,6 +13,13 @@ import {
 import { animations } from '@/lib/animations';
 import { Calendar, X, User, AlertCircle } from 'lucide-react';
 
+interface AppointmentInfo {
+  date: string;
+  time: string;
+  clinic: string;
+  service: string;
+}
+
 interface ConfirmationModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -20,7 +27,7 @@ interface ConfirmationModalProps {
   type: 'appointment' | 'cancel' | 'personal-data' | 'emergency';
   title?: string;
   description?: string;
-  data?: any;
+  data?: AppointmentInfo;
 }
 
 export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
