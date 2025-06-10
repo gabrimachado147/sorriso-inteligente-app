@@ -9,7 +9,7 @@
     "build:dev": "vite build --mode development",
     "build:staging": "vite build --mode staging",
     "preview": "vite preview",
-    "type-check": "tsc --noEmit -p tsconfig.json",
+    "type-check": "tsc --noEmit",
     "test": "vitest",
     "lint": "eslint .",
     "lighthouse": "lighthouse https://sorriso-inteligente-app.lovable.app --output html"
