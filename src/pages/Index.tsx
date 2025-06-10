@@ -152,13 +152,6 @@ const Index = () => {
     navigate('/emergency');
   };
 
-  const whatsappKey = import.meta.env.VITE_N8N_WEBHOOK_URL;
-
-  const apiUrl = import.meta.env.API_URL;
-  if (!apiUrl) {
-    console.error('API_URL is not defined in environment variables');
-  }
-
   if (isLoading) {
     return (
       <div className="p-6 space-y-6">
