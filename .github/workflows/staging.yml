@@ -46,7 +46,7 @@ jobs:
         run: npm run type-check
 
       - name: Run tests (ignore if none exist)
-        run: npm run test || echo "No tests found, skipping."
+        run: npm run test || echo "No tests found. Skipping..."
 
       - name: Build project for staging
         run: npm run build:staging
