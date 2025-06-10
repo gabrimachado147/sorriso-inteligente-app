@@ -3,7 +3,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { toastInfo } from '@/components/ui/custom-toast';
 import { animations } from '@/lib/animations';
-import { Home, MessageCircle, Calendar, User, MapPin } from 'lucide-react';
+import { Home, MessageCircle, Calendar, User, MapPin, Phone } from 'lucide-react';
 
 interface BottomNavigationProps {
   currentPage: string;
@@ -30,16 +30,16 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({ currentPage,
       action: () => handleNavigation('locations', 'unidades')
     },
     { 
-      id: 'chat', 
-      icon: MessageCircle, 
-      label: 'Chat',
-      action: () => handleNavigation('chat', 'chat com assistente')
-    },
-    { 
       id: 'appointments', 
       icon: Calendar, 
       label: 'Agendar',
       action: () => handleNavigation('appointments', 'agendamento')
+    },
+    { 
+      id: 'chat', 
+      icon: MessageCircle, 
+      label: 'Chat',
+      action: () => handleNavigation('chat', 'chat com assistente')
     },
     { 
       id: 'profile', 
