@@ -69,6 +69,7 @@ cd sorriso-inteligente-app
 npm install
 
 # Configure as variáveis de ambiente
+# Utilize o arquivo `.env.example` como base e copie-o para `.env.local`
 cp .env.example .env.local
 
 # Inicie o servidor de desenvolvimento
