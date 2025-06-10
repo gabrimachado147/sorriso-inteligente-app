@@ -14,7 +14,7 @@
   "lighthouse": "lighthouse https://sorriso-inteligente-app.lovable.app --output html"
 }
 
-  },
+}
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
     "@radix-ui/react-accordion": "^1.2.0",
