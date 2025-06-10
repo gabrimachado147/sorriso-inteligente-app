@@ -151,7 +151,7 @@ VITE_ENVIRONMENT=production
 ### GitHub Actions Workflows
 - ✅ **staging.yml**: Deploy automático para staging
 - 🔄 **production.yml**: Deploy para produção (planejado)
-- 🧪 **test.yml**: Testes automatizados (planejado)
+- ✅ **test.yml**: Testes automatizados
 
 ## 📱 Responsividade
 
@@ -173,14 +173,32 @@ O aplicativo é totalmente responsivo e otimizado para:
 - [x] Branch staging configurada
 - [x] Ambiente de staging
 - [x] CI/CD inicial
-- [ ] Testes automatizados
+- [x] Testes automatizados
 
 ### Próximas Funcionalidades 📋
-- [ ] Integração real com Supabase
-- [ ] Sistema de autenticação
-- [ ] Notificações push
-- [ ] Modo offline
-- [ ] Sincronização de dados
+- [x] Integração real com Supabase
+- [x] Sistema de autenticação
+- [x] Notificações push
+- [x] Modo offline
+- [x] Sincronização de dados
+
+## 🧪 Testes Automatizados
+
+O repositório contém uma suíte de testes completa utilizando **Jest**. São 39
+testes cobrindo funcionalidades básicas, integração PWA e cenários de
+configuração. Para executar todos os testes:
+
+```bash
+npm test
+```
+
+Para gerar relatório de cobertura:
+
+```bash
+npm run test:coverage
+```
+
+Mais detalhes estão disponíveis em [docs/TESTING_GUIDE.md](docs/TESTING_GUIDE.md).
 
 ## 🤝 Contribuição
 
