@@ -65,7 +65,7 @@ async function verifySetup() {
   
   for (let i = 0; i < questions.length; i++) {
     const { question, action } = questions[i];
-    const answer = await askQuestion(\`\${i + 1}. \${question}\`);
+    const answer = await askQuestion(`${i + 1}. ${question}`);
     
     if (answer !== 'y' && answer !== 'yes') {
       console.log("❌ Setup incomplete:");
@@ -77,7 +77,7 @@ async function verifySetup() {
     console.log("✅ Completed!\\n");
   }
   
-  console.log(\`
+  console.log(`
 🎉 Supabase Setup Verification Complete!
 
 Next Steps:
