@@ -10,7 +10,7 @@
     "build:staging": "vite build --mode staging",
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
-    "test": "vitest",
+    "test": "jest",
     "lint": "eslint .",
     "lighthouse": "lighthouse https://sorriso-inteligente-app.lovable.app --output html"
   },
@@ -79,6 +79,7 @@
     "eslint-plugin-react-refresh": "^0.4.9",
     "globals": "^15.9.0",
     "lovable-tagger": "^1.1.7",
+    "jest": "^28.0.0",
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.11",
     "typescript": "^5.8.3",
