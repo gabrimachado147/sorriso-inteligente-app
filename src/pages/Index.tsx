@@ -1,5 +1,5 @@
 
-import HomePage from "@/components/Dashboard/HomePage";
+import { HomePage } from "@/components/Dashboard/HomePage";
 
 const Index = () => {
   return <HomePage />;
