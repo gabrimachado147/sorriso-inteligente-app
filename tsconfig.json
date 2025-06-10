@@ -18,6 +18,9 @@
       "vite/client"
     ]
   },
-  "include": ["src"], // Adjust this to match your source directory
+  "include": [
+    "src",
+    "src/env.d.ts"
+  ], // Adjust this to match your source directory
   "exclude": ["node_modules", "dist"]
 }
