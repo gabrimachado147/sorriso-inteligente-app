@@ -61,11 +61,11 @@ async function askQuestion(question) {
 
 async function verifySetup() {
   console.log("📋 Supabase Setup Checklist:");
-  console.log("=".repeat(30));
+  console.log("=" .repeat(30));
   
   for (let i = 0; i < questions.length; i++) {
     const { question, action } = questions[i];
-    const answer = await askQuestion(`${i + 1}. ${question}`);
+    const answer = await askQuestion(\`\${i + 1}. \${question}\`);
     
     if (answer !== 'y' && answer !== 'yes') {
       console.log("❌ Setup incomplete:");
@@ -74,10 +74,10 @@ async function verifySetup() {
       continue;
     }
     
-    console.log("✅ Completed!\n");
+    console.log("✅ Completed!\\n");
   }
   
-  console.log(`
+  console.log(\`
 🎉 Supabase Setup Verification Complete!
 
 Next Steps:
