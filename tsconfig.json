@@ -19,9 +19,7 @@
     ]
   },
   "include": [
-    "src",
-    "src/vite-env.d.ts",
-    "src/globals.d.ts"
-  ], // Adjust this to match your source directory
+    "src"
+  ],
   "exclude": ["node_modules", "dist"]
 }
