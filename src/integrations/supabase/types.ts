@@ -354,6 +354,51 @@ export type Database = {
         }
         Relationships: []
       }
+      leads_whatsapp_senhor_sorriso: {
+        Row: {
+          chatInput: string | null
+          created_at: string
+          data_de_cadastro: string | null
+          id: number
+          lead_name: string | null
+          name: string | null
+          number: string | null
+          phone: string | null
+          sessionId: string | null
+          thread_id: string | null
+          timeout: string | null
+          Whastapp: string | null
+        }
+        Insert: {
+          chatInput?: string | null
+          created_at?: string
+          data_de_cadastro?: string | null
+          id?: number
+          lead_name?: string | null
+          name?: string | null
+          number?: string | null
+          phone?: string | null
+          sessionId?: string | null
+          thread_id?: string | null
+          timeout?: string | null
+          Whastapp?: string | null
+        }
+        Update: {
+          chatInput?: string | null
+          created_at?: string
+          data_de_cadastro?: string | null
+          id?: number
+          lead_name?: string | null
+          name?: string | null
+          number?: string | null
+          phone?: string | null
+          sessionId?: string | null
+          thread_id?: string | null
+          timeout?: string | null
+          Whastapp?: string | null
+        }
+        Relationships: []
+      }
       n8n_chat_histories: {
         Row: {
           id: number

@@ -1,12 +1,37 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Bell, Menu, User } from 'lucide-react';
+import { Bell, Menu, User, ArrowLeft } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 export const Header: React.FC = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Não mostrar botão voltar na página inicial
+  const showBackButton = location.pathname !== '/';
+
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      navigate(-1); // Volta para a página anterior
+    } else {
+      navigate('/'); // Se não há histórico, vai para home
+    }
+  };
+
   return (
     <header className="bg-white shadow-sm border-b px-4 py-3 flex items-center justify-between">
       <div className="flex items-center space-x-3">
+        {showBackButton && (
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={handleBack}
+            className="mr-2"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+        )}
         <Button variant="ghost" size="icon" className="md:hidden">
           <Menu className="h-5 w-5" />
         </Button>
