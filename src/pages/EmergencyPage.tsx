@@ -89,4 +89,4 @@ const EmergencyPage = () => {
   );
 };
 
-export default ChatPage;
+export default EmergencyPage;

@@ -1,73 +1,53 @@
 
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
-import { MainLayout } from "@/components/Layout/MainLayout";
-import Index from "./pages/Index";
-import SchedulePage from "./pages/SchedulePage";
-import ClinicsPage from "./pages/ClinicsPage";
-import ChatPage from "./pages/ChatPage";
-import ProfilePage from "./pages/ProfilePage";
-import EmergencyPage from "./pages/EmergencyPage";
-import NotFound from "./pages/NotFound";
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { MainLayout } from '@/components/Layout/MainLayout';
+import { HomePage } from '@/components/Dashboard/HomePage';
+import LocationsPage from '@/components/Locations/LocationsPage';
+import AppointmentScheduler from '@/components/Appointments/AppointmentScheduler';
+import ChatPage from '@/pages/ChatPage';
+import EmergencyPage from '@/pages/EmergencyPage';
+import ProfilePage from '@/pages/ProfilePage';
+import { PWASettingsPage } from '@/pages/PWASettingsPage';
+import NotFound from '@/pages/NotFound';
+import Index from '@/pages/Index';
+import { Toaster } from '@/components/ui/toaster';
+import './App.css';
 
-const queryClient = new QueryClient();
-
-const AppContent = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  const getPageFromPath = (path: string) => {
-    switch (path) {
-      case '/': return 'home';
-      case '/schedule': return 'appointments';
-      case '/clinics': return 'locations';
-      case '/chat': return 'chat';
-      case '/profile': return 'profile';
-      case '/emergency': return 'emergency';
-      default: return 'home';
-    }
-  };
+const App = () => {
+  const [currentPage, setCurrentPage] = useState('home');
 
   const handlePageChange = (page: string) => {
-    const routes = {
-      'home': '/',
-      'appointments': '/schedule',
-      'locations': '/clinics',
-      'chat': '/chat',
-      'profile': '/profile',
-      'emergency': '/emergency'
-    };
-    navigate(routes[page as keyof typeof routes] || '/');
+    setCurrentPage(page);
   };
 
-  const currentPage = getPageFromPath(location.pathname);
+  const handleNavigate = (page: string) => {
+    setCurrentPage(page);
+  };
 
   return (
-    <MainLayout currentPage={currentPage} onPageChange={handlePageChange}>
-      <Routes>
-        <Route path="/" element={<Index />} />
-        <Route path="/schedule" element={<SchedulePage />} />
-        <Route path="/clinics" element={<ClinicsPage />} />
-        <Route path="/chat" element={<ChatPage />} />
-        <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/emergency" element={<EmergencyPage />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </MainLayout>
+    <Router>
+      <div className="App">
+        <MainLayout currentPage={currentPage} onPageChange={handlePageChange}>
+          <Routes>
+            <Route path="/" element={<HomePage onNavigate={handleNavigate} />} />
+            <Route path="/home" element={<HomePage onNavigate={handleNavigate} />} />
+            <Route path="/index" element={<Index />} />
+            <Route path="/locations" element={<LocationsPage />} />
+            <Route path="/clinics" element={<LocationsPage />} />
+            <Route path="/appointments" element={<AppointmentScheduler />} />
+            <Route path="/schedule" element={<AppointmentScheduler />} />
+            <Route path="/chat" element={<ChatPage />} />
+            <Route path="/emergency" element={<EmergencyPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/pwa-settings" element={<PWASettingsPage onNavigate={handleNavigate} />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </MainLayout>
+        <Toaster />
+      </div>
+    </Router>
   );
 };
-
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <AppContent />
-    </TooltipProvider>
-  </QueryClientProvider>
-);
 
 export default App;
