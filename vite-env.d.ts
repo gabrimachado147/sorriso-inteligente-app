@@ -5,7 +5,7 @@ interface ImportMetaEnv {
   readonly VITE_N8N_WEBHOOK_URL: string;
   readonly VITE_EVOLUTION_API_URL: string;
   readonly VITE_WA_BUSINESS_JID: string;
-  // Add other environment variables here as needed
+  // Add other environment variables as needed
 }
 
 interface ImportMeta {
