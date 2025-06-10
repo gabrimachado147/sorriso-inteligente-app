@@ -14,9 +14,6 @@
   "lighthouse": "lighthouse https://sorriso-inteligente-app.lovable.app --output html"
 }
 
-}
-  "engines": {
-    "node": ">=18.0.0"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
