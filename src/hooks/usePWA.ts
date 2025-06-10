@@ -15,28 +15,35 @@ interface PWAHook {
   checkForUpdates: () => Promise<void>;
 }
 
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<{ outcome: 'accepted' | 'dismissed' }>
+}
+
 export const usePWA = (): PWAHook => {
   const [isInstallable, setIsInstallable] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [deferredPrompt, setDeferredPrompt] =
+    useState<BeforeInstallPromptEvent | null>(null);
   const [promptOutcome, setPromptOutcome] = useState<'accepted' | 'dismissed' | null>(null);
 
   useEffect(() => {
     // Verificar se é standalone (já instalado)
     const checkStandalone = () => {
-      const isStandaloneMode = window.matchMedia('(display-mode: standalone)').matches ||
-                              (window.navigator as any).standalone ||
-                              document.referrer.includes('android-app://');
+      const nav = navigator as Navigator & { standalone?: boolean };
+      const isStandaloneMode =
+        window.matchMedia('(display-mode: standalone)').matches ||
+        nav.standalone ||
+        document.referrer.includes('android-app://');
       setIsStandalone(isStandaloneMode);
       setIsInstalled(isStandaloneMode);
     };
 
     // Listener para evento beforeinstallprompt
-    const handleBeforeInstallPrompt = (e: Event) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
+      const handleBeforeInstallPrompt = (e: Event) => {
+        e.preventDefault();
+        setDeferredPrompt(e as BeforeInstallPromptEvent);
       setIsInstallable(true);
       console.log('[PWA] App is installable');
     };
