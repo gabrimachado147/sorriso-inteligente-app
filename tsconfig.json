@@ -13,7 +13,10 @@
     "paths": {
       "@/*": ["src/*"]
     },
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "types": [
+      "vite/client"
+    ]
   },
   "include": ["src"], // Adjust this to match your source directory
   "exclude": ["node_modules", "dist"]

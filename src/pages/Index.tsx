@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -195,6 +194,8 @@ const Index = () => {
       toastCall("Ligação", "Discando para (11) 99999-9999...");
     }
   };
+
+  const whatsappKey = import.meta.env.VITE_N8N_WEBHOOK_URL;
 
   if (isLoading) {
     return (

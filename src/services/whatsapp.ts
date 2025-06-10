@@ -1,8 +1,7 @@
-
 import { toast } from 'sonner';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const N8N_WEBHOOK_URL = import.meta.env.VITE_N8N_WEBHOOK_URL;
+const whatsappApiUrl = import.meta.env.VITE_API_BASE_URL;
+const whatsappToken = import.meta.env.VITE_N8N_WEBHOOK_URL;
 const EVOLUTION_API_URL = import.meta.env.VITE_EVOLUTION_API_URL;
 
 export interface WhatsAppMessage {
@@ -61,7 +60,7 @@ class WhatsAppService {
   // Processar mensagem via n8n webhook
   async processMessage(data: ChatMessage) {
     try {
-      const response = await fetch(N8N_WEBHOOK_URL, {
+      const response = await fetch(whatsappToken, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -89,7 +88,7 @@ class WhatsAppService {
   // Agendar consulta
   async scheduleAppointment(data: AppointmentData) {
     try {
-      const response = await fetch(`${API_BASE_URL}/appointments`, {
+      const response = await fetch(`${whatsappApiUrl}/appointments`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -115,7 +114,7 @@ class WhatsAppService {
       if (filters?.city) params.append('city', filters.city);
       if (filters?.service) params.append('service', filters.service);
 
-      const response = await fetch(`${API_BASE_URL}/clinics?${params}`, {
+      const response = await fetch(`${whatsappApiUrl}/clinics?${params}`, {
         headers: {
           'Content-Type': 'application/json',
         }
@@ -135,7 +134,7 @@ class WhatsAppService {
   // Buscar horários disponíveis
   async getAvailableSlots(clinicId: string, date: string) {
     try {
-      const response = await fetch(`${API_BASE_URL}/clinics/${clinicId}/slots?date=${date}`, {
+      const response = await fetch(`${whatsappApiUrl}/clinics/${clinicId}/slots?date=${date}`, {
         headers: {
           'Content-Type': 'application/json',
         }

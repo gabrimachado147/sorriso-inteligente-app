@@ -7,7 +7,7 @@ interface ImportMetaEnv {
   readonly VITE_SUPABASE_URL: string;
   readonly VITE_SUPABASE_ANON_KEY: string;
   readonly VITE_ENVIRONMENT: string;
-  // add more env variables as needed
+  // Add any other VITE_ variables you use
 }
 
 interface ImportMeta {
