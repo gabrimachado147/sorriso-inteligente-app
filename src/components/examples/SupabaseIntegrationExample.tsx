@@ -11,6 +11,7 @@ import { clinicService } from '../../services/supabase/clinics';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Alert, AlertDescription } from '../ui/alert';
+import type { Appointment, Clinic } from '../../integrations/supabase/types';
 
 export const SupabaseIntegrationExample: React.FC = () => {
   const {
@@ -24,8 +25,8 @@ export const SupabaseIntegrationExample: React.FC = () => {
     isAuthenticated
   } = useAuth();
 
-  const [appointments, setAppointments] = useState<any[]>([]);
-  const [clinics, setClinics] = useState<any[]>([]);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [clinics, setClinics] = useState<Clinic[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -284,7 +285,7 @@ export const SupabaseIntegrationExample: React.FC = () => {
                       <p className="text-sm text-gray-600">{clinic.address}</p>
                       <p className="text-sm text-gray-600">{clinic.city}, {clinic.state}</p>
                       <p className="text-sm">
-                        ⭐ {clinic.rating} ({clinic.total_reviews} reviews)
+                        📍 {clinic.phone}
                       </p>
                     </div>
                     <Button 
@@ -318,7 +319,7 @@ export const SupabaseIntegrationExample: React.FC = () => {
                   <div className="flex justify-between items-start">
                     <div>
                       <p className="font-semibold">
-                        {appointment.appointment_date} at {appointment.appointment_time}
+                        {new Date(appointment.appointment_date).toLocaleDateString()} 
                       </p>
                       <p className="text-sm text-gray-600">
                         Status: <span className="capitalize">{appointment.status}</span>

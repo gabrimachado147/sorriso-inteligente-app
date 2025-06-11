@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { MainLayout } from '@/components/Layout/MainLayout';
@@ -12,6 +11,7 @@ import { PWASettingsPage } from '@/pages/PWASettingsPage';
 import NotFound from '@/pages/NotFound';
 import Index from '@/pages/Index';
 import { Toaster } from '@/components/ui/toaster';
+import { PWANotification } from '@/components/PWA/PWANotification';
 import './App.css';
 
 const App = () => {
@@ -44,6 +44,10 @@ const App = () => {
             <Route path="*" element={<NotFound />} />
           </Routes>
         </MainLayout>
+        
+        {/* PWA Notifications - sempre visível */}
+        <PWANotification />
+        
         <Toaster />
       </div>
     </Router>

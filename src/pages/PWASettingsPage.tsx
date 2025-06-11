@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PWADashboard } from '@/components/ui/pwa-dashboard';
-import { PWAPerformanceMonitor } from '@/components/ui/pwa-performance';
-import { PWANotificationCenter } from '@/components/ui/pwa-notifications';
+import { PWAPerformanceMonitor as OldPWAPerformanceMonitor } from '@/components/ui/pwa-performance';
+import { PWANotificationCenter as OldPWANotificationCenter } from '@/components/ui/pwa-notifications';
+import { PWAPerformanceMonitor } from '@/components/PWA/PWAPerformanceMonitor';
+import { PWANotificationCenter } from '@/components/PWA/PWANotificationCenter';
 import { animations } from '@/lib/animations';
 import { 
   Settings, 

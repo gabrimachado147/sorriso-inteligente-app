@@ -208,22 +208,191 @@ function getOfflineFallback(request) {
 
 // Background Sync para agendamentos offline
 self.addEventListener('sync', (event) => {
+  console.log('[SW] Background sync triggered:', event.tag);
+  
   if (event.tag === 'background-sync-appointments') {
     console.log('[SW] Background sync: appointments');
     event.waitUntil(syncAppointments());
+  } else if (event.tag === 'background-sync-chat') {
+    console.log('[SW] Background sync: chat messages');
+    event.waitUntil(syncChatMessages());
+  }
+});
+
+// Tratamento de mensagens do cliente
+self.addEventListener('message', (event) => {
+  console.log('[SW] Message received:', event.data);
+  
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+    return;
+  }
+  
+  if (event.data && event.data.type === 'GET_VERSION') {
+    event.ports[0].postMessage({ version: CACHE_NAME });
+    return;
+  }
+  
+  if (event.data && event.data.type === 'SYNC_APPOINTMENTS') {
+    syncAppointments().then(() => {
+      event.ports[0].postMessage({ success: true });
+    }).catch(error => {
+      event.ports[0].postMessage({ success: false, error: error.message });
+    });
+    return;
   }
 });
 
 async function syncAppointments() {
-  // Implementar sincronização de agendamentos offline
   try {
-    const offlineAppointments = await getOfflineAppointments();
-    for (const appointment of offlineAppointments) {
-      await syncAppointment(appointment);
+    console.log('[SW] Starting appointment sync...');
+    
+    // Buscar dados offline do IndexedDB ou localStorage
+    const offlineData = await getOfflineData('appointments');
+    
+    if (!offlineData || offlineData.length === 0) {
+      console.log('[SW] No offline appointments to sync');
+      return;
     }
+    
+    // Sincronizar cada agendamento
+    for (const appointment of offlineData) {
+      try {
+        await syncSingleAppointment(appointment);
+        await removeOfflineData('appointments', appointment.id);
+        console.log('[SW] Synced appointment:', appointment.id);
+      } catch (error) {
+        console.error('[SW] Failed to sync appointment:', appointment.id, error);
+        throw error; // Re-throw para tentar novamente
+      }
+    }
+    
+    // Notificar cliente sobre sincronização bem-sucedida
+    const clients = await self.clients.matchAll();
+    clients.forEach(client => {
+      client.postMessage({
+        type: 'SYNC_COMPLETE',
+        data: { type: 'appointments', count: offlineData.length }
+      });
+    });
+    
+    console.log('[SW] Appointment sync completed');
   } catch (error) {
-    console.log('[SW] Sync failed:', error);
+    console.error('[SW] Appointment sync failed:', error);
+    throw error;
   }
+}
+
+async function syncChatMessages() {
+  try {
+    console.log('[SW] Starting chat sync...');
+    
+    const offlineMessages = await getOfflineData('chat_messages');
+    
+    if (!offlineMessages || offlineMessages.length === 0) {
+      console.log('[SW] No offline messages to sync');
+      return;
+    }
+    
+    for (const message of offlineMessages) {
+      try {
+        await syncSingleMessage(message);
+        await removeOfflineData('chat_messages', message.id);
+        console.log('[SW] Synced message:', message.id);
+      } catch (error) {
+        console.error('[SW] Failed to sync message:', message.id, error);
+        throw error;
+      }
+    }
+    
+    console.log('[SW] Chat sync completed');
+  } catch (error) {
+    console.error('[SW] Chat sync failed:', error);
+    throw error;
+  }
+}
+
+async function syncSingleAppointment(appointment) {
+  const response = await fetch('/api/appointments', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${appointment.token || ''}`
+    },
+    body: JSON.stringify(appointment.data)
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+  }
+  
+  return response.json();
+}
+
+async function syncSingleMessage(message) {
+  const response = await fetch('/api/chat/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${message.token || ''}`
+    },
+    body: JSON.stringify(message.data)
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+  }
+  
+  return response.json();
+}
+
+// Funções auxiliares para dados offline (usando IndexedDB via helper)
+async function getOfflineData(storeName) {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open('SorrisoInteligenteDB', 1);
+    
+    request.onerror = () => reject(request.error);
+    
+    request.onsuccess = () => {
+      const db = request.result;
+      if (!db.objectStoreNames.contains(storeName)) {
+        resolve([]);
+        return;
+      }
+      
+      const transaction = db.transaction([storeName], 'readonly');
+      const store = transaction.objectStore(storeName);
+      const getAllRequest = store.getAll();
+      
+      getAllRequest.onsuccess = () => resolve(getAllRequest.result);
+      getAllRequest.onerror = () => reject(getAllRequest.error);
+    };
+    
+    request.onupgradeneeded = (event) => {
+      const db = event.target.result;
+      if (!db.objectStoreNames.contains(storeName)) {
+        db.createObjectStore(storeName, { keyPath: 'id' });
+      }
+    };
+  });
+}
+
+async function removeOfflineData(storeName, id) {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open('SorrisoInteligenteDB', 1);
+    
+    request.onerror = () => reject(request.error);
+    
+    request.onsuccess = () => {
+      const db = request.result;
+      const transaction = db.transaction([storeName], 'readwrite');
+      const store = transaction.objectStore(storeName);
+      const deleteRequest = store.delete(id);
+      
+      deleteRequest.onsuccess = () => resolve();
+      deleteRequest.onerror = () => reject(deleteRequest.error);
+    };
+  });
 }
 
 // Notificações Push

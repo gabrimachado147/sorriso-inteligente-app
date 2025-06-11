@@ -10,7 +10,7 @@ import type {
 export interface RealtimeError {
   message: string
   event?: string
-  payload?: any
+  payload?: Record<string, unknown>
 }
 
 export interface RealtimeSubscription {
@@ -436,8 +436,8 @@ export function subscribeToPresence(
   userId: string,
   userMetadata: { name: string; avatar?: string },
   callbacks: {
-    onJoin?: (user: any) => void
-    onLeave?: (user: any) => void
+    onJoin?: (user: Record<string, unknown>) => void
+    onLeave?: (user: Record<string, unknown>) => void
     onSync?: () => void
     onError?: (error: RealtimeError) => void
   }

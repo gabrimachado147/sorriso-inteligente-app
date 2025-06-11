@@ -9,12 +9,14 @@ import { useChatHandler } from '@/hooks/useChatHandler';
 import { animations } from '@/lib/animations';
 import { MessageCircle, Send, Bot, User, Clock, Calendar, MapPin, Phone } from 'lucide-react';
 
+type MessageType = 'welcome' | 'general' | 'appointment' | 'location' | 'schedule' | 'emergency';
+
 interface Message {
   id: number;
   text: string;
   sender: 'user' | 'bot';
   timestamp: Date;
-  type: 'welcome' | 'general' | 'appointment' | 'location' | 'schedule' | 'emergency';
+  type: MessageType;
   quickReplies?: string[];
 }
 
@@ -94,7 +96,7 @@ const ChatBot = () => {
           text: response.reply,
           sender: 'bot',
           timestamp: new Date(),
-          type: context as any
+          type: (context as MessageType) || 'general'
         };
       }
     } catch (error) {

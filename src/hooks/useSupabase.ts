@@ -344,7 +344,7 @@ export const useUserProfile = (userId?: string) => {
 
   // Update profile mutation
   const updateProfile = useMutation({
-    mutationFn: async (updates: Partial<any>) => {
+    mutationFn: async (updates: Record<string, unknown>) => {
       if (!userId) throw new Error('User ID required')
       
       const { data, error } = await supabase

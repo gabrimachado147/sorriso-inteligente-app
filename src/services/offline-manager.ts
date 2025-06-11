@@ -2,7 +2,7 @@
 export interface OfflineData {
   id: string;
   type: 'appointment' | 'user_data' | 'clinic_info' | 'chat_message';
-  data: any;
+  data: Record<string, unknown>;
   timestamp: number;
   synced: boolean;
   priority: 'high' | 'medium' | 'low';
@@ -12,7 +12,7 @@ export interface SyncQueueItem {
   id: string;
   endpoint: string;
   method: 'POST' | 'PUT' | 'DELETE' | 'PATCH';
-  data: any;
+  data: Record<string, unknown>;
   headers?: Record<string, string>;
   retryCount: number;
   maxRetries: number;
@@ -266,7 +266,7 @@ class PWAOfflineManager {
   }
 
   // Cache API responses
-  async cacheAPIResponse(url: string, data: any, ttl: number = 3600000): Promise<void> {
+  async cacheAPIResponse(url: string, data: Record<string, unknown>, ttl: number = 3600000): Promise<void> {
     if (!this.db) return;
 
     const cacheItem = {
@@ -287,7 +287,7 @@ class PWAOfflineManager {
   }
 
   // Get cached API response
-  async getCachedAPIResponse(url: string): Promise<any | null> {
+  async getCachedAPIResponse(url: string): Promise<Record<string, unknown> | null> {
     if (!this.db) return null;
 
     return new Promise((resolve, reject) => {
@@ -308,7 +308,7 @@ class PWAOfflineManager {
   }
 
   // Store appointment offline
-  async storeAppointmentOffline(appointmentData: any): Promise<string> {
+  async storeAppointmentOffline(appointmentData: Record<string, unknown>): Promise<string> {
     const id = await this.storeOfflineData({
       type: 'appointment',
       data: appointmentData,
@@ -391,7 +391,7 @@ class PWAOfflineManager {
       request.onsuccess = () => resolve(request.result);
     });
 
-    const cache = await new Promise<any[]>((resolve) => {
+    const cache = await new Promise<Record<string, unknown>[]>((resolve) => {
       const store = transaction.objectStore('apiCache');
       const request = store.getAll();
       request.onsuccess = () => resolve(request.result);
@@ -420,9 +420,9 @@ export const useOfflineManager = () => {
     storeOfflineData: (data: Omit<OfflineData, 'id' | 'timestamp' | 'synced'>) => 
       manager.storeOfflineData(data),
     getOfflineData: (type?: string) => manager.getOfflineData(type),
-    storeAppointmentOffline: (data: any) => manager.storeAppointmentOffline(data),
+    storeAppointmentOffline: (data: Record<string, unknown>) => manager.storeAppointmentOffline(data),
     getOfflineAppointments: () => manager.getOfflineAppointments(),
-    cacheAPIResponse: (url: string, data: any, ttl?: number) => 
+    cacheAPIResponse: (url: string, data: Record<string, unknown>, ttl?: number) => 
       manager.cacheAPIResponse(url, data, ttl),
     getCachedAPIResponse: (url: string) => manager.getCachedAPIResponse(url),
     getStorageStats: () => manager.getStorageStats(),

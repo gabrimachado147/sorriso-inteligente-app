@@ -8,6 +8,25 @@ import type {
   Dentist
 } from '../../integrations/supabase/types'
 
+interface ClinicReview {
+  id: string;
+  patient_id: string;
+  dentist_id: string | null;
+  clinic_id: string;
+  appointment_id: string | null;
+  rating: number;
+  comment: string | null;
+  created_at: string;
+  updated_at: string;
+  is_verified: boolean;
+  patient: {
+    full_name: string | null;
+  } | null;
+  dentist: {
+    full_name: string | null;
+  } | null;
+}
+
 export class ClinicService {
   /**
    * Get all clinics with filters
@@ -196,7 +215,7 @@ export class ClinicService {
       throw new Error(error.message)
     }
 
-    const workingHours = data.opening_hours as any
+    const workingHours = data.opening_hours as Record<string, { open: string; close: string }> | null
     return workingHours?.[dayOfWeek] || null
   }
 
@@ -226,7 +245,7 @@ export class ClinicService {
       limit?: number
       rating?: number
     }
-  ): Promise<any[]> {
+  ): Promise<Record<string, unknown>[]> {
     let query = supabase
       .from('reviews')
       .select(`

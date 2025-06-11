@@ -53,7 +53,7 @@ export class AppointmentService {
       .eq('patient_id', userId)
 
     if (options?.status) {
-      query = query.in('status', options.status as any)
+      query = query.in('status', options.status as Array<'scheduled' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled' | 'no_show'>)
     }
 
     if (options?.upcoming) {
@@ -200,7 +200,7 @@ export class AppointmentService {
 
     // Generate available slots based on working hours and existing appointments
     const dayOfWeek = new Date(date).toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase()
-    const workingHours = clinic.opening_hours as any
+    const workingHours = clinic.opening_hours as Record<string, { open: string; close: string }> | null
     
     if (!workingHours || !workingHours[dayOfWeek]) {
       return [] // Clinic closed on this day
