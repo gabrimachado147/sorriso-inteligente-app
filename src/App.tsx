@@ -9,6 +9,9 @@ import ChatPage from '@/pages/ChatPage';
 import EmergencyPage from '@/pages/EmergencyPage';
 import ProfilePage from '@/pages/ProfilePage';
 import { PWASettingsPage } from '@/pages/PWASettingsPage';
+import Login from '@/pages/auth/Login';
+import SignUp from '@/pages/auth/SignUp';
+import { RequireAuth } from './contexts/RequireAuth';
 import NotFound from '@/pages/NotFound';
 import Index from '@/pages/Index';
 import { Toaster } from '@/components/ui/toaster';
@@ -30,18 +33,29 @@ const App = () => {
       <div className="App">
         <MainLayout currentPage={currentPage} onPageChange={handlePageChange}>
           <Routes>
-            <Route path="/" element={<HomePage onNavigate={handleNavigate} />} />
-            <Route path="/home" element={<HomePage onNavigate={handleNavigate} />} />
-            <Route path="/index" element={<Index />} />
-            <Route path="/locations" element={<LocationsPage />} />
-            <Route path="/clinics" element={<LocationsPage />} />
-            <Route path="/appointments" element={<AppointmentScheduler />} />
-            <Route path="/schedule" element={<AppointmentScheduler />} />
-            <Route path="/chat" element={<ChatPage />} />
-            <Route path="/emergency" element={<EmergencyPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/pwa-settings" element={<PWASettingsPage onNavigate={handleNavigate} />} />
-            <Route path="*" element={<NotFound />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/sign-up" element={<SignUp />} />
+            <Route
+              path="/*"
+              element={
+                <RequireAuth>
+                  <Routes>
+                    <Route path="/" element={<HomePage onNavigate={handleNavigate} />} />
+                    <Route path="/home" element={<HomePage onNavigate={handleNavigate} />} />
+                    <Route path="/index" element={<Index />} />
+                    <Route path="/locations" element={<LocationsPage />} />
+                    <Route path="/clinics" element={<LocationsPage />} />
+                    <Route path="/appointments" element={<AppointmentScheduler />} />
+                    <Route path="/schedule" element={<AppointmentScheduler />} />
+                    <Route path="/chat" element={<ChatPage />} />
+                    <Route path="/emergency" element={<EmergencyPage />} />
+                    <Route path="/profile" element={<ProfilePage />} />
+                    <Route path="/pwa-settings" element={<PWASettingsPage onNavigate={handleNavigate} />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </RequireAuth>
+              }
+            />
           </Routes>
         </MainLayout>
         <Toaster />
