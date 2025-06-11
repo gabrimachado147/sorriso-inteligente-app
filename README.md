@@ -1,3 +1,4 @@
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/66018b405a664453ac8626dcae05bbdc)](https://app.codacy.com/gh/gabrimachado147/sorriso-inteligente-app/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 
 # Sorriso Inteligente App
 
