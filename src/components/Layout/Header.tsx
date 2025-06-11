@@ -98,20 +98,22 @@ export const Header: React.FC = () => {
     <header className="bg-white shadow-sm border-b px-4 py-3 flex items-center justify-between">
       <div className="flex items-center space-x-3 flex-1">
         {showBackButton && (
-          <Button 
-            variant="ghost" 
-            size="icon" 
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={handleBack}
             className="mr-2"
+            aria-label="Voltar"
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
         )}
-        <Button 
-          variant="ghost" 
-          size="icon" 
+        <Button
+          variant="ghost"
+          size="icon"
           className="md:hidden"
           onClick={handleMenuClick}
+          aria-label="Abrir menu"
         >
           <Menu className="h-5 w-5" />
         </Button>
@@ -141,17 +143,18 @@ export const Header: React.FC = () => {
       
       <div className="flex items-center space-x-2">
         {/* Botão de Pesquisa */}
-        <Button 
-          variant="ghost" 
+        <Button
+          variant="ghost"
           size="icon"
           onClick={toggleSearch}
           className="hidden sm:flex"
+          aria-label="Pesquisar"
         >
           <Search className="h-5 w-5" />
         </Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="relative">
+            <Button variant="ghost" size="icon" className="relative" aria-label="Notificações">
               <Bell className="h-5 w-5" />
               {notificationCount > 0 && (
                 <Badge 
@@ -195,7 +198,7 @@ export const Header: React.FC = () => {
         
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" aria-label="Menu do usuário">
               <User className="h-5 w-5" />
             </Button>
           </DropdownMenuTrigger>
@@ -236,7 +239,7 @@ export const Header: React.FC = () => {
                 </div>
                 <span className="font-semibold text-lg text-primary">Sorriso Inteligente</span>
               </div>
-              <Button variant="ghost" size="icon" onClick={() => setShowMobileMenu(false)}>
+              <Button variant="ghost" size="icon" onClick={() => setShowMobileMenu(false)} aria-label="Fechar menu">
                 <ArrowLeft className="h-5 w-5" />
               </Button>
             </div>

@@ -69,6 +69,11 @@ bun run preview
 
 ### Testes
 ```bash
+# Certifique-se de instalar as dependências antes de rodar os testes
+bun install
+# ou
+npm ci
+
 # Executar testes
 bun run test
 

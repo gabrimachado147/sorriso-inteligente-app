@@ -86,6 +86,19 @@ cp .env.example .env.local
 npm run dev
 ```
 
+### Executando Testes
+Antes de rodar os testes automatizados, instale as dependências do projeto:
+
+```bash
+npm ci
+```
+
+Em seguida execute:
+
+```bash
+npm test --silent
+```
+
 ### Available NPM Scripts
 
 Adicione os seguintes scripts ao seu `package.json` para suporte completo aos ambientes:
