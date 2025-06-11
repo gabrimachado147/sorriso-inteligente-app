@@ -1,0 +1,19 @@
+# .codacy.yml
+
+# Configuração dos motores de análise de qualidade
+engines:
+  # ESLint com configuração baseada no estilo Airbnb
+  eslint:
+    enabled: true
+    configuration:
+      extends:
+        - "airbnb"
+
+# Arquivos e pastas que serão ignorados pela análise
+exclude:
+  - "node_modules/**"
+  - "dist/**"
+
+# Regra de cobertura mínima de testes
+coverage:
+  threshold: 80
