@@ -26,7 +26,7 @@
 
 ### **Testing & Verification**
 10. **`scripts/verify-supabase.js`** - Manual verification script
-11. **`tests/setup.js`** - Jest setup for Supabase (updated)
+11. **`tests/setup.js`** - Vitest setup for Supabase (updated)
 
 ### **Documentation & Examples**
 12. **`src/components/examples/SupabaseIntegrationExample.tsx`** - Working example component

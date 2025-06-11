@@ -32,7 +32,7 @@ Este documento registra todas as otimizações aplicadas no projeto durante a fa
   - `noImplicitOverride`: true
   - Configurações de strict mode mantidas sem quebrar o desenvolvimento
 
-### **Jest (jest.config.js)**
+### **Vitest (vitest.config.ts)**
 - ✅ **Ambiente de Testes**:
   - Configurado para jsdom
   - Coverage threshold: 50% (balanceado)
@@ -49,6 +49,7 @@ Este documento registra todas as otimizações aplicadas no projeto durante a fa
 
 | Script | Função |
 |--------|---------|
+| `test` | Executa a suíte de testes |
 | `test:watch` | Testes em modo watch |
 | `test:coverage` | Relatório de cobertura |
 | `lint:fix` | Correção automática de lint |
