@@ -20,7 +20,8 @@ Um aplicativo híbrido (desktop e mobile) para agendamento e gestão de consulta
 - **Roteamento**: React Router DOM
 - **Ícones**: Lucide React
 - **Animações**: CSS Animations + Tailwind
-- **Backend**: Supabase (planejado)
+- **Backend API**: Node.js + Express (pasta `backend`), integrações futuras com Supabase
+- **Mobile App**: React Native (pasta `mobile`)
 
 ## 📁 Estrutura do Projeto
 
@@ -195,6 +196,9 @@ O aplicativo é totalmente responsivo e otimizado para:
 Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
 ## 📞 Suporte
+## ⚠️ Aviso
+Este projeto é fornecido apenas como uma ferramenta de apoio e não substitui consulta com profissionais de saúde bucal. Não configura diagnóstico médico.
+
 
 Para dúvidas ou suporte, entre em contato:
 - **Email**: suporte@sorrisointeligente.com
