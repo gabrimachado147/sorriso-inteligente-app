@@ -11,6 +11,7 @@ import ProfilePage from '@/pages/ProfilePage';
 import { PWASettingsPage } from '@/pages/PWASettingsPage';
 import NotFound from '@/pages/NotFound';
 import Index from '@/pages/Index';
+import StatsigDemo from '@/pages/StatsigDemo';
 import { Toaster } from '@/components/ui/toaster';
 import './App.css';
 
@@ -41,6 +42,7 @@ const App = () => {
             <Route path="/emergency" element={<EmergencyPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/pwa-settings" element={<PWASettingsPage onNavigate={handleNavigate} />} />
+            <Route path="/flags" element={<StatsigDemo />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </MainLayout>

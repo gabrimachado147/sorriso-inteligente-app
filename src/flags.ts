@@ -1,30 +1,16 @@
-import { Identify } from 'flags';
-import { dedupe, flag } from 'flags/next';
-import { createHypertuneAdapter } from '@flags-sdk/hypertune';
-import {
-  createSource,
-  flagFallbacks,
-  vercelFlagDefinitions as flagDefinitions,
-  Context,
-  RootFlagValues,
-} from './generated/hypertune';
+import { statsigAdapter, type StatsigUser } from '@flags-sdk/statsig';
+import { flag, dedupe } from 'flags/next';
+import type { Identify } from 'flags';
 
-const identify: Identify<Context> = dedupe(async ({ headers, cookies }) => {
-  return {
-    environment: process.env.NODE_ENV,
-    user: { id: '1', name: 'Test User', email: 'hi@test.com' },
-  };
-});
+export const identify = dedupe((async () => ({
+  userID: '1234',
+})) satisfies Identify<StatsigUser>);
 
-const hypertuneAdapter = createHypertuneAdapter<RootFlagValues, Context>({
-  createSource,
-  flagFallbacks,
-  flagDefinitions,
-  identify,
-});
-
-export const exampleFlagFlag = flag(hypertuneAdapter.declarations.exampleFlag);
-
-export const enableDesignV2Flag = flag(
-  hypertuneAdapter.declarations.enableDesignV2,
-);
+export const createFeatureFlag = (key: string) =>
+  flag<boolean, StatsigUser>({
+    key,
+    adapter: statsigAdapter.featureGate((gate) => gate.value, {
+      exposureLogging: true,
+    }),
+    identify,
+  });
