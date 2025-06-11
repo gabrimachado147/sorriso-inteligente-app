@@ -48,6 +48,7 @@ src/
 - **[Ambiente de Staging](docs/staging-environment.md)** - Deploy e CI/CD
 - **[Guia de Contribuição](CONTRIBUTING.md)** - Como contribuir com o projeto
 - **[Changelog](CHANGELOG.md)** - Histórico de versões e mudanças
+- **[AI Integration Blueprint](docs/ai-integration-blueprint.md)** - Visão geral das integrações de IA e plano de melhorias
 
 ## 🎨 Sistema de Design
 
