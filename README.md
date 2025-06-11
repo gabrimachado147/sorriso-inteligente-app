@@ -197,5 +197,5 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 ## 📞 Suporte
 
 Para dúvidas ou suporte, entre em contato:
-- **Email**: suporte@sorrisointeligente.com
+- **Email**: <suporte@sorrisointeligente.com>
 - **GitHub Issues**: [Criar issue](https://github.com/gabrimachado147/sorriso-inteligente-app/issues)
