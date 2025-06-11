@@ -8,6 +8,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { appointmentService } from '../../services/supabase/appointments';
 import { clinicService } from '../../services/supabase/clinics';
+import type { Appointment, Clinic } from '../../integrations/supabase/types';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Alert, AlertDescription } from '../ui/alert';
@@ -24,8 +25,8 @@ export const SupabaseIntegrationExample: React.FC = () => {
     isAuthenticated
   } = useAuth();
 
-  const [appointments, setAppointments] = useState<any[]>([]);
-  const [clinics, setClinics] = useState<any[]>([]);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [clinics, setClinics] = useState<Clinic[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -34,7 +35,7 @@ export const SupabaseIntegrationExample: React.FC = () => {
     if (isAuthenticated && user) {
       loadUserData();
     }
-  }, [isAuthenticated, user]);
+  }, [isAuthenticated, user, loadUserData]);
 
   const loadUserData = async () => {
     try {
