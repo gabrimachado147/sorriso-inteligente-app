@@ -136,6 +136,24 @@ VITE_SUPABASE_SERVICE_ROLE_KEY=your_production_service_role_key
 VITE_ENVIRONMENT=production
 ```
 
+### Edge Config
+
+Para utilizar o Edge Config da Vercel, defina a variável `EDGE_CONFIG` com a
+Connection String do seu store e instale o pacote `@vercel/edge-config`:
+
+```bash
+npm install @vercel/edge-config
+vercel env pull
+```
+
+Em seguida, é possível ler valores no código:
+
+```ts
+import { get } from '@vercel/edge-config'
+
+const greeting = await get<string>('greeting')
+```
+
 ## 🚀 CI/CD
 
 ### Branch Strategy
