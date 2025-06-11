@@ -18,7 +18,7 @@ const EmergencyPage = () => {
   return (
     <div className="p-6 space-y-6">
       <div className="text-center mb-6">
-        <h1 className="text-2xl font-bold text-red-600 flex items-center justify-center gap-2">
+        <h1 className="text-2xl font-bold text-red-700 flex items-center justify-center gap-2">
           <AlertTriangle className="h-6 w-6" />
           Emergência Odontológica
         </h1>
@@ -32,7 +32,7 @@ const EmergencyPage = () => {
           <CardTitle className="text-red-700">Situação de Emergência?</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <p className="text-red-600 font-medium">
+          <p className="text-red-700 font-medium">
             Para situações de extrema urgência, ligue imediatamente:
           </p>
           <Button 

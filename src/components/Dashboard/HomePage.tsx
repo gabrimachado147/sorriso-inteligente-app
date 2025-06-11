@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { PWADashboard, PWAQuickInstall } from '@/components/ui/pwa-dashboard';
 import { toastSuccess, toastInfo, toastAppointment, toastCall } from '@/components/ui/custom-toast';
 import { useAppointmentScheduler } from '@/hooks/useAppointmentScheduler';
@@ -138,7 +138,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
           <CardContent className="p-4 text-center">
             <MessageCircle className="h-8 w-8 mx-auto mb-2 text-primary" />
             <p className="font-medium">Chat IA</p>
-            <p className="text-xs text-gray-500">Tire suas dúvidas</p>
+            <p className="text-xs text-gray-700">Tire suas dúvidas</p>
           </CardContent>
         </Card>
 
@@ -149,7 +149,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
           <CardContent className="p-4 text-center">
             <MapPin className="h-8 w-8 mx-auto mb-2 text-primary" />
             <p className="font-medium">Unidades</p>
-            <p className="text-xs text-gray-500">5 cidades</p>
+            <p className="text-xs text-gray-700">5 cidades</p>
           </CardContent>
         </Card>
 
@@ -160,7 +160,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
           <CardContent className="p-4 text-center">
             <Calendar className="h-8 w-8 mx-auto mb-2 text-primary" />
             <p className="font-medium">Agendar</p>
-            <p className="text-xs text-gray-500">Nova consulta</p>
+            <p className="text-xs text-gray-700">Nova consulta</p>
           </CardContent>
         </Card>
 
@@ -171,7 +171,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
           <CardContent className="p-4 text-center">
             <Phone className="h-8 w-8 mx-auto mb-2 text-primary" />
             <p className="font-medium">Urgência</p>
-            <p className="text-xs text-gray-500">Atendimento 24h</p>
+            <p className="text-xs text-gray-700">Atendimento 24h</p>
           </CardContent>
         </Card>
       </div>
@@ -179,20 +179,20 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
       {/* Nossas Unidades - ENDEREÇOS CORRIGIDOS */}
       <Card className={animations.slideInLeft}>
         <CardHeader>
-          <CardTitle className="flex items-center justify-between">
+          <h2 className="flex items-center justify-between text-2xl font-semibold leading-none tracking-tight">
             <div className="flex items-center">
               <MapPin className="h-5 w-5 mr-2" />
               Nossas Unidades
             </div>
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               size="sm"
               onClick={handleViewUnits}
               className={animations.buttonHover}
             >
               Ver todas
             </Button>
-          </CardTitle>
+          </h2>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -201,7 +201,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                 <div>
                   <p className="font-medium">Campo Belo - MG</p>
                   <p className="text-sm text-gray-600">Av. Afonso Pena, 151</p>
-                  <p className="text-xs text-gray-500">(35) 99869-5479</p>
+                  <p className="text-xs text-gray-700">(35) 99869-5479</p>
                 </div>
                 <Button 
                   size="sm" 
@@ -219,7 +219,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                 <div>
                   <p className="font-medium">Formiga - MG</p>
                   <p className="text-sm text-gray-600">R. Barão de Piumhy, 198</p>
-                  <p className="text-xs text-gray-500">(35) 9969-5479</p>
+                  <p className="text-xs text-gray-700">(35) 9969-5479</p>
                 </div>
                 <Button 
                   size="sm" 
@@ -238,10 +238,10 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
       {/* Próximas Consultas */}
       <Card className={animations.slideInRight}>
         <CardHeader>
-          <CardTitle className="flex items-center">
+          <h2 className="flex items-center text-2xl font-semibold leading-none tracking-tight">
             <Clock className="h-5 w-5 mr-2" />
             Próximas Consultas
-          </CardTitle>
+          </h2>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
@@ -249,7 +249,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
               <div>
                 <p className="font-medium">Limpeza Dental</p>
                 <p className="text-sm text-gray-600">Campo Belo - Dr. Silva</p>
-                <p className="text-xs text-gray-500">15/06/2024 às 14:00</p>
+                <p className="text-xs text-gray-700">15/06/2024 às 14:00</p>
               </div>
               <Button 
                 size="sm" 
@@ -277,7 +277,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
       {/* Serviços em Destaque */}
       <Card className={animations.fadeIn}>
         <CardHeader>
-          <CardTitle>Nossos Serviços</CardTitle>
+          <h2 className="text-2xl font-semibold leading-none tracking-tight">Nossos Serviços</h2>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -313,10 +313,10 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
       {/* Avaliações */}
       <Card className={animations.slideInBottom}>
         <CardHeader>
-          <CardTitle className="flex items-center">
+          <h2 className="flex items-center text-2xl font-semibold leading-none tracking-tight">
             <Star className="h-5 w-5 mr-2 text-yellow-500" />
             Avaliações de Pacientes
-          </CardTitle>
+          </h2>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -353,7 +353,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="font-semibold text-red-800">Urgência Dental 24h</h3>
-              <p className="text-sm text-red-600">Atendimento imediato para emergências</p>
+              <p className="text-sm text-red-700">Atendimento imediato para emergências</p>
             </div>
             <Button 
               className={`bg-red-600 hover:bg-red-700 ${animations.buttonHover}`}
