@@ -2,8 +2,8 @@
 import React from 'react';
 import { Header } from './Header';
 import { BottomNavigation } from './BottomNavigation';
-import { Analytics } from '@vercel/analytics/react';
-import { SpeedInsights } from '@vercel/speed-insights/react';
+import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 interface MainLayoutProps {
   children: React.ReactNode;
