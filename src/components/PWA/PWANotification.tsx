@@ -45,6 +45,7 @@ export function PWANotification({ className }: PWANotificationProps) {
 
       return () => clearTimeout(timer);
     }
+    return () => {}; // Always return a cleanup function
   }, [isInstallable, isInstalled]);
 
   // Mostrar prompt de atualização quando disponível

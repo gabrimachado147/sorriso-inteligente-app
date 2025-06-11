@@ -157,13 +157,15 @@ export function PWANotificationCenter() {
     const timeUntilNotification = scheduledTime.getTime() - Date.now();
     if (timeUntilNotification > 0) {
       setTimeout(() => {
-        if (permission === 'granted' && settings[type]) {
+        // Map notification type to settings key
+        const settingsKey = notification.type === 'appointment' ? 'appointments' : notification.type;
+        if (permission === 'granted' && settings[settingsKey as keyof NotificationSettings]) {
           new Notification(title, {
             body,
             icon: '/icons/icon-192x192.svg',
             badge: '/icons/icon-72x72.svg',
             tag: notification.id,
-            requireInteraction: type === 'emergency'
+            requireInteraction: notification.type === 'emergency'
           });
         }
       }, timeUntilNotification);
@@ -416,7 +418,6 @@ export function PWANotificationCenter() {
                     <Switch
                       checked={notification.enabled}
                       onCheckedChange={() => toggleNotificationEnabled(notification.id)}
-                      size="sm"
                     />
                     <Button
                       variant="ghost"

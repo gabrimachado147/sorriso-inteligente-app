@@ -74,8 +74,13 @@ export function PWAPerformanceMonitor() {
       collectMetrics();
     } else {
       window.addEventListener('load', collectMetrics);
-      return () => window.removeEventListener('load', collectMetrics);
     }
+
+    return () => {
+      if (document.readyState !== 'complete') {
+        window.removeEventListener('load', collectMetrics);
+      }
+    };
   }, []);
 
   // Monitor network information
@@ -94,14 +99,17 @@ export function PWAPerformanceMonitor() {
 
     updateNetworkInfo();
     
+    let connection: ConnectionAPI | null = null;
     if ('connection' in navigator) {
-      const connection = (navigator as Navigator & { connection: ConnectionAPI }).connection;
+      connection = (navigator as Navigator & { connection: ConnectionAPI }).connection;
       connection.addEventListener('change', updateNetworkInfo);
-      
-      return () => {
-        connection.removeEventListener('change', updateNetworkInfo);
-      };
     }
+      
+    return () => {
+      if (connection) {
+        connection.removeEventListener('change', updateNetworkInfo);
+      }
+    };
   }, []);
 
   // Calculate cache size

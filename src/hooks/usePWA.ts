@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
 import { offlineStorage } from '@/lib/offline-storage';
-import { offlineStorage } from '@/lib/offline-storage';
 
 interface PWAPrompt {
   prompt: () => void;
@@ -453,11 +452,13 @@ export const usePWA = (): PWAHook => {
 
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.addEventListener('message', handleSyncComplete);
-      
-      return () => {
-        navigator.serviceWorker.removeEventListener('message', handleSyncComplete);
-      };
     }
+      
+    return () => {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.removeEventListener('message', handleSyncComplete);
+      }
+    };
   }, [getStorageUsage]);
 
   return {
