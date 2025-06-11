@@ -2,6 +2,7 @@
 import React from 'react';
 import { Header } from './Header';
 import { BottomNavigation } from './BottomNavigation';
+import { SidebarNavigation } from './SidebarNavigation';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -13,9 +14,12 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children, currentPage, o
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      <main className="flex-1 pb-20 md:pb-0">
-        {children}
-      </main>
+      <div className="flex flex-1">
+        <SidebarNavigation currentPage={currentPage} onPageChange={onPageChange} />
+        <main className="flex-1 container mx-auto pb-20 md:pb-4 px-4">
+          {children}
+        </main>
+      </div>
       <BottomNavigation currentPage={currentPage} onPageChange={onPageChange} />
     </div>
   );
