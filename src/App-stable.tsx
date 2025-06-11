@@ -92,7 +92,7 @@ const SimpleHomePage: React.FC<{ onNavigate: (page: string) => void }> = ({ onNa
             Chat com IA
           </button>
           <button 
-            onClick={() => window.location.reload()}
+            onClick={() => { window.location.reload(); }}
             className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
           >
             Recarregar
