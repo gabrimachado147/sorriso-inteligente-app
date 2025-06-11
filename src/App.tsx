@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { MainLayout } from '@/components/Layout/MainLayout';
@@ -11,6 +10,8 @@ import ProfilePage from '@/pages/ProfilePage';
 import { PWASettingsPage } from '@/pages/PWASettingsPage';
 import NotFound from '@/pages/NotFound';
 import Index from '@/pages/Index';
+import WelcomePage from '@/pages/WelcomePage';
+import FeatureFlagPage from '@/pages/FeatureFlagPage';
 import { Toaster } from '@/components/ui/toaster';
 import './App.css';
 
@@ -40,6 +41,8 @@ const App = () => {
             <Route path="/chat" element={<ChatPage />} />
             <Route path="/emergency" element={<EmergencyPage />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/welcome" element={<WelcomePage />} />
+            <Route path="/feature-flag" element={<FeatureFlagPage />} />
             <Route path="/pwa-settings" element={<PWASettingsPage onNavigate={handleNavigate} />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
