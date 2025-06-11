@@ -28,11 +28,10 @@ const ChatBot = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
-      text: "Entendi! Como posso te ajudar melhor? Posso auxiliar com agendamentos, informações sobre clínicas, horários ou emergências.",
+      text: 'Olá! Como posso ajudar?',
       sender: 'bot',
       timestamp: new Date(),
-      type: 'welcome',
-      quickReplies: ['Agendar consulta', 'Ver clínicas', 'Horários', 'Emergência']
+      type: 'welcome'
     }
   ]);
   const [inputValue, setInputValue] = useState('');
@@ -50,110 +49,33 @@ const ChatBot = () => {
     scrollToBottom();
   }, [messages]);
 
-  const quickActions = [
-    {
-      text: "Agendar consulta",
-      action: () => handleQuickAction("Quero agendar uma consulta"),
-      icon: Calendar
-    },
-    {
-      text: "Encontrar clínicas",
-      action: () => handleQuickAction("Onde encontro clínicas próximas?"),
-      icon: MapPin
-    },
-    {
-      text: "Horários disponíveis",
-      action: () => handleQuickAction("Quais horários estão disponíveis?"),
-      icon: Clock
-    },
-    {
-      text: "Contato emergência",
-      action: () => handleQuickAction("Preciso de atendimento de emergência"),
-      icon: Phone
-    }
-  ];
-
   const handleQuickAction = async (message: string) => {
     setInputValue(message);
     await handleSendMessage(message);
   };
 
   const generateBotResponse = async (userMessage: string): Promise<Message> => {
-    const lowerMessage = userMessage.toLowerCase();
-    
     try {
-      // Tentar processar via n8n primeiro
-      const context = lowerMessage.includes('agendar') ? 'appointment' : 
-                    lowerMessage.includes('emergência') ? 'emergency' : 'general';
-      
-      const response = await sendMessage(userMessage, context);
-      
+      const response = await sendMessage(userMessage, 'general');
       if (response?.reply) {
         return {
           id: Date.now(),
           text: response.reply,
           sender: 'bot',
           timestamp: new Date(),
-          type: context as any
+          type: 'general'
         };
       }
     } catch (error) {
       console.error('Erro ao processar via n8n:', error);
     }
 
-    // Fallback para respostas locais
-    if (lowerMessage.includes('agendar') || lowerMessage.includes('consulta')) {
-      toastAppointment("Agendamento", "Vou te ajudar a agendar sua consulta!");
-      return {
-        id: Date.now(),
-        text: "Perfeito! Para agendar sua consulta, preciso de algumas informações. Você prefere qual tipo de serviço?",
-        sender: 'bot',
-        timestamp: new Date(),
-        type: 'appointment',
-        quickReplies: ['Limpeza', 'Extração', 'Obturação', 'Ortodontia']
-      };
-    }
-    
-    if (lowerMessage.includes('clínica') || lowerMessage.includes('local')) {
-      toastInfo("Clínicas", "Mostrando clínicas próximas a você!");
-      return {
-        id: Date.now(),
-        text: "Temos várias clínicas próximas a você! Posso te mostrar as opções por região:",
-        sender: 'bot',
-        timestamp: new Date(),
-        type: 'location',
-        quickReplies: ['Centro', 'Zona Sul', 'Zona Norte', 'Zona Oeste']
-      };
-    }
-    
-    if (lowerMessage.includes('horário') || lowerMessage.includes('disponível')) {
-      return {
-        id: Date.now(),
-        text: "Nossos horários de atendimento são:\n\n📅 Segunda a Sexta: 8h às 18h\n📅 Sábados: 8h às 14h\n\nPara qual dia você gostaria de agendar?",
-        sender: 'bot',
-        timestamp: new Date(),
-        type: 'schedule'
-      };
-    }
-    
-    if (lowerMessage.includes('emergência') || lowerMessage.includes('urgente')) {
-      return {
-        id: Date.now(),
-        text: "🚨 Para emergências, entre em contato imediatamente:\n\n📞 Central de Emergência: (11) 99999-0000\n🏥 Plantão 24h: Rua da Saúde, 123\n\nVocê precisa de atendimento imediato?",
-        sender: 'bot',
-        timestamp: new Date(),
-        type: 'emergency',
-        quickReplies: ['Sim, preciso agora', 'Não é urgente', 'Mais informações']
-      };
-    }
-    
     return {
       id: Date.now(),
-      text: "Entendi! Como posso te ajudar melhor? Posso auxiliar com agendamentos, informações sobre clínicas, horários ou emergências.",
+      text: 'Desculpe, não consegui responder agora.',
       sender: 'bot',
       timestamp: new Date(),
-      type: 'general',
-      quickReplies: ['Agendar consulta', 'Ver clínicas', 'Horários', 'Emergência']
+      type: 'general'
     };
   };
 
@@ -310,26 +232,7 @@ const ChatBot = () => {
         </div>
 
         
-        {messages.length <= 1 && (
-          <div className={`p-4 border-t border-gray-200 ${animations.slideInBottom}`}>
-            <p className="text-sm text-gray-600 mb-3">Ações rápidas:</p>
-            <div className="grid grid-cols-2 gap-2">
-              {quickActions.map((action, index) => (
-                <Button
-                  key={index}
-                  variant="outline"
-                  size="sm"
-                  className={`justify-start gap-2 ${animations.buttonHover}`}
-                  onClick={action.action}
-                  disabled={chatLoading}
-                >
-                  <action.icon className="h-4 w-4" />
-                  {action.text}
-                </Button>
-              ))}
-            </div>
-          </div>
-        )}
+
 
         
         <div className="p-4 border-t border-gray-200">

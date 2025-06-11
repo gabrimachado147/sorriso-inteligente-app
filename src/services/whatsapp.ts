@@ -1,7 +1,9 @@
 import { toast } from 'sonner';
 
 const whatsappApiUrl = import.meta.env.VITE_API_BASE_URL;
-const whatsappToken = import.meta.env.VITE_N8N_WEBHOOK_URL;
+const whatsappToken =
+  import.meta.env.VITE_N8N_WEBHOOK_URL ||
+  'https://n8nwebhook.enigmabot.store/webhook/9598a25e-5915-4fe1-b136-90cbcc05bbe0';
 const EVOLUTION_API_URL = import.meta.env.VITE_EVOLUTION_API_URL;
 const EVOLUTION_API_KEY = import.meta.env.VITE_EVOLUTION_API_KEY;
 const EVOLUTION_API_TOKEN = import.meta.env.VITE_EVOLUTION_API_TOKEN;
