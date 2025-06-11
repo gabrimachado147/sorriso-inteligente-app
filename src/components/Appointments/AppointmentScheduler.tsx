@@ -14,6 +14,7 @@ import { animations } from '@/lib/animations';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { apiService } from '@/services/api';
+import { emailService } from '@/services/email';
 
 interface Appointment {
   id: number;
@@ -155,6 +156,16 @@ const AppointmentScheduler = () => {
         `${actionText} com sucesso!`,
         `${selectedServiceName} em ${selectedClinicName} no dia ${format(selectedDate!, 'dd/MM/yyyy')} às ${selectedTime}`
       );
+
+      await emailService.sendAppointment({
+        name: 'Usuário',
+        email: 'usuario@example.com',
+        phone: '000000000',
+        clinic: selectedClinicName || '',
+        service: selectedServiceName || '',
+        date: format(selectedDate!, 'dd/MM/yyyy'),
+        time: selectedTime
+      });
       
       // Reset form and navigate back
       setSelectedTime('');
@@ -237,9 +248,9 @@ const AppointmentScheduler = () => {
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
         {/* Seleção de Data */}
-        <Card className={`${animations.slideInLeft} ${animations.cardHover}`}>
+        <Card className={`${animations.slideInLeft} ${animations.cardHover} h-full`}>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <CalendarIcon className="h-5 w-5" />
@@ -259,7 +270,7 @@ const AppointmentScheduler = () => {
         </Card>
 
         {/* Seleção de Horário */}
-        <Card className={`${animations.slideInRight} ${animations.cardHover}`}>
+        <Card className={`${animations.slideInRight} ${animations.cardHover} h-full`}>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Clock className="h-5 w-5" />
@@ -286,7 +297,7 @@ const AppointmentScheduler = () => {
       </div>
 
       {/* Seleção de Clínica */}
-      <Card className={`${animations.fadeIn} ${animations.cardHover}`}>
+      <Card className={`${animations.fadeIn} ${animations.cardHover} h-full`}>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <MapPin className="h-5 w-5" />
@@ -316,7 +327,7 @@ const AppointmentScheduler = () => {
       </Card>
 
       {/* Seleção de Serviço */}
-      <Card className={`${animations.fadeIn} ${animations.cardHover}`}>
+      <Card className={`${animations.fadeIn} ${animations.cardHover} h-full`}>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Stethoscope className="h-5 w-5" />

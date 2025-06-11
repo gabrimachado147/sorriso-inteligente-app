@@ -6,7 +6,7 @@ import { toastSuccess, toastInfo, toastAppointment, toastCall } from '@/componen
 import { useAppointmentScheduler } from '@/hooks/useAppointmentScheduler';
 import { useChatHandler } from '@/hooks/useChatHandler';
 import { animations } from '@/lib/animations';
-import { Calendar, MessageCircle, Clock, Star, Phone, MapPin } from 'lucide-react';
+import { Calendar, MessageCircle, Clock, Star, Phone, MapPin, User } from 'lucide-react';
 
 interface HomePageProps {
   onNavigate: (page: string) => void;
@@ -109,7 +109,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
           <h1 className="text-2xl font-bold mb-2">Bem-vindo à Senhor Sorriso!</h1>
           <p className="mb-4 opacity-90">Seu sorriso perfeito está a um clique de distância</p>
           <div className="flex flex-col sm:flex-row gap-2">
-            <Button 
+            <Button
               className={`bg-white text-primary hover:bg-gray-100 ${animations.buttonHover}`}
               onClick={handleScheduleEvaluation}
               disabled={schedulingLoading}
@@ -117,7 +117,15 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
               <Calendar className="h-4 w-4 mr-2" />
               {schedulingLoading ? 'Agendando...' : 'Agendar Avaliação Gratuita'}
             </Button>
-            <Button 
+            <Button
+              variant="outline"
+              className={`bg-transparent border-white text-white hover:bg-white hover:text-primary ${animations.buttonHover}`}
+              onClick={() => onNavigate('register')}
+            >
+              <User className="h-4 w-4 mr-2" />
+              Cadastre-se
+            </Button>
+            <Button
               variant="outline"
               className={`bg-transparent border-white text-white hover:bg-white hover:text-primary ${animations.buttonHover}`}
               onClick={handleViewUnits}
@@ -281,14 +289,15 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {[
-              { name: 'Avaliação Gratuita', icon: '🔍', popular: true },
-              { name: 'Limpeza Dental', icon: '🦷', popular: false },
-              { name: 'Ortodontia', icon: '😬', popular: true },
-              { name: 'Implantodontia', icon: '🔧', popular: false },
-              { name: 'Clareamento', icon: '✨', popular: true },
-              { name: 'Urgência 24h', icon: '🚨', popular: false },
-            ].map((service, index) => (
+              {[
+                { name: 'Implante', icon: '🦷', popular: false },
+                { name: 'Facetas de resina', icon: '😬', popular: true },
+                { name: 'Prótese', icon: '🔧', popular: false },
+                { name: 'Restauração & Tratamento de Canal', icon: '🛠️', popular: false },
+                { name: 'Limpeza & Extração', icon: '🪥', popular: true },
+                { name: 'Clareamento & Aplicação de Fluor', icon: '✨', popular: true },
+                { name: 'Ortodontia', icon: '😬', popular: true },
+              ].map((service, index) => (
               <Card 
                 key={service.name} 
                 className={`relative hover:shadow-md transition-shadow cursor-pointer ${animations.cardHover} ${animations.scaleIn}`}
