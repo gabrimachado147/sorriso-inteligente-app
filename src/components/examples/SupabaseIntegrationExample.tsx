@@ -4,7 +4,7 @@
  * Copy this code into your React components as needed
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { appointmentService } from '../../services/supabase/appointments';
 import { clinicService } from '../../services/supabase/clinics';
@@ -29,14 +29,7 @@ export const SupabaseIntegrationExample: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Load data when user is authenticated
-  useEffect(() => {
-    if (isAuthenticated && user) {
-      loadUserData();
-    }
-  }, [isAuthenticated, user]);
-
-  const loadUserData = async () => {
+  const loadUserData = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -56,7 +49,14 @@ export const SupabaseIntegrationExample: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user?.id]);
+
+  // Load data when user is authenticated
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      loadUserData();
+    }
+  }, [isAuthenticated, user, loadUserData]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();

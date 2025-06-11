@@ -20,7 +20,10 @@
     "analyze": "npm run build && npx vite-bundle-analyzer dist",
     "lighthouse": "lighthouse https://sorriso-inteligente-app.lovable.app --output html",
     "deps:check": "npm audit && npm outdated",
-    "deps:update": "npm update && npm audit fix"
+    "deps:update": "npm update && npm audit fix",
+    "deploy:preview": "npm run build && npm run preview",
+    "deploy:check": "npm run type-check && npm run lint && npm run build",
+    "production:verify": "npm run deploy:check && echo '✅ Production ready!'"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",

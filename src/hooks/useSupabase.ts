@@ -104,8 +104,8 @@ export const useAppointments = (userId?: string) => {
 export const useClinics = () => {
   const queryClient = useQueryClient()
 
-  // Get all clinics with filters
-  const getClinics = (filters?: {
+  // Use getClinics hook function - takes filters as parameters
+  const useGetClinics = (filters?: {
     specialty?: string
     city?: string
     emergencyOnly?: boolean
@@ -159,8 +159,8 @@ export const useClinics = () => {
     staleTime: 30 * 60 * 1000
   })
 
-  // Get clinic by ID
-  const getClinicById = (clinicId: string) => {
+  // Get clinic by ID hook function
+  const useGetClinicById = (clinicId: string) => {
     return useQuery({
       queryKey: ['clinic', clinicId],
       queryFn: () => ClinicService.getById(clinicId),
@@ -182,7 +182,7 @@ export const useClinics = () => {
   }
 
   return {
-    getClinics,
+    useGetClinics,
     featuredClinics,
     emergencyClinics,
     specialties,
@@ -191,7 +191,7 @@ export const useClinics = () => {
     isLoadingEmergency,
     isLoadingSpecialties,
     isLoadingCities,
-    getClinicById,
+    useGetClinicById,
     searchClinics
   }
 }

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -42,15 +42,10 @@ export const PWAPerformanceMonitor: React.FC = () => {
     initializeMonitoring();
     const interval = setInterval(updateMetrics, 10000); // Update every 10 seconds
     return () => clearInterval(interval);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const initializeMonitoring = async () => {
-    setIsMonitoring(true);
-    await updateMetrics();
-    setIsMonitoring(false);
-  };
-
-  const updateMetrics = async () => {
+  const updateMetrics = useCallback(async () => {
     try {
       // Performance timing
       const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
@@ -102,7 +97,13 @@ export const PWAPerformanceMonitor: React.FC = () => {
     } catch (error) {
       console.error('[PWA] Performance monitoring error:', error);
     }
-  };
+  }, [getStorageStats]);
+
+  const initializeMonitoring = useCallback(async () => {
+    setIsMonitoring(true);
+    await updateMetrics();
+    setIsMonitoring(false);
+  }, [updateMetrics]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
