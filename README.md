@@ -154,6 +154,26 @@ import { get } from '@vercel/edge-config'
 const greeting = await get<string>('greeting')
 ```
 
+### Hypertune Flags
+
+Para habilitar feature flags com Hypertune, defina no seu `.env.local` as variáveis
+`NEXT_PUBLIC_HYPERTUNE_TOKEN` e `EXPERIMENTATION_CONFIG_ITEM_KEY`. Também
+configure o diretório de saída para os tipos gerados:
+
+```bash
+HYPERTUNE_FRAMEWORK=nextApp
+HYPERTUNE_OUTPUT_DIRECTORY_PATH=src/generated
+```
+
+Com tudo configurado, instale as dependências e gere os tipos:
+
+```bash
+npm install flags @flags-sdk/hypertune hypertune server-only @vercel/edge-config
+npx hypertune
+```
+
+O arquivo `src/flags.ts` expõe funções de flag prontas para uso no código.
+
 ## 🚀 CI/CD
 
 ### Branch Strategy
