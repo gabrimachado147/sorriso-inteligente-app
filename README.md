@@ -1,6 +1,8 @@
 
 # Sorriso Inteligente App
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/21e62aa3204c4a18a1e40e0d09861b38)](https://app.codacy.com/gh/gabrimachado147/sorriso-inteligente-app?utm_source=github.com&utm_medium=referral&utm_content=gabrimachado147/sorriso-inteligente-app&utm_campaign=Badge_Grade)
+
 Um aplicativo híbrido (desktop e mobile) para agendamento e gestão de consultas odontológicas, desenvolvido com React, TypeScript e Tailwind CSS.
 
 ## 🚀 Funcionalidades
