@@ -51,7 +51,7 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({ currentPage,
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-white border-t md:hidden z-50">
-      <div className="flex justify-around items-center py-2">
+      <div className="flex justify-between items-center py-2">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = currentPage === item.id;
@@ -60,7 +60,7 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({ currentPage,
             <Button
               key={item.id}
               variant="ghost"
-              className={`flex flex-col items-center space-y-1 h-auto py-2 px-3 ${
+              className={`flex flex-col items-center space-y-1 h-auto py-2 px-3 flex-1 ${
                 isActive ? 'text-primary' : 'text-gray-500'
               } ${animations.buttonHover}`}
               onClick={item.action}
