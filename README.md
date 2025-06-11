@@ -175,6 +175,16 @@ O aplicativo é totalmente responsivo e otimizado para:
 - [x] CI/CD inicial
 - [ ] Testes automatizados
 
+### Testes Automatizados
+
+Para executar a suíte de testes localmente, utilize o [Vitest](https://vitest.dev):
+
+```bash
+pnpm install
+pnpm test
+pnpm run type-check
+```
+
 ### Próximas Funcionalidades 📋
 - [ ] Integração real com Supabase
 - [ ] Sistema de autenticação
