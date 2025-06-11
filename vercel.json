@@ -9,6 +9,10 @@
   "public": true,
   "rewrites": [
     {
+      "source": "/welcome",
+      "destination": "/api/welcome"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
