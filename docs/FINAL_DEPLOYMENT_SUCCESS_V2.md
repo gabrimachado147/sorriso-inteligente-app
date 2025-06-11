@@ -20,13 +20,17 @@
 
 ### 🌐 **URLs de Produção Ativas:**
 
-#### **Aplicação Principal (INTERFACE COMPLETA RESTAURADA!)**
-- **URL**: https://sorriso-inteligente-knax7p20k-gabriels-projects-477810e9.vercel.app
+#### **Aplicação Principal (INTERFACE COMPLETA - MAIS RECENTE!)**
+- **URL**: https://sorriso-inteligente-c16acl1iw-gabriels-projects-477810e9.vercel.app
 - **Status**: ✅ **INTERFACE RICA E BONITA FUNCIONANDO**
 - **Bundle Size**: 752.60 KiB (Versão completa com todos os recursos)
 - **Performance**: Totalmente otimizada
 - **Versão**: App.tsx v3.0 (Interface Completa + PWA Dashboard)
 - **Features**: MainLayout, PWA Dashboard, Custom Toasts, Animações, Design Moderno
+
+#### **Versão Anterior (Backup Funcional)**
+- **URL**: https://sorriso-inteligente-knax7p20k-gabriels-projects-477810e9.vercel.app
+- **Status**: ✅ Funcional (Interface completa)
 
 #### **Versão Simplificada (Backup Estável)**
 - **URL**: https://sorriso-inteligente-kk7v7r0gz-gabriels-projects-477810e9.vercel.app
