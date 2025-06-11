@@ -135,7 +135,7 @@ describe('PWA Advanced Features', () => {
         return 'Agora';
       };
 
-      const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000);
+      const tomorrow = new Date(Date.now() + 25 * 60 * 60 * 1000);
       const formatted = formatDate(tomorrow);
       
       expect(formatted).toContain('Em 1 dia');
