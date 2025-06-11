@@ -156,9 +156,10 @@ VITE_ENVIRONMENT=production
 ## 📱 Responsividade
 
 O aplicativo é totalmente responsivo e otimizado para:
-- **Desktop**: Layout com sidebar e navegação completa
+- **Desktop**: Sidebar lateral fixa e navegação completa
 - **Tablet**: Layout adaptativo com navegação simplificada
 - **Mobile**: Bottom navigation e interface touch-friendly
+- **Container**: Conteúdo centralizado com largura máxima para melhor leitura
 
 ## 🎯 Roadmap
 
