@@ -174,6 +174,62 @@ npx hypertune
 
 O arquivo `src/flags.ts` expõe funções de flag prontas para uso no código.
 
+### Statsig Flags
+
+Para utilizar o adaptador do Statsig, defina as variáveis `NEXT_PUBLIC_STATSIG_CLIENT_KEY` e `STATSIG_SERVER_API_KEY` no `.env.local`.
+Instale as dependências e sincronize o ambiente:
+
+```bash
+npm install flags @flags-sdk/statsig
+vercel env pull
+```
+
+Em seguida, crie `src/statsigFlags.ts` conforme o exemplo abaixo:
+
+```ts
+import { statsigAdapter, type StatsigUser } from "@flags-sdk/statsig";
+import { flag, dedupe } from "flags/next";
+import type { Identify } from "flags";
+
+export const identify = dedupe(async () => ({ userID: "1234" })) satisfies Identify<StatsigUser>;
+
+export const createFeatureFlag = (key: string) =>
+  flag<boolean, StatsigUser>({
+    key,
+    adapter: statsigAdapter.featureGate((g) => g.value, { exposureLogging: true }),
+    identify,
+  });
+```
+
+### XAI / OpenAI
+
+Defina `XAI_API_KEY` no ambiente e instale o SDK de sua preferência:
+
+```bash
+npm install openai @ai-sdk/xai ai
+```
+
+Exemplo de uso com o SDK OpenAI:
+
+```ts
+import OpenAI from 'openai';
+
+const client = new OpenAI({
+  apiKey: process.env.XAI_API_KEY,
+  baseURL: 'https://api.x.ai/v1',
+});
+
+const completion = await client.chat.completions.create({
+  model: 'grok-2-latest',
+  messages: [
+    { role: 'system', content: 'You are Grok...' },
+    { role: 'user', content: 'What is the meaning of life?' },
+  ],
+});
+
+console.log(completion.choices[0].message.content);
+```
+
 ## 🚀 CI/CD
 
 ### Branch Strategy
