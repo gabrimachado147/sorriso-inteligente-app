@@ -2,7 +2,8 @@
 import React from 'react';
 import { Header } from './Header';
 import { BottomNavigation } from './BottomNavigation';
-import { Analytics } from '@vercel/analytics/next';
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -19,6 +20,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children, currentPage, o
       </main>
       <BottomNavigation currentPage={currentPage} onPageChange={onPageChange} />
       <Analytics />
+      <SpeedInsights />
     </div>
   );
 };
