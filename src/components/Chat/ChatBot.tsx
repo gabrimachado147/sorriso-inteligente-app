@@ -35,6 +35,7 @@ const ChatBot = () => {
       quickReplies: ['Agendar consulta', 'Ver clínicas', 'Horários', 'Emergência']
     }
   ]);
+  const [showSuggestions, setShowSuggestions] = useState(true);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -110,7 +111,7 @@ const ChatBot = () => {
         sender: 'bot',
         timestamp: new Date(),
         type: 'appointment',
-        quickReplies: ['Limpeza', 'Extração', 'Obturação', 'Ortodontia']
+        ...(showSuggestions ? { quickReplies: ['Limpeza', 'Extração', 'Obturação', 'Ortodontia'] } : {})
       };
     }
     
@@ -122,7 +123,7 @@ const ChatBot = () => {
         sender: 'bot',
         timestamp: new Date(),
         type: 'location',
-        quickReplies: ['Centro', 'Zona Sul', 'Zona Norte', 'Zona Oeste']
+        ...(showSuggestions ? { quickReplies: ['Centro', 'Zona Sul', 'Zona Norte', 'Zona Oeste'] } : {})
       };
     }
     
@@ -143,7 +144,7 @@ const ChatBot = () => {
         sender: 'bot',
         timestamp: new Date(),
         type: 'emergency',
-        quickReplies: ['Sim, preciso agora', 'Não é urgente', 'Mais informações']
+        ...(showSuggestions ? { quickReplies: ['Sim, preciso agora', 'Não é urgente', 'Mais informações'] } : {})
       };
     }
     
@@ -153,13 +154,15 @@ const ChatBot = () => {
       sender: 'bot',
       timestamp: new Date(),
       type: 'general',
-      quickReplies: ['Agendar consulta', 'Ver clínicas', 'Horários', 'Emergência']
+      ...(showSuggestions ? { quickReplies: ['Agendar consulta', 'Ver clínicas', 'Horários', 'Emergência'] } : {})
     };
   };
 
   const handleSendMessage = async (messageText?: string) => {
     const text = messageText || inputValue.trim();
     if (!text || chatLoading) return;
+
+    setShowSuggestions(false);
 
     // Adicionar mensagem do usuário
     const userMessage: Message = {

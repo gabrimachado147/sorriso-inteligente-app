@@ -35,15 +35,21 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({ currentPage,
       label: 'Agendar',
       action: () => handleNavigation('appointments', 'agendamento')
     },
-    { 
-      id: 'chat', 
-      icon: MessageCircle, 
+    {
+      id: 'chat',
+      icon: MessageCircle,
       label: 'Chat',
       action: () => handleNavigation('chat', 'chat com assistente')
     },
-    { 
-      id: 'profile', 
-      icon: User, 
+    {
+      id: 'register',
+      icon: User,
+      label: 'Cadastro',
+      action: () => handleNavigation('register', 'cadastro')
+    },
+    {
+      id: 'profile',
+      icon: User,
       label: 'Perfil',
       action: () => handleNavigation('profile', 'perfil do usuário')
     },

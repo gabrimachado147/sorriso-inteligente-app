@@ -247,7 +247,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
           <div className="space-y-3">
             <div className={`flex items-center justify-between p-3 bg-blue-50 rounded-lg ${animations.cardHover}`}>
               <div>
-                <p className="font-medium">Limpeza Dental</p>
+                <p className="font-medium">Implante</p>
                 <p className="text-sm text-gray-600">Campo Belo - Dr. Silva</p>
                 <p className="text-xs text-gray-500">15/06/2024 às 14:00</p>
               </div>
@@ -283,10 +283,10 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {[
               { name: 'Avaliação Gratuita', icon: '🔍', popular: true },
-              { name: 'Limpeza Dental', icon: '🦷', popular: false },
-              { name: 'Ortodontia', icon: '😬', popular: true },
-              { name: 'Implantodontia', icon: '🔧', popular: false },
-              { name: 'Clareamento', icon: '✨', popular: true },
+              { name: 'Implante', icon: '🦷', popular: false },
+              { name: 'Facetas de Resina', icon: '😬', popular: true },
+              { name: 'Prótese', icon: '🔧', popular: false },
+              { name: 'Clareamento Dental', icon: '✨', popular: true },
               { name: 'Urgência 24h', icon: '🚨', popular: false },
             ].map((service, index) => (
               <Card 

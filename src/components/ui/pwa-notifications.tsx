@@ -112,7 +112,7 @@ export const PWANotificationCenter: React.FC = () => {
   const sendSampleAppointmentReminder = async () => {
     if (permission === 'granted') {
       await notifyAppointmentReminder({
-        service: 'Limpeza Dental',
+        service: 'Implante',
         clinic: 'Sorriso Campo Belo',
         date: 'Hoje',
         time: '14:00'
