@@ -49,3 +49,4 @@ O roteador decide qual provedor de LLM utilizar (Groq, Deep Infra, xAI) de acord
 
 Este plano possibilita um pipeline multimídia completo, controle de rollout e observabilidade centralizada.
 
+\nO código do pipeline VSL encontra-se em `src/services/vsl.ts`.

@@ -230,6 +230,18 @@ const completion = await client.chat.completions.create({
 
 console.log(completion.choices[0].message.content);
 ```
+### VSL Pipeline
+
+Configure `FAL_KEY` e `ELEVENLABS_API_KEY` para gerar vídeos automáticos.
+Instale:
+```bash
+npm install @fal-ai/client @elevenlabs/client
+```
+Use `generateVSL` em `src/services/vsl.ts`:
+```ts
+import { generateVSL } from "./services/vsl";
+const assets = await generateVSL("Bem-vindo!");
+```
 
 ## 🚀 CI/CD
 
