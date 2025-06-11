@@ -1,0 +1,34 @@
+# Codacy configuration for Sorriso Inteligente App
+# Documentação: https://docs.codacy.com/repositories-configure/codacy-configuration-file/
+
+engines:
+  eslint:
+    enabled: true
+    extra_args: ["--ext", ".js,.jsx,.ts,.tsx"]
+    config_file: eslint.config.js
+  coverage:
+    enabled: true
+    report:
+      - coverage/lcov.info
+
+ignore:
+  - node_modules/**
+  - dist/**
+  - public/**
+  - docs/**
+  - tests/setup.*
+  - src/components/ui/examples/**
+
+# Regras customizadas (opcional)
+# patterns:
+#   - pattern: "no-console"
+#     parameters:
+#       severity: "info"
+#     enabled: false
+
+# Linguagens suportadas
+languages:
+  javascript: true
+  typescript: true
+
+default_language: typescript
