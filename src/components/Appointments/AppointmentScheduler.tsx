@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -17,6 +16,18 @@ import { TimeSelector } from './TimeSelector';
 import { ClinicSelector } from './ClinicSelector';
 import { ServiceSelector } from './ServiceSelector';
 import { AppointmentSummary } from './AppointmentSummary';
+import { 
+  Stethoscope, 
+  Search, 
+  Sparkles, 
+  Wrench, 
+  Smile, 
+  Settings, 
+  Shield, 
+  Baby, 
+  Heart, 
+  AlertTriangle 
+} from 'lucide-react';
 
 interface Appointment {
   id: number;
@@ -62,17 +73,61 @@ const AppointmentScheduler = () => {
   const [availableClinics, setAvailableClinics] = useState<Array<{id: string, name: string, city: string, state: string}>>([]);
 
   const availableServices = [
-    { id: 'avaliacao-gratuita', name: 'Avaliação Gratuita' },
-    { id: 'limpeza', name: 'Limpeza' },
-    { id: 'restauracao', name: 'Restauração' },
-    { id: 'ortodontia', name: 'Ortodontia' },
-    { id: 'implantodontia', name: 'Implantodontia' },
-    { id: 'estetica-dental', name: 'Estética Dental' },
-    { id: 'proteses-fixa', name: 'Próteses Fixa' },
-    { id: 'endodontia', name: 'Endodontia' },
-    { id: 'odontopediatria', name: 'Odontopediatria' },
-    { id: 'periodontia', name: 'Periodontia' },
-    { id: 'urgencia', name: 'Atendimento de Urgência' }
+    { 
+      id: 'avaliacao-gratuita', 
+      name: 'Avaliação Gratuita', 
+      icon: <Search className="h-6 w-6" /> 
+    },
+    { 
+      id: 'limpeza', 
+      name: 'Limpeza Dental', 
+      icon: <Sparkles className="h-6 w-6" /> 
+    },
+    { 
+      id: 'restauracao', 
+      name: 'Restauração', 
+      icon: <Wrench className="h-6 w-6" /> 
+    },
+    { 
+      id: 'ortodontia', 
+      name: 'Ortodontia', 
+      icon: <Smile className="h-6 w-6" /> 
+    },
+    { 
+      id: 'implantodontia', 
+      name: 'Implantodontia', 
+      icon: <Settings className="h-6 w-6" /> 
+    },
+    { 
+      id: 'estetica-dental', 
+      name: 'Estética Dental', 
+      icon: <Sparkles className="h-6 w-6" /> 
+    },
+    { 
+      id: 'proteses-fixas', 
+      name: 'Próteses Fixas', 
+      icon: <Shield className="h-6 w-6" /> 
+    },
+    { 
+      id: 'endodontia', 
+      name: 'Endodontia', 
+      icon: <Stethoscope className="h-6 w-6" /> 
+    },
+    { 
+      id: 'odontopediatria', 
+      name: 'Odontopediatria', 
+      icon: <Baby className="h-6 w-6" /> 
+    },
+    { 
+      id: 'periodontia', 
+      name: 'Periodontia', 
+      icon: <Heart className="h-6 w-6" /> 
+    },
+    { 
+      id: 'urgencia', 
+      name: 'Atendimento de Urgência', 
+      icon: <AlertTriangle className="h-6 w-6" /> 
+    }
   ];
 
   // Carregar clínicas reais ao montar o componente
