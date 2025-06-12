@@ -9,9 +9,16 @@ import { User, Session } from '@supabase/supabase-js';
 import { 
   AuthService, 
   type AuthResponse, 
-  type LoginCredentials, 
-  type RegisterCredentials
+  type LoginCredentials
 } from '../services/auth';
+
+// Simplified register credentials for our system
+export interface SimpleRegisterCredentials {
+  email: string;
+  password: string;
+  nome_completo: string;
+  telefone: string;
+}
 
 interface UseAuthReturn {
   // State
@@ -22,7 +29,7 @@ interface UseAuthReturn {
   
   // Actions
   login: (credentials: LoginCredentials) => Promise<AuthResponse>;
-  register: (credentials: RegisterCredentials) => Promise<AuthResponse>;
+  register: (credentials: SimpleRegisterCredentials) => Promise<AuthResponse>;
   logout: () => Promise<AuthResponse>;
   resetPassword: (email: string) => Promise<AuthResponse>;
   updatePassword: (newPassword: string) => Promise<AuthResponse>;
@@ -99,13 +106,18 @@ export const useAuth = (): UseAuthReturn => {
     }
   }, []);
 
-  // Register function
-  const register = useCallback(async (credentials: RegisterCredentials): Promise<AuthResponse> => {
+  // Register function - adapted for our simplified system
+  const register = useCallback(async (credentials: SimpleRegisterCredentials): Promise<AuthResponse> => {
     try {
       setLoading(true);
       setError(null);
       
-      const response = await AuthService.register(credentials);
+      const response = await AuthService.register({
+        email: credentials.email,
+        password: credentials.password,
+        name: credentials.nome_completo,
+        phone: credentials.telefone
+      });
       
       if (!response.success) {
         setError(response.error || 'Registration failed');
