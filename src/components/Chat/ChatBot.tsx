@@ -1,10 +1,11 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { EnhancedSkeleton } from '@/components/ui/enhanced-skeleton';
-import { toastSuccess, toastInfo, toastAppointment, toastError } from '@/components/ui/custom-toast';
+import { toastSuccess, toastInfo, toastError } from '@/components/ui/custom-toast';
 import { useChatHandler } from '@/hooks/useChatHandler';
 import { animations } from '@/lib/animations';
 import { MessageCircle, Send, Bot, User, Clock, Calendar, MapPin, Phone } from 'lucide-react';
@@ -35,7 +36,6 @@ const ChatBot = () => {
     }
   ]);
   const [inputValue, setInputValue] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
@@ -77,85 +77,6 @@ const ChatBot = () => {
     await handleSendMessage(message);
   };
 
-  const generateBotResponse = async (userMessage: string): Promise<Message> => {
-    const lowerMessage = userMessage.toLowerCase();
-    
-    try {
-      // Tentar processar via n8n primeiro
-      const context = lowerMessage.includes('agendar') ? 'appointment' : 
-                    lowerMessage.includes('emergência') ? 'emergency' : 'general';
-      
-      const response = await sendMessage(userMessage, context);
-      
-      if (response?.reply) {
-        return {
-          id: Date.now(),
-          text: response.reply,
-          sender: 'bot',
-          timestamp: new Date(),
-          type: context as any
-        };
-      }
-    } catch (error) {
-      console.error('Erro ao processar via n8n:', error);
-    }
-
-    // Fallback para respostas locais
-    if (lowerMessage.includes('agendar') || lowerMessage.includes('consulta')) {
-      toastAppointment("Agendamento", "Vou te ajudar a agendar sua consulta!");
-      return {
-        id: Date.now(),
-        text: "Perfeito! Para agendar sua consulta, preciso de algumas informações. Você prefere qual tipo de serviço?",
-        sender: 'bot',
-        timestamp: new Date(),
-        type: 'appointment',
-        quickReplies: ['Limpeza', 'Extração', 'Obturação', 'Ortodontia']
-      };
-    }
-    
-    if (lowerMessage.includes('clínica') || lowerMessage.includes('local')) {
-      toastInfo("Clínicas", "Mostrando clínicas próximas a você!");
-      return {
-        id: Date.now(),
-        text: "Temos várias clínicas próximas a você! Posso te mostrar as opções por região:",
-        sender: 'bot',
-        timestamp: new Date(),
-        type: 'location',
-        quickReplies: ['Centro', 'Zona Sul', 'Zona Norte', 'Zona Oeste']
-      };
-    }
-    
-    if (lowerMessage.includes('horário') || lowerMessage.includes('disponível')) {
-      return {
-        id: Date.now(),
-        text: "Nossos horários de atendimento são:\n\n📅 Segunda a Sexta: 8h às 18h\n📅 Sábados: 8h às 14h\n\nPara qual dia você gostaria de agendar?",
-        sender: 'bot',
-        timestamp: new Date(),
-        type: 'schedule'
-      };
-    }
-    
-    if (lowerMessage.includes('emergência') || lowerMessage.includes('urgente')) {
-      return {
-        id: Date.now(),
-        text: "🚨 Para emergências, entre em contato imediatamente:\n\n📞 Central de Emergência: (11) 99999-0000\n🏥 Plantão 24h: Rua da Saúde, 123\n\nVocê precisa de atendimento imediato?",
-        sender: 'bot',
-        timestamp: new Date(),
-        type: 'emergency',
-        quickReplies: ['Sim, preciso agora', 'Não é urgente', 'Mais informações']
-      };
-    }
-    
-    return {
-      id: Date.now(),
-      text: "Entendi! Como posso te ajudar melhor? Posso auxiliar com agendamentos, informações sobre clínicas, horários ou emergências.",
-      sender: 'bot',
-      timestamp: new Date(),
-      type: 'general',
-      quickReplies: ['Agendar consulta', 'Ver clínicas', 'Horários', 'Emergência']
-    };
-  };
-
   const handleSendMessage = async (messageText?: string) => {
     const text = messageText || inputValue.trim();
     if (!text || chatLoading) return;
@@ -171,17 +92,28 @@ const ChatBot = () => {
 
     setMessages(prev => [...prev, userMessage]);
     setInputValue('');
-    setIsTyping(true);
 
-    // Simular delay de digitação e processar resposta
+    // Enviar dados para o webhook sem gerar resposta automática
     try {
-      const botResponse = await generateBotResponse(text);
-      setMessages(prev => [...prev, botResponse]);
+      const context = text.toLowerCase().includes('agendar') ? 'appointment' : 
+                    text.toLowerCase().includes('emergência') ? 'emergency' : 'general';
+      
+      await sendMessage(text, context);
+      
+      // Adicionar mensagem informativa de que a mensagem foi enviada
+      const confirmationMessage: Message = {
+        id: Date.now() + 1,
+        text: "Sua mensagem foi enviada para nossa equipe. Em breve você receberá uma resposta.",
+        sender: 'bot',
+        timestamp: new Date(),
+        type: 'general'
+      };
+      
+      setMessages(prev => [...prev, confirmationMessage]);
+      
     } catch (error) {
-      console.error('Erro ao gerar resposta:', error);
-      toastError('Erro', 'Não foi possível processar sua mensagem');
-    } finally {
-      setIsTyping(false);
+      console.error('Erro ao enviar mensagem:', error);
+      toastError('Erro', 'Não foi possível enviar sua mensagem');
     }
   };
 
@@ -214,7 +146,7 @@ const ChatBot = () => {
           <Bot className="h-6 w-6 text-primary" />
           Assistente Virtual
           <Badge variant="secondary" className="ml-auto">
-            {chatLoading ? 'Processando...' : 'Online'}
+            {chatLoading ? 'Enviando...' : 'Online'}
           </Badge>
         </CardTitle>
         <p className="text-sm text-gray-600">
@@ -222,8 +154,6 @@ const ChatBot = () => {
         </p>
       </CardHeader>
 
-      
-      
       <CardContent className="flex-1 flex flex-col p-0">
         
         <div className="flex-1 overflow-y-auto p-4 space-y-4 max-h-96">
@@ -249,7 +179,6 @@ const ChatBot = () => {
                   )}
                 </div>
 
-                
                 <div className={`rounded-lg p-3 ${
                   message.sender === 'user'
                     ? 'bg-primary text-white'
@@ -258,7 +187,6 @@ const ChatBot = () => {
                   <div className="whitespace-pre-wrap text-sm">
                     {message.text}
                   </div>
-                  
                   
                   {message.quickReplies && (
                     <div className="flex flex-wrap gap-2 mt-3">
@@ -287,8 +215,7 @@ const ChatBot = () => {
             </div>
           ))}
 
-          
-          {(isTyping || chatLoading) && (
+          {chatLoading && (
             <div className={`flex justify-start ${animations.fadeIn}`}>
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
@@ -308,7 +235,6 @@ const ChatBot = () => {
           <div ref={messagesEndRef} />
         </div>
 
-        
         {messages.length <= 1 && (
           <div className={`p-4 border-t border-gray-200 ${animations.slideInBottom}`}>
             <p className="text-sm text-gray-600 mb-3">Ações rápidas:</p>
@@ -330,7 +256,6 @@ const ChatBot = () => {
           </div>
         )}
 
-        
         <div className="p-4 border-t border-gray-200">
           <div className="flex gap-2">
             <Input
@@ -339,11 +264,11 @@ const ChatBot = () => {
               onKeyPress={handleKeyPress}
               placeholder="Digite sua mensagem..."
               className="flex-1"
-              disabled={isTyping || chatLoading}
+              disabled={chatLoading}
             />
             <Button
               onClick={() => handleSendMessage()}
-              disabled={!inputValue.trim() || isTyping || chatLoading}
+              disabled={!inputValue.trim() || chatLoading}
               className={animations.buttonHover}
             >
               <Send className="h-4 w-4" />

@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { whatsappService, ChatMessage } from '@/services/whatsapp';
-import { toastError } from '@/components/ui/custom-toast';
+import { toastError, toastSuccess } from '@/components/ui/custom-toast';
 
 export const useChatHandler = () => {
   const [loading, setLoading] = useState(false);
@@ -12,13 +12,18 @@ export const useChatHandler = () => {
     try {
       const sessionId = `session_${Date.now()}`;
       
-      const response = await whatsappService.processMessage({
+      // Apenas envia os dados para o webhook, sem gerar resposta automática
+      await whatsappService.sendUserMessage({
         message,
         sessionId,
         context: context || 'general'
       });
 
-      return response;
+      // Confirma que a mensagem foi enviada para processamento
+      return {
+        success: true,
+        message: 'Mensagem enviada para processamento'
+      };
     } catch (error) {
       toastError(
         'Erro no Chat', 

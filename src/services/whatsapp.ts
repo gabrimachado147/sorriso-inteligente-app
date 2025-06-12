@@ -1,8 +1,9 @@
+
 import { toast } from 'sonner';
 
 const whatsappApiUrl = import.meta.env.VITE_API_BASE_URL;
-const whatsappToken = import.meta.env.VITE_N8N_WEBHOOK_URL;
 const EVOLUTION_API_URL = import.meta.env.VITE_EVOLUTION_API_URL;
+const USER_MESSAGE_WEBHOOK = 'https://n8nwebhook.enigmabot.store/webhook/68db7bec-7f2f-4948-be67-54fd27fb0770';
 
 export interface WhatsAppMessage {
   to: string;
@@ -57,10 +58,10 @@ class WhatsAppService {
     }
   }
 
-  // Processar mensagem via n8n webhook
-  async processMessage(data: ChatMessage) {
+  // Enviar dados da mensagem do usuário para o webhook (sem resposta automática)
+  async sendUserMessage(data: ChatMessage) {
     try {
-      const response = await fetch(whatsappToken, {
+      const response = await fetch(USER_MESSAGE_WEBHOOK, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -70,19 +71,25 @@ class WhatsAppService {
           sessionId: data.sessionId,
           userId: data.userId,
           context: data.context,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
+          source: 'sorriso_inteligente_app'
         })
       });
 
       if (!response.ok) {
-        throw new Error('Erro ao processar mensagem');
+        throw new Error('Erro ao enviar dados para webhook');
       }
 
       return await response.json();
     } catch (error) {
-      console.error('Erro n8n webhook:', error);
+      console.error('Erro webhook:', error);
       throw error;
     }
+  }
+
+  // Método mantido para compatibilidade, mas agora apenas envia dados sem retornar resposta
+  async processMessage(data: ChatMessage) {
+    return this.sendUserMessage(data);
   }
 
   // Agendar consulta
