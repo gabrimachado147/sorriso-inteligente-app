@@ -22,6 +22,7 @@ const AuthPage = () => {
   const navigate = useNavigate();
 
   const handleInputChange = (field: string, value: string) => {
+    console.log('Input change:', field, value);
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -42,6 +43,8 @@ const AuthPage = () => {
   };
 
   const validateForm = () => {
+    console.log('Validating form:', formData);
+    
     if (!isLogin && !formData.nomeCompleto.trim()) {
       toastError('Erro', 'Por favor, digite seu nome completo');
       return false;
@@ -69,27 +72,40 @@ const AuthPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!validateForm()) return;
+    console.log('Form submitted:', { isLogin, formData });
+    
+    if (!validateForm()) {
+      console.log('Form validation failed');
+      return;
+    }
 
     setLoading(true);
 
     try {
       // Converte telefone para email format para compatibilidade com Supabase
-      const phoneEmail = `${formData.telefone.replace(/\D/g, '')}@sorriso.app`;
+      const phoneNumbers = formData.telefone.replace(/\D/g, '');
+      const phoneEmail = `${phoneNumbers}@sorriso.app`;
+      
+      console.log('Phone email generated:', phoneEmail);
 
       if (isLogin) {
+        console.log('Attempting login...');
         const result = await login({
           email: phoneEmail,
           password: formData.password
         });
 
+        console.log('Login result:', result);
+
         if (result.success) {
           toastSuccess('Sucesso', 'Login realizado com sucesso!');
           navigate('/');
         } else {
+          console.error('Login failed:', result.error);
           toastError('Erro', result.error || 'Erro ao fazer login');
         }
       } else {
+        console.log('Attempting registration...');
         const result = await register({
           email: phoneEmail,
           password: formData.password,
@@ -97,14 +113,18 @@ const AuthPage = () => {
           telefone: formData.telefone
         });
 
+        console.log('Register result:', result);
+
         if (result.success) {
           toastSuccess('Sucesso', 'Cadastro realizado com sucesso!');
           navigate('/');
         } else {
+          console.error('Registration failed:', result.error);
           toastError('Erro', result.error || 'Erro ao criar conta');
         }
       }
     } catch (error) {
+      console.error('Auth error:', error);
       toastError('Erro', 'Ocorreu um erro inesperado');
     } finally {
       setLoading(false);

@@ -49,14 +49,18 @@ export const useAuth = (): UseAuthReturn => {
   useEffect(() => {
     const initAuth = async () => {
       try {
+        console.log('Initializing auth...');
         setLoading(true);
         
         // Get current session
         const currentSession = await AuthService.getCurrentSession();
+        console.log('Current session:', currentSession);
+        
         setSession(currentSession);
         
         if (currentSession?.user) {
           setUser(currentSession.user);
+          console.log('User found:', currentSession.user.email);
         }
       } catch (err) {
         console.error('Auth initialization error:', err);
@@ -87,10 +91,12 @@ export const useAuth = (): UseAuthReturn => {
   // Login function
   const login = useCallback(async (credentials: LoginCredentials): Promise<AuthResponse> => {
     try {
+      console.log('useAuth: Starting login process...');
       setLoading(true);
       setError(null);
       
       const response = await AuthService.login(credentials);
+      console.log('useAuth: Login response:', response);
       
       if (!response.success) {
         setError(response.error || 'Login failed');
@@ -98,6 +104,7 @@ export const useAuth = (): UseAuthReturn => {
       
       return response;
     } catch (err) {
+      console.error('useAuth: Login error:', err);
       const error = err instanceof Error ? err.message : 'Login failed';
       setError(error);
       return { success: false, error };
@@ -109,6 +116,7 @@ export const useAuth = (): UseAuthReturn => {
   // Register function - adapted for our simplified system
   const register = useCallback(async (credentials: SimpleRegisterCredentials): Promise<AuthResponse> => {
     try {
+      console.log('useAuth: Starting registration process...');
       setLoading(true);
       setError(null);
       
@@ -119,12 +127,15 @@ export const useAuth = (): UseAuthReturn => {
         phone: credentials.telefone
       });
       
+      console.log('useAuth: Registration response:', response);
+      
       if (!response.success) {
         setError(response.error || 'Registration failed');
       }
       
       return response;
     } catch (err) {
+      console.error('useAuth: Registration error:', err);
       const error = err instanceof Error ? err.message : 'Registration failed';
       setError(error);
       return { success: false, error };
