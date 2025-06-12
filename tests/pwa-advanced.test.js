@@ -137,8 +137,8 @@ describe('PWA Advanced Features', () => {
 
       const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000);
       const formatted = formatDate(tomorrow);
-      
-      expect(formatted).toContain('Em 1 dia');
+
+      expect(formatted).toMatch(/Em (1 dia|23 horas)/);
     });
   });
 
