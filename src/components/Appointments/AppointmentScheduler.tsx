@@ -83,17 +83,55 @@ const AppointmentScheduler = () => {
 
   const [availableClinics, setAvailableClinics] = useState<Array<{id: string, name: string, city: string, state: string}>>([]);
 
+  // Serviços atualizados conforme a lista fornecida
   const availableServices = [
-    { id: 'cleaning', name: 'Limpeza' },
-    { id: 'extraction', name: 'Extração' },
-    { id: 'filling', name: 'Obturação' },
-    { id: 'orthodontics', name: 'Ortodontia' }
+    { id: 'avaliacao-gratuita', name: 'Avaliação Gratuita' },
+    { id: 'limpeza', name: 'Limpeza' },
+    { id: 'restauracao', name: 'Restauração' },
+    { id: 'ortodontia', name: 'Ortodontia' },
+    { id: 'implantodontia', name: 'Implantodontia' },
+    { id: 'estetica-dental', name: 'Estética Dental' },
+    { id: 'proteses-fixa', name: 'Próteses Fixa' },
+    { id: 'endodontia', name: 'Endodontia' },
+    { id: 'odontopediatria', name: 'Odontopediatria' },
+    { id: 'periodontia', name: 'Periodontia' },
+    { id: 'urgencia', name: 'Atendimento de Urgência' }
   ];
 
-  const timeSlots = [
-    '08:00', '08:30', '09:00', '09:30', '10:00', '10:30',
-    '14:00', '14:30', '15:00', '15:30', '16:00', '16:30'
-  ];
+  // Função para gerar horários disponíveis baseado no dia da semana
+  const getAvailableTimeSlots = (date: Date | undefined) => {
+    if (!date) return [];
+    
+    const dayOfWeek = date.getDay(); // 0 = domingo, 1 = segunda, ..., 6 = sábado
+    
+    // Horários base (segunda a sexta): 08:00 às 19:00
+    const weekdaySlots = [
+      '08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
+      '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30',
+      '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00'
+    ];
+    
+    // Horários de sábado: 08:00 às 13:00
+    const saturdaySlots = [
+      '08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
+      '12:00', '12:30', '13:00'
+    ];
+    
+    // Domingo não funciona
+    if (dayOfWeek === 0) {
+      return [];
+    }
+    
+    // Sábado - horário reduzido
+    if (dayOfWeek === 6) {
+      return saturdaySlots;
+    }
+    
+    // Segunda a sexta - horário completo
+    return weekdaySlots;
+  };
+
+  const timeSlots = getAvailableTimeSlots(selectedDate);
 
   // Carregar clínicas reais ao montar o componente
   useEffect(() => {
@@ -118,6 +156,11 @@ const AppointmentScheduler = () => {
 
     loadClinics();
   }, []);
+
+  // Resetar horário selecionado quando a data mudar
+  useEffect(() => {
+    setSelectedTime('');
+  }, [selectedDate]);
 
   const filteredServices = availableServices.filter(service => {
     if (filters.search) {
@@ -238,7 +281,7 @@ const AppointmentScheduler = () => {
       </Card>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Seleção de Data */}
+        {/* Seleção de Data - Layout melhorado */}
         <Card className={`${animations.slideInLeft} ${animations.cardHover}`}>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -246,41 +289,50 @@ const AppointmentScheduler = () => {
               Selecionar Data
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="flex justify-center">
             <Calendar
               mode="single"
               selected={selectedDate}
               onSelect={setSelectedDate}
               locale={ptBR}
-              disabled={(date) => date < new Date()}
-              className="rounded-md border"
+              disabled={(date) => date < new Date() || date.getDay() === 0} // Desabilita datas passadas e domingos
+              className="rounded-md border w-fit"
             />
           </CardContent>
         </Card>
 
-        {/* Seleção de Horário */}
+        {/* Seleção de Horário - Horários atualizados */}
         <Card className={`${animations.slideInRight} ${animations.cardHover}`}>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Clock className="h-5 w-5" />
               Horários Disponíveis
+              {selectedDate && selectedDate.getDay() === 6 && (
+                <Badge variant="secondary" className="ml-2">Sábado - Até 13:00</Badge>
+              )}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-3 gap-2">
-              {timeSlots.map((time) => (
-                <Button
-                  key={time}
-                  variant={selectedTime === time ? "default" : "outline"}
-                  className={`${animations.buttonHover} ${
-                    selectedTime === time ? animations.scaleIn : ''
-                  }`}
-                  onClick={() => setSelectedTime(time)}
-                >
-                  {time}
-                </Button>
-              ))}
-            </div>
+            {timeSlots.length === 0 ? (
+              <p className="text-center text-gray-500 py-8">
+                {selectedDate?.getDay() === 0 ? 'Não funcionamos aos domingos' : 'Selecione uma data para ver os horários'}
+              </p>
+            ) : (
+              <div className="grid grid-cols-3 gap-2 max-h-64 overflow-y-auto">
+                {timeSlots.map((time) => (
+                  <Button
+                    key={time}
+                    variant={selectedTime === time ? "default" : "outline"}
+                    className={`${animations.buttonHover} ${
+                      selectedTime === time ? animations.scaleIn : ''
+                    }`}
+                    onClick={() => setSelectedTime(time)}
+                  >
+                    {time}
+                  </Button>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -315,7 +367,7 @@ const AppointmentScheduler = () => {
         </CardContent>
       </Card>
 
-      {/* Seleção de Serviço */}
+      {/* Seleção de Serviço - Lista atualizada */}
       <Card className={`${animations.fadeIn} ${animations.cardHover}`}>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -324,7 +376,7 @@ const AppointmentScheduler = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredServices.map((service) => (
               <Button
                 key={service.id}
