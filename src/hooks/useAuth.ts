@@ -1,4 +1,3 @@
-
 /**
  * Authentication Hook for Sorriso Inteligente PWA
  * Provides authentication state management and user operations
@@ -66,7 +65,7 @@ export const useAuth = (): UseAuthReturn => {
         }
       } catch (err) {
         console.error('useAuth: Auth initialization error:', err);
-        setError(err instanceof Error ? err.message : 'Authentication failed');
+        setError('Erro ao inicializar autenticação');
       } finally {
         console.log('useAuth: Auth initialization complete');
         setLoading(false);
@@ -86,8 +85,10 @@ export const useAuth = (): UseAuthReturn => {
         
         if (event === 'SIGNED_IN') {
           console.log('useAuth: User signed in successfully');
+          setError(null);
         } else if (event === 'SIGNED_OUT') {
           console.log('useAuth: User signed out');
+          setError(null);
         }
         
         setLoading(false);
@@ -113,17 +114,26 @@ export const useAuth = (): UseAuthReturn => {
       
       if (!response.success) {
         console.error('useAuth: Login failed with error:', response.error);
-        setError(response.error || 'Login failed');
+        let errorMessage = 'Erro ao fazer login';
+        
+        if (response.error?.includes('Invalid login credentials')) {
+          errorMessage = 'Email ou senha inválidos';
+        } else if (response.error?.includes('Load failed')) {
+          errorMessage = 'Erro de conexão. Verifique sua internet e tente novamente.';
+        }
+        
+        setError(errorMessage);
       } else {
         console.log('useAuth: Login successful in hook');
+        setError(null);
       }
       
       return response;
     } catch (err) {
       console.error('useAuth: Login error:', err);
-      const error = err instanceof Error ? err.message : 'Login failed';
-      setError(error);
-      return { success: false, error };
+      const errorMessage = 'Erro de conexão. Verifique sua internet e tente novamente.';
+      setError(errorMessage);
+      return { success: false, error: errorMessage };
     } finally {
       console.log('useAuth: Login process complete, setting loading to false');
       setLoading(false);
@@ -147,15 +157,25 @@ export const useAuth = (): UseAuthReturn => {
       console.log('useAuth: Registration response:', response);
       
       if (!response.success) {
-        setError(response.error || 'Registration failed');
+        let errorMessage = 'Erro ao criar conta';
+        
+        if (response.error?.includes('User already registered')) {
+          errorMessage = 'Este email já está cadastrado';
+        } else if (response.error?.includes('Load failed')) {
+          errorMessage = 'Erro de conexão. Verifique sua internet e tente novamente.';
+        }
+        
+        setError(errorMessage);
+      } else {
+        setError(null);
       }
       
       return response;
     } catch (err) {
       console.error('useAuth: Registration error:', err);
-      const error = err instanceof Error ? err.message : 'Registration failed';
-      setError(error);
-      return { success: false, error };
+      const errorMessage = 'Erro de conexão. Verifique sua internet e tente novamente.';
+      setError(errorMessage);
+      return { success: false, error: errorMessage };
     } finally {
       setLoading(false);
     }
@@ -170,7 +190,7 @@ export const useAuth = (): UseAuthReturn => {
       const response = await AuthService.logout();
       
       if (!response.success) {
-        setError(response.error || 'Logout failed');
+        setError(response.error || 'Erro ao sair');
       } else {
         setUser(null);
         setSession(null);
@@ -178,7 +198,7 @@ export const useAuth = (): UseAuthReturn => {
       
       return response;
     } catch (err) {
-      const error = err instanceof Error ? err.message : 'Logout failed';
+      const error = err instanceof Error ? err.message : 'Erro ao sair';
       setError(error);
       return { success: false, error };
     } finally {
@@ -194,12 +214,12 @@ export const useAuth = (): UseAuthReturn => {
       const response = await AuthService.resetPassword(email);
       
       if (!response.success) {
-        setError(response.error || 'Password reset failed');
+        setError(response.error || 'Erro ao redefinir senha');
       }
       
       return response;
     } catch (err) {
-      const error = err instanceof Error ? err.message : 'Password reset failed';
+      const error = err instanceof Error ? err.message : 'Erro ao redefinir senha';
       setError(error);
       return { success: false, error };
     }
@@ -213,12 +233,12 @@ export const useAuth = (): UseAuthReturn => {
       const response = await AuthService.updatePassword(newPassword);
       
       if (!response.success) {
-        setError(response.error || 'Password update failed');
+        setError(response.error || 'Erro ao atualizar senha');
       }
       
       return response;
     } catch (err) {
-      const error = err instanceof Error ? err.message : 'Password update failed';
+      const error = err instanceof Error ? err.message : 'Erro ao atualizar senha';
       setError(error);
       return { success: false, error };
     }
