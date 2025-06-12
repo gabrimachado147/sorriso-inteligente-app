@@ -1,30 +1,21 @@
-// Supabase service for managing appointments
+
+// Service for managing chat appointments using existing tables
 import { supabase } from '../../integrations/supabase/client'
-import type { 
-  Appointment, 
-  AppointmentInsert, 
-  AppointmentUpdate,
-  Database 
-} from '../../integrations/supabase/types'
+import type { Tables, TablesInsert, TablesUpdate } from '../../integrations/supabase/types'
 
 export class AppointmentService {
   /**
-   * Create a new appointment
+   * Create a new lead entry (using leads_whatsapp_senhor_sorriso table)
    */
-  static async create(appointment: AppointmentInsert): Promise<Appointment> {
+  static async createLead(lead: TablesInsert<'leads_whatsapp_senhor_sorriso'>): Promise<Tables<'leads_whatsapp_senhor_sorriso'>> {
     const { data, error } = await supabase
-      .from('appointments')
-      .insert(appointment)
-      .select(`
-        *,
-        clinic:clinics(*),
-        dentist:dentists(*),
-        service:services(*)
-      `)
+      .from('leads_whatsapp_senhor_sorriso')
+      .insert(lead)
+      .select()
       .single()
 
     if (error) {
-      console.error('Error creating appointment:', error)
+      console.error('Error creating lead:', error)
       throw new Error(error.message)
     }
 
@@ -32,46 +23,22 @@ export class AppointmentService {
   }
 
   /**
-   * Get user appointments
+   * Get user leads
    */
-  static async getUserAppointments(
-    userId: string, 
-    options?: {
-      status?: string[]
-      limit?: number
-      upcoming?: boolean
-    }
-  ): Promise<Appointment[]> {
+  static async getUserLeads(phone?: string): Promise<Tables<'leads_whatsapp_senhor_sorriso'>[]> {
     let query = supabase
-      .from('appointments')
-      .select(`
-        *,
-        clinic:clinics(id, name, address, phone, whatsapp),
-        dentist:dentists(id, full_name, specialties, photo_url),
-        service:services(id, name, duration, price)
-      `)
-      .eq('patient_id', userId)
+      .from('leads_whatsapp_senhor_sorriso')
+      .select('*')
+      .order('created_at', { ascending: false })
 
-    if (options?.status) {
-      query = query.in('status', options.status as any)
-    }
-
-    if (options?.upcoming) {
-      const today = new Date().toISOString().split('T')[0]
-      query = query.gte('appointment_date', today)
-    }
-
-    query = query.order('appointment_date', { ascending: true })
-                 .order('appointment_time', { ascending: true })
-
-    if (options?.limit) {
-      query = query.limit(options.limit)
+    if (phone) {
+      query = query.or(`phone.eq.${phone},number.eq.${phone}`)
     }
 
     const { data, error } = await query
 
     if (error) {
-      console.error('Error fetching user appointments:', error)
+      console.error('Error fetching user leads:', error)
       throw new Error(error.message)
     }
 
@@ -79,57 +46,21 @@ export class AppointmentService {
   }
 
   /**
-   * Get clinic appointments for a specific date
+   * Update lead
    */
-  static async getClinicAppointments(
-    clinicId: string, 
-    date: string
-  ): Promise<Appointment[]> {
+  static async updateLead(
+    leadId: number, 
+    updates: TablesUpdate<'leads_whatsapp_senhor_sorriso'>
+  ): Promise<Tables<'leads_whatsapp_senhor_sorriso'>> {
     const { data, error } = await supabase
-      .from('appointments')
-      .select(`
-        *,
-        patient:users(id, full_name, phone),
-        dentist:dentists(id, full_name),
-        service:services(id, name, duration)
-      `)
-      .eq('clinic_id', clinicId)
-      .eq('appointment_date', date)
-      .in('status', ['scheduled', 'confirmed', 'in_progress'])
-      .order('appointment_time', { ascending: true })
-
-    if (error) {
-      console.error('Error fetching clinic appointments:', error)
-      throw new Error(error.message)
-    }
-
-    return data || []
-  }
-
-  /**
-   * Update appointment
-   */
-  static async update(
-    appointmentId: string, 
-    updates: AppointmentUpdate
-  ): Promise<Appointment> {
-    const { data, error } = await supabase
-      .from('appointments')
-      .update({
-        ...updates,
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', appointmentId)
-      .select(`
-        *,
-        clinic:clinics(*),
-        dentist:dentists(*),
-        service:services(*)
-      `)
+      .from('leads_whatsapp_senhor_sorriso')
+      .update(updates)
+      .eq('id', leadId)
+      .select()
       .single()
 
     if (error) {
-      console.error('Error updating appointment:', error)
+      console.error('Error updating lead:', error)
       throw new Error(error.message)
     }
 
@@ -137,188 +68,127 @@ export class AppointmentService {
   }
 
   /**
-   * Cancel appointment
+   * Get lead statistics
    */
-  static async cancel(
-    appointmentId: string, 
-    reason?: string
-  ): Promise<Appointment> {
-    return this.update(appointmentId, {
-      status: 'cancelled',
-      notes: reason ? `Cancelled: ${reason}` : 'Cancelled'
-    })
-  }
-
-  /**
-   * Confirm appointment
-   */
-  static async confirm(appointmentId: string): Promise<Appointment> {
-    return this.update(appointmentId, {
-      status: 'confirmed'
-    })
-  }
-
-  /**
-   * Get available time slots for a clinic/dentist
-   */
-  static async getAvailableSlots(
-    clinicId: string,
-    date: string,
-    dentistId?: string,
-    duration: number = 60
-  ): Promise<string[]> {
-    // First get existing appointments for the date
-    let query = supabase
-      .from('appointments')
-      .select('appointment_date, duration_minutes')
-      .eq('clinic_id', clinicId)
-      .like('appointment_date', `${date}%`)
-      .in('status', ['scheduled', 'confirmed', 'in_progress'])
-
-    if (dentistId) {
-      query = query.eq('dentist_id', dentistId)
-    }
-
-    const { data: existingAppointments, error } = await query
-
-    if (error) {
-      console.error('Error fetching existing appointments:', error)
-      throw new Error(error.message)
-    }
-
-    // Get clinic working hours for the day
-    const { data: clinic, error: clinicError } = await supabase
-      .from('clinics')
-      .select('opening_hours')
-      .eq('id', clinicId)
-      .single()
-
-    if (clinicError) {
-      console.error('Error fetching clinic:', clinicError)
-      throw new Error(clinicError.message)
-    }
-
-    // Generate available slots based on working hours and existing appointments
-    const dayOfWeek = new Date(date).toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase()
-    const workingHours = clinic.opening_hours as any
-    
-    if (!workingHours || !workingHours[dayOfWeek]) {
-      return [] // Clinic closed on this day
-    }
-
-    const openTime = workingHours[dayOfWeek].open
-    const closeTime = workingHours[dayOfWeek].close
-    
-    // Generate time slots
-    const slots: string[] = []
-    const start = new Date(`${date}T${openTime}`)
-    const end = new Date(`${date}T${closeTime}`)
-    
-    for (let time = start; time < end; time.setMinutes(time.getMinutes() + duration)) {
-      const timeStr = time.toTimeString().slice(0, 5)
-      
-      // Check if this slot conflicts with existing appointments
-      const hasConflict = existingAppointments?.some(apt => {
-        const aptStart = new Date(apt.appointment_date)
-        const aptDuration = apt.duration_minutes || 60
-        const aptEnd = new Date(aptStart.getTime() + (aptDuration * 60000))
-        const slotStart = new Date(`${date}T${timeStr}`)
-        const slotEnd = new Date(slotStart.getTime() + (duration * 60000))
-        
-        return (slotStart < aptEnd && slotEnd > aptStart)
-      })
-      
-      if (!hasConflict) {
-        slots.push(timeStr)
-      }
-    }
-    
-    return slots
-  }
-
-  /**
-   * Send reminder notifications for upcoming appointments
-   */
-  static async sendReminders(): Promise<void> {
-    const tomorrow = new Date()
-    tomorrow.setDate(tomorrow.getDate() + 1)
-    const tomorrowStr = tomorrow.toISOString().split('T')[0]
-
-    const { data: appointments, error } = await supabase
-      .from('appointments')
-      .select(`
-        *,
-        patient:users(full_name, email),
-        clinic:clinics(name, address, phone),
-        service:services(name)
-      `)
-      .eq('appointment_date', tomorrowStr)
-      .eq('status', 'confirmed')
-      .is('reminder_sent_at', null)
-
-    if (error) {
-      console.error('Error fetching appointments for reminders:', error)
-      return
-    }
-
-    if (!appointments?.length) {
-      console.log('No appointments need reminders')
-      return
-    }
-
-    // Send reminders (this would integrate with your notification service)
-    for (const appointment of appointments) {
-      try {
-        // Here you would call your notification service
-        console.log(`Sending reminder for appointment ${appointment.id}`)
-        
-        // Note: reminder tracking would need to be added to the database schema
-        // await supabase.from('appointments').update({ reminder_sent_at: new Date().toISOString() }).eq('id', appointment.id)
-          
-      } catch (error) {
-        console.error(`Failed to send reminder for appointment ${appointment.id}:`, error)
-      }
-    }
-  }
-
-  /**
-   * Get appointment statistics
-   */
-  static async getStats(userId?: string): Promise<{
+  static async getStats(): Promise<{
     total: number
-    pending: number
-    confirmed: number
-    completed: number
-    cancelled: number
+    recent: number
   }> {
-    let query = supabase
-      .from('appointments')
-      .select('status')
-
-    if (userId) {
-      query = query.eq('patient_id', userId)
-    }
-
-    const { data, error } = await query
+    const { data, error } = await supabase
+      .from('leads_whatsapp_senhor_sorriso')
+      .select('created_at')
 
     if (error) {
-      console.error('Error fetching appointment stats:', error)
+      console.error('Error fetching lead stats:', error)
       throw new Error(error.message)
     }
 
-    const stats = {
+    const today = new Date()
+    const yesterday = new Date(today)
+    yesterday.setDate(yesterday.getDate() - 1)
+
+    const recent = data?.filter(lead => 
+      new Date(lead.created_at) >= yesterday
+    ).length || 0
+
+    return {
       total: data?.length || 0,
-      pending: 0,
-      confirmed: 0,
-      completed: 0,
-      cancelled: 0
+      recent
+    }
+  }
+
+  /**
+   * Create a contact entry
+   */
+  static async createContact(contact: TablesInsert<'contacts'>): Promise<Tables<'contacts'>> {
+    const { data, error } = await supabase
+      .from('contacts')
+      .insert(contact)
+      .select()
+      .single()
+
+    if (error) {
+      console.error('Error creating contact:', error)
+      throw new Error(error.message)
     }
 
-    data?.forEach(appointment => {
-      stats[appointment.status as keyof typeof stats]++
-    })
+    return data
+  }
 
-    return stats
+  /**
+   * Get contacts
+   */
+  static async getContacts(): Promise<Tables<'contacts'>[]> {
+    const { data, error } = await supabase
+      .from('contacts')
+      .select('*')
+      .order('created_at', { ascending: false })
+
+    if (error) {
+      console.error('Error fetching contacts:', error)
+      throw new Error(error.message)
+    }
+
+    return data || []
+  }
+
+  /**
+   * Update contact
+   */
+  static async updateContact(
+    contactId: string, 
+    updates: TablesUpdate<'contacts'>
+  ): Promise<Tables<'contacts'>> {
+    const { data, error } = await supabase
+      .from('contacts')
+      .update(updates)
+      .eq('id', contactId)
+      .select()
+      .single()
+
+    if (error) {
+      console.error('Error updating contact:', error)
+      throw new Error(error.message)
+    }
+
+    return data
+  }
+
+  /**
+   * Create chat message
+   */
+  static async createChatMessage(message: TablesInsert<'chat_messages'>): Promise<Tables<'chat_messages'>> {
+    const { data, error } = await supabase
+      .from('chat_messages')
+      .insert(message)
+      .select()
+      .single()
+
+    if (error) {
+      console.error('Error creating chat message:', error)
+      throw new Error(error.message)
+    }
+
+    return data
+  }
+
+  /**
+   * Get chat messages for a phone number
+   */
+  static async getChatMessages(phone: string): Promise<Tables<'chat_messages'>[]> {
+    const { data, error } = await supabase
+      .from('chat_messages')
+      .select('*')
+      .eq('phone', phone)
+      .eq('active', true)
+      .order('created_at', { ascending: true })
+
+    if (error) {
+      console.error('Error fetching chat messages:', error)
+      throw new Error(error.message)
+    }
+
+    return data || []
   }
 }
 

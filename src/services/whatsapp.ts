@@ -1,162 +1,71 @@
-
-import { toast } from 'sonner';
-
-const whatsappApiUrl = import.meta.env.VITE_API_BASE_URL;
-const EVOLUTION_API_URL = import.meta.env.VITE_EVOLUTION_API_URL;
-const USER_MESSAGE_WEBHOOK = 'https://n8nwebhook.enigmabot.store/webhook/68db7bec-7f2f-4948-be67-54fd27fb0770';
-
+// WhatsApp webhook service
 export interface WhatsAppMessage {
-  to: string;
-  message: string;
-  sessionId?: string;
+  phone: string
+  message: string
+  name?: string
+  timestamp?: string
 }
 
-export interface AppointmentData {
-  service: string;
-  clinic: string;
-  date: string;
-  time: string;
-  userInfo: {
-    name: string;
-    phone: string;
-    email?: string;
-  };
+export interface WhatsAppWebhookData {
+  phone: string
+  message: string
+  name?: string
+  sessionId?: string
+  threadId?: string
 }
 
-export interface ChatMessage {
-  message: string;
-  sessionId: string;
-  userId?: string;
-  context?: 'appointment' | 'general' | 'emergency';
-}
+export class WhatsAppService {
+  private static readonly WEBHOOK_URL = 'https://n8nwebhook.enigmabot.store/webhook/9598a25e-5915-4fe1-b136-90cbcc05bbe0'
 
-class WhatsAppService {
-  // Enviar mensagem via Evolution API
-  async sendMessage(data: WhatsAppMessage) {
+  /**
+   * Send message data to webhook
+   */
+  static async sendToWebhook(data: WhatsAppWebhookData): Promise<void> {
     try {
-      const response = await fetch(EVOLUTION_API_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          number: data.to,
-          textMessage: {
-            text: data.message
-          }
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error('Erro ao enviar mensagem');
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error('Erro WhatsApp API:', error);
-      throw error;
-    }
-  }
-
-  // Enviar dados da mensagem do usuário para o webhook (sem resposta automática)
-  async sendUserMessage(data: ChatMessage) {
-    try {
-      const response = await fetch(USER_MESSAGE_WEBHOOK, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: data.message,
-          sessionId: data.sessionId,
-          userId: data.userId,
-          context: data.context,
-          timestamp: new Date().toISOString(),
-          source: 'sorriso_inteligente_app'
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error('Erro ao enviar dados para webhook');
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error('Erro webhook:', error);
-      throw error;
-    }
-  }
-
-  // Método mantido para compatibilidade, mas agora apenas envia dados sem retornar resposta
-  async processMessage(data: ChatMessage) {
-    return this.sendUserMessage(data);
-  }
-
-  // Agendar consulta
-  async scheduleAppointment(data: AppointmentData) {
-    try {
-      const response = await fetch(`${whatsappApiUrl}/appointments`, {
+      console.log('Sending data to webhook:', data)
+      
+      const response = await fetch(this.WEBHOOK_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data)
-      });
+      })
 
       if (!response.ok) {
-        throw new Error('Erro ao agendar consulta');
+        throw new Error(`Webhook request failed: ${response.status} ${response.statusText}`)
       }
 
-      return await response.json();
+      console.log('Data sent to webhook successfully')
     } catch (error) {
-      console.error('Erro API agendamento:', error);
-      throw error;
+      console.error('Error sending data to webhook:', error)
+      throw error
     }
   }
 
-  // Buscar clínicas
-  async getClinics(filters?: { city?: string; service?: string }) {
-    try {
-      const params = new URLSearchParams();
-      if (filters?.city) params.append('city', filters.city);
-      if (filters?.service) params.append('service', filters.service);
-
-      const response = await fetch(`${whatsappApiUrl}/clinics?${params}`, {
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error('Erro ao buscar clínicas');
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error('Erro API clínicas:', error);
-      throw error;
+  /**
+   * Process incoming WhatsApp message
+   */
+  static async processMessage(message: WhatsAppMessage): Promise<void> {
+    const webhookData: WhatsAppWebhookData = {
+      phone: message.phone,
+      message: message.message,
+      name: message.name,
+      sessionId: `session_${message.phone}_${Date.now()}`,
+      threadId: `thread_${message.phone}_${Date.now()}`
     }
+
+    await this.sendToWebhook(webhookData)
   }
 
-  // Buscar horários disponíveis
-  async getAvailableSlots(clinicId: string, date: string) {
-    try {
-      const response = await fetch(`${whatsappApiUrl}/clinics/${clinicId}/slots?date=${date}`, {
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error('Erro ao buscar horários');
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error('Erro API horários:', error);
-      throw error;
-    }
+  /**
+   * Send response back to WhatsApp (placeholder for actual implementation)
+   */
+  static async sendResponse(phone: string, message: string): Promise<void> {
+    console.log(`Sending response to ${phone}: ${message}`)
+    // This would integrate with actual WhatsApp API
+    // For now, it's just a placeholder
   }
 }
 
-export const whatsappService = new WhatsAppService();
+export const whatsappService = WhatsAppService

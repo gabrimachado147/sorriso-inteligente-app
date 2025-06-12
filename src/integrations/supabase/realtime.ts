@@ -1,11 +1,7 @@
+
 import { supabase } from './client'
 import type { RealtimeChannel } from '@supabase/supabase-js'
-import type {
-  Appointment,
-  ChatMessage,
-  Review,
-  SyncQueueItem
-} from './types'
+import type { Tables } from './types'
 
 export interface RealtimeError {
   message: string
@@ -18,165 +14,29 @@ export interface RealtimeSubscription {
   unsubscribe: () => void
 }
 
-// Subscribe to appointment updates for a specific user
-export function subscribeToUserAppointments(
-  userId: string,
-  callbacks: {
-    onInsert?: (appointment: Appointment) => void
-    onUpdate?: (appointment: Appointment) => void
-    onDelete?: (appointment: Appointment) => void
-    onError?: (error: RealtimeError) => void
-  }
-): RealtimeSubscription {
-  const channel = supabase
-    .channel(`user-appointments-${userId}`)
-    .on(
-      'postgres_changes',
-      {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'appointments',
-        filter: `patient_id=eq.${userId}`
-      },
-      (payload) => {
-        if (callbacks.onInsert) {
-          callbacks.onInsert(payload.new as Appointment)
-        }
-      }
-    )
-    .on(
-      'postgres_changes',
-      {
-        event: 'UPDATE',
-        schema: 'public',
-        table: 'appointments',
-        filter: `patient_id=eq.${userId}`
-      },
-      (payload) => {
-        if (callbacks.onUpdate) {
-          callbacks.onUpdate(payload.new as Appointment)
-        }
-      }
-    )
-    .on(
-      'postgres_changes',
-      {
-        event: 'DELETE',
-        schema: 'public',
-        table: 'appointments',
-        filter: `patient_id=eq.${userId}`
-      },
-      (payload) => {
-        if (callbacks.onDelete) {
-          callbacks.onDelete(payload.old as Appointment)
-        }
-      }
-    )
-    .subscribe((status) => {
-      if (status !== 'SUBSCRIBED' && callbacks.onError) {
-        callbacks.onError({ message: 'Failed to subscribe to appointments' })
-      }
-    })
-
-  return {
-    channel,
-    unsubscribe: () => {
-      supabase.removeChannel(channel)
-    }
-  }
-}
-
-// Subscribe to dentist appointment updates
-export function subscribeToDentistAppointments(
-  dentistId: string,
-  callbacks: {
-    onInsert?: (appointment: Appointment) => void
-    onUpdate?: (appointment: Appointment) => void
-    onDelete?: (appointment: Appointment) => void
-    onError?: (error: RealtimeError) => void
-  }
-): RealtimeSubscription {
-  const channel = supabase
-    .channel(`dentist-appointments-${dentistId}`)
-    .on(
-      'postgres_changes',
-      {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'appointments',
-        filter: `dentist_id=eq.${dentistId}`
-      },
-      (payload) => {
-        if (callbacks.onInsert) {
-          callbacks.onInsert(payload.new as Appointment)
-        }
-      }
-    )
-    .on(
-      'postgres_changes',
-      {
-        event: 'UPDATE',
-        schema: 'public',
-        table: 'appointments',
-        filter: `dentist_id=eq.${dentistId}`
-      },
-      (payload) => {
-        if (callbacks.onUpdate) {
-          callbacks.onUpdate(payload.new as Appointment)
-        }
-      }
-    )
-    .on(
-      'postgres_changes',
-      {
-        event: 'DELETE',
-        schema: 'public',
-        table: 'appointments',
-        filter: `dentist_id=eq.${dentistId}`
-      },
-      (payload) => {
-        if (callbacks.onDelete) {
-          callbacks.onDelete(payload.old as Appointment)
-        }
-      }
-    )
-    .subscribe((status) => {
-      if (status !== 'SUBSCRIBED' && callbacks.onError) {
-        callbacks.onError({ message: 'Failed to subscribe to dentist appointments' })
-      }
-    })
-
-  return {
-    channel,
-    unsubscribe: () => {
-      supabase.removeChannel(channel)
-    }
-  }
-}
-
-// Subscribe to chat messages for a specific session
+// Subscribe to chat messages for a specific phone number
 export function subscribeToChatMessages(
-  sessionId: string,
+  phone: string,
   callbacks: {
-    onInsert?: (message: ChatMessage) => void
-    onUpdate?: (message: ChatMessage) => void
-    onDelete?: (message: ChatMessage) => void
+    onInsert?: (message: Tables<'chat_messages'>) => void
+    onUpdate?: (message: Tables<'chat_messages'>) => void
+    onDelete?: (message: Tables<'chat_messages'>) => void
     onError?: (error: RealtimeError) => void
   }
 ): RealtimeSubscription {
   const channel = supabase
-    .channel(`chat-messages-${sessionId}`)
+    .channel(`chat-messages-${phone}`)
     .on(
       'postgres_changes',
       {
         event: 'INSERT',
         schema: 'public',
         table: 'chat_messages',
-        filter: `session_id=eq.${sessionId}`
+        filter: `phone=eq.${phone}`
       },
       (payload) => {
         if (callbacks.onInsert) {
-          callbacks.onInsert(payload.new as ChatMessage)
+          callbacks.onInsert(payload.new as Tables<'chat_messages'>)
         }
       }
     )
@@ -186,11 +46,11 @@ export function subscribeToChatMessages(
         event: 'UPDATE',
         schema: 'public',
         table: 'chat_messages',
-        filter: `session_id=eq.${sessionId}`
+        filter: `phone=eq.${phone}`
       },
       (payload) => {
         if (callbacks.onUpdate) {
-          callbacks.onUpdate(payload.new as ChatMessage)
+          callbacks.onUpdate(payload.new as Tables<'chat_messages'>)
         }
       }
     )
@@ -200,11 +60,11 @@ export function subscribeToChatMessages(
         event: 'DELETE',
         schema: 'public',
         table: 'chat_messages',
-        filter: `session_id=eq.${sessionId}`
+        filter: `phone=eq.${phone}`
       },
       (payload) => {
         if (callbacks.onDelete) {
-          callbacks.onDelete(payload.old as ChatMessage)
+          callbacks.onDelete(payload.old as Tables<'chat_messages'>)
         }
       }
     )
@@ -222,31 +82,27 @@ export function subscribeToChatMessages(
   }
 }
 
-// Subscribe to new reviews for a dentist or clinic
-export function subscribeToReviews(
-  targetType: 'dentist' | 'clinic',
-  targetId: string,
+// Subscribe to contact updates
+export function subscribeToContacts(
   callbacks: {
-    onInsert?: (review: Review) => void
-    onUpdate?: (review: Review) => void
-    onDelete?: (review: Review) => void
+    onInsert?: (contact: Tables<'contacts'>) => void
+    onUpdate?: (contact: Tables<'contacts'>) => void
+    onDelete?: (contact: Tables<'contacts'>) => void
     onError?: (error: RealtimeError) => void
   }
 ): RealtimeSubscription {
-  const filterColumn = targetType === 'dentist' ? 'dentist_id' : 'clinic_id'
   const channel = supabase
-    .channel(`${targetType}-reviews-${targetId}`)
+    .channel('contacts-changes')
     .on(
       'postgres_changes',
       {
         event: 'INSERT',
         schema: 'public',
-        table: 'reviews',
-        filter: `${filterColumn}=eq.${targetId}`
+        table: 'contacts'
       },
       (payload) => {
         if (callbacks.onInsert) {
-          callbacks.onInsert(payload.new as Review)
+          callbacks.onInsert(payload.new as Tables<'contacts'>)
         }
       }
     )
@@ -255,12 +111,11 @@ export function subscribeToReviews(
       {
         event: 'UPDATE',
         schema: 'public',
-        table: 'reviews',
-        filter: `${filterColumn}=eq.${targetId}`
+        table: 'contacts'
       },
       (payload) => {
         if (callbacks.onUpdate) {
-          callbacks.onUpdate(payload.new as Review)
+          callbacks.onUpdate(payload.new as Tables<'contacts'>)
         }
       }
     )
@@ -269,18 +124,17 @@ export function subscribeToReviews(
       {
         event: 'DELETE',
         schema: 'public',
-        table: 'reviews',
-        filter: `${filterColumn}=eq.${targetId}`
+        table: 'contacts'
       },
       (payload) => {
         if (callbacks.onDelete) {
-          callbacks.onDelete(payload.old as Review)
+          callbacks.onDelete(payload.old as Tables<'contacts'>)
         }
       }
     )
     .subscribe((status) => {
       if (status !== 'SUBSCRIBED' && callbacks.onError) {
-        callbacks.onError({ message: 'Failed to subscribe to reviews' })
+        callbacks.onError({ message: 'Failed to subscribe to contacts' })
       }
     })
 
@@ -292,30 +146,27 @@ export function subscribeToReviews(
   }
 }
 
-// Subscribe to sync queue updates for offline sync
-export function subscribeToSyncQueue(
-  userId: string | null,
+// Subscribe to WhatsApp leads updates
+export function subscribeToWhatsAppLeads(
   callbacks: {
-    onInsert?: (item: SyncQueueItem) => void
-    onUpdate?: (item: SyncQueueItem) => void
-    onDelete?: (item: SyncQueueItem) => void
+    onInsert?: (lead: Tables<'leads_whatsapp_senhor_sorriso'>) => void
+    onUpdate?: (lead: Tables<'leads_whatsapp_senhor_sorriso'>) => void
+    onDelete?: (lead: Tables<'leads_whatsapp_senhor_sorriso'>) => void
     onError?: (error: RealtimeError) => void
   }
 ): RealtimeSubscription {
-  const filter = userId ? `user_id=eq.${userId}` : 'user_id=is.null'
   const channel = supabase
-    .channel(`sync-queue-${userId || 'global'}`)
+    .channel('whatsapp-leads-changes')
     .on(
       'postgres_changes',
       {
         event: 'INSERT',
         schema: 'public',
-        table: 'sync_queue',
-        filter
+        table: 'leads_whatsapp_senhor_sorriso'
       },
       (payload) => {
         if (callbacks.onInsert) {
-          callbacks.onInsert(payload.new as SyncQueueItem)
+          callbacks.onInsert(payload.new as Tables<'leads_whatsapp_senhor_sorriso'>)
         }
       }
     )
@@ -324,12 +175,11 @@ export function subscribeToSyncQueue(
       {
         event: 'UPDATE',
         schema: 'public',
-        table: 'sync_queue',
-        filter
+        table: 'leads_whatsapp_senhor_sorriso'
       },
       (payload) => {
         if (callbacks.onUpdate) {
-          callbacks.onUpdate(payload.new as SyncQueueItem)
+          callbacks.onUpdate(payload.new as Tables<'leads_whatsapp_senhor_sorriso'>)
         }
       }
     )
@@ -338,18 +188,17 @@ export function subscribeToSyncQueue(
       {
         event: 'DELETE',
         schema: 'public',
-        table: 'sync_queue',
-        filter
+        table: 'leads_whatsapp_senhor_sorriso'
       },
       (payload) => {
         if (callbacks.onDelete) {
-          callbacks.onDelete(payload.old as SyncQueueItem)
+          callbacks.onDelete(payload.old as Tables<'leads_whatsapp_senhor_sorriso'>)
         }
       }
     )
     .subscribe((status) => {
       if (status !== 'SUBSCRIBED' && callbacks.onError) {
-        callbacks.onError({ message: 'Failed to subscribe to sync queue' })
+        callbacks.onError({ message: 'Failed to subscribe to WhatsApp leads' })
       }
     })
 
