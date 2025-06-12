@@ -125,18 +125,6 @@ jest.mock('../src/lib/offline-storage', () => ({
   },
 }));
 
-// Mock @testing-library/react-hooks
-jest.mock('@testing-library/react-hooks', () => ({
-  renderHook: jest.fn((callback) => {
-    const result = { current: callback() };
-    return { 
-      result,
-      rerender: jest.fn(),
-      unmount: jest.fn(),
-    };
-  }),
-}));
-
 // Mock usePWA hook directly for testing
 jest.mock('../src/hooks/usePWA', () => ({
   usePWA: jest.fn(() => ({
