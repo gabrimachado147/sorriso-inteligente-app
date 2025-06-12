@@ -1,28 +1,32 @@
 
 import { useState } from 'react';
-import { whatsappService, type ChatMessage } from '@/services/whatsapp';
+import { whatsappService, type ChatMessage, type WhatsAppWebhookResponse } from '@/services/whatsapp';
 import { toastError, toastSuccess } from '@/components/ui/custom-toast';
 
 export const useChatHandler = () => {
   const [loading, setLoading] = useState(false);
 
-  const sendMessage = async (message: string, context?: 'appointment' | 'general' | 'emergency') => {
+  const sendMessage = async (message: string, context?: 'appointment' | 'general' | 'emergency'): Promise<WhatsAppWebhookResponse | null> => {
     setLoading(true);
 
     try {
       const sessionId = `session_${Date.now()}`;
       
-      // Apenas envia os dados para o webhook, sem gerar resposta automática
-      await whatsappService.sendUserMessage({
+      // Envia dados para o webhook e recebe resposta com campo "output"
+      const response = await whatsappService.sendUserMessage({
         message,
         sessionId,
         context: context || 'general'
       });
 
-      // Confirma que a mensagem foi enviada para processamento
+      console.log('Chat response with output:', response);
+
+      // Retorna a resposta estruturada
       return {
-        success: true,
-        message: 'Mensagem enviada para processamento'
+        output: response.output || 'Mensagem processada com sucesso',
+        sessionId,
+        threadId: `thread_${sessionId}`,
+        timestamp: new Date().toISOString()
       };
     } catch (error) {
       toastError(
@@ -40,6 +44,7 @@ export const useChatHandler = () => {
 
     try {
       const response = await whatsappService.sendMessage({ to, message });
+      console.log('WhatsApp response with output:', response);
       return response;
     } catch (error) {
       toastError(

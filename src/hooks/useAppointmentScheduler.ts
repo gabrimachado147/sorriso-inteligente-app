@@ -14,9 +14,11 @@ export const useAppointmentScheduler = () => {
     try {
       const response = await whatsappService.scheduleAppointment(data);
       
+      console.log('Appointment response with output:', response);
+      
       toastSuccess(
         'Consulta Agendada!', 
-        `Agendamento confirmado para ${data.date} às ${data.time}`
+        response.output || `Agendamento confirmado para ${data.date} às ${data.time}`
       );
       
       setSuccess(true);

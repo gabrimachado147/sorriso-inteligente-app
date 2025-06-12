@@ -15,6 +15,13 @@ export interface WhatsAppWebhookData {
   threadId?: string
 }
 
+export interface WhatsAppWebhookResponse {
+  output: string
+  sessionId?: string
+  threadId?: string
+  timestamp?: string
+}
+
 export interface AppointmentData {
   name: string
   phone: string
@@ -35,9 +42,9 @@ export class WhatsAppService {
   private static readonly WEBHOOK_URL = 'https://n8nwebhook.enigmabot.store/webhook/9598a25e-5915-4fe1-b136-90cbcc05bbe0'
 
   /**
-   * Send message data to webhook
+   * Send message data to webhook and receive response
    */
-  static async sendToWebhook(data: WhatsAppWebhookData): Promise<void> {
+  static async sendToWebhook(data: WhatsAppWebhookData): Promise<WhatsAppWebhookResponse> {
     try {
       console.log('Sending data to webhook:', data)
       
@@ -53,7 +60,19 @@ export class WhatsAppService {
         throw new Error(`Webhook request failed: ${response.status} ${response.statusText}`)
       }
 
-      console.log('Data sent to webhook successfully')
+      const result = await response.json()
+      console.log('Webhook response received:', result)
+      
+      // Garantir que a resposta tenha o campo "output"
+      const webhookResponse: WhatsAppWebhookResponse = {
+        output: result.output || result.message || 'Resposta recebida com sucesso',
+        sessionId: result.sessionId || data.sessionId,
+        threadId: result.threadId || data.threadId,
+        timestamp: new Date().toISOString()
+      }
+
+      console.log('Formatted webhook response:', webhookResponse)
+      return webhookResponse
     } catch (error) {
       console.error('Error sending data to webhook:', error)
       throw error
@@ -61,9 +80,9 @@ export class WhatsAppService {
   }
 
   /**
-   * Process incoming WhatsApp message
+   * Process incoming WhatsApp message and return response
    */
-  static async processMessage(message: WhatsAppMessage): Promise<void> {
+  static async processMessage(message: WhatsAppMessage): Promise<WhatsAppWebhookResponse> {
     const webhookData: WhatsAppWebhookData = {
       phone: message.phone,
       message: message.message,
@@ -72,7 +91,7 @@ export class WhatsAppService {
       threadId: `thread_${message.phone}_${Date.now()}`
     }
 
-    await this.sendToWebhook(webhookData)
+    return await this.sendToWebhook(webhookData)
   }
 
   /**
@@ -87,7 +106,7 @@ export class WhatsAppService {
   /**
    * Schedule appointment via webhook
    */
-  static async scheduleAppointment(data: AppointmentData): Promise<{ success: boolean; message: string }> {
+  static async scheduleAppointment(data: AppointmentData): Promise<{ success: boolean; message: string; output?: string }> {
     try {
       const webhookData: WhatsAppWebhookData = {
         phone: data.phone,
@@ -96,11 +115,12 @@ export class WhatsAppService {
         threadId: `thread_appointment_${Date.now()}`
       }
 
-      await this.sendToWebhook(webhookData)
+      const response = await this.sendToWebhook(webhookData)
 
       return {
         success: true,
-        message: 'Appointment scheduled successfully'
+        message: 'Appointment scheduled successfully',
+        output: response.output
       }
     } catch (error) {
       console.error('Error scheduling appointment:', error)
@@ -109,13 +129,13 @@ export class WhatsAppService {
   }
 
   /**
-   * Send user message to webhook for processing
+   * Send user message to webhook for processing and return formatted response
    */
   static async sendUserMessage(data: {
     message: string
     sessionId: string
     context?: string
-  }): Promise<{ success: boolean; message: string }> {
+  }): Promise<{ success: boolean; message: string; output?: string }> {
     try {
       const webhookData: WhatsAppWebhookData = {
         phone: 'user-app', // Identifier for app users vs WhatsApp users
@@ -124,11 +144,12 @@ export class WhatsAppService {
         threadId: `thread_${data.sessionId}`
       }
 
-      await this.sendToWebhook(webhookData)
+      const response = await this.sendToWebhook(webhookData)
 
       return {
         success: true,
-        message: 'Message sent for processing'
+        message: 'Message sent for processing',
+        output: response.output
       }
     } catch (error) {
       console.error('Error sending user message:', error)
@@ -143,8 +164,6 @@ export class WhatsAppService {
     try {
       console.log(`Sending WhatsApp message to ${data.to}: ${data.message}`)
       
-      // For now, this is a placeholder
-      // In a real implementation, this would call the WhatsApp Business API
       const webhookData: WhatsAppWebhookData = {
         phone: data.to,
         message: data.message,
@@ -152,9 +171,13 @@ export class WhatsAppService {
         threadId: `thread_whatsapp_${Date.now()}`
       }
 
-      await this.sendToWebhook(webhookData)
+      const response = await this.sendToWebhook(webhookData)
 
-      return { success: true, messageId: `msg_${Date.now()}` }
+      return { 
+        success: true, 
+        messageId: `msg_${Date.now()}`,
+        output: response.output
+      }
     } catch (error) {
       console.error('Error sending WhatsApp message:', error)
       throw error
