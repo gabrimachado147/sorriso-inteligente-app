@@ -5,13 +5,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/useAuth';
-import { ArrowLeft, Phone, User, Lock } from 'lucide-react';
+import { ArrowLeft, Phone, User, Lock, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toastError, toastSuccess } from '@/components/ui/custom-toast';
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [debugInfo, setDebugInfo] = useState('');
   const [formData, setFormData] = useState({
     nomeCompleto: '',
     telefone: '',
@@ -22,15 +23,11 @@ const AuthPage = () => {
   const navigate = useNavigate();
 
   const handleInputChange = (field: string, value: string) => {
-    console.log('Input change:', field, value);
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   const formatPhone = (phone: string) => {
-    // Remove tudo exceto números
     const numbers = phone.replace(/\D/g, '');
-    
-    // Aplica máscara (11) 99999-9999
     if (numbers.length <= 11) {
       return numbers.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
     }
@@ -43,8 +40,6 @@ const AuthPage = () => {
   };
 
   const validateForm = () => {
-    console.log('Validating form:', formData);
-    
     if (!isLogin && !formData.nomeCompleto.trim()) {
       toastError('Erro', 'Por favor, digite seu nome completo');
       return false;
@@ -72,53 +67,45 @@ const AuthPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    console.log('=== FORM SUBMISSION START ===');
-    console.log('Form submitted:', { isLogin, formData });
-    console.log('Form element:', e.target);
-    console.log('Loading state:', loading);
+    setDebugInfo('Iniciando processo de login...');
     
     if (!validateForm()) {
-      console.log('Form validation failed');
+      setDebugInfo('Validação do formulário falhou');
       return;
     }
 
-    console.log('Form validation passed, proceeding...');
+    setDebugInfo('Formulário validado, processando...');
     setLoading(true);
 
     try {
-      // Converte telefone para email format para compatibilidade com Supabase
       const phoneNumbers = formData.telefone.replace(/\D/g, '');
       const phoneEmail = `${phoneNumbers}@sorriso.app`;
       
-      console.log('Phone email generated:', phoneEmail);
+      setDebugInfo(`Email gerado: ${phoneEmail}`);
 
       if (isLogin) {
-        console.log('=== LOGIN ATTEMPT ===');
-        console.log('About to call login function...');
+        setDebugInfo('Tentando fazer login...');
         
         const result = await login({
           email: phoneEmail,
           password: formData.password
         });
 
-        console.log('Login result received:', result);
+        setDebugInfo(`Resultado do login: ${result.success ? 'Sucesso' : 'Erro'}`);
 
         if (result.success) {
-          console.log('Login successful, showing toast and navigating...');
           toastSuccess('Sucesso', 'Login realizado com sucesso!');
-          
-          // Aguardar um pouco antes de navegar para garantir que o estado foi atualizado
-          console.log('Setting timeout for navigation...');
+          setDebugInfo('Login bem-sucedido, redirecionando...');
           setTimeout(() => {
-            console.log('Executing navigation to home page...');
             navigate('/', { replace: true });
           }, 1500);
         } else {
-          console.error('Login failed with error:', result.error);
+          setDebugInfo(`Erro no login: ${result.error}`);
           toastError('Erro', result.error || 'Erro ao fazer login');
         }
       } else {
-        console.log('=== REGISTRATION ATTEMPT ===');
+        setDebugInfo('Tentando criar conta...');
+        
         const result = await register({
           email: phoneEmail,
           password: formData.password,
@@ -126,32 +113,27 @@ const AuthPage = () => {
           telefone: formData.telefone
         });
 
-        console.log('Registration result received:', result);
+        setDebugInfo(`Resultado do registro: ${result.success ? 'Sucesso' : 'Erro'}`);
 
         if (result.success) {
-          console.log('Registration successful, showing toast and navigating...');
           toastSuccess('Sucesso', 'Cadastro realizado com sucesso!');
+          setDebugInfo('Registro bem-sucedido, redirecionando...');
           setTimeout(() => {
-            console.log('Navigating to home page...');
             navigate('/', { replace: true });
           }, 1500);
         } else {
-          console.error('Registration failed with error:', result.error);
+          setDebugInfo(`Erro no registro: ${result.error}`);
           toastError('Erro', result.error || 'Erro ao criar conta');
         }
       }
     } catch (error) {
-      console.error('=== UNEXPECTED ERROR ===', error);
+      const errorMessage = error instanceof Error ? error.message : 'Erro inesperado';
+      setDebugInfo(`Erro inesperado: ${errorMessage}`);
       toastError('Erro', 'Ocorreu um erro inesperado');
     } finally {
-      console.log('=== FORM SUBMISSION END ===');
-      console.log('Setting loading to false...');
       setLoading(false);
     }
   };
-
-  // Adicionar logs para debug do componente
-  console.log('AuthPage render - Current state:', { isLogin, loading, formData });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/10 to-background flex items-center justify-center p-4">
@@ -159,10 +141,7 @@ const AuthPage = () => {
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => {
-            console.log('Back button clicked, navigating to home');
-            navigate('/');
-          }}
+          onClick={() => navigate('/')}
           className="mb-4"
         >
           <ArrowLeft className="h-5 w-5" />
@@ -188,6 +167,15 @@ const AuthPage = () => {
           </CardHeader>
 
           <CardContent>
+            {debugInfo && (
+              <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+                <div className="flex items-center gap-2 text-blue-700">
+                  <AlertCircle className="h-4 w-4" />
+                  <span className="text-sm">{debugInfo}</span>
+                </div>
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-4">
               {!isLogin && (
                 <div className="space-y-2">
@@ -243,7 +231,6 @@ const AuthPage = () => {
                 type="submit" 
                 className="w-full py-6 text-lg font-semibold"
                 disabled={loading}
-                onClick={() => console.log('Submit button clicked!')}
               >
                 {loading ? 'Aguarde...' : (isLogin ? 'Entrar' : 'Criar Conta')}
               </Button>
@@ -256,8 +243,8 @@ const AuthPage = () => {
               <Button
                 variant="link"
                 onClick={() => {
-                  console.log('Toggle login/register mode');
                   setIsLogin(!isLogin);
+                  setDebugInfo('');
                 }}
                 className="text-primary font-semibold"
               >
