@@ -47,7 +47,16 @@ print_status $? "Testes com cobertura"
 
 # 5. Check Coverage Threshold
 if [ -f "coverage/coverage-summary.json" ]; then
-    COVERAGE=$(node -p "Math.round(JSON.parse(require('fs').readFileSync('coverage/coverage-summary.json', 'utf8')).total.lines.pct)" 2>/dev/null || echo "0")
+    COVERAGE=$(node -e "
+        try {
+            const data = JSON.parse(require('fs').readFileSync('coverage/coverage-summary.json', 'utf8'));
+            const pct = data.total.lines.pct;
+            console.log(Math.round(pct || 0));
+        } catch(e) {
+            console.log(0);
+        }
+    " 2>/dev/null || echo "0")
+    
     if [ "$COVERAGE" -ge 70 ]; then
         print_status 0 "Cobertura de testes: $COVERAGE% (≥70%)"
     else
