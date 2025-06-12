@@ -1,3 +1,4 @@
+
 /**
  * Supabase Integration Example Component
  * Demonstrates how to use authentication and database services
@@ -6,8 +7,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
-import { appointmentService } from '../../services/supabase/appointments';
-import { clinicService } from '../../services/supabase/clinics';
+import { useChatMessages, useContacts, useWhatsAppLeads } from '../../hooks/useSupabase';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Alert, AlertDescription } from '../ui/alert';
@@ -15,7 +15,7 @@ import { Alert, AlertDescription } from '../ui/alert';
 export const SupabaseIntegrationExample: React.FC = () => {
   const {
     user,
-    profile,
+    session,
     loading: authLoading,
     error: authError,
     login,
@@ -24,39 +24,10 @@ export const SupabaseIntegrationExample: React.FC = () => {
     isAuthenticated
   } = useAuth();
 
-  const [appointments, setAppointments] = useState<any[]>([]);
-  const [clinics, setClinics] = useState<any[]>([]);
+  const { contacts, createContact } = useContacts();
+  const { leads, createLead } = useWhatsAppLeads();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  // Load data when user is authenticated
-  useEffect(() => {
-    if (isAuthenticated && user) {
-      loadUserData();
-    }
-  }, [isAuthenticated, user]);
-
-  const loadUserData = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      // Load user appointments
-      if (user?.id) {
-        const userAppointments = await appointmentService.getUserAppointments(user.id);
-        setAppointments(userAppointments);
-      }
-
-      // Load available clinics
-      const availableClinics = await clinicService.getAll();
-      setClinics(availableClinics);
-
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load data');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -90,30 +61,21 @@ export const SupabaseIntegrationExample: React.FC = () => {
     }
   };
 
-  const bookAppointment = async (clinicId: string) => {
-    if (!user) return;
-
+  const createSampleContact = async () => {
     try {
       setLoading(true);
       
-      const appointmentData = {
-        patient_id: user.id,
-        dentist_id: 'default-dentist-id', // This should come from selected dentist
-        clinic_id: clinicId,
-        service_id: 'cleaning-service', // This should come from selected service
-        appointment_date: new Date('2024-12-31T14:00:00').toISOString(),
-        status: 'scheduled' as const,
-        notes: 'Regular checkup appointment'
-      };
-
-      const newAppointment = await appointmentService.create(appointmentData);
+      await createContact.mutateAsync({
+        nome: 'Contato de Exemplo',
+        email: 'exemplo@email.com',
+        telefone: '(11) 99999-9999',
+        empresa: 'Empresa Exemplo',
+        objetivo: 'Teste de integração'
+      });
       
-      if (newAppointment) {
-        setAppointments(prev => [...prev, newAppointment]);
-        alert('Appointment booked successfully!');
-      }
+      alert('Contato criado com sucesso!');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to book appointment');
+      setError(err instanceof Error ? err.message : 'Failed to create contact');
     } finally {
       setLoading(false);
     }
@@ -236,7 +198,7 @@ export const SupabaseIntegrationExample: React.FC = () => {
       <Card>
         <CardHeader>
           <CardTitle className="flex justify-between items-center">
-            Welcome, {profile?.full_name || user?.email}!
+            Welcome, {user?.email}!
             <Button onClick={logout} variant="outline" size="sm">
               Logout
             </Button>
@@ -245,16 +207,16 @@ export const SupabaseIntegrationExample: React.FC = () => {
         <CardContent>
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <strong>Email:</strong> {profile?.email}
+              <strong>Email:</strong> {user?.email}
             </div>
             <div>
-              <strong>Phone:</strong> {profile?.phone || 'Not provided'}
+              <strong>User ID:</strong> {user?.id}
             </div>
             <div>
-              <strong>User Type:</strong> Patient
+              <strong>User Type:</strong> Authenticated User
             </div>
             <div>
-              <strong>Member Since:</strong> {profile?.created_at ? new Date(profile.created_at).toLocaleDateString() : 'N/A'}
+              <strong>Session Active:</strong> {session ? 'Yes' : 'No'}
             </div>
           </div>
         </CardContent>
@@ -266,75 +228,42 @@ export const SupabaseIntegrationExample: React.FC = () => {
         </Alert>
       )}
 
-      {/* Available Clinics */}
+      {/* Contacts Management */}
       <Card>
         <CardHeader>
-          <CardTitle>Available Clinics</CardTitle>
+          <CardTitle>Contacts ({contacts?.length || 0})</CardTitle>
         </CardHeader>
         <CardContent>
-          {loading ? (
-            <div className="text-center">Loading clinics...</div>
-          ) : clinics.length > 0 ? (
+          <div className="flex justify-between items-center mb-4">
+            <p className="text-sm text-gray-600">
+              Manage your contacts in the database
+            </p>
+            <Button 
+              onClick={createSampleContact}
+              disabled={loading}
+            >
+              Create Sample Contact
+            </Button>
+          </div>
+          
+          {contacts && contacts.length > 0 ? (
             <div className="grid gap-4">
-              {clinics.map((clinic) => (
-                <div key={clinic.id} className="p-4 border rounded-lg">
+              {contacts.slice(0, 5).map((contact) => (
+                <div key={contact.id} className="p-4 border rounded-lg">
                   <div className="flex justify-between items-start">
                     <div>
-                      <h3 className="font-semibold">{clinic.name}</h3>
-                      <p className="text-sm text-gray-600">{clinic.address}</p>
-                      <p className="text-sm text-gray-600">{clinic.city}, {clinic.state}</p>
-                      <p className="text-sm">
-                        ⭐ {clinic.rating} ({clinic.total_reviews} reviews)
-                      </p>
-                    </div>
-                    <Button 
-                      onClick={() => bookAppointment(clinic.id)}
-                      disabled={loading}
-                    >
-                      Book Appointment
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center text-gray-500">
-              No clinics available. Make sure you've loaded the sample data.
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* User Appointments */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Your Appointments</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {appointments.length > 0 ? (
-            <div className="space-y-4">
-              {appointments.map((appointment) => (
-                <div key={appointment.id} className="p-4 border rounded-lg">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <p className="font-semibold">
-                        {appointment.appointment_date} at {appointment.appointment_time}
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        Status: <span className="capitalize">{appointment.status}</span>
-                      </p>
-                      {appointment.notes && (
-                        <p className="text-sm text-gray-600">
-                          Notes: {appointment.notes}
-                        </p>
+                      <h3 className="font-semibold">{contact.nome}</h3>
+                      <p className="text-sm text-gray-600">{contact.email}</p>
+                      <p className="text-sm text-gray-600">{contact.telefone}</p>
+                      {contact.empresa && (
+                        <p className="text-sm text-gray-500">Company: {contact.empresa}</p>
                       )}
                     </div>
                     <span className={`px-2 py-1 rounded text-xs ${
-                      appointment.status === 'confirmed' ? 'bg-green-100 text-green-800' :
-                      appointment.status === 'completed' ? 'bg-blue-100 text-blue-800' :
+                      contact.stage === 'complete' ? 'bg-green-100 text-green-800' :
                       'bg-gray-100 text-gray-800'
                     }`}>
-                      {appointment.status}
+                      {contact.stage}
                     </span>
                   </div>
                 </div>
@@ -342,7 +271,43 @@ export const SupabaseIntegrationExample: React.FC = () => {
             </div>
           ) : (
             <div className="text-center text-gray-500">
-              No appointments yet. Book your first appointment above!
+              No contacts yet. Create your first contact above!
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* WhatsApp Leads */}
+      <Card>
+        <CardHeader>
+          <CardTitle>WhatsApp Leads ({leads?.length || 0})</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {leads && leads.length > 0 ? (
+            <div className="space-y-4">
+              {leads.slice(0, 3).map((lead) => (
+                <div key={lead.id} className="p-4 border rounded-lg">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <p className="font-semibold">
+                        {lead.name || lead.lead_name || 'Unnamed Lead'}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        Phone: {lead.phone || lead.number || 'N/A'}
+                      </p>
+                      {lead.created_at && (
+                        <p className="text-sm text-gray-500">
+                          Created: {new Date(lead.created_at).toLocaleDateString()}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center text-gray-500">
+              No WhatsApp leads yet.
             </div>
           )}
         </CardContent>
@@ -369,7 +334,7 @@ export const SupabaseIntegrationExample: React.FC = () => {
             </div>
             <div className="flex items-center space-x-2">
               <span className="w-2 h-2 bg-yellow-500 rounded-full"></span>
-              <span>PWA Sync: Ready (not active)</span>
+              <span>Chat System: Active</span>
             </div>
           </div>
         </CardContent>
