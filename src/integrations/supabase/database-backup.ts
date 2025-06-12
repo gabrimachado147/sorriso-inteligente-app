@@ -1,13 +1,6 @@
+
 import { supabase } from './client'
-import type {
-  User, UserInsert, UserUpdate,
-  Clinic, ClinicInsert, ClinicUpdate,
-  Service, ServiceInsert, ServiceUpdate,
-  Dentist, DentistInsert, DentistUpdate,
-  Appointment, AppointmentInsert, AppointmentUpdate,
-  Review, ReviewInsert, ReviewUpdate,
-  ServiceCategory
-} from './types'
+import type { Tables, TablesInsert, TablesUpdate } from './types'
 
 export interface DatabaseError {
   message: string
@@ -26,12 +19,12 @@ export interface DatabaseListResponse<T> {
   count?: number
 }
 
-// User operations
-export const userOperations = {
-  async getAll(): Promise<DatabaseListResponse<User>> {
+// Chat Messages operations
+export const chatMessageOperations = {
+  async getAll(): Promise<DatabaseListResponse<Tables<'chat_messages'>>> {
     try {
       const { data, error, count } = await supabase
-        .from('users')
+        .from('chat_messages')
         .select('*', { count: 'exact' })
 
       if (error) {
@@ -47,10 +40,10 @@ export const userOperations = {
     }
   },
 
-  async getById(id: string): Promise<DatabaseResponse<User>> {
+  async getById(id: number): Promise<DatabaseResponse<Tables<'chat_messages'>>> {
     try {
       const { data, error } = await supabase
-        .from('users')
+        .from('chat_messages')
         .select('*')
         .eq('id', id)
         .single()
@@ -68,10 +61,10 @@ export const userOperations = {
     }
   },
 
-  async create(item: UserInsert): Promise<DatabaseResponse<User>> {
+  async create(item: TablesInsert<'chat_messages'>): Promise<DatabaseResponse<Tables<'chat_messages'>>> {
     try {
       const { data, error } = await supabase
-        .from('users')
+        .from('chat_messages')
         .insert(item)
         .select('*')
         .single()
@@ -84,59 +77,18 @@ export const userOperations = {
     } catch (error) {
       return {
         data: null,
-        error: { message: error instanceof Error ? error.message : 'Unknown error' }
-      }
-    }
-  },
-
-  async update(id: string, updates: UserUpdate): Promise<DatabaseResponse<User>> {
-    try {
-      const { data, error } = await supabase
-        .from('users')
-        .update(updates)
-        .eq('id', id)
-        .select('*')
-        .single()
-
-      if (error) {
-        return { data: null, error: { message: error.message, code: error.code, details: error.details } }
-      }
-
-      return { data, error: null }
-    } catch (error) {
-      return {
-        data: null,
-        error: { message: error instanceof Error ? error.message : 'Unknown error' }
-      }
-    }
-  },
-
-  async delete(id: string): Promise<{ error: DatabaseError | null }> {
-    try {
-      const { error } = await supabase
-        .from('users')
-        .delete()
-        .eq('id', id)
-
-      if (error) {
-        return { error: { message: error.message, code: error.code, details: error.details } }
-      }
-
-      return { error: null }
-    } catch (error) {
-      return {
         error: { message: error instanceof Error ? error.message : 'Unknown error' }
       }
     }
   }
 }
 
-// Appointment operations
-export const appointmentOperations = {
-  async getAll(): Promise<DatabaseListResponse<Appointment>> {
+// Contacts operations
+export const contactOperations = {
+  async getAll(): Promise<DatabaseListResponse<Tables<'contacts'>>> {
     try {
       const { data, error, count } = await supabase
-        .from('appointments')
+        .from('contacts')
         .select('*', { count: 'exact' })
 
       if (error) {
@@ -152,10 +104,10 @@ export const appointmentOperations = {
     }
   },
 
-  async getById(id: string): Promise<DatabaseResponse<Appointment>> {
+  async getById(id: string): Promise<DatabaseResponse<Tables<'contacts'>>> {
     try {
       const { data, error } = await supabase
-        .from('appointments')
+        .from('contacts')
         .select('*')
         .eq('id', id)
         .single()
@@ -173,10 +125,10 @@ export const appointmentOperations = {
     }
   },
 
-  async create(item: AppointmentInsert): Promise<DatabaseResponse<Appointment>> {
+  async create(item: TablesInsert<'contacts'>): Promise<DatabaseResponse<Tables<'contacts'>>> {
     try {
       const { data, error } = await supabase
-        .from('appointments')
+        .from('contacts')
         .insert(item)
         .select('*')
         .single()
@@ -194,10 +146,10 @@ export const appointmentOperations = {
     }
   },
 
-  async update(id: string, updates: AppointmentUpdate): Promise<DatabaseResponse<Appointment>> {
+  async update(id: string, updates: TablesUpdate<'contacts'>): Promise<DatabaseResponse<Tables<'contacts'>>> {
     try {
       const { data, error } = await supabase
-        .from('appointments')
+        .from('contacts')
         .update(updates)
         .eq('id', id)
         .select('*')
@@ -217,13 +169,14 @@ export const appointmentOperations = {
   }
 }
 
-// Service operations
-export const serviceOperations = {
-  async getAll(): Promise<DatabaseListResponse<Service>> {
+// WhatsApp Leads operations
+export const whatsappLeadOperations = {
+  async getAll(): Promise<DatabaseListResponse<Tables<'leads_whatsapp_senhor_sorriso'>>> {
     try {
       const { data, error, count } = await supabase
-        .from('services')
+        .from('leads_whatsapp_senhor_sorriso')
         .select('*', { count: 'exact' })
+        .order('created_at', { ascending: false })
 
       if (error) {
         return { data: null, error: { message: error.message, code: error.code, details: error.details } }
@@ -236,19 +189,60 @@ export const serviceOperations = {
         error: { message: error instanceof Error ? error.message : 'Unknown error' }
       }
     }
+  },
+
+  async getById(id: number): Promise<DatabaseResponse<Tables<'leads_whatsapp_senhor_sorriso'>>> {
+    try {
+      const { data, error } = await supabase
+        .from('leads_whatsapp_senhor_sorriso')
+        .select('*')
+        .eq('id', id)
+        .single()
+
+      if (error) {
+        return { data: null, error: { message: error.message, code: error.code, details: error.details } }
+      }
+
+      return { data, error: null }
+    } catch (error) {
+      return {
+        data: null,
+        error: { message: error instanceof Error ? error.message : 'Unknown error' }
+      }
+    }
+  },
+
+  async create(item: TablesInsert<'leads_whatsapp_senhor_sorriso'>): Promise<DatabaseResponse<Tables<'leads_whatsapp_senhor_sorriso'>>> {
+    try {
+      const { data, error } = await supabase
+        .from('leads_whatsapp_senhor_sorriso')
+        .insert(item)
+        .select('*')
+        .single()
+
+      if (error) {
+        return { data: null, error: { message: error.message, code: error.code, details: error.details } }
+      }
+
+      return { data, error: null }
+    } catch (error) {
+      return {
+        data: null,
+        error: { message: error instanceof Error ? error.message : 'Unknown error' }
+      }
+    }
   }
 }
 
-// Specialized queries for the dental app
-export async function getClinicsWithDetails() {
+// Specialized queries for chat messages by phone
+export async function getChatMessagesByPhone(phone: string) {
   try {
     const { data, error } = await supabase
-      .from('clinics')
-      .select(`
-        *,
-        services (*),
-        dentists (*, users (*))
-      `)
+      .from('chat_messages')
+      .select('*')
+      .eq('phone', phone)
+      .eq('active', true)
+      .order('created_at', { ascending: true })
 
     if (error) {
       return { data: null, error: { message: error.message, code: error.code, details: error.details } }
@@ -263,112 +257,13 @@ export async function getClinicsWithDetails() {
   }
 }
 
-// Get user appointments with related data
-export async function getUserAppointments(userId: string) {
+// Search contacts by name or phone
+export async function searchContacts(query: string) {
   try {
     const { data, error } = await supabase
-      .from('appointments')
-      .select(`
-        *,
-        services (*),
-        dentists (*, users (*)),
-        clinics (*)
-      `)
-      .eq('patient_id', userId)
-      .order('appointment_date', { ascending: true })
-
-    if (error) {
-      return { data: null, error: { message: error.message, code: error.code, details: error.details } }
-    }
-
-    return { data: data || [], error: null }
-  } catch (error) {
-    return {
-      data: null,
-      error: { message: error instanceof Error ? error.message : 'Unknown error' }
-    }
-  }
-}
-
-// Get dentist appointments with related data
-export async function getDentistAppointments(dentistId: string) {
-  try {
-    const { data, error } = await supabase
-      .from('appointments')
-      .select(`
-        *,
-        services (*),
-        users (*),
-        clinics (*)
-      `)
-      .eq('dentist_id', dentistId)
-      .order('appointment_date', { ascending: true })
-
-    if (error) {
-      return { data: null, error: { message: error.message, code: error.code, details: error.details } }
-    }
-
-    return { data: data || [], error: null }
-  } catch (error) {
-    return {
-      data: null,
-      error: { message: error instanceof Error ? error.message : 'Unknown error' }
-    }
-  }
-}
-
-// Get available appointment slots
-export async function getAvailableSlots(dentistId: string, date: string) {
-  try {
-    const slots = []
-    const workingHours = ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00', '17:00']
-    
-    // Get existing appointments for the date - simplified version
-    const { data: appointments, error } = await supabase
-      .from('appointments')
-      .select('appointment_date')
-      .eq('dentist_id', dentistId)
-      .gte('appointment_date', `${date}T00:00:00`)
-      .lt('appointment_date', `${date}T23:59:59`)
-      .neq('status', 'cancelled')
-
-    if (error) {
-      return { data: null, error: { message: error.message, code: error.code, details: error.details } }
-    }
-
-    const bookedTimes = appointments?.map(apt => {
-      const time = apt.appointment_date.split('T')[1]
-      return time ? time.substring(0, 5) : ''
-    }).filter(Boolean) || []
-
-    for (const time of workingHours) {
-      slots.push({
-        time,
-        available: !bookedTimes.includes(time)
-      })
-    }
-
-    return { data: slots, error: null }
-  } catch (error) {
-    return {
-      data: null,
-      error: { message: error instanceof Error ? error.message : 'Unknown error' }
-    }
-  }
-}
-
-// Get reviews for a dentist or clinic
-export async function getReviews(targetType: 'dentist' | 'clinic', targetId: string) {
-  try {
-    const column = targetType === 'dentist' ? 'dentist_id' : 'clinic_id'
-    
-    const { data, error } = await supabase
-      .from('reviews')
-      .select(`
-        *,
-        users (*)
-      `)
-      .eq(column, targetId)
+      .from('contacts')
+      .select('*')
+      .or(`nome.ilike.%${query}%,telefone.ilike.%${query}%`)
       .order('created_at', { ascending: false })
 
     if (error) {
@@ -384,26 +279,14 @@ export async function getReviews(targetType: 'dentist' | 'clinic', targetId: str
   }
 }
 
-// Search services by name or category
-export async function searchServices(query: string, category?: ServiceCategory) {
+// Get recent leads
+export async function getRecentLeads(limit: number = 10) {
   try {
-    let dbQuery = supabase
-      .from('services')
-      .select(`
-        *,
-        clinics (*)
-      `)
-      .eq('is_active', true)
-
-    if (query) {
-      dbQuery = dbQuery.or(`name.ilike.%${query}%,description.ilike.%${query}%`)
-    }
-
-    if (category) {
-      dbQuery = dbQuery.eq('category', category)
-    }
-
-    const { data, error } = await dbQuery.order('name')
+    const { data, error } = await supabase
+      .from('leads_whatsapp_senhor_sorriso')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(limit)
 
     if (error) {
       return { data: null, error: { message: error.message, code: error.code, details: error.details } }

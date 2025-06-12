@@ -1,3 +1,4 @@
+
 /**
  * Authentication Hook for Sorriso Inteligente PWA
  * Provides authentication state management and user operations
@@ -9,14 +10,12 @@ import {
   AuthService, 
   type AuthResponse, 
   type LoginCredentials, 
-  type RegisterCredentials,
-  type UserProfile 
+  type RegisterCredentials
 } from '../services/auth';
 
 interface UseAuthReturn {
   // State
   user: User | null;
-  profile: UserProfile | null;
   session: Session | null;
   loading: boolean;
   error: string | null;
@@ -27,19 +26,14 @@ interface UseAuthReturn {
   logout: () => Promise<AuthResponse>;
   resetPassword: (email: string) => Promise<AuthResponse>;
   updatePassword: (newPassword: string) => Promise<AuthResponse>;
-  updateProfile: (updates: Partial<UserProfile>) => Promise<boolean>;
   clearError: () => void;
   
   // Utilities
   isAuthenticated: boolean;
-  isAdmin: boolean;
-  isDentist: boolean;
-  isPatient: boolean;
 }
 
 export const useAuth = (): UseAuthReturn => {
   const [user, setUser] = useState<User | null>(null);
-  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -56,10 +50,6 @@ export const useAuth = (): UseAuthReturn => {
         
         if (currentSession?.user) {
           setUser(currentSession.user);
-          
-          // Load user profile
-          const userProfile = await AuthService.getUserProfile(currentSession.user.id);
-          setProfile(userProfile);
         }
       } catch (err) {
         console.error('Auth initialization error:', err);
@@ -78,15 +68,6 @@ export const useAuth = (): UseAuthReturn => {
         
         setSession(session);
         setUser(session?.user ?? null);
-        
-        if (session?.user) {
-          // Load user profile
-          const userProfile = await AuthService.getUserProfile(session.user.id);
-          setProfile(userProfile);
-        } else {
-          setProfile(null);
-        }
-        
         setLoading(false);
       }
     );
@@ -152,7 +133,6 @@ export const useAuth = (): UseAuthReturn => {
         setError(response.error || 'Logout failed');
       } else {
         setUser(null);
-        setProfile(null);
         setSession(null);
       }
       
@@ -204,32 +184,6 @@ export const useAuth = (): UseAuthReturn => {
     }
   }, []);
 
-  // Update profile function
-  const updateProfile = useCallback(async (
-    updates: Partial<Omit<UserProfile, 'id' | 'created_at' | 'updated_at'>>
-  ): Promise<boolean> => {
-    if (!user) return false;
-    
-    try {
-      setError(null);
-      
-      const success = await AuthService.updateUserProfile(user.id, updates);
-      
-      if (success && profile) {
-        // Update local profile state
-        setProfile({ ...profile, ...updates });
-      } else if (!success) {
-        setError('Profile update failed');
-      }
-      
-      return success;
-    } catch (err) {
-      const error = err instanceof Error ? err.message : 'Profile update failed';
-      setError(error);
-      return false;
-    }
-  }, [user, profile]);
-
   // Clear error function
   const clearError = useCallback(() => {
     setError(null);
@@ -237,14 +191,10 @@ export const useAuth = (): UseAuthReturn => {
 
   // Computed values
   const isAuthenticated = !!session && !!user;
-  const isAdmin = false; // Remove user_type since it's not in database
-  const isDentist = false; // Remove user_type since it's not in database  
-  const isPatient = true; // Default to patient
 
   return {
     // State
     user,
-    profile,
     session,
     loading,
     error,
@@ -255,14 +205,10 @@ export const useAuth = (): UseAuthReturn => {
     logout,
     resetPassword,
     updatePassword,
-    updateProfile,
     clearError,
     
     // Utilities
-    isAuthenticated,
-    isAdmin,
-    isDentist,
-    isPatient
+    isAuthenticated
   };
 };
 
