@@ -67,7 +67,7 @@ const AuthPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    setDebugInfo('Iniciando processo de login...');
+    setDebugInfo('Iniciando processo...');
     
     if (!validateForm()) {
       setDebugInfo('Validação do formulário falhou');
@@ -91,7 +91,7 @@ const AuthPage = () => {
           password: formData.password
         });
 
-        setDebugInfo(`Resultado do login: ${result.success ? 'Sucesso' : 'Erro'}`);
+        setDebugInfo(`Resultado do login: ${result.success ? 'Sucesso' : 'Erro: ' + result.error}`);
 
         if (result.success) {
           toastSuccess('Sucesso', 'Login realizado com sucesso!');
@@ -100,8 +100,31 @@ const AuthPage = () => {
             navigate('/', { replace: true });
           }, 1500);
         } else {
-          setDebugInfo(`Erro no login: ${result.error}`);
-          toastError('Erro', result.error || 'Erro ao fazer login');
+          // Se o login falhar com "Invalid login credentials", vamos tentar registrar automaticamente
+          if (result.error === 'Invalid login credentials') {
+            setDebugInfo('Usuário não encontrado, tentando criar conta automaticamente...');
+            
+            const registerResult = await register({
+              email: phoneEmail,
+              password: formData.password,
+              nome_completo: formData.nomeCompleto || 'Usuário Sorriso',
+              telefone: formData.telefone
+            });
+
+            if (registerResult.success) {
+              setDebugInfo('Conta criada com sucesso! Fazendo login...');
+              toastSuccess('Sucesso', 'Conta criada e login realizado!');
+              setTimeout(() => {
+                navigate('/', { replace: true });
+              }, 1500);
+            } else {
+              setDebugInfo(`Erro ao criar conta: ${registerResult.error}`);
+              toastError('Erro', 'Erro ao criar conta: ' + registerResult.error);
+            }
+          } else {
+            setDebugInfo(`Erro no login: ${result.error}`);
+            toastError('Erro', result.error || 'Erro ao fazer login');
+          }
         }
       } else {
         setDebugInfo('Tentando criar conta...');
@@ -113,7 +136,7 @@ const AuthPage = () => {
           telefone: formData.telefone
         });
 
-        setDebugInfo(`Resultado do registro: ${result.success ? 'Sucesso' : 'Erro'}`);
+        setDebugInfo(`Resultado do registro: ${result.success ? 'Sucesso' : 'Erro: ' + result.error}`);
 
         if (result.success) {
           toastSuccess('Sucesso', 'Cadastro realizado com sucesso!');
