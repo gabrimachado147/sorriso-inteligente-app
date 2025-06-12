@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -275,7 +274,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         </CardContent>
       </Card>
 
-      {/* Nossos Serviços - ATUALIZADO */}
+      {/* Nossos Serviços - ATUALIZADOS COM TODOS OS SERVIÇOS */}
       <Card className={animations.fadeIn}>
         <CardHeader>
           <CardTitle>Nossos Serviços</CardTitle>
@@ -284,12 +283,12 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {[
               { name: 'Avaliação Gratuita', icon: '🔍', popular: true },
-              { name: 'Limpeza', icon: '🦷', popular: true },
+              { name: 'Limpeza Dental', icon: '🦷', popular: true },
               { name: 'Restauração', icon: '🔧', popular: false },
               { name: 'Ortodontia', icon: '😬', popular: true },
               { name: 'Implantodontia', icon: '⚙️', popular: false },
               { name: 'Estética Dental', icon: '✨', popular: true },
-              { name: 'Próteses Fixa', icon: '🔩', popular: false },
+              { name: 'Próteses Fixas', icon: '🔩', popular: false },
               { name: 'Endodontia', icon: '🩺', popular: false },
               { name: 'Odontopediatria', icon: '👶', popular: false },
               { name: 'Periodontia', icon: '🦷', popular: false },

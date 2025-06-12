@@ -41,12 +41,19 @@ const LocationsPage = () => {
     status: ''
   });
 
+  // Serviços atualizados com todos os tratamentos odontológicos
   const availableServices = [
-    { id: 'Avaliação Gratuita', name: 'Avaliação Gratuita' },
-    { id: 'Limpeza Dental', name: 'Limpeza Dental' },
-    { id: 'Ortodontia', name: 'Ortodontia' },
-    { id: 'Implantodontia', name: 'Implantodontia' },
-    { id: 'Clareamento', name: 'Clareamento' }
+    { id: 'avaliacao-gratuita', name: 'Avaliação Gratuita' },
+    { id: 'limpeza', name: 'Limpeza Dental' },
+    { id: 'restauracao', name: 'Restauração' },
+    { id: 'ortodontia', name: 'Ortodontia' },
+    { id: 'implantodontia', name: 'Implantodontia' },
+    { id: 'estetica-dental', name: 'Estética Dental' },
+    { id: 'proteses-fixas', name: 'Próteses Fixas' },
+    { id: 'endodontia', name: 'Endodontia' },
+    { id: 'odontopediatria', name: 'Odontopediatria' },
+    { id: 'periodontia', name: 'Periodontia' },
+    { id: 'urgencia', name: 'Atendimento de Urgência' }
   ];
 
   // Carregar clínicas reais

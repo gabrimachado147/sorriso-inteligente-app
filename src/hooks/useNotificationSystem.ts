@@ -18,53 +18,16 @@ export const useNotificationSystem = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const { scheduleNotification } = useNotifications();
 
-  // Simular notificações inteligentes baseadas no usuário
+  // Sistema de notificações baseado em eventos reais
   useEffect(() => {
     if (!user) return;
 
-    const generateSmartNotifications = () => {
-      const now = new Date();
-      const newNotifications: Notification[] = [];
-
-      // Lembrete de consulta (simulado)
-      newNotifications.push({
-        id: '1',
-        title: 'Consulta Agendada',
-        message: 'Você tem uma consulta marcada para amanhã às 14:00 com Dr. Silva',
-        type: 'appointment',
-        timestamp: new Date(now.getTime() - 2 * 60 * 60 * 1000), // 2 horas atrás
-        read: false,
-        actionUrl: '/appointments'
-      });
-
-      // Promoção especial
-      newNotifications.push({
-        id: '2',
-        title: 'Oferta Especial! 🎉',
-        message: '30% de desconto em limpeza dental. Válido até sexta-feira!',
-        type: 'promotion',
-        timestamp: new Date(now.getTime() - 24 * 60 * 60 * 1000), // 1 dia atrás
-        read: false,
-        actionUrl: '/appointments'
-      });
-
-      // Lembrete de higiene
-      newNotifications.push({
-        id: '3',
-        title: 'Lembrete de Cuidados 🦷',
-        message: 'Não esqueça de escovar os dentes antes de dormir!',
-        type: 'reminder',
-        timestamp: new Date(now.getTime() - 30 * 60 * 1000), // 30 min atrás
-        read: true
-      });
-
-      setNotifications(newNotifications);
-    };
-
-    // Gerar notificações depois de um pequeno delay
-    const timer = setTimeout(generateSmartNotifications, 1000);
+    // As notificações agora só aparecem quando há eventos reais
+    // Como agendamentos confirmados, lembretes, etc.
     
-    return () => clearTimeout(timer);
+    return () => {
+      // Cleanup se necessário
+    };
   }, [user]);
 
   const markAsRead = (notificationId: string) => {
@@ -89,6 +52,16 @@ export const useNotificationSystem = () => {
     );
   };
 
+  // Função para adicionar notificação real quando necessário
+  const addNotification = (notification: Omit<Notification, 'id' | 'timestamp'>) => {
+    const newNotification: Notification = {
+      ...notification,
+      id: Date.now().toString(),
+      timestamp: new Date()
+    };
+    setNotifications(prev => [newNotification, ...prev]);
+  };
+
   const unreadCount = notifications.filter(n => !n.read).length;
 
   return {
@@ -96,6 +69,7 @@ export const useNotificationSystem = () => {
     unreadCount,
     markAsRead,
     markAllAsRead,
-    removeNotification
+    removeNotification,
+    addNotification
   };
 };
