@@ -23,3 +23,12 @@ dist-ssr
 *.sln
 *.sw?
 .vercel
+
+# Environment files with sensitive data
+.env.codacy
+.env.local
+.env.*.local
+
+# Coverage directory used by tools like istanbul
+coverage
+*.lcov

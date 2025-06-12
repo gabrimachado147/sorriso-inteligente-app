@@ -1,8 +1,15 @@
 export default {
+  preset: 'ts-jest/presets/default-esm',
   testEnvironment: 'jsdom',
+  extensionsToTreatAsEsm: ['.ts', '.tsx'],
+  globals: {
+    'ts-jest': {
+      useESM: true,
+    },
+  },
   roots: ['<rootDir>/tests'],
   testMatch: [
-    '<rootDir>/tests/**/*.test.{js,jsx}',
+    '<rootDir>/tests/**/*.test.{js,jsx,ts,tsx}',
   ],
   collectCoverageFrom: [
     'src/**/*.{ts,tsx}',
@@ -18,7 +25,8 @@ export default {
       statements: 50,
     },
   },
-  coverageReporters: ['text', 'lcov', 'html'],
+  coverageReporters: ['text', 'lcov', 'html', 'json'],
+  coverageDirectory: 'coverage',
   verbose: true,
   transformIgnorePatterns: [
     'node_modules/(?!(@supabase|cross-fetch)/.*)'
@@ -26,5 +34,5 @@ export default {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1'
   },
-  setupFilesAfterEnv: ['<rootDir>/tests/setup.js']
+  setupFilesAfterEnv: ['<rootDir>/tests/setup.ts']
 };

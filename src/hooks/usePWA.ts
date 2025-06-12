@@ -1,6 +1,16 @@
 import { useState, useEffect, useCallback } from 'react';
 import { offlineStorage } from '@/lib/offline-storage';
 
+// Add validation queue interface
+interface ValidationQueueItem {
+  id: string;
+  type: 'chat' | 'appointment' | 'emergency' | 'clinical';
+  data: any;
+  timestamp: number;
+  retryCount: number;
+  status: 'pending' | 'processing' | 'completed' | 'failed';
+}
+
 interface PWAPrompt {
   prompt: () => void;
   outcome: 'accepted' | 'dismissed' | null;
@@ -27,6 +37,12 @@ interface PWAHook {
   getStorageUsage: () => Promise<{ used: number; quota: number; percentage: number }>;
   clearOfflineData: () => Promise<boolean>;
   syncOfflineData: () => Promise<boolean>;
+  // Enhanced validation queue methods
+  validationQueue: ValidationQueueItem[];
+  addToValidationQueue: (type: ValidationQueueItem['type'], data: any) => Promise<string>;
+  processValidationQueue: () => Promise<void>;
+  getValidationQueueStatus: () => { pending: number; processing: number; failed: number };
+  clearValidationQueue: () => Promise<void>;
   getMetrics: () => Promise<{
     install: {
       installPromptShown: number;
@@ -39,6 +55,7 @@ interface PWAHook {
     standalone: boolean;
     updateAvailable: boolean;
     backgroundSyncStatus: 'idle' | 'syncing' | 'failed';
+    validationQueue: { pending: number; processing: number; failed: number };
   }>;
 }
 
@@ -82,6 +99,7 @@ export const usePWA = (): PWAHook => {
     installDismissed: 0
   });
   const [storageUsage, setStorageUsage] = useState({ used: 0, quota: 0, percentage: 0 });
+  const [validationQueue, setValidationQueue] = useState<ValidationQueueItem[]>([]);
 
   // Load metrics from localStorage
   useEffect(() => {
@@ -413,6 +431,73 @@ export const usePWA = (): PWAHook => {
     }
   }, [isOnline]);
 
+  // Validation queue management
+  const addToValidationQueue = useCallback(async (type: ValidationQueueItem['type'], data: any) => {
+    const newItem: ValidationQueueItem = {
+      id: `${Date.now()}-${Math.random()}`,
+      type,
+      data,
+      timestamp: Date.now(),
+      retryCount: 0,
+      status: 'pending'
+    };
+    
+    setValidationQueue(prev => [...prev, newItem]);
+    
+    console.log('[PWA] Added to validation queue:', newItem);
+    
+    return newItem.id;
+  }, []);
+
+  const processValidationQueue = useCallback(async () => {
+    setValidationQueue(prev => {
+      return prev.map(item => ({ ...item, status: 'processing' }));
+    });
+    
+    for (const item of validationQueue) {
+      try {
+        // Simulate processing time
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        console.log('[PWA] Processing validation item:', item);
+        
+        // TODO: Implement actual validation logic here
+        
+        // Mark as completed
+        setValidationQueue(prev => {
+          return prev.map(i => i.id === item.id ? { ...i, status: 'completed' } : i);
+        });
+      } catch (error) {
+        console.error('[PWA] Validation processing error:', error);
+        
+        // Increment retry count and mark as failed if exceeds limit
+        setValidationQueue(prev => {
+          return prev.map(i => {
+            if (i.id === item.id) {
+              const newRetryCount = i.retryCount + 1;
+              const newStatus = newRetryCount >= 3 ? 'failed' : 'pending';
+              return { ...i, retryCount: newRetryCount, status: newStatus };
+            }
+            return i;
+          });
+        });
+      }
+    }
+  }, [validationQueue]);
+
+  const getValidationQueueStatus = useCallback(() => {
+    const pending = validationQueue.filter(item => item.status === 'pending').length;
+    const processing = validationQueue.filter(item => item.status === 'processing').length;
+    const failed = validationQueue.filter(item => item.status === 'failed').length;
+    
+    return { pending, processing, failed };
+  }, [validationQueue]);
+
+  const clearValidationQueue = useCallback(async () => {
+    setValidationQueue([]);
+    console.log('[PWA] Validation queue cleared');
+  }, []);
+
   // Get metrics and observability data
   const getMetrics = useCallback(async () => {
     const storage = await getStorageUsage();
@@ -424,9 +509,10 @@ export const usePWA = (): PWAHook => {
       installed: isInstalled,
       standalone: isStandalone,
       updateAvailable,
-      backgroundSyncStatus
+      backgroundSyncStatus,
+      validationQueue: getValidationQueueStatus()
     };
-  }, [installMetrics, isOnline, isInstalled, isStandalone, updateAvailable, backgroundSyncStatus, getStorageUsage]);
+  }, [installMetrics, isOnline, isInstalled, isStandalone, updateAvailable, backgroundSyncStatus, getStorageUsage, getValidationQueueStatus]);
 
   // Initialize storage monitoring
   useEffect(() => {
@@ -481,6 +567,11 @@ export const usePWA = (): PWAHook => {
     getStorageUsage,
     clearOfflineData,
     syncOfflineData,
+    validationQueue,
+    addToValidationQueue,
+    processValidationQueue,
+    getValidationQueueStatus,
+    clearValidationQueue,
     getMetrics
   };
 };

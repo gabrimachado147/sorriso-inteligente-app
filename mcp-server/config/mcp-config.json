@@ -1,0 +1,137 @@
+{
+  "server": {
+    "name": "codacy",
+    "version": "1.0.0",
+    "description": "Codacy code quality analysis server",
+    "command": "node",
+    "args": ["codacy-mcp-server.js"],
+    "env": {
+      "CODACY_API_TOKEN": "eJzda2H97ZUpnBA47FNt",
+      "CODACY_ORGANIZATION_PROVIDER": "gh",
+      "CODACY_USERNAME": "gabrimachado147",
+      "CODACY_PROJECT_NAME": "sorriso-inteligente-app"
+    }
+  },
+  "tools": [
+    {
+      "name": "analyze_code_quality",
+      "description": "Analisa qualidade do código usando a API da Codacy",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "filePath": {
+            "type": "string",
+            "description": "Caminho do arquivo para análise"
+          },
+          "commitSha": {
+            "type": "string",
+            "description": "SHA do commit (opcional)"
+          }
+        },
+        "required": ["filePath"]
+      }
+    },
+    {
+      "name": "upload_coverage",
+      "description": "Envia relatório de cobertura de testes para a Codacy",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "coverageFile": {
+            "type": "string",
+            "description": "Caminho para o arquivo de cobertura (lcov.info)"
+          },
+          "commitSha": {
+            "type": "string",
+            "description": "SHA do commit"
+          }
+        },
+        "required": ["coverageFile"]
+      }
+    },
+    {
+      "name": "get_project_metrics",
+      "description": "Obtém métricas do projeto da Codacy",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "metric": {
+            "type": "string",
+            "enum": ["quality", "coverage", "duplication", "complexity"],
+            "description": "Tipo de métrica a obter"
+          }
+        }
+      }
+    },
+    {
+      "name": "get_pull_request_analysis",
+      "description": "Analisa pull request com a Codacy",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "pullRequestNumber": {
+            "type": "number",
+            "description": "Número do pull request"
+          }
+        },
+        "required": ["pullRequestNumber"]
+      }
+    },
+    {
+      "name": "configure_quality_gates",
+      "description": "Configura quality gates do projeto",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "coverageThreshold": {
+            "type": "number",
+            "description": "Threshold mínimo de cobertura (%)"
+          },
+          "qualityGrade": {
+            "type": "string",
+            "enum": ["A", "B", "C", "D"],
+            "description": "Nota mínima de qualidade"
+          }
+        }
+      }
+    }
+  ],
+  "examples": [
+    {
+      "name": "Analisar arquivo TypeScript",
+      "tool": "analyze_code_quality",
+      "input": {
+        "filePath": "src/components/App.tsx"
+      }
+    },
+    {
+      "name": "Upload de cobertura",
+      "tool": "upload_coverage",
+      "input": {
+        "coverageFile": "coverage/lcov.info"
+      }
+    },
+    {
+      "name": "Obter métricas de cobertura",
+      "tool": "get_project_metrics",
+      "input": {
+        "metric": "coverage"
+      }
+    },
+    {
+      "name": "Analisar Pull Request",
+      "tool": "get_pull_request_analysis",
+      "input": {
+        "pullRequestNumber": 42
+      }
+    },
+    {
+      "name": "Configurar quality gates",
+      "tool": "configure_quality_gates",
+      "input": {
+        "coverageThreshold": 80,
+        "qualityGrade": "B"
+      }
+    }
+  ]
+}
