@@ -1,9 +1,10 @@
+
 /**
  * Authentication Hook for Sorriso Inteligente PWA
  * Provides authentication state management and user operations
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { 
   AuthService, 
