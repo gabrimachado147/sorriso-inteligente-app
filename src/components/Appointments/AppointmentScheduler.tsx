@@ -2,18 +2,21 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Calendar } from '@/components/ui/calendar';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
 import { Filters, FilterState } from '@/components/ui/filters';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { EnhancedSkeleton } from '@/components/ui/enhanced-skeleton';
-import { toastSuccess, toastError, toastAppointment } from '@/components/ui/custom-toast';
-import { Calendar as CalendarIcon, Clock, MapPin, User, Stethoscope } from 'lucide-react';
+import { toastError, toastAppointment } from '@/components/ui/custom-toast';
+import { Calendar as CalendarIcon } from 'lucide-react';
 import { animations } from '@/lib/animations';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { apiService } from '@/services/api';
+import { DateSelector } from './DateSelector';
+import { TimeSelector } from './TimeSelector';
+import { ClinicSelector } from './ClinicSelector';
+import { ServiceSelector } from './ServiceSelector';
+import { AppointmentSummary } from './AppointmentSummary';
 
 interface Appointment {
   id: number;
@@ -27,39 +30,14 @@ interface Appointment {
 interface Clinic {
   id: string;
   name: string;
+  city: string;
+  state: string;
 }
 
 interface Service {
   id: string;
   name: string;
 }
-
-const mockAppointments: Appointment[] = [
-  {
-    id: 1,
-    service: 'Limpeza',
-    date: '10/07/2024',
-    time: '10:00',
-    clinic: 'Clínica A',
-    status: 'confirmed',
-  },
-  {
-    id: 2,
-    service: 'Consulta',
-    date: '15/07/2024',
-    time: '14:00',
-    clinic: 'Clínica B',
-    status: 'pending',
-  },
-  {
-    id: 3,
-    service: 'Emergência',
-    date: '20/07/2024',
-    time: '16:00',
-    clinic: 'Clínica C',
-    status: 'cancelled',
-  },
-];
 
 const AppointmentScheduler = () => {
   const navigate = useNavigate();
@@ -83,7 +61,6 @@ const AppointmentScheduler = () => {
 
   const [availableClinics, setAvailableClinics] = useState<Array<{id: string, name: string, city: string, state: string}>>([]);
 
-  // Serviços atualizados conforme a lista fornecida
   const availableServices = [
     { id: 'avaliacao-gratuita', name: 'Avaliação Gratuita' },
     { id: 'limpeza', name: 'Limpeza' },
@@ -97,41 +74,6 @@ const AppointmentScheduler = () => {
     { id: 'periodontia', name: 'Periodontia' },
     { id: 'urgencia', name: 'Atendimento de Urgência' }
   ];
-
-  // Função para gerar horários disponíveis baseado no dia da semana
-  const getAvailableTimeSlots = (date: Date | undefined) => {
-    if (!date) return [];
-    
-    const dayOfWeek = date.getDay(); // 0 = domingo, 1 = segunda, ..., 6 = sábado
-    
-    // Horários base (segunda a sexta): 08:00 às 19:00
-    const weekdaySlots = [
-      '08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
-      '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30',
-      '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00'
-    ];
-    
-    // Horários de sábado: 08:00 às 13:00
-    const saturdaySlots = [
-      '08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
-      '12:00', '12:30', '13:00'
-    ];
-    
-    // Domingo não funciona
-    if (dayOfWeek === 0) {
-      return [];
-    }
-    
-    // Sábado - horário reduzido
-    if (dayOfWeek === 6) {
-      return saturdaySlots;
-    }
-    
-    // Segunda a sexta - horário completo
-    return weekdaySlots;
-  };
-
-  const timeSlots = getAvailableTimeSlots(selectedDate);
 
   // Carregar clínicas reais ao montar o componente
   useEffect(() => {
@@ -265,10 +207,7 @@ const AppointmentScheduler = () => {
 
       {/* Filtros */}
       <Card className={animations.fadeIn}>
-        <CardHeader>
-          <CardTitle className="text-lg">Filtros de Busca</CardTitle>
-        </CardHeader>
-        <CardContent>
+        <CardContent className="p-6">
           <Filters
             filters={filters}
             onFiltersChange={setFilters}
@@ -281,166 +220,39 @@ const AppointmentScheduler = () => {
       </Card>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Seleção de Data - Layout melhorado */}
-        <Card className={`${animations.slideInLeft} ${animations.cardHover}`}>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <CalendarIcon className="h-5 w-5" />
-              Selecionar Data
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="flex justify-center">
-            <Calendar
-              mode="single"
-              selected={selectedDate}
-              onSelect={setSelectedDate}
-              locale={ptBR}
-              disabled={(date) => date < new Date() || date.getDay() === 0} // Desabilita datas passadas e domingos
-              className="rounded-md border w-fit"
-            />
-          </CardContent>
-        </Card>
-
-        {/* Seleção de Horário - Horários atualizados */}
-        <Card className={`${animations.slideInRight} ${animations.cardHover}`}>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Clock className="h-5 w-5" />
-              Horários Disponíveis
-              {selectedDate && selectedDate.getDay() === 6 && (
-                <Badge variant="secondary" className="ml-2">Sábado - Até 13:00</Badge>
-              )}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {timeSlots.length === 0 ? (
-              <p className="text-center text-gray-500 py-8">
-                {selectedDate?.getDay() === 0 ? 'Não funcionamos aos domingos' : 'Selecione uma data para ver os horários'}
-              </p>
-            ) : (
-              <div className="grid grid-cols-3 gap-2 max-h-64 overflow-y-auto">
-                {timeSlots.map((time) => (
-                  <Button
-                    key={time}
-                    variant={selectedTime === time ? "default" : "outline"}
-                    className={`${animations.buttonHover} ${
-                      selectedTime === time ? animations.scaleIn : ''
-                    }`}
-                    onClick={() => setSelectedTime(time)}
-                  >
-                    {time}
-                  </Button>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        <DateSelector 
+          selectedDate={selectedDate}
+          onDateSelect={setSelectedDate}
+        />
+        
+        <TimeSelector
+          selectedDate={selectedDate}
+          selectedTime={selectedTime}
+          onTimeSelect={setSelectedTime}
+        />
       </div>
 
-      {/* Seleção de Clínica */}
-      <Card className={`${animations.fadeIn} ${animations.cardHover}`}>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <MapPin className="h-5 w-5" />
-            Escolher Clínica
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {filteredClinics.map((clinic) => (
-              <Button
-                key={clinic.id}
-                variant={selectedClinic === clinic.id ? "default" : "outline"}
-                className={`h-auto p-4 ${animations.buttonHover} ${
-                  selectedClinic === clinic.id ? animations.scaleIn : ''
-                }`}
-                onClick={() => setSelectedClinic(clinic.id)}
-              >
-                <div className="text-center">
-                  <MapPin className="h-6 w-6 mx-auto mb-2" />
-                  <p className="font-medium">{clinic.name}</p>
-                  <p className="text-xs text-muted-foreground">{clinic.city} - {clinic.state}</p>
-                </div>
-              </Button>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      <ClinicSelector
+        selectedClinic={selectedClinic}
+        onClinicSelect={setSelectedClinic}
+        filteredClinics={filteredClinics}
+      />
 
-      {/* Seleção de Serviço - Lista atualizada */}
-      <Card className={`${animations.fadeIn} ${animations.cardHover}`}>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Stethoscope className="h-5 w-5" />
-            Tipo de Serviço
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredServices.map((service) => (
-              <Button
-                key={service.id}
-                variant={selectedService === service.id ? "default" : "outline"}
-                className={`h-auto p-4 ${animations.buttonHover} ${
-                  selectedService === service.id ? animations.scaleIn : ''
-                }`}
-                onClick={() => setSelectedService(service.id)}
-              >
-                <div className="text-center">
-                  <Stethoscope className="h-6 w-6 mx-auto mb-2" />
-                  <p className="font-medium">{service.name}</p>
-                </div>
-              </Button>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      <ServiceSelector
+        selectedService={selectedService}
+        onServiceSelect={setSelectedService}
+        filteredServices={filteredServices}
+      />
 
-      {/* Resumo e Confirmação */}
-      {(selectedDate || selectedTime || selectedClinic || selectedService) && (
-        <Card className={`${animations.scaleIn} border-primary/20 bg-primary/5`}>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-primary">
-              <User className="h-5 w-5" />
-              Resumo do Agendamento
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {selectedDate && (
-              <div className="flex items-center gap-2">
-                <CalendarIcon className="h-4 w-4 text-muted-foreground" />
-                <span>Data: {format(selectedDate, 'dd/MM/yyyy', { locale: ptBR })}</span>
-              </div>
-            )}
-            {selectedTime && (
-              <div className="flex items-center gap-2">
-                <Clock className="h-4 w-4 text-muted-foreground" />
-                <span>Horário: {selectedTime}</span>
-              </div>
-            )}
-            {selectedClinic && (
-              <div className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-muted-foreground" />
-                <span>Clínica: {availableClinics.find(c => c.id === selectedClinic)?.name}</span>
-              </div>
-            )}
-            {selectedService && (
-              <div className="flex items-center gap-2">
-                <Stethoscope className="h-4 w-4 text-muted-foreground" />
-                <span>Serviço: {availableServices.find(s => s.id === selectedService)?.name}</span>
-              </div>
-            )}
-            
-            <Button 
-              onClick={handleScheduleAppointment}
-              className={`w-full mt-4 ${animations.buttonHover}`}
-              disabled={!selectedDate || !selectedTime || !selectedClinic || !selectedService}
-            >
-              Confirmar Agendamento
-            </Button>
-          </CardContent>
-        </Card>
-      )}
+      <AppointmentSummary
+        selectedDate={selectedDate}
+        selectedTime={selectedTime}
+        selectedClinic={selectedClinic}
+        selectedService={selectedService}
+        availableClinics={availableClinics}
+        availableServices={availableServices}
+        onConfirm={handleScheduleAppointment}
+      />
 
       {/* Modal de Confirmação */}
       <ConfirmationModal
