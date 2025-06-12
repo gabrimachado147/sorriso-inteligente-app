@@ -93,26 +93,49 @@ const ChatBot = () => {
     setMessages(prev => [...prev, userMessage]);
     setInputValue('');
 
-    // Enviar dados para o webhook sem gerar resposta automática
+    // Enviar dados para o webhook e aguardar resposta
     try {
       const context = text.toLowerCase().includes('agendar') ? 'appointment' : 
                     text.toLowerCase().includes('emergência') ? 'emergency' : 'general';
       
-      await sendMessage(text, context);
+      const response = await sendMessage(text, context);
       
-      // Adicionar mensagem informativa de que a mensagem foi enviada
-      const confirmationMessage: Message = {
+      // Verificar se há uma resposta do webhook
+      if (response && response.output) {
+        const botMessage: Message = {
+          id: Date.now() + 1,
+          text: response.output,
+          sender: 'bot',
+          timestamp: new Date(),
+          type: context as any
+        };
+        
+        setMessages(prev => [...prev, botMessage]);
+      } else {
+        // Caso não haja resposta específica, mostrar mensagem padrão
+        const confirmationMessage: Message = {
+          id: Date.now() + 1,
+          text: "Sua mensagem foi enviada para nossa equipe. Em breve você receberá uma resposta.",
+          sender: 'bot',
+          timestamp: new Date(),
+          type: 'general'
+        };
+        
+        setMessages(prev => [...prev, confirmationMessage]);
+      }
+      
+    } catch (error) {
+      console.error('Erro ao enviar mensagem:', error);
+      
+      const errorMessage: Message = {
         id: Date.now() + 1,
-        text: "Sua mensagem foi enviada para nossa equipe. Em breve você receberá uma resposta.",
+        text: "Desculpe, ocorreu um erro ao processar sua mensagem. Tente novamente.",
         sender: 'bot',
         timestamp: new Date(),
         type: 'general'
       };
       
-      setMessages(prev => [...prev, confirmationMessage]);
-      
-    } catch (error) {
-      console.error('Erro ao enviar mensagem:', error);
+      setMessages(prev => [...prev, errorMessage]);
       toastError('Erro', 'Não foi possível enviar sua mensagem');
     }
   };
@@ -146,7 +169,7 @@ const ChatBot = () => {
           <Bot className="h-6 w-6 text-primary" />
           Assistente Virtual
           <Badge variant="secondary" className="ml-auto">
-            {chatLoading ? 'Enviando...' : 'Online'}
+            {chatLoading ? 'Processando...' : 'Online'}
           </Badge>
         </CardTitle>
         <p className="text-sm text-gray-600">
