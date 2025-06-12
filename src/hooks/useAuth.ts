@@ -140,7 +140,7 @@ export const useAuth = (): UseAuthReturn => {
     }
   }, []);
 
-  // Register function - adapted for our simplified system
+  // Register function - updated for email-based system
   const register = useCallback(async (credentials: SimpleRegisterCredentials): Promise<AuthResponse> => {
     try {
       console.log('useAuth: Starting registration process...');

@@ -5,39 +5,22 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/useAuth';
-import { ArrowLeft, Phone, User, Lock, AlertCircle } from 'lucide-react';
+import { useAuthForm } from '@/hooks/useAuthForm';
+import { ArrowLeft, Phone, User, Lock, AlertCircle, Mail } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { toastError, toastSuccess } from '@/components/ui/custom-toast';
+import { toastError, toastSuccess, toastWarning } from '@/components/ui/custom-toast';
+import { EmailConfirmationStatus } from '@/components/Auth/EmailConfirmationStatus';
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [showEmailConfirmation, setShowEmailConfirmation] = useState(false);
+  const [pendingEmail, setPendingEmail] = useState('');
   const [debugInfo, setDebugInfo] = useState('');
-  const [formData, setFormData] = useState({
-    nomeCompleto: '',
-    telefone: '',
-    password: ''
-  });
 
+  const { formData, handleInputChange, handlePhoneChange, validateEmail, resetForm } = useAuthForm();
   const { login, register } = useAuth();
   const navigate = useNavigate();
-
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
-  const formatPhone = (phone: string) => {
-    const numbers = phone.replace(/\D/g, '');
-    if (numbers.length <= 11) {
-      return numbers.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
-    }
-    return phone;
-  };
-
-  const handlePhoneChange = (value: string) => {
-    const formatted = formatPhone(value);
-    handleInputChange('telefone', formatted);
-  };
 
   const validateForm = () => {
     if (!isLogin && !formData.nomeCompleto.trim()) {
@@ -45,6 +28,11 @@ const AuthPage = () => {
       return false;
     }
     
+    if (!formData.email.trim() || !validateEmail(formData.email)) {
+      toastError('Erro', 'Por favor, digite um email válido');
+      return false;
+    }
+
     if (!formData.telefone.trim()) {
       toastError('Erro', 'Por favor, digite seu telefone');
       return false;
@@ -78,16 +66,11 @@ const AuthPage = () => {
     setLoading(true);
 
     try {
-      const phoneNumbers = formData.telefone.replace(/\D/g, '');
-      const phoneEmail = `${phoneNumbers}@sorriso.app`;
-      
-      setDebugInfo(`Email gerado: ${phoneEmail}`);
-
       if (isLogin) {
         setDebugInfo('Tentando fazer login...');
         
         const result = await login({
-          email: phoneEmail,
+          email: formData.email,
           password: formData.password
         });
 
@@ -100,27 +83,12 @@ const AuthPage = () => {
             navigate('/', { replace: true });
           }, 1500);
         } else {
-          // Se o login falhar com "Invalid login credentials", vamos tentar registrar automaticamente
-          if (result.error === 'Invalid login credentials') {
-            setDebugInfo('Usuário não encontrado, tentando criar conta automaticamente...');
-            
-            const registerResult = await register({
-              email: phoneEmail,
-              password: formData.password,
-              nome_completo: formData.nomeCompleto || 'Usuário Sorriso',
-              telefone: formData.telefone
-            });
-
-            if (registerResult.success) {
-              setDebugInfo('Conta criada com sucesso! Fazendo login...');
-              toastSuccess('Sucesso', 'Conta criada e login realizado!');
-              setTimeout(() => {
-                navigate('/', { replace: true });
-              }, 1500);
-            } else {
-              setDebugInfo(`Erro ao criar conta: ${registerResult.error}`);
-              toastError('Erro', 'Erro ao criar conta: ' + registerResult.error);
-            }
+          if (result.error?.includes('Email not confirmed')) {
+            toastWarning('Email não confirmado', 'Verifique seu email e clique no link de confirmação');
+            setPendingEmail(formData.email);
+            setShowEmailConfirmation(true);
+          } else if (result.error?.includes('Invalid login credentials')) {
+            toastError('Erro', 'Email ou senha incorretos');
           } else {
             setDebugInfo(`Erro no login: ${result.error}`);
             toastError('Erro', result.error || 'Erro ao fazer login');
@@ -130,7 +98,7 @@ const AuthPage = () => {
         setDebugInfo('Tentando criar conta...');
         
         const result = await register({
-          email: phoneEmail,
+          email: formData.email,
           password: formData.password,
           nome_completo: formData.nomeCompleto,
           telefone: formData.telefone
@@ -139,14 +107,17 @@ const AuthPage = () => {
         setDebugInfo(`Resultado do registro: ${result.success ? 'Sucesso' : 'Erro: ' + result.error}`);
 
         if (result.success) {
-          toastSuccess('Sucesso', 'Cadastro realizado com sucesso!');
-          setDebugInfo('Registro bem-sucedido, redirecionando...');
-          setTimeout(() => {
-            navigate('/', { replace: true });
-          }, 1500);
+          toastSuccess('Conta criada!', 'Verifique seu email para confirmar a conta');
+          setPendingEmail(formData.email);
+          setShowEmailConfirmation(true);
+          resetForm();
         } else {
-          setDebugInfo(`Erro no registro: ${result.error}`);
-          toastError('Erro', result.error || 'Erro ao criar conta');
+          if (result.error?.includes('User already registered')) {
+            toastError('Erro', 'Este email já está cadastrado. Tente fazer login.');
+          } else {
+            setDebugInfo(`Erro no registro: ${result.error}`);
+            toastError('Erro', result.error || 'Erro ao criar conta');
+          }
         }
       }
     } catch (error) {
@@ -157,6 +128,34 @@ const AuthPage = () => {
       setLoading(false);
     }
   };
+
+  const handleBackToLogin = () => {
+    setShowEmailConfirmation(false);
+    setPendingEmail('');
+    setIsLogin(true);
+    resetForm();
+  };
+
+  if (showEmailConfirmation) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-primary/10 to-background flex items-center justify-center p-4">
+        <div className="w-full max-w-md">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate('/')}
+            className="mb-4"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <EmailConfirmationStatus 
+            email={pendingEmail}
+            onBackToLogin={handleBackToLogin}
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/10 to-background flex items-center justify-center p-4">
@@ -218,6 +217,22 @@ const AuthPage = () => {
               )}
 
               <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="seu@email.com"
+                    value={formData.email}
+                    onChange={(e) => handleInputChange('email', e.target.value)}
+                    className="pl-10"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
                 <Label htmlFor="telefone">Telefone</Label>
                 <div className="relative">
                   <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -268,6 +283,7 @@ const AuthPage = () => {
                 onClick={() => {
                   setIsLogin(!isLogin);
                   setDebugInfo('');
+                  resetForm();
                 }}
                 className="text-primary font-semibold"
               >
@@ -277,7 +293,18 @@ const AuthPage = () => {
 
             {isLogin && (
               <div className="mt-4 text-center">
-                <Button variant="link" className="text-sm text-muted-foreground">
+                <Button 
+                  variant="link" 
+                  className="text-sm text-muted-foreground"
+                  onClick={() => {
+                    if (formData.email && validateEmail(formData.email)) {
+                      setPendingEmail(formData.email);
+                      setShowEmailConfirmation(true);
+                    } else {
+                      toastError('Erro', 'Digite um email válido primeiro');
+                    }
+                  }}
+                >
                   Esqueci minha senha
                 </Button>
               </div>
