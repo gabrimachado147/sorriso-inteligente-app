@@ -56,7 +56,7 @@ const realClinicsData = [
     email: 'campobelo@senhorsorriso.com.br',
     coordinates: { lat: -20.8889, lng: -45.2733 },
     available: true,
-    services: ['Avaliação Gratuita', 'Limpeza Dental', 'Ortodontia', 'Implantodontia', 'Clareamento'],
+    services: ['Avaliação Gratuita', 'Implante', 'Facetas de Resina', 'Prótese', 'Clareamento Dental'],
     workingHours: 'Segunda a Sexta: 8h às 18h | Sábado: 8h às 12h'
   },
   {
@@ -71,7 +71,7 @@ const realClinicsData = [
     email: 'formiga@senhorsorriso.com.br',
     coordinates: { lat: -20.4642, lng: -45.4267 },
     available: true,
-    services: ['Avaliação Gratuita', 'Limpeza Dental', 'Ortodontia', 'Implantodontia', 'Clareamento'],
+    services: ['Avaliação Gratuita', 'Implante', 'Facetas de Resina', 'Prótese', 'Clareamento Dental'],
     workingHours: 'Segunda a Sexta: 8h às 18h | Sábado: 8h às 12h'
   },
   {
@@ -86,7 +86,7 @@ const realClinicsData = [
     email: 'itarare@senhorsorriso.com.br',
     coordinates: { lat: -24.1147, lng: -49.3314 },
     available: true,
-    services: ['Avaliação Gratuita', 'Limpeza Dental', 'Ortodontia', 'Implantodontia', 'Clareamento'],
+    services: ['Avaliação Gratuita', 'Implante', 'Facetas de Resina', 'Prótese', 'Clareamento Dental'],
     workingHours: 'Segunda a Sexta: 8h às 18h | Sábado: 8h às 12h'
   },
   {
@@ -101,7 +101,7 @@ const realClinicsData = [
     email: 'capaobonito@senhorsorriso.com.br',
     coordinates: { lat: -24.0094, lng: -48.3506 },
     available: true,
-    services: ['Avaliação Gratuita', 'Limpeza Dental', 'Ortodontia', 'Implantodontia', 'Clareamento'],
+    services: ['Avaliação Gratuita', 'Implante', 'Facetas de Resina', 'Prótese', 'Clareamento Dental'],
     workingHours: 'Segunda a Sexta: 8h às 18h | Sábado: 8h às 12h'
   },
   {
@@ -116,7 +116,7 @@ const realClinicsData = [
     email: 'itapeva@senhorsorriso.com.br',
     coordinates: { lat: -23.9822, lng: -48.8764 },
     available: true,
-    services: ['Avaliação Gratuita', 'Limpeza Dental', 'Ortodontia', 'Implantodontia', 'Clareamento'],
+    services: ['Avaliação Gratuita', 'Implante', 'Facetas de Resina', 'Prótese', 'Clareamento Dental'],
     workingHours: 'Segunda a Sexta: 8h às 18h | Sábado: 8h às 12h'
   }
 ];
@@ -211,7 +211,7 @@ export const apiService = {
       return [
         {
           id: '1',
-          service: 'Limpeza Dental',
+          service: 'Implante',
           clinic: 'Campo Belo - MG',
           doctor: 'Dr. Silva',
           date: '2024-06-15',
@@ -233,7 +233,7 @@ export const apiService = {
         appointments: [
           {
             id: '1',
-            service: 'Limpeza Dental',
+            service: 'Implante',
             clinic: 'Centro',
             date: '2024-06-15',
             time: '14:00',

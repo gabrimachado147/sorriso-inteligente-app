@@ -43,10 +43,10 @@ const LocationsPage = () => {
 
   const availableServices = [
     { id: 'Avaliação Gratuita', name: 'Avaliação Gratuita' },
-    { id: 'Limpeza Dental', name: 'Limpeza Dental' },
-    { id: 'Ortodontia', name: 'Ortodontia' },
-    { id: 'Implantodontia', name: 'Implantodontia' },
-    { id: 'Clareamento', name: 'Clareamento' }
+    { id: 'Implante', name: 'Implante' },
+    { id: 'Facetas de Resina', name: 'Facetas de Resina' },
+    { id: 'Prótese', name: 'Prótese' },
+    { id: 'Clareamento Dental', name: 'Clareamento Dental' }
   ];
 
   // Carregar clínicas reais

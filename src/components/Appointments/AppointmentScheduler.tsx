@@ -14,6 +14,8 @@ import { animations } from '@/lib/animations';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { apiService } from '@/services/api';
+import { supabase } from '@/integrations/supabase/client';
+import { emailService } from '@/services/email';
 
 interface Appointment {
   id: number;
@@ -84,10 +86,10 @@ const AppointmentScheduler = () => {
   const [availableClinics, setAvailableClinics] = useState<Array<{id: string, name: string, city: string, state: string}>>([]);
 
   const availableServices = [
-    { id: 'cleaning', name: 'Limpeza' },
-    { id: 'extraction', name: 'Extração' },
-    { id: 'filling', name: 'Obturação' },
-    { id: 'orthodontics', name: 'Ortodontia' }
+    { id: 'implant', name: 'Implante' },
+    { id: 'facetas', name: 'Facetas de Resina' },
+    { id: 'protese', name: 'Prótese' },
+    { id: 'clareamento', name: 'Clareamento Dental' }
   ];
 
   const timeSlots = [
@@ -141,31 +143,48 @@ const AppointmentScheduler = () => {
 
   const handleConfirmAppointment = async () => {
     setIsLoading(true);
-    
+
     try {
-      // Simular chamada para API
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
       const selectedClinicName = availableClinics.find(c => c.id === selectedClinic)?.name;
       const selectedServiceName = availableServices.find(s => s.id === selectedService)?.name;
-      
-      const actionText = rescheduleId ? 'Consulta reagendada' : 'Consulta agendada';
-      
+
+      const userData = JSON.parse(localStorage.getItem('registeredUser') || '{}');
+
+      await supabase.from('appointments').insert({
+        patient_id: userData.id,
+        dentist_id: '00000000-0000-0000-0000-000000000000',
+        clinic_id: selectedClinic,
+        service_id: selectedService,
+        appointment_date: `${format(selectedDate!, 'yyyy-MM-dd')}T${selectedTime}:00`,
+        status: 'scheduled'
+      });
+
+      if (userData.email) {
+        await emailService.sendAppointment({
+          name: userData.name,
+          email: userData.email,
+          phone: userData.phone,
+          clinic: selectedClinicName || '',
+          service: selectedServiceName || '',
+          date: format(selectedDate!, 'dd/MM/yyyy'),
+          time: selectedTime
+        });
+      }
+
       toastAppointment(
-        `${actionText} com sucesso!`,
+        'Consulta agendada com sucesso!',
         `${selectedServiceName} em ${selectedClinicName} no dia ${format(selectedDate!, 'dd/MM/yyyy')} às ${selectedTime}`
       );
-      
-      // Reset form and navigate back
+
       setSelectedTime('');
       setSelectedClinic('');
       setSelectedService('');
       setSelectedDate(new Date());
-      
+
       setTimeout(() => {
         navigate('/');
       }, 2000);
-      
+
     } catch (error) {
       toastError(
         'Erro ao agendar consulta',
@@ -239,7 +258,7 @@ const AppointmentScheduler = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Seleção de Data */}
-        <Card className={`${animations.slideInLeft} ${animations.cardHover}`}>
+        <Card className={`${animations.slideInLeft} ${animations.cardHover} w-full`}>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <CalendarIcon className="h-5 w-5" />
@@ -253,13 +272,13 @@ const AppointmentScheduler = () => {
               onSelect={setSelectedDate}
               locale={ptBR}
               disabled={(date) => date < new Date()}
-              className="rounded-md border"
+              className="rounded-md border w-full"
             />
           </CardContent>
         </Card>
 
         {/* Seleção de Horário */}
-        <Card className={`${animations.slideInRight} ${animations.cardHover}`}>
+        <Card className={`${animations.slideInRight} ${animations.cardHover} w-full`}>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Clock className="h-5 w-5" />
