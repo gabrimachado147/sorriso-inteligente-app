@@ -63,11 +63,17 @@ export class WhatsAppService {
       const result = await response.json()
       console.log('Webhook response received:', result)
       
+      // O webhook retorna um array, então vamos pegar o primeiro item
+      let webhookData = result
+      if (Array.isArray(result) && result.length > 0) {
+        webhookData = result[0]
+      }
+      
       // Garantir que a resposta tenha o campo "output"
       const webhookResponse: WhatsAppWebhookResponse = {
-        output: result.output || result.message || 'Resposta recebida com sucesso',
-        sessionId: result.sessionId || data.sessionId,
-        threadId: result.threadId || data.threadId,
+        output: webhookData.output || webhookData.message || 'Resposta recebida com sucesso',
+        sessionId: webhookData.sessionId || data.sessionId,
+        threadId: webhookData.threadId || data.threadId,
         timestamp: new Date().toISOString()
       }
 
