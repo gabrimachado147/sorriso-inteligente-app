@@ -16,15 +16,7 @@
     "allowSyntheticDefaultImports": true,
     "types": [
       "vite/client"
-    ],
-    // Additional strict checks for better code quality (relaxed for development)
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "exactOptionalPropertyTypes": false,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitOverride": true,
-    "useUnknownInCatchVariables": false
+    ]
   },
   "include": [
     "src/types/env.d.ts",

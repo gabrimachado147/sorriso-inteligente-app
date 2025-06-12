@@ -28,11 +28,10 @@ const ChatBot = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
-      text: "Entendi! Como posso te ajudar melhor? Posso auxiliar com agendamentos, informações sobre clínicas, horários ou emergências.",
+      text: "Olá! Sou o assistente virtual da Sorriso Inteligente. Como posso ajudar você hoje?",
       sender: 'bot',
       timestamp: new Date(),
-      type: 'welcome',
-      quickReplies: ['Agendar consulta', 'Ver clínicas', 'Horários', 'Emergência']
+      type: 'welcome'
     }
   ]);
   const [inputValue, setInputValue] = useState('');

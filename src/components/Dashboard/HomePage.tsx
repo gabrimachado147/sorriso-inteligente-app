@@ -1,7 +1,7 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { PWADashboard, PWAQuickInstall } from '@/components/ui/pwa-dashboard';
 import { toastSuccess, toastInfo, toastAppointment, toastCall } from '@/components/ui/custom-toast';
 import { useAppointmentScheduler } from '@/hooks/useAppointmentScheduler';
 import { useChatHandler } from '@/hooks/useChatHandler';
@@ -366,12 +366,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
           </div>
         </CardContent>
       </Card>
-
-      {/* PWA Dashboard */}
-      <PWADashboard onInstall={() => toastSuccess("App Instalado", "Sorriso Inteligente foi instalado com sucesso!")} />
-
-      {/* PWA Quick Install Prompt */}
-      <PWAQuickInstall />
     </div>
   );
 };

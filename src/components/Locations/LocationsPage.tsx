@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -6,22 +7,25 @@ import { Filters, FilterState } from "@/components/ui/filters";
 import { EnhancedSkeleton } from "@/components/ui/enhanced-skeleton";
 import { toastSuccess, toastCall, toastLocation, toastAppointment } from "@/components/ui/custom-toast";
 import { animations } from "@/lib/animations";
-import { MapPin, Phone, MessageSquare, Navigation, Clock, Users, Mail } from "lucide-react";
-import { apiService } from "@/services/api";
+import { MapPin, Phone, MessageSquare, Navigation, Clock, Star, Users, Mail } from "lucide-react";
 
 interface Clinic {
-  id: string;
+  id: number;
   name: string;
   address: string;
   city: string;
   state: string;
+  zipCode: string;
   phone: string;
   whatsapp: string;
   email: string;
-  coordinates: { lat: number; lng: number };
-  available: boolean;
+  rating: number;
+  reviews: number;
+  distance: string;
+  status: "Aberto" | "Fechado";
+  nextAvailable: string;
   services: string[];
-  workingHours: string;
+  image: string;
 }
 
 interface Service {
@@ -31,7 +35,6 @@ interface Service {
 
 const LocationsPage = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [clinics, setClinics] = useState<Clinic[]>([]);
   const [filters, setFilters] = useState<FilterState>({
     search: '',
     clinic: '',
@@ -42,29 +45,106 @@ const LocationsPage = () => {
   });
 
   const availableServices = [
-    { id: 'Avaliação Gratuita', name: 'Avaliação Gratuita' },
-    { id: 'Limpeza Dental', name: 'Limpeza Dental' },
-    { id: 'Ortodontia', name: 'Ortodontia' },
-    { id: 'Implantodontia', name: 'Implantodontia' },
-    { id: 'Clareamento', name: 'Clareamento' }
+    { id: 'cleaning', name: 'Limpeza' },
+    { id: 'extraction', name: 'Extração' },
+    { id: 'filling', name: 'Obturação' },
+    { id: 'orthodontics', name: 'Ortodontia' },
+    { id: 'implants', name: 'Implantes' },
+    { id: 'whitening', name: 'Clareamento' }
   ];
 
-  // Carregar clínicas reais
-  useEffect(() => {
-    const loadClinics = async () => {
-      try {
-        setIsLoading(true);
-        const clinicsData = await apiService.clinics.getAll();
-        setClinics(clinicsData);
-      } catch (error) {
-        console.error('Erro ao carregar clínicas:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadClinics();
-  }, []);
+  const clinics: Clinic[] = [
+    {
+      id: 1,
+      name: "Senhor Sorriso - Campo Belo",
+      address: "Avenida Afonso Pena, 151, Centro",
+      city: "Campo Belo",
+      state: "MG",
+      zipCode: "37270-000",
+      phone: "(35) 99869-5479",
+      whatsapp: "(35) 99869-5479",
+      email: "campobelo@senhorsorriso.com.br",
+      rating: 4.8,
+      reviews: 145,
+      distance: "Calcular rota",
+      status: "Aberto",
+      nextAvailable: "Hoje às 14:30",
+      services: ['cleaning', 'extraction', 'filling', 'orthodontics', 'implants'],
+      image: "/placeholder.svg"
+    },
+    {
+      id: 2,
+      name: "Senhor Sorriso - Formiga",
+      address: "Rua Barão de Piumhy, 198, Centro",
+      city: "Formiga",
+      state: "MG",
+      zipCode: "35570-128",
+      phone: "(35) 9969-5479",
+      whatsapp: "(35) 9969-5479",
+      email: "formiga@senhorsorriso.com.br",
+      rating: 4.9,
+      reviews: 98,
+      distance: "Calcular rota",
+      status: "Aberto",
+      nextAvailable: "Amanhã às 09:00",
+      services: ['cleaning', 'whitening', 'implants', 'orthodontics', 'filling'],
+      image: "/placeholder.svg"
+    },
+    {
+      id: 3,
+      name: "Senhor Sorriso - Itararé",
+      address: "Rua São Pedro, 1348 (Loja), Centro",
+      city: "Itararé",
+      state: "SP",
+      zipCode: "18460-009",
+      phone: "(35) 99969-5479",
+      whatsapp: "(35) 99969-5479",
+      email: "itarare@senhorsorriso.com.br",
+      rating: 4.7,
+      reviews: 76,
+      distance: "Calcular rota",
+      status: "Aberto",
+      nextAvailable: "Hoje às 16:00",
+      services: ['extraction', 'filling', 'implants', 'cleaning'],
+      image: "/placeholder.svg"
+    },
+    {
+      id: 4,
+      name: "Senhor Sorriso - Capão Bonito",
+      address: "Rua Floriano Peixoto, 732 (Super Lojas), Centro",
+      city: "Capão Bonito",
+      state: "SP",
+      zipCode: "18300-250",
+      phone: "(15) 2153-0549",
+      whatsapp: "(15) 2153-0549",
+      email: "capaobonito@senhorsorriso.com.br",
+      rating: 4.6,
+      reviews: 112,
+      distance: "Calcular rota",
+      status: "Aberto",
+      nextAvailable: "Segunda às 08:00",
+      services: ['cleaning', 'orthodontics', 'whitening', 'filling'],
+      image: "/placeholder.svg"
+    },
+    {
+      id: 5,
+      name: "Senhor Sorriso - Itapeva",
+      address: "Rua Doutor Pinheiro, 558, Centro",
+      city: "Itapeva",
+      state: "SP",
+      zipCode: "18400-005",
+      phone: "(15) 2153-0549",
+      whatsapp: "(15) 2153-0549",
+      email: "itapeva@senhorsorriso.com.br",
+      rating: 4.8,
+      reviews: 89,
+      distance: "Calcular rota",
+      status: "Fechado",
+      nextAvailable: "Segunda às 08:00",
+      services: ['cleaning', 'extraction', 'filling', 'implants', 'orthodontics'],
+      image: "/placeholder.svg"
+    }
+  ];
 
   const filteredClinics = clinics.filter(clinic => {
     if (filters.search) {
@@ -91,7 +171,7 @@ const LocationsPage = () => {
   const handleWhatsApp = (whatsapp: string, clinicName: string) => {
     const phoneNumber = whatsapp.replace(/\D/g, '');
     const message = encodeURIComponent(`Olá! Gostaria de agendar uma consulta na unidade ${clinicName}.`);
-    window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
+    window.open(`https://wa.me/55${phoneNumber}?text=${message}`, '_blank');
     toastSuccess("WhatsApp aberto", `Iniciando conversa com ${clinicName}`);
   };
 
@@ -102,8 +182,8 @@ const LocationsPage = () => {
     toastSuccess("E-mail aberto", `Enviando e-mail para ${clinicName}`);
   };
 
-  const handleRoute = (address: string, city: string, state: string, clinicName: string) => {
-    const fullAddress = `${address}, ${city}, ${state}`;
+  const handleRoute = (address: string, city: string, state: string, zipCode: string, clinicName: string) => {
+    const fullAddress = `${address}, ${city}, ${state}, ${zipCode}`;
     const encodedAddress = encodeURIComponent(fullAddress);
     window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodedAddress}`, '_blank');
     toastLocation("Rota calculada", `Abrindo GPS para ${clinicName}`);
@@ -179,16 +259,21 @@ const LocationsPage = () => {
                     <div>
                       <h3 className="text-xl font-semibold text-gray-900">{clinic.name}</h3>
                       <p className="text-gray-600">{clinic.address}</p>
-                      <p className="text-sm text-gray-500">{clinic.city}, {clinic.state}</p>
+                      <p className="text-sm text-gray-500">{clinic.city}, {clinic.state} - CEP: {clinic.zipCode}</p>
                     </div>
                     
                     <div className="flex flex-col items-start sm:items-end gap-2">
                       <Badge 
-                        variant={clinic.available ? "default" : "secondary"}
-                        className={clinic.available ? "bg-green-100 text-green-800" : ""}
+                        variant={clinic.status === "Aberto" ? "default" : "secondary"}
+                        className={clinic.status === "Aberto" ? "bg-green-100 text-green-800" : ""}
                       >
-                        {clinic.available ? "Disponível" : "Indisponível"}
+                        {clinic.status}
                       </Badge>
+                      <div className="flex items-center gap-1">
+                        <Star className="h-4 w-4 text-yellow-500 fill-current" />
+                        <span className="text-sm font-medium">{clinic.rating}</span>
+                        <span className="text-sm text-gray-500">({clinic.reviews})</span>
+                      </div>
                     </div>
                   </div>
 
@@ -212,17 +297,17 @@ const LocationsPage = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                     <div className="flex items-center gap-2">
                       <Clock className="h-4 w-4 text-primary" />
-                      <span>{clinic.workingHours}</span>
+                      <span>{clinic.nextAvailable}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Users className="h-4 w-4 text-primary" />
-                      <span>Equipe especializada</span>
+                      <span>{clinic.reviews} avaliações</span>
                     </div>
                   </div>
 
                   {/* Serviços Disponíveis */}
-                  <div className="space-y-2">
-                    <h4 className="font-medium text-gray-900">Serviços disponíveis:</h4>
+                  <div>
+                    <p className="text-sm font-medium text-gray-700 mb-2">Serviços disponíveis:</p>
                     <div className="flex flex-wrap gap-2">
                       {clinic.services.map((serviceId) => {
                         const service = availableServices.find(s => s.id === serviceId);
@@ -271,7 +356,7 @@ const LocationsPage = () => {
                       size="sm"
                       variant="outline"
                       className={animations.buttonHover}
-                      onClick={() => handleRoute(clinic.address, clinic.city, clinic.state, clinic.name)}
+                      onClick={() => handleRoute(clinic.address, clinic.city, clinic.state, clinic.zipCode, clinic.name)}
                     >
                       <Navigation className="h-4 w-4 mr-1" />
                       Como Chegar

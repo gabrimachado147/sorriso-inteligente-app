@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,7 +13,6 @@ import { Calendar as CalendarIcon, Clock, MapPin, User, Stethoscope } from 'luci
 import { animations } from '@/lib/animations';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { apiService } from '@/services/api';
 
 interface Appointment {
   id: number;
@@ -81,7 +80,11 @@ const AppointmentScheduler = () => {
     status: ''
   });
 
-  const [availableClinics, setAvailableClinics] = useState<Array<{id: string, name: string, city: string, state: string}>>([]);
+  const availableClinics = [
+    { id: 'clinic1', name: 'Clínica Centro' },
+    { id: 'clinic2', name: 'Clínica Zona Sul' },
+    { id: 'clinic3', name: 'Clínica Norte' }
+  ];
 
   const availableServices = [
     { id: 'cleaning', name: 'Limpeza' },
@@ -94,30 +97,6 @@ const AppointmentScheduler = () => {
     '08:00', '08:30', '09:00', '09:30', '10:00', '10:30',
     '14:00', '14:30', '15:00', '15:30', '16:00', '16:30'
   ];
-
-  // Carregar clínicas reais ao montar o componente
-  useEffect(() => {
-    const loadClinics = async () => {
-      try {
-        setIsLoading(true);
-        const clinics = await apiService.clinics.getAll();
-        const formattedClinics = clinics.map(clinic => ({
-          id: clinic.id,
-          name: clinic.name,
-          city: clinic.city,
-          state: clinic.state
-        }));
-        setAvailableClinics(formattedClinics);
-      } catch (error) {
-        console.error('Erro ao carregar clínicas:', error);
-        toastError('Erro', 'Não foi possível carregar as clínicas');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadClinics();
-  }, []);
 
   const filteredServices = availableServices.filter(service => {
     if (filters.search) {
@@ -307,7 +286,6 @@ const AppointmentScheduler = () => {
                 <div className="text-center">
                   <MapPin className="h-6 w-6 mx-auto mb-2" />
                   <p className="font-medium">{clinic.name}</p>
-                  <p className="text-xs text-muted-foreground">{clinic.city} - {clinic.state}</p>
                 </div>
               </Button>
             ))}

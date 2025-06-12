@@ -36,18 +36,8 @@ src/
 ├── lib/                 # Utilitários e configurações
 ├── hooks/               # Custom hooks
 ├── pages/               # Páginas principais
-├── services/            # Serviços e API
-└── integrations/        # Integrações externas (Supabase, etc.)
+└── services/            # Serviços e API
 ```
-
-## 📚 Documentação
-
-- **[Guia de Desenvolvimento](docs/development-guide.md)** - Setup, scripts e convenções
-- **[Arquitetura](docs/architecture.md)** - Estrutura técnica e padrões
-- **[API e Integrações](docs/api-integrations.md)** - Supabase, N8N, WhatsApp
-- **[Ambiente de Staging](docs/staging-environment.md)** - Deploy e CI/CD
-- **[Guia de Contribuição](CONTRIBUTING.md)** - Como contribuir com o projeto
-- **[Changelog](CHANGELOG.md)** - Histórico de versões e mudanças
 
 ## 🎨 Sistema de Design
 
