@@ -1,234 +1,49 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+
+import React from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Filters, FilterState } from '@/components/ui/filters';
+import { Filters } from '@/components/ui/filters';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { EnhancedSkeleton } from '@/components/ui/enhanced-skeleton';
-import { toastError, toastAppointment } from '@/components/ui/custom-toast';
 import { Calendar as CalendarIcon } from 'lucide-react';
 import { animations } from '@/lib/animations';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { apiService } from '@/services/api';
 import { DateSelector } from './DateSelector';
 import { TimeSelector } from './TimeSelector';
 import { ClinicSelector } from './ClinicSelector';
 import { ServiceSelector } from './ServiceSelector';
 import { AppointmentSummary } from './AppointmentSummary';
-import { 
-  Stethoscope, 
-  Search, 
-  Sparkles, 
-  Wrench, 
-  Smile, 
-  Settings, 
-  Shield, 
-  Baby, 
-  Heart, 
-  AlertTriangle 
-} from 'lucide-react';
-
-interface Appointment {
-  id: number;
-  service: string;
-  date: string;
-  time: string;
-  clinic: string;
-  status: 'confirmed' | 'pending' | 'cancelled';
-}
-
-interface Clinic {
-  id: string;
-  name: string;
-  city: string;
-  state: string;
-}
-
-interface Service {
-  id: string;
-  name: string;
-}
+import { RescheduleNotification } from './RescheduleNotification';
+import { availableServices } from './constants/services';
+import { useAppointmentSchedulerLogic } from '@/hooks/useAppointmentSchedulerLogic';
 
 const AppointmentScheduler = () => {
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const rescheduleId = searchParams.get('reschedule');
   
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
-  const [selectedTime, setSelectedTime] = useState<string>('');
-  const [selectedClinic, setSelectedClinic] = useState<string>('');
-  const [selectedService, setSelectedService] = useState<string>('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [filters, setFilters] = useState<FilterState>({
-    search: '',
-    clinic: '',
-    service: '',
-    dateFrom: undefined,
-    dateTo: undefined,
-    status: ''
-  });
-
-  const [availableClinics, setAvailableClinics] = useState<Array<{id: string, name: string, city: string, state: string}>>([]);
-
-  const availableServices = [
-    { 
-      id: 'avaliacao-gratuita', 
-      name: 'Avaliação Gratuita', 
-      icon: <Search className="h-6 w-6" /> 
-    },
-    { 
-      id: 'limpeza', 
-      name: 'Limpeza Dental', 
-      icon: <Sparkles className="h-6 w-6" /> 
-    },
-    { 
-      id: 'restauracao', 
-      name: 'Restauração', 
-      icon: <Wrench className="h-6 w-6" /> 
-    },
-    { 
-      id: 'ortodontia', 
-      name: 'Ortodontia', 
-      icon: <Smile className="h-6 w-6" /> 
-    },
-    { 
-      id: 'implantodontia', 
-      name: 'Implantodontia', 
-      icon: <Settings className="h-6 w-6" /> 
-    },
-    { 
-      id: 'estetica-dental', 
-      name: 'Estética Dental', 
-      icon: <Sparkles className="h-6 w-6" /> 
-    },
-    { 
-      id: 'proteses-fixas', 
-      name: 'Próteses Fixas', 
-      icon: <Shield className="h-6 w-6" /> 
-    },
-    { 
-      id: 'endodontia', 
-      name: 'Endodontia', 
-      icon: <Stethoscope className="h-6 w-6" /> 
-    },
-    { 
-      id: 'odontopediatria', 
-      name: 'Odontopediatria', 
-      icon: <Baby className="h-6 w-6" /> 
-    },
-    { 
-      id: 'periodontia', 
-      name: 'Periodontia', 
-      icon: <Heart className="h-6 w-6" /> 
-    },
-    { 
-      id: 'urgencia', 
-      name: 'Atendimento de Urgência', 
-      icon: <AlertTriangle className="h-6 w-6" /> 
-    }
-  ];
-
-  // Carregar clínicas reais ao montar o componente
-  useEffect(() => {
-    const loadClinics = async () => {
-      try {
-        setIsLoading(true);
-        const clinics = await apiService.clinics.getAll();
-        const formattedClinics = clinics.map(clinic => ({
-          id: clinic.id,
-          name: clinic.name,
-          city: clinic.city,
-          state: clinic.state
-        }));
-        setAvailableClinics(formattedClinics);
-      } catch (error) {
-        console.error('Erro ao carregar clínicas:', error);
-        toastError('Erro', 'Não foi possível carregar as clínicas');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadClinics();
-  }, []);
-
-  // Resetar horário selecionado quando a data mudar
-  useEffect(() => {
-    setSelectedTime('');
-  }, [selectedDate]);
-
-  const filteredServices = availableServices.filter(service => {
-    if (filters.search) {
-      return service.name.toLowerCase().includes(filters.search.toLowerCase());
-    }
-    if (filters.service) {
-      return service.id === filters.service;
-    }
-    return true;
-  });
-
-  const filteredClinics = availableClinics.filter(clinic => {
-    if (filters.search) {
-      return clinic.name.toLowerCase().includes(filters.search.toLowerCase());
-    }
-    if (filters.clinic) {
-      return clinic.id === filters.clinic;
-    }
-    return true;
-  });
-
-  const handleConfirmAppointment = async () => {
-    setIsLoading(true);
-    
-    try {
-      // Simular chamada para API
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      const selectedClinicName = availableClinics.find(c => c.id === selectedClinic)?.name;
-      const selectedServiceName = availableServices.find(s => s.id === selectedService)?.name;
-      
-      const actionText = rescheduleId ? 'Consulta reagendada' : 'Consulta agendada';
-      
-      toastAppointment(
-        `${actionText} com sucesso!`,
-        `${selectedServiceName} em ${selectedClinicName} no dia ${format(selectedDate!, 'dd/MM/yyyy')} às ${selectedTime}`
-      );
-      
-      // Reset form and navigate back
-      setSelectedTime('');
-      setSelectedClinic('');
-      setSelectedService('');
-      setSelectedDate(new Date());
-      
-      setTimeout(() => {
-        navigate('/');
-      }, 2000);
-      
-    } catch (error) {
-      toastError(
-        'Erro ao agendar consulta',
-        'Tente novamente ou entre em contato conosco.'
-      );
-    } finally {
-      setIsLoading(false);
-      setShowConfirmModal(false);
-    }
-  };
-
-  const handleScheduleAppointment = () => {
-    if (!selectedDate || !selectedTime || !selectedClinic || !selectedService) {
-      toastError('Preencha todos os campos', 'Selecione data, horário, clínica e serviço.');
-      return;
-    }
-    
-    setShowConfirmModal(true);
-  };
-
-  const handleGoBack = () => {
-    navigate('/');
-  };
+  const {
+    selectedDate,
+    setSelectedDate,
+    selectedTime,
+    setSelectedTime,
+    selectedClinic,
+    setSelectedClinic,
+    selectedService,
+    setSelectedService,
+    isLoading,
+    showConfirmModal,
+    setShowConfirmModal,
+    filters,
+    setFilters,
+    availableClinics,
+    filteredServices,
+    filteredClinics,
+    handleConfirmAppointment,
+    handleScheduleAppointment,
+    handleGoBack
+  } = useAppointmentSchedulerLogic(rescheduleId);
 
   if (isLoading) {
     return (
@@ -251,13 +66,7 @@ const AppointmentScheduler = () => {
       </div>
 
       {rescheduleId && (
-        <Card className="border-blue-200 bg-blue-50">
-          <CardContent className="p-4">
-            <p className="text-blue-800">
-              <strong>Reagendamento:</strong> Você está alterando a consulta #{rescheduleId}
-            </p>
-          </CardContent>
-        </Card>
+        <RescheduleNotification rescheduleId={rescheduleId} />
       )}
 
       {/* Filtros */}
