@@ -3,11 +3,16 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-// Use environment variables instead of hardcoded values
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "https://porzszsbobsvwezdbipc.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBvcnpzenNib2JzdndlemRiaXBjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgzNzMxOTQsImV4cCI6MjA2Mzk0OTE5NH0.CZddiUvIqkVr8r4Y4kVMYqCP3mxz-txxrFQ10h4JYqA";
+// Use your Supabase credentials
+const SUPABASE_URL = "https://porzszsbobsvwezdbipc.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBvcnpzenNib2JzdndlemRiaXBjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgzNzMxOTQsImV4cCI6MjA2Mzk0OTE5NH0.CZddiUvIqkVr8r4Y4kVMYqCP3mxz-txxrFQ10h4JYqA";
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
-export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+  }
+});
