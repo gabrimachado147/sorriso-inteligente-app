@@ -1,8 +1,6 @@
+
 // Re-export all Supabase integration modules for easy importing
 export { supabase } from './client'
-
-// Authentication
-export * from './auth'
 
 // Database operations
 export * from './database'
