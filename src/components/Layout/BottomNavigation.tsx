@@ -3,7 +3,8 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { toastInfo } from '@/components/ui/custom-toast';
 import { animations } from '@/lib/animations';
-import { Home, MessageCircle, Calendar, User, MapPin, Phone } from 'lucide-react';
+import { Home, MessageCircle, Calendar, User, MapPin } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface BottomNavigationProps {
   currentPage: string;
@@ -11,41 +12,49 @@ interface BottomNavigationProps {
 }
 
 export const BottomNavigation: React.FC<BottomNavigationProps> = ({ currentPage, onPageChange }) => {
-  const handleNavigation = (page: string, label: string) => {
+  const navigate = useNavigate();
+
+  const handleNavigation = (page: string, path: string, label: string) => {
     toastInfo(`Navegação`, `Abrindo ${label}...`);
     onPageChange(page);
+    navigate(path);
   };
 
   const navItems = [
     { 
       id: 'home', 
+      path: '/',
       icon: Home, 
       label: 'Início',
-      action: () => handleNavigation('home', 'página inicial')
+      action: () => handleNavigation('home', '/', 'página inicial')
     },
     { 
       id: 'locations', 
+      path: '/locations',
       icon: MapPin, 
       label: 'Unidades',
-      action: () => handleNavigation('locations', 'unidades')
+      action: () => handleNavigation('locations', '/locations', 'unidades')
     },
     { 
       id: 'appointments', 
+      path: '/appointments',
       icon: Calendar, 
       label: 'Agendar',
-      action: () => handleNavigation('appointments', 'agendamento')
+      action: () => handleNavigation('appointments', '/appointments', 'agendamento')
     },
     { 
       id: 'chat', 
+      path: '/chat',
       icon: MessageCircle, 
       label: 'Chat',
-      action: () => handleNavigation('chat', 'chat com assistente')
+      action: () => handleNavigation('chat', '/chat', 'chat com assistente')
     },
     { 
       id: 'profile', 
+      path: '/profile',
       icon: User, 
       label: 'Perfil',
-      action: () => handleNavigation('profile', 'perfil do usuário')
+      action: () => handleNavigation('profile', '/profile', 'perfil do usuário')
     },
   ];
 

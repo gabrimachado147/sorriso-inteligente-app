@@ -1,6 +1,6 @@
 
-import { useState } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { MainLayout } from "@/components/Layout/MainLayout";
@@ -17,79 +17,98 @@ import { PWASettingsPage } from "@/pages/PWASettingsPage";
 
 const queryClient = new QueryClient();
 
-function App() {
+// Component to handle page tracking
+const AppContent = () => {
   const [currentPage, setCurrentPage] = useState("home");
+  const location = useLocation();
+
+  useEffect(() => {
+    const path = location.pathname;
+    if (path === '/') setCurrentPage('home');
+    else if (path === '/chat') setCurrentPage('chat');
+    else if (path === '/appointments') setCurrentPage('appointments');
+    else if (path === '/locations') setCurrentPage('locations');
+    else if (path === '/profile') setCurrentPage('profile');
+    else if (path === '/emergency') setCurrentPage('emergency');
+    else if (path === '/pwa-settings') setCurrentPage('pwa-settings');
+  }, [location.pathname]);
 
   const handlePageChange = (page: string) => {
     setCurrentPage(page);
   };
 
   return (
+    <Routes>
+      {/* Public routes */}
+      <Route path="/auth" element={<AuthPage />} />
+      
+      {/* Protected routes */}
+      <Route path="/" element={
+        <ProtectedRoute>
+          <MainLayout currentPage={currentPage} onPageChange={handlePageChange}>
+            <Index />
+          </MainLayout>
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/chat" element={
+        <ProtectedRoute>
+          <MainLayout currentPage="chat" onPageChange={handlePageChange}>
+            <ChatPage />
+          </MainLayout>
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/appointments" element={
+        <ProtectedRoute>
+          <MainLayout currentPage="appointments" onPageChange={handlePageChange}>
+            <SchedulePage />
+          </MainLayout>
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/locations" element={
+        <ProtectedRoute>
+          <MainLayout currentPage="locations" onPageChange={handlePageChange}>
+            <ClinicsPage />
+          </MainLayout>
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/profile" element={
+        <ProtectedRoute>
+          <MainLayout currentPage="profile" onPageChange={handlePageChange}>
+            <ProfilePage />
+          </MainLayout>
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/emergency" element={
+        <ProtectedRoute>
+          <MainLayout currentPage="emergency" onPageChange={handlePageChange}>
+            <EmergencyPage />
+          </MainLayout>
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/pwa-settings" element={
+        <ProtectedRoute>
+          <MainLayout currentPage="pwa-settings" onPageChange={handlePageChange}>
+            <PWASettingsPage onNavigate={handlePageChange} />
+          </MainLayout>
+        </ProtectedRoute>
+      } />
+      
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+};
+
+function App() {
+  return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <Routes>
-          {/* Public routes */}
-          <Route path="/auth" element={<AuthPage />} />
-          
-          {/* Protected routes */}
-          <Route path="/" element={
-            <ProtectedRoute>
-              <MainLayout currentPage={currentPage} onPageChange={handlePageChange}>
-                <Index />
-              </MainLayout>
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/chat" element={
-            <ProtectedRoute>
-              <MainLayout currentPage="chat" onPageChange={handlePageChange}>
-                <ChatPage />
-              </MainLayout>
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/appointments" element={
-            <ProtectedRoute>
-              <MainLayout currentPage="appointments" onPageChange={handlePageChange}>
-                <SchedulePage />
-              </MainLayout>
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/locations" element={
-            <ProtectedRoute>
-              <MainLayout currentPage="locations" onPageChange={handlePageChange}>
-                <ClinicsPage />
-              </MainLayout>
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/profile" element={
-            <ProtectedRoute>
-              <MainLayout currentPage="profile" onPageChange={handlePageChange}>
-                <ProfilePage />
-              </MainLayout>
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/emergency" element={
-            <ProtectedRoute>
-              <MainLayout currentPage="emergency" onPageChange={handlePageChange}>
-                <EmergencyPage />
-              </MainLayout>
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/pwa-settings" element={
-            <ProtectedRoute>
-              <MainLayout currentPage="pwa-settings" onPageChange={handlePageChange}>
-                <PWASettingsPage onNavigate={handlePageChange} />
-              </MainLayout>
-            </ProtectedRoute>
-          } />
-          
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <AppContent />
         <Toaster />
       </BrowserRouter>
     </QueryClientProvider>

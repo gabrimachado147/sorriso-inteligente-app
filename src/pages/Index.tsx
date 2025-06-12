@@ -7,14 +7,19 @@ import { Calendar, MessageCircle, MapPin, Heart, Clock, Star, Phone } from "luci
 import { toastInfo } from "@/components/ui/custom-toast";
 import { animations } from "@/lib/animations";
 import { useAuth } from "@/hooks/useAuth";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Index = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const handleEmergencyCall = () => {
     toastInfo("Emergência", "Conectando você com atendimento de emergência...");
     window.open("tel:+5511999999999", "_self");
+  };
+
+  const handleNavigation = (path: string) => {
+    navigate(path);
   };
 
   return (
@@ -40,14 +45,15 @@ const Index = () => {
           </p>
           {user && (
             <p className="text-lg text-primary font-medium">
-              Bem-vindo de volta! 😊
+              Bem-vindo de volta, {user.user_metadata?.nome_completo || user.email}! 😊
             </p>
           )}
         </div>
 
         {/* Quick Actions */}
         <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 ${animations.slideInLeft}`}>
-          <Card className={`${animations.cardHover} border-primary/20 hover:border-primary/40 transition-all`}>
+          <Card className={`${animations.cardHover} border-primary/20 hover:border-primary/40 transition-all cursor-pointer`}
+                onClick={() => handleNavigation('/appointments')}>
             <CardHeader className="text-center pb-2">
               <Calendar className="h-8 w-8 text-primary mx-auto mb-2" />
               <CardTitle className="text-lg">Agendar</CardTitle>
@@ -56,13 +62,17 @@ const Index = () => {
               <p className="text-sm text-muted-foreground mb-3">
                 Marque sua consulta rapidamente
               </p>
-              <Button className="w-full">
+              <Button className="w-full" onClick={(e) => {
+                e.stopPropagation();
+                handleNavigation('/appointments');
+              }}>
                 Novo Agendamento
               </Button>
             </CardContent>
           </Card>
 
-          <Card className={`${animations.cardHover} border-primary/20 hover:border-primary/40 transition-all`}>
+          <Card className={`${animations.cardHover} border-primary/20 hover:border-primary/40 transition-all cursor-pointer`}
+                onClick={() => handleNavigation('/chat')}>
             <CardHeader className="text-center pb-2">
               <MessageCircle className="h-8 w-8 text-primary mx-auto mb-2" />
               <CardTitle className="text-lg">Chat</CardTitle>
@@ -71,13 +81,17 @@ const Index = () => {
               <p className="text-sm text-muted-foreground mb-3">
                 Tire suas dúvidas conosco
               </p>
-              <Button variant="outline" className="w-full">
+              <Button variant="outline" className="w-full" onClick={(e) => {
+                e.stopPropagation();
+                handleNavigation('/chat');
+              }}>
                 Iniciar Chat
               </Button>
             </CardContent>
           </Card>
 
-          <Card className={`${animations.cardHover} border-primary/20 hover:border-primary/40 transition-all`}>
+          <Card className={`${animations.cardHover} border-primary/20 hover:border-primary/40 transition-all cursor-pointer`}
+                onClick={() => handleNavigation('/locations')}>
             <CardHeader className="text-center pb-2">
               <MapPin className="h-8 w-8 text-primary mx-auto mb-2" />
               <CardTitle className="text-lg">Unidades</CardTitle>
@@ -86,13 +100,17 @@ const Index = () => {
               <p className="text-sm text-muted-foreground mb-3">
                 Encontre a unidade mais próxima
               </p>
-              <Button variant="outline" className="w-full">
+              <Button variant="outline" className="w-full" onClick={(e) => {
+                e.stopPropagation();
+                handleNavigation('/locations');
+              }}>
                 Ver Locais
               </Button>
             </CardContent>
           </Card>
 
-          <Card className={`${animations.cardHover} border-red-200 hover:border-red-400 transition-all bg-red-50`}>
+          <Card className={`${animations.cardHover} border-red-200 hover:border-red-400 transition-all bg-red-50 cursor-pointer`}
+                onClick={handleEmergencyCall}>
             <CardHeader className="text-center pb-2">
               <Phone className="h-8 w-8 text-red-600 mx-auto mb-2" />
               <CardTitle className="text-lg text-red-600">Emergência</CardTitle>
@@ -104,7 +122,10 @@ const Index = () => {
               <Button 
                 variant="destructive" 
                 className="w-full"
-                onClick={handleEmergencyCall}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleEmergencyCall();
+                }}
               >
                 Ligar Agora
               </Button>
@@ -158,7 +179,8 @@ const Index = () => {
                 badge: "24h"
               }
             ].map((service, index) => (
-              <Card key={index} className={`${animations.cardHover} h-full`}>
+              <Card key={index} className={`${animations.cardHover} h-full cursor-pointer`}
+                    onClick={() => handleNavigation('/appointments')}>
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="text-3xl mb-2">{service.icon}</div>
@@ -190,10 +212,10 @@ const Index = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button size="lg" className="text-lg px-8">
+                <Button size="lg" className="text-lg px-8" onClick={() => handleNavigation('/appointments')}>
                   Agendar Consulta
                 </Button>
-                <Button size="lg" variant="outline" className="text-lg px-8">
+                <Button size="lg" variant="outline" className="text-lg px-8" onClick={() => handleNavigation('/chat')}>
                   Falar no WhatsApp
                 </Button>
               </div>
