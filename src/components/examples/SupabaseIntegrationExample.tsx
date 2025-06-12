@@ -51,8 +51,8 @@ export const SupabaseIntegrationExample: React.FC = () => {
     const credentials = {
       email: formData.get('email') as string,
       password: formData.get('password') as string,
-      name: formData.get('name') as string,
-      phone: formData.get('phone') as string
+      nome_completo: formData.get('nome_completo') as string,
+      telefone: formData.get('telefone') as string
     };
 
     const result = await register(credentials);
@@ -140,13 +140,13 @@ export const SupabaseIntegrationExample: React.FC = () => {
           <CardContent>
             <form onSubmit={handleRegister} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-1">Name</label>
+                <label className="block text-sm font-medium mb-1">Nome Completo</label>
                 <input
-                  name="name"
+                  name="nome_completo"
                   type="text"
                   required
                   className="w-full p-2 border rounded-md"
-                  placeholder="Your full name"
+                  placeholder="Seu nome completo"
                 />
               </div>
               
@@ -162,9 +162,9 @@ export const SupabaseIntegrationExample: React.FC = () => {
               </div>
               
               <div>
-                <label className="block text-sm font-medium mb-1">Phone</label>
+                <label className="block text-sm font-medium mb-1">Telefone</label>
                 <input
-                  name="phone"
+                  name="telefone"
                   type="tel"
                   className="w-full p-2 border rounded-md"
                   placeholder="(11) 99999-9999"

@@ -21,7 +21,7 @@ const Index = () => {
     <div className="min-h-screen bg-gradient-to-br from-primary/5 to-background">
       <div className="container mx-auto px-4 py-8 space-y-8">
         {/* Hero Section */}
-        <div className={`text-center space-y-4 ${animations.fadeInUp}`}>
+        <div className={`text-center space-y-4 ${animations.fadeIn}`}>
           <div className="flex justify-center mb-6">
             <div className="w-24 h-24 rounded-2xl flex items-center justify-center overflow-hidden bg-white shadow-lg">
               <img 

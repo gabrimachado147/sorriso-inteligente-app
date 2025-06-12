@@ -13,7 +13,7 @@ import ProfilePage from "@/pages/ProfilePage";
 import AuthPage from "@/pages/AuthPage";
 import NotFound from "@/pages/NotFound";
 import EmergencyPage from "@/pages/EmergencyPage";
-import PWASettingsPage from "@/pages/PWASettingsPage";
+import { PWASettingsPage } from "@/pages/PWASettingsPage";
 
 const queryClient = new QueryClient();
 
@@ -83,7 +83,7 @@ function App() {
           <Route path="/pwa-settings" element={
             <ProtectedRoute>
               <MainLayout currentPage="pwa-settings" onPageChange={handlePageChange}>
-                <PWASettingsPage />
+                <PWASettingsPage onNavigate={handlePageChange} />
               </MainLayout>
             </ProtectedRoute>
           } />
