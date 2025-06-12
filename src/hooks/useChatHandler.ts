@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { whatsappService, ChatMessage } from '@/services/whatsapp';
+import { whatsappService, type ChatMessage } from '@/services/whatsapp';
 import { toastError, toastSuccess } from '@/components/ui/custom-toast';
 
 export const useChatHandler = () => {

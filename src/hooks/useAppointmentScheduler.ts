@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { whatsappService, AppointmentData } from '@/services/whatsapp';
+import { whatsappService, type AppointmentData } from '@/services/whatsapp';
 import { toastSuccess, toastError } from '@/components/ui/custom-toast';
 
 export const useAppointmentScheduler = () => {

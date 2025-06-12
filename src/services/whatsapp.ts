@@ -15,6 +15,22 @@ export interface WhatsAppWebhookData {
   threadId?: string
 }
 
+export interface AppointmentData {
+  name: string
+  phone: string
+  date: string
+  time: string
+  service?: string
+}
+
+export interface ChatMessage {
+  id: string
+  phone: string
+  message: string
+  type: 'user' | 'bot'
+  timestamp: string
+}
+
 export class WhatsAppService {
   private static readonly WEBHOOK_URL = 'https://n8nwebhook.enigmabot.store/webhook/9598a25e-5915-4fe1-b136-90cbcc05bbe0'
 
@@ -66,6 +82,30 @@ export class WhatsAppService {
     console.log(`Sending response to ${phone}: ${message}`)
     // This would integrate with actual WhatsApp API
     // For now, it's just a placeholder
+  }
+
+  /**
+   * Schedule appointment via webhook
+   */
+  static async scheduleAppointment(data: AppointmentData): Promise<{ success: boolean; message: string }> {
+    try {
+      const webhookData: WhatsAppWebhookData = {
+        phone: data.phone,
+        message: `Agendamento: ${data.name} - ${data.date} às ${data.time}${data.service ? ` - ${data.service}` : ''}`,
+        sessionId: `appointment_${Date.now()}`,
+        threadId: `thread_appointment_${Date.now()}`
+      }
+
+      await this.sendToWebhook(webhookData)
+
+      return {
+        success: true,
+        message: 'Appointment scheduled successfully'
+      }
+    } catch (error) {
+      console.error('Error scheduling appointment:', error)
+      throw error
+    }
   }
 
   /**
