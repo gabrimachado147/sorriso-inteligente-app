@@ -2,7 +2,7 @@ export default {
   testEnvironment: 'jsdom',
   roots: ['<rootDir>/tests'],
   testMatch: [
-    '<rootDir>/tests/**/*.test.{js,jsx}',
+    '<rootDir>/tests/**/*.test.{js,jsx,ts,tsx}',
   ],
   collectCoverageFrom: [
     'src/**/*.{ts,tsx}',
@@ -23,6 +23,9 @@ export default {
   transformIgnorePatterns: [
     'node_modules/(?!(@supabase|cross-fetch)/.*)'
   ],
+  transform: {
+    '^.+\\.(ts|tsx)$': 'ts-jest'
+  },
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1'
   },
