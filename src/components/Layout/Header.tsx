@@ -36,8 +36,12 @@ export const Header: React.FC = () => {
           <Menu className="h-5 w-5" />
         </Button>
         <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-sm">SS</span>
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden">
+            <img 
+              src="/lovable-uploads/a077d15e-e6ba-4de3-833a-6913d8203ffd.png" 
+              alt="Senhor Sorriso Logo" 
+              className="w-full h-full object-contain"
+            />
           </div>
           <span className="font-semibold text-lg text-primary">Senhor Sorriso</span>
         </div>
