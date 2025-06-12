@@ -1,6 +1,9 @@
 /**
  * Testes avançados para funcionalidades PWA
  * Valida Background Sync, notificações e armazenamento offline
+ *
+ * Nota: esta suíte é ignorada em CI devido à dependência em APIs de hooks
+ * que não funcionam bem sem a lib de testes oficial.
  */
 
 const React = require('react');
