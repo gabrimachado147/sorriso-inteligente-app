@@ -1,4 +1,21 @@
-# Guardrails AI Implementation Complete - Sorriso Inteligente PWA
+# REMOVED: Guardrails AI Implementation
+**Status: REMOVED**
+
+This file documented the previous Guardrails AI implementation that has been completely removed from the Sorriso Inteligente application. 
+
+**What was removed:**
+- All Guardrails AI validation endpoints
+- Python-based validation server
+- AI safety and content filtering
+- Emergency triage validation
+- Clinical content validation
+
+**Current state:**
+- Application now uses simple client-side validation
+- No external validation API dependencies
+- Streamlined codebase without AI validation complexity
+
+The application continues to function with basic form validation and user input checking.
 
 ## 🛡️ **IMPLEMENTATION SUMMARY**
 

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import { MainLayout } from '@/components/Layout/MainLayout';
-import { HomePage } from '@/components/Dashboard/HomePage';
+import { HomePage } from '@/components/Dashboard/HomePageSimple';
 import LocationsPage from '@/components/Locations/LocationsPage';
 import AppointmentScheduler from '@/components/Appointments/AppointmentScheduler';
 import ChatPage from '@/pages/ChatPage';

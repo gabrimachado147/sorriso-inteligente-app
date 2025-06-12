@@ -1,18 +1,47 @@
 // API Configuration for Production/Development
+// Type definitions for API responses
+export interface AppointmentData {
+  id?: string;
+  patient_name: string;
+  date: string;
+  time: string;
+  reason: string;
+  urgency_level: string;
+}
+
+export interface PatientData {
+  id?: string;
+  name: string;
+  email: string;
+  phone: string;
+  dateOfBirth: string;
+  medicalHistory?: string[];
+}
+
+export interface APIResponse<T = unknown> {
+  success: boolean;
+  data: T;
+  message?: string;
+  error?: string;
+}
+
+export interface HealthCheckResponse {
+  status: string;
+  message: string;
+  timestamp: string;
+}
+
 export const API_CONFIG = {
-  GUARDRAILS_BASE_URL: process.env.NODE_ENV === 'production' 
+  // Standard REST API endpoints (removed Guardrails dependencies)
+  BASE_URL: process.env.NODE_ENV === 'production' 
     ? 'https://your-api-domain.com'  // TODO: Replace with actual production URL
-    : 'http://localhost:8000',
+    : 'http://localhost:3000',
   
   ENDPOINTS: {
-    health: '/health',
-    metrics: '/metrics',
-    validate: {
-      chat: '/validate/chat',
-      appointment: '/validate/appointment', 
-      emergency: '/validate/emergency',
-      clinical: '/validate/clinical'
-    }
+    appointments: '/api/appointments',
+    patients: '/api/patients',
+    services: '/api/services',
+    health: '/api/health'
   },
   
   // Request configuration
@@ -21,15 +50,15 @@ export const API_CONFIG = {
   RETRY_DELAY: 1000
 }
 
-// API Client with retry logic and error handling
-export class GuardrailsAPIClient {
+// Standard API Client (without Guardrails validation)
+export class APIClient {
   private baseURL: string;
   
   constructor() {
-    this.baseURL = API_CONFIG.GUARDRAILS_BASE_URL;
+    this.baseURL = API_CONFIG.BASE_URL;
   }
   
-  private async request(endpoint: string, options: RequestInit = {}) {
+  private async request<T = unknown>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const url = `${this.baseURL}${endpoint}`;
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.TIMEOUT);
@@ -50,101 +79,53 @@ export class GuardrailsAPIClient {
         throw new Error(`API Error: ${response.status} ${response.statusText}`);
       }
       
-      return await response.json();
+      return await response.json() as T;
     } catch (error) {
       clearTimeout(timeoutId);
       throw error;
     }
   }
   
-  // Health check with automatic retry
-  async checkHealth(): Promise<{ status: string; message: string }> {
-    return this.request(API_CONFIG.ENDPOINTS.health);
+  // Health check
+  async checkHealth(): Promise<HealthCheckResponse> {
+    return this.request<HealthCheckResponse>(API_CONFIG.ENDPOINTS.health);
   }
   
-  // Get API metrics
-  async getMetrics(): Promise<any> {
-    return this.request(API_CONFIG.ENDPOINTS.metrics);
-  }
-  
-  // Validate chat message
-  async validateChat(message: string): Promise<{
-    isValid: boolean;
-    confidence: number;
-    risk_level: string;
-    message: string;
-  }> {
-    return this.request(API_CONFIG.ENDPOINTS.validate.chat, {
-      method: 'POST',
-      body: JSON.stringify({ message })
-    });
-  }
-  
-  // Validate appointment request
-  async validateAppointment(appointmentData: {
-    patient_name: string;
-    preferred_date: string;
-    reason: string;
-    urgency_level: string;
-  }): Promise<{
-    isValid: boolean;
-    confidence: number;
-    risk_level: string;
-    message: string;
-  }> {
-    return this.request(API_CONFIG.ENDPOINTS.validate.appointment, {
+  // Basic appointment operations
+  async createAppointment(appointmentData: AppointmentData): Promise<APIResponse<AppointmentData>> {
+    return this.request<APIResponse<AppointmentData>>(API_CONFIG.ENDPOINTS.appointments, {
       method: 'POST',
       body: JSON.stringify(appointmentData)
     });
   }
   
-  // Validate emergency triage
-  async validateEmergency(emergencyData: {
-    symptoms: string;
-    severity: string;
-    duration: string;
-    patient_age: number;
-  }): Promise<{
-    isValid: boolean;
-    confidence: number;
-    risk_level: string;
-    message: string;
-  }> {
-    return this.request(API_CONFIG.ENDPOINTS.validate.emergency, {
+  async getAppointments(): Promise<APIResponse<AppointmentData[]>> {
+    return this.request<APIResponse<AppointmentData[]>>(API_CONFIG.ENDPOINTS.appointments);
+  }
+  
+  // Basic patient operations
+  async createPatient(patientData: PatientData): Promise<APIResponse<PatientData>> {
+    return this.request<APIResponse<PatientData>>(API_CONFIG.ENDPOINTS.patients, {
       method: 'POST',
-      body: JSON.stringify(emergencyData)
+      body: JSON.stringify(patientData)
     });
   }
   
-  // Validate clinical content
-  async validateClinical(clinicalData: {
-    content: string;
-    content_type: string;
-    medical_specialty: string;
-  }): Promise<{
-    isValid: boolean;
-    confidence: number;
-    risk_level: string;
-    message: string;
-  }> {
-    return this.request(API_CONFIG.ENDPOINTS.validate.clinical, {
-      method: 'POST',
-      body: JSON.stringify(clinicalData)
-    });
+  async getPatients(): Promise<APIResponse<PatientData[]>> {
+    return this.request<APIResponse<PatientData[]>>(API_CONFIG.ENDPOINTS.patients);
   }
 }
 
 // Singleton instance
-export const guardrailsAPI = new GuardrailsAPIClient();
+export const apiClient = new APIClient();
 
-// React hook for API integration
-export const useGuardrailsAPI = () => {
+// React hook for API integration (without Guardrails)
+export const useAPI = () => {
   return {
-    checkHealth: guardrailsAPI.checkHealth.bind(guardrailsAPI),
-    getMetrics: guardrailsAPI.getMetrics.bind(guardrailsAPI),
-    validateChat: guardrailsAPI.validateChat.bind(guardrailsAPI),
-    validateAppointment: guardrailsAPI.validateAppointment.bind(guardrailsAPI),
-    validateEmergency: guardrailsAPI.validateEmergency.bind(guardrailsAPI),
-    validateClinical: guardrailsAPI.validateClinical.bind(guardrailsAPI)
+    checkHealth: apiClient.checkHealth.bind(apiClient),
+    createAppointment: apiClient.createAppointment.bind(apiClient),
+    getAppointments: apiClient.getAppointments.bind(apiClient),
+    createPatient: apiClient.createPatient.bind(apiClient),
+    getPatients: apiClient.getPatients.bind(apiClient)
   };
 };

@@ -58,8 +58,13 @@ describe('PWA Advanced Features', () => {
       const { result } = renderHook(() => usePWA());
       
       // Mock updateAvailable to true for this test
-      (result.current as any).updateAvailable = true;
-      (result.current as any).hasUpdate = true;
+      const mockResult = result.current as unknown as {
+        updateAvailable: boolean;
+        hasUpdate: boolean;
+        checkForUpdates: jest.MockedFunction<() => Promise<void>>;
+      };
+      mockResult.updateAvailable = true;
+      mockResult.hasUpdate = true;
       
       await result.current.checkForUpdates();
       expect(result.current.checkForUpdates).toHaveBeenCalled();

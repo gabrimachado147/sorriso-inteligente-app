@@ -5,7 +5,7 @@ import { offlineStorage } from '@/lib/offline-storage';
 interface ValidationQueueItem {
   id: string;
   type: 'chat' | 'appointment' | 'emergency' | 'clinical';
-  data: any;
+  data: Record<string, unknown>;
   timestamp: number;
   retryCount: number;
   status: 'pending' | 'processing' | 'completed' | 'failed';
@@ -39,7 +39,7 @@ interface PWAHook {
   syncOfflineData: () => Promise<boolean>;
   // Enhanced validation queue methods
   validationQueue: ValidationQueueItem[];
-  addToValidationQueue: (type: ValidationQueueItem['type'], data: any) => Promise<string>;
+  addToValidationQueue: (type: ValidationQueueItem['type'], data: Record<string, unknown>) => Promise<string>;
   processValidationQueue: () => Promise<void>;
   getValidationQueueStatus: () => { pending: number; processing: number; failed: number };
   clearValidationQueue: () => Promise<void>;
@@ -432,7 +432,7 @@ export const usePWA = (): PWAHook => {
   }, [isOnline]);
 
   // Validation queue management
-  const addToValidationQueue = useCallback(async (type: ValidationQueueItem['type'], data: any) => {
+  const addToValidationQueue = useCallback(async (type: ValidationQueueItem['type'], data: Record<string, unknown>) => {
     const newItem: ValidationQueueItem = {
       id: `${Date.now()}-${Math.random()}`,
       type,

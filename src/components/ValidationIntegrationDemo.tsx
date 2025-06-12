@@ -1,7 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { usePWA } from '../hooks/usePWA';
-import { useGuardrailsAPI } from '../config/api';
+import { useAPI } from '../config/api';
 import { ChatValidationComponent, AppointmentValidationComponent, EmergencyTriageComponent } from '../components/ValidationComponents';
+
+// Type definitions for validation results
+interface ValidationResultItem {
+  type: string;
+  timestamp: string;
+  isValid: boolean;
+  confidence?: number;
+  risk_level: string;
+  message: string;
+  input: unknown;
+}
 
 interface ValidationDemoProps {
   className?: string;
@@ -9,10 +20,15 @@ interface ValidationDemoProps {
 
 export const ValidationIntegrationDemo: React.FC<ValidationDemoProps> = ({ className }) => {
   const pwa = usePWA();
-  const guardrailsAPI = useGuardrailsAPI();
+  const api = useAPI();
   
   const [chatMessage, setChatMessage] = useState('');
-  const [appointmentData, setAppointmentData] = useState({
+  const [appointmentData, setAppointmentData] = useState<{
+    patient_name: string;
+    preferred_date: string;
+    reason: string;
+    urgency_level: string;
+  }>({
     patient_name: '',
     preferred_date: '',
     reason: '',
@@ -25,14 +41,14 @@ export const ValidationIntegrationDemo: React.FC<ValidationDemoProps> = ({ class
     patient_age: 30
   });
   
-  const [validationResults, setValidationResults] = useState<any[]>([]);
+  const [validationResults, setValidationResults] = useState<ValidationResultItem[]>([]);
   const [apiHealth, setApiHealth] = useState<{ status: string; message: string } | null>(null);
 
   // Check API health on mount
   useEffect(() => {
     const checkHealth = async () => {
       try {
-        const health = await guardrailsAPI.checkHealth();
+        const health = await api.checkHealth();
         setApiHealth(health);
       } catch (error) {
         setApiHealth({ status: 'error', message: 'API unavailable' });
@@ -41,21 +57,22 @@ export const ValidationIntegrationDemo: React.FC<ValidationDemoProps> = ({ class
     };
     
     checkHealth();
-  }, [guardrailsAPI]);
+  }, [api]);
 
   // Auto-sync validation queue when coming online
   useEffect(() => {
     if (pwa.isOnline && pwa.validationQueue.length > 0) {
       pwa.processValidationQueue();
     }
-  }, [pwa.isOnline, pwa.validationQueue.length]);
+  }, [pwa.isOnline, pwa.validationQueue.length, pwa]);
 
   const handleChatValidation = async (isValid: boolean, confidence: number, message: string) => {
-    const result = {
+    const result: ValidationResultItem = {
       type: 'chat',
       timestamp: new Date().toISOString(),
       isValid,
       confidence,
+      risk_level: isValid ? 'low' : 'high',
       message,
       input: chatMessage
     };
@@ -68,11 +85,14 @@ export const ValidationIntegrationDemo: React.FC<ValidationDemoProps> = ({ class
     }
   };
 
-  const handleAppointmentValidation = async (result: any) => {
-    const validationResult = {
+  const handleAppointmentValidation = async (result: { isValid: boolean; confidence?: number; risk_level: string; message: string }) => {
+    const validationResult: ValidationResultItem = {
       type: 'appointment',
       timestamp: new Date().toISOString(),
-      ...result,
+      isValid: result.isValid,
+      confidence: result.confidence,
+      risk_level: result.risk_level,
+      message: result.message,
       input: appointmentData
     };
     
@@ -84,11 +104,13 @@ export const ValidationIntegrationDemo: React.FC<ValidationDemoProps> = ({ class
     }
   };
 
-  const handleEmergencyTriage = async (result: any) => {
-    const triageResult = {
+  const handleEmergencyTriage = async (result: { isValid: boolean; risk_level: string; message: string }) => {
+    const triageResult: ValidationResultItem = {
       type: 'emergency',
       timestamp: new Date().toISOString(),
-      ...result,
+      isValid: result.isValid,
+      risk_level: result.risk_level,
+      message: result.message,
       input: emergencyData
     };
     
@@ -108,7 +130,7 @@ export const ValidationIntegrationDemo: React.FC<ValidationDemoProps> = ({ class
       <div className="api-status-header">
         <div className={`status-indicator ${apiHealth?.status === 'healthy' ? 'online' : 'offline'}`}>
           <span className="status-dot"></span>
-          <span>Guardrails API: {apiHealth?.status || 'Checking...'}</span>
+          <span>API Status: {apiHealth?.status || 'Checking...'}</span>
         </div>
         
         <div className={`pwa-status ${pwa.isOnline ? 'online' : 'offline'}`}>

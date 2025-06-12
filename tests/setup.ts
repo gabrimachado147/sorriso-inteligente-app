@@ -242,5 +242,12 @@ global.indexedDB = {
     error: null,
     readyState: 'done',
     source: null
-  }))
-} as any;
+  })),
+  deleteDatabase: jest.fn(() => ({
+    onsuccess: jest.fn(),
+    onerror: jest.fn(),
+    onblocked: jest.fn()
+  })),
+  cmp: jest.fn((a, b) => a === b ? 0 : a < b ? -1 : 1),
+  databases: jest.fn(() => Promise.resolve([]))
+} as unknown as IDBFactory;

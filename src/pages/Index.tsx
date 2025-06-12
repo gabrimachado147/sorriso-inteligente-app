@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { HomePage } from '@/components/Dashboard/HomePage';
+import { HomePage } from '@/components/Dashboard/HomePageSimple';
 import { useNavigate } from 'react-router-dom';
 
 const Index = () => {

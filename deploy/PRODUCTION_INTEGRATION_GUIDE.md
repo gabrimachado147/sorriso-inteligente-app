@@ -1,3 +1,16 @@
+# ⚠️ **GUARDRAILS REMOVED - JUNE 12, 2025**
+
+**This integration guide is now OUTDATED as the entire Guardrails AI system has been completely removed from the application.**
+
+**Current Status:**
+- ✅ No Guardrails API integration required
+- ✅ Application simplified to frontend-only deployment
+- ✅ Standard React/PWA deployment process applies
+
+---
+
+# Production Integration Guide - Sorriso Inteligente PWA (OUTDATED)
+
 # 🚀 Production Integration Guide
 ## Sorriso Inteligente PWA with Guardrails API
 

@@ -1,7 +1,6 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { PWADashboard, PWAQuickInstall } from '@/components/ui/pwa-dashboard';
 import { toastSuccess, toastInfo, toastAppointment, toastCall } from '@/components/ui/custom-toast';
 import { useAppointmentScheduler } from '@/hooks/useAppointmentScheduler';
 import { useChatHandler } from '@/hooks/useChatHandler';
@@ -367,11 +366,24 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         </CardContent>
       </Card>
 
-      {/* PWA Dashboard */}
-      <PWADashboard onInstall={() => toastSuccess("App Instalado", "Sorriso Inteligente foi instalado com sucesso!")} />
-
-      {/* PWA Quick Install Prompt */}
-      <PWAQuickInstall />
+      {/* App Installation Prompt */}
+      <Card className={`bg-blue-50 border-blue-200 ${animations.fadeIn}`}>
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-semibold text-blue-800">Instalar App</h3>
+              <p className="text-sm text-blue-600">Acesso rápido e funcionalidade offline</p>
+            </div>
+            <Button 
+              className={`bg-blue-600 hover:bg-blue-700 ${animations.buttonHover}`}
+              onClick={() => toastInfo("PWA", "Recursos PWA disponíveis no menu configurações")}
+            >
+              <Phone className="h-4 w-4 mr-2" />
+              Configurar
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };

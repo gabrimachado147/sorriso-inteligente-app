@@ -1,5 +1,19 @@
 import React, { useState, useCallback } from 'react';
-import { useGuardrailsAPI } from '../config/api';
+import { useAPI } from '../config/api';
+
+// Type definitions for validation results
+interface ValidationResult {
+  isValid: boolean;
+  confidence?: number;
+  risk_level: string;
+  message: string;
+}
+
+interface TriageResult {
+  isValid: boolean;
+  risk_level: string;
+  message: string;
+}
 
 interface ChatValidationProps {
   onValidation: (isValid: boolean, confidence: number, message: string) => void;
@@ -20,7 +34,20 @@ export const ChatValidationComponent: React.FC<ChatValidationProps> = ({
     message: string;
   } | null>(null);
   
-  const { validateChat } = useGuardrailsAPI();
+  // Basic client-side validation (replacing Guardrails)
+  const validateChat = useCallback(async (message: string) => {
+    // Simple validation rules without external API
+    const isValid = message.trim().length > 0 && message.trim().length <= 1000;
+    const confidence = isValid ? 0.9 : 0.1;
+    const risk_level = isValid ? 'low' : 'high';
+    
+    return {
+      isValid,
+      confidence,
+      risk_level,
+      message: isValid ? 'Message is valid' : 'Message is invalid or too long'
+    };
+  }, []);
   
   const handleValidation = useCallback(async (message: string) => {
     if (!message.trim() || disabled) return;
@@ -76,7 +103,7 @@ interface AppointmentValidationProps {
     reason: string;
     urgency_level: string;
   };
-  onValidation: (result: any) => void;
+  onValidation: (result: ValidationResult) => void;
 }
 
 export const AppointmentValidationComponent: React.FC<AppointmentValidationProps> = ({
@@ -84,7 +111,28 @@ export const AppointmentValidationComponent: React.FC<AppointmentValidationProps
   onValidation
 }) => {
   const [isValidating, setIsValidating] = useState(false);
-  const { validateAppointment } = useGuardrailsAPI();
+  
+  // Basic appointment validation (replacing Guardrails)
+  const validateAppointment = useCallback(async (appointmentData: {
+    patient_name: string;
+    preferred_date: string;
+    reason: string;
+    urgency_level: string;
+  }) => {
+    // Simple validation rules
+    const hasRequiredFields = Boolean(appointmentData.patient_name && 
+                                     appointmentData.preferred_date && 
+                                     appointmentData.reason);
+    const isValid = hasRequiredFields;
+    const confidence = isValid ? 0.9 : 0.1;
+    
+    return {
+      isValid,
+      confidence,
+      risk_level: isValid ? 'low' : 'high',
+      message: isValid ? 'Appointment data is valid' : 'Missing required appointment information'
+    };
+  }, []);
   
   const handleValidateAppointment = async () => {
     setIsValidating(true);
@@ -93,7 +141,12 @@ export const AppointmentValidationComponent: React.FC<AppointmentValidationProps
       onValidation(result);
     } catch (error) {
       console.error('Appointment validation failed:', error);
-      onValidation({ isValid: false, message: 'Validation failed' });
+      onValidation({ 
+        isValid: false, 
+        confidence: 0,
+        risk_level: 'high',
+        message: 'Validation failed' 
+      });
     } finally {
       setIsValidating(false);
     }
@@ -117,7 +170,7 @@ interface EmergencyTriageProps {
   severity: string;
   duration: string;
   patientAge: number;
-  onTriageResult: (result: any) => void;
+  onTriageResult: (result: TriageResult) => void;
 }
 
 export const EmergencyTriageComponent: React.FC<EmergencyTriageProps> = ({
@@ -128,7 +181,41 @@ export const EmergencyTriageComponent: React.FC<EmergencyTriageProps> = ({
   onTriageResult
 }) => {
   const [isProcessing, setIsProcessing] = useState(false);
-  const { validateEmergency } = useGuardrailsAPI();
+  
+  // Basic emergency triage (replacing Guardrails)
+  const validateEmergency = useCallback(async (emergencyData: {
+    symptoms: string;
+    severity: string;
+    duration: string;
+    patient_age: number;
+  }) => {
+    const emergencyKeywords = ['severe pain', 'bleeding', 'trauma', 'unconscious', 'chest pain'];
+    const urgentKeywords = ['pain', 'swelling', 'fever', 'difficulty'];
+    
+    const hasEmergency = emergencyKeywords.some(keyword => 
+      emergencyData.symptoms.toLowerCase().includes(keyword)
+    );
+    const hasUrgent = urgentKeywords.some(keyword => 
+      emergencyData.symptoms.toLowerCase().includes(keyword)
+    );
+    
+    const isValid = true;
+    let risk_level: string;
+    let message: string;
+    
+    if (hasEmergency) {
+      risk_level = 'high';
+      message = 'Emergency conditions detected - seek immediate medical attention';
+    } else if (hasUrgent) {
+      risk_level = 'medium';
+      message = 'Urgent conditions detected - schedule appointment soon';
+    } else {
+      risk_level = 'low';
+      message = 'Routine symptoms - schedule regular appointment';
+    }
+    
+    return { isValid, risk_level, message };
+  }, []);
   
   const handleEmergencyTriage = async () => {
     setIsProcessing(true);
@@ -168,26 +255,4 @@ export const EmergencyTriageComponent: React.FC<EmergencyTriageProps> = ({
       </button>
     </div>
   );
-};
-
-// Validation status hook for real-time feedback
-export const useValidationStatus = () => {
-  const [validationQueue, setValidationQueue] = useState<string[]>([]);
-  const [isConnected, setIsConnected] = useState(true);
-  
-  const addToQueue = (validationType: string) => {
-    setValidationQueue(prev => [...prev, validationType]);
-  };
-  
-  const removeFromQueue = (validationType: string) => {
-    setValidationQueue(prev => prev.filter(item => item !== validationType));
-  };
-  
-  return {
-    validationQueue,
-    isConnected,
-    addToQueue,
-    removeFromQueue,
-    queueLength: validationQueue.length
-  };
 };
