@@ -1,0 +1,14 @@
+{
+  "name": "sorriso-inteligente-mobile",
+  "private": true,
+  "version": "0.1.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "expo start"
+  },
+  "dependencies": {
+    "expo": "^50.0.0",
+    "react": "18.3.0",
+    "react-native": "0.73.0"
+  }
+}

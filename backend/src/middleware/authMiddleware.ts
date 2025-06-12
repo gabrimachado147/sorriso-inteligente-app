@@ -1,0 +1,6 @@
+import { Request, Response, NextFunction } from 'express';
+
+export function authenticate(req: Request, res: Response, next: NextFunction) {
+  // TODO: verify JWT token
+  next();
+}
