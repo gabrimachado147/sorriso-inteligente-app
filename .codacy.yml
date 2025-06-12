@@ -1,0 +1,76 @@
+---
+engines:
+  # TypeScript/JavaScript Analysis
+  eslint:
+    enabled: true
+    exclude_paths:
+      - 'dist/'
+      - 'node_modules/'
+      - 'coverage/'
+      - '*.test.ts'
+      - '*.test.tsx'
+      - '*.spec.ts'
+      - '*.spec.tsx'
+  
+  # CSS Analysis
+  stylelint:
+    enabled: true
+    exclude_paths:
+      - 'dist/'
+      - 'node_modules/'
+  
+  # Duplication Detection
+  duplication:
+    enabled: true
+    exclude_paths:
+      - 'dist/'
+      - 'node_modules/'
+      - 'coverage/'
+      - 'tests/'
+  
+  # Coverage Analysis
+  coverage:
+    enabled: true
+    exclude_paths:
+      - 'dist/'
+      - 'node_modules/'
+      - 'coverage/'
+
+exclude_paths:
+  - 'dist/**'
+  - 'node_modules/**'
+  - 'coverage/**'
+  - '*.min.js'
+  - '*.min.css'
+  - 'public/**'
+  - '.vercel/**'
+  - '.git/**'
+  - 'vite.config.ts'
+  - 'tailwind.config.js'
+  - 'postcss.config.js'
+
+# File extensions to analyze
+include_paths:
+  - '**/*.ts'
+  - '**/*.tsx'
+  - '**/*.js'
+  - '**/*.jsx'
+  - '**/*.css'
+  - '**/*.scss'
+
+# Codacy configuration
+grade:
+  threshold: 8.0  # Minimum grade threshold (out of 10)
+
+coverage:
+  precision: 2    # Coverage precision (decimal places)
+  range:
+    min: 70       # Minimum coverage percentage
+    max: 100      # Maximum coverage percentage
+
+# Issue severity mapping
+issue_classification:
+  complexity:
+    threshold: 10
+  duplication:
+    threshold: 5
