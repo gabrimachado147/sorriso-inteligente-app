@@ -49,23 +49,26 @@ export const useAuth = (): UseAuthReturn => {
   useEffect(() => {
     const initAuth = async () => {
       try {
-        console.log('Initializing auth...');
+        console.log('useAuth: Initializing auth...');
         setLoading(true);
         
         // Get current session
         const currentSession = await AuthService.getCurrentSession();
-        console.log('Current session:', currentSession);
+        console.log('useAuth: Current session:', currentSession);
         
         setSession(currentSession);
         
         if (currentSession?.user) {
           setUser(currentSession.user);
-          console.log('User found:', currentSession.user.email);
+          console.log('useAuth: User found in session:', currentSession.user.email);
+        } else {
+          console.log('useAuth: No user found in session');
         }
       } catch (err) {
-        console.error('Auth initialization error:', err);
+        console.error('useAuth: Auth initialization error:', err);
         setError(err instanceof Error ? err.message : 'Authentication failed');
       } finally {
+        console.log('useAuth: Auth initialization complete');
         setLoading(false);
       }
     };
@@ -73,17 +76,26 @@ export const useAuth = (): UseAuthReturn => {
     initAuth();
 
     // Listen for auth state changes
+    console.log('useAuth: Setting up auth state listener...');
     const { data: { subscription } } = AuthService.onAuthStateChange(
       async (event, session) => {
-        console.log('Auth state changed:', event, session);
+        console.log('useAuth: Auth state changed:', event, session);
         
         setSession(session);
         setUser(session?.user ?? null);
+        
+        if (event === 'SIGNED_IN') {
+          console.log('useAuth: User signed in successfully');
+        } else if (event === 'SIGNED_OUT') {
+          console.log('useAuth: User signed out');
+        }
+        
         setLoading(false);
       }
     );
 
     return () => {
+      console.log('useAuth: Cleaning up auth state listener');
       subscription.unsubscribe();
     };
   }, []);
@@ -92,6 +104,7 @@ export const useAuth = (): UseAuthReturn => {
   const login = useCallback(async (credentials: LoginCredentials): Promise<AuthResponse> => {
     try {
       console.log('useAuth: Starting login process...');
+      console.log('useAuth: Login credentials email:', credentials.email);
       setLoading(true);
       setError(null);
       
@@ -99,7 +112,10 @@ export const useAuth = (): UseAuthReturn => {
       console.log('useAuth: Login response:', response);
       
       if (!response.success) {
+        console.error('useAuth: Login failed with error:', response.error);
         setError(response.error || 'Login failed');
+      } else {
+        console.log('useAuth: Login successful in hook');
       }
       
       return response;
@@ -109,6 +125,7 @@ export const useAuth = (): UseAuthReturn => {
       setError(error);
       return { success: false, error };
     } finally {
+      console.log('useAuth: Login process complete, setting loading to false');
       setLoading(false);
     }
   }, []);
@@ -214,6 +231,15 @@ export const useAuth = (): UseAuthReturn => {
 
   // Computed values
   const isAuthenticated = !!session && !!user;
+
+  // Debug logs
+  console.log('useAuth: Current state:', { 
+    user: user?.email, 
+    hasSession: !!session, 
+    loading, 
+    error, 
+    isAuthenticated 
+  });
 
   return {
     // State

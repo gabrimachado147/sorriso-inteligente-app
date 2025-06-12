@@ -74,6 +74,8 @@ const AuthPage = () => {
     
     console.log('=== FORM SUBMISSION START ===');
     console.log('Form submitted:', { isLogin, formData });
+    console.log('Form element:', e.target);
+    console.log('Loading state:', loading);
     
     if (!validateForm()) {
       console.log('Form validation failed');
@@ -92,6 +94,8 @@ const AuthPage = () => {
 
       if (isLogin) {
         console.log('=== LOGIN ATTEMPT ===');
+        console.log('About to call login function...');
+        
         const result = await login({
           email: phoneEmail,
           password: formData.password
@@ -102,10 +106,13 @@ const AuthPage = () => {
         if (result.success) {
           console.log('Login successful, showing toast and navigating...');
           toastSuccess('Sucesso', 'Login realizado com sucesso!');
+          
+          // Aguardar um pouco antes de navegar para garantir que o estado foi atualizado
+          console.log('Setting timeout for navigation...');
           setTimeout(() => {
-            console.log('Navigating to home page...');
-            navigate('/');
-          }, 1000);
+            console.log('Executing navigation to home page...');
+            navigate('/', { replace: true });
+          }, 1500);
         } else {
           console.error('Login failed with error:', result.error);
           toastError('Erro', result.error || 'Erro ao fazer login');
@@ -126,8 +133,8 @@ const AuthPage = () => {
           toastSuccess('Sucesso', 'Cadastro realizado com sucesso!');
           setTimeout(() => {
             console.log('Navigating to home page...');
-            navigate('/');
-          }, 1000);
+            navigate('/', { replace: true });
+          }, 1500);
         } else {
           console.error('Registration failed with error:', result.error);
           toastError('Erro', result.error || 'Erro ao criar conta');
@@ -138,9 +145,13 @@ const AuthPage = () => {
       toastError('Erro', 'Ocorreu um erro inesperado');
     } finally {
       console.log('=== FORM SUBMISSION END ===');
+      console.log('Setting loading to false...');
       setLoading(false);
     }
   };
+
+  // Adicionar logs para debug do componente
+  console.log('AuthPage render - Current state:', { isLogin, loading, formData });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/10 to-background flex items-center justify-center p-4">
@@ -148,7 +159,10 @@ const AuthPage = () => {
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => navigate('/')}
+          onClick={() => {
+            console.log('Back button clicked, navigating to home');
+            navigate('/');
+          }}
           className="mb-4"
         >
           <ArrowLeft className="h-5 w-5" />
@@ -229,6 +243,7 @@ const AuthPage = () => {
                 type="submit" 
                 className="w-full py-6 text-lg font-semibold"
                 disabled={loading}
+                onClick={() => console.log('Submit button clicked!')}
               >
                 {loading ? 'Aguarde...' : (isLogin ? 'Entrar' : 'Criar Conta')}
               </Button>
@@ -240,7 +255,10 @@ const AuthPage = () => {
               </p>
               <Button
                 variant="link"
-                onClick={() => setIsLogin(!isLogin)}
+                onClick={() => {
+                  console.log('Toggle login/register mode');
+                  setIsLogin(!isLogin);
+                }}
                 className="text-primary font-semibold"
               >
                 {isLogin ? 'Criar conta agora' : 'Fazer login'}
