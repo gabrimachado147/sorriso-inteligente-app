@@ -31,6 +31,12 @@ export class AuthService {
    */
   static async register(credentials: RegisterCredentials): Promise<AuthResponse> {
     try {
+      console.log('AuthService: Attempting registration with:', { 
+        email: credentials.email, 
+        name: credentials.name,
+        phone: credentials.phone 
+      });
+
       const { data, error } = await supabase.auth.signUp({
         email: credentials.email,
         password: credentials.password,
@@ -42,12 +48,16 @@ export class AuthService {
         }
       })
 
+      console.log('AuthService: Registration response:', { data, error });
+
       if (error) {
+        console.error('AuthService: Registration error:', error);
         return { success: false, error: error.message }
       }
 
       return { success: true, user: data.user || undefined }
     } catch (error) {
+      console.error('AuthService: Registration exception:', error);
       return { 
         success: false, 
         error: error instanceof Error ? error.message : 'Registration failed' 
@@ -60,17 +70,24 @@ export class AuthService {
    */
   static async login(credentials: LoginCredentials): Promise<AuthResponse> {
     try {
+      console.log('AuthService: Attempting login with email:', credentials.email);
+
       const { data, error } = await supabase.auth.signInWithPassword({
         email: credentials.email,
         password: credentials.password,
       })
 
+      console.log('AuthService: Login response:', { data, error });
+
       if (error) {
+        console.error('AuthService: Login error:', error);
         return { success: false, error: error.message }
       }
 
+      console.log('AuthService: Login successful, user:', data.user?.email);
       return { success: true, user: data.user || undefined }
     } catch (error) {
+      console.error('AuthService: Login exception:', error);
       return { 
         success: false, 
         error: error instanceof Error ? error.message : 'Login failed' 

@@ -72,6 +72,7 @@ const AuthPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    console.log('=== FORM SUBMISSION START ===');
     console.log('Form submitted:', { isLogin, formData });
     
     if (!validateForm()) {
@@ -79,6 +80,7 @@ const AuthPage = () => {
       return;
     }
 
+    console.log('Form validation passed, proceeding...');
     setLoading(true);
 
     try {
@@ -89,23 +91,27 @@ const AuthPage = () => {
       console.log('Phone email generated:', phoneEmail);
 
       if (isLogin) {
-        console.log('Attempting login...');
+        console.log('=== LOGIN ATTEMPT ===');
         const result = await login({
           email: phoneEmail,
           password: formData.password
         });
 
-        console.log('Login result:', result);
+        console.log('Login result received:', result);
 
         if (result.success) {
+          console.log('Login successful, showing toast and navigating...');
           toastSuccess('Sucesso', 'Login realizado com sucesso!');
-          navigate('/');
+          setTimeout(() => {
+            console.log('Navigating to home page...');
+            navigate('/');
+          }, 1000);
         } else {
-          console.error('Login failed:', result.error);
+          console.error('Login failed with error:', result.error);
           toastError('Erro', result.error || 'Erro ao fazer login');
         }
       } else {
-        console.log('Attempting registration...');
+        console.log('=== REGISTRATION ATTEMPT ===');
         const result = await register({
           email: phoneEmail,
           password: formData.password,
@@ -113,20 +119,25 @@ const AuthPage = () => {
           telefone: formData.telefone
         });
 
-        console.log('Register result:', result);
+        console.log('Registration result received:', result);
 
         if (result.success) {
+          console.log('Registration successful, showing toast and navigating...');
           toastSuccess('Sucesso', 'Cadastro realizado com sucesso!');
-          navigate('/');
+          setTimeout(() => {
+            console.log('Navigating to home page...');
+            navigate('/');
+          }, 1000);
         } else {
-          console.error('Registration failed:', result.error);
+          console.error('Registration failed with error:', result.error);
           toastError('Erro', result.error || 'Erro ao criar conta');
         }
       }
     } catch (error) {
-      console.error('Auth error:', error);
+      console.error('=== UNEXPECTED ERROR ===', error);
       toastError('Erro', 'Ocorreu um erro inesperado');
     } finally {
+      console.log('=== FORM SUBMISSION END ===');
       setLoading(false);
     }
   };
