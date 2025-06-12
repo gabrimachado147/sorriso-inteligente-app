@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -274,25 +275,30 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         </CardContent>
       </Card>
 
-      {/* Serviços em Destaque */}
+      {/* Nossos Serviços - ATUALIZADO */}
       <Card className={animations.fadeIn}>
         <CardHeader>
           <CardTitle>Nossos Serviços</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {[
               { name: 'Avaliação Gratuita', icon: '🔍', popular: true },
-              { name: 'Limpeza Dental', icon: '🦷', popular: false },
+              { name: 'Limpeza', icon: '🦷', popular: true },
+              { name: 'Restauração', icon: '🔧', popular: false },
               { name: 'Ortodontia', icon: '😬', popular: true },
-              { name: 'Implantodontia', icon: '🔧', popular: false },
-              { name: 'Clareamento', icon: '✨', popular: true },
-              { name: 'Urgência 24h', icon: '🚨', popular: false },
+              { name: 'Implantodontia', icon: '⚙️', popular: false },
+              { name: 'Estética Dental', icon: '✨', popular: true },
+              { name: 'Próteses Fixa', icon: '🔩', popular: false },
+              { name: 'Endodontia', icon: '🩺', popular: false },
+              { name: 'Odontopediatria', icon: '👶', popular: false },
+              { name: 'Periodontia', icon: '🦷', popular: false },
+              { name: 'Urgência 24h', icon: '🚨', popular: true },
             ].map((service, index) => (
               <Card 
                 key={service.name} 
                 className={`relative hover:shadow-md transition-shadow cursor-pointer ${animations.cardHover} ${animations.scaleIn}`}
-                style={{ animationDelay: `${index * 100}ms` }}
+                style={{ animationDelay: `${index * 50}ms` }}
                 onClick={() => handleServiceSelect(service.name)}
               >
                 {service.popular && (
