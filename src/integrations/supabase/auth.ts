@@ -1,241 +1,223 @@
+
+// Simplified auth service to work with current database schema
 import { supabase } from './client'
-import type { User, UserInsert, UserUpdate } from './types'
 
-export interface SignUpData {
-  email: string
-  password: string
-  fullName?: string
+export interface AuthUser {
+  id: string
+  email?: string
   phone?: string
-  userType?: 'patient' | 'dentist'
+  user_metadata?: any
 }
 
-export interface SignInData {
+export interface LoginCredentials {
   email: string
   password: string
 }
 
-export interface AuthError {
-  message: string
-  status?: number
+export interface RegisterCredentials {
+  email: string
+  password: string
+  name?: string
+  phone?: string
 }
 
-export interface AuthResponse {
-  user: User | null
-  error: AuthError | null
-}
-
-// Sign up a new user
-export async function signUp(data: SignUpData): Promise<AuthResponse> {
-  try {
-    const { data: authData, error: authError } = await supabase.auth.signUp({
-      email: data.email,
-      password: data.password,
-      options: {
-        data: {
-          full_name: data.fullName,
-          phone: data.phone,
-          user_type: data.userType || 'patient'
+export class AuthService {
+  /**
+   * Register a new user with email and password
+   */
+  static async register(credentials: RegisterCredentials) {
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: credentials.email,
+        password: credentials.password,
+        options: {
+          data: {
+            name: credentials.name,
+            phone: credentials.phone
+          }
         }
-      }
-    })
-
-    if (authError) {
-      return { user: null, error: { message: authError.message } }
-    }
-
-    if (!authData.user) {
-      return { user: null, error: { message: 'Failed to create user' } }
-    }
-
-    // Create user profile in the users table
-    const { data: userProfile, error: profileError } = await supabase
-      .from('users')
-      .insert({
-        id: authData.user.id,
-        email: data.email,
-        full_name: data.fullName,
-        phone: data.phone,
-        user_type: data.userType || 'patient'
       })
-      .select()
-      .single()
 
-    if (profileError) {
-      return { user: null, error: { message: profileError.message } }
-    }
+      if (error) {
+        return { success: false, error: error.message }
+      }
 
-    return { user: userProfile, error: null }
-  } catch (error) {
-    return { 
-      user: null, 
-      error: { message: error instanceof Error ? error.message : 'Unknown error' } 
-    }
-  }
-}
-
-// Sign in an existing user
-export async function signIn(data: SignInData): Promise<AuthResponse> {
-  try {
-    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-      email: data.email,
-      password: data.password
-    })
-
-    if (authError) {
-      return { user: null, error: { message: authError.message } }
-    }
-
-    if (!authData.user) {
-      return { user: null, error: { message: 'Authentication failed' } }
-    }
-
-    // Get user profile
-    const { data: userProfile, error: profileError } = await supabase
-      .from('users')
-      .select('*')
-      .eq('id', authData.user.id)
-      .single()
-
-    if (profileError) {
-      return { user: null, error: { message: profileError.message } }
-    }
-
-    return { user: userProfile, error: null }
-  } catch (error) {
-    return { 
-      user: null, 
-      error: { message: error instanceof Error ? error.message : 'Unknown error' } 
+      return { success: true, user: data.user }
+    } catch (error) {
+      return { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Registration failed' 
+      }
     }
   }
-}
 
-// Sign out the current user
-export async function signOut(): Promise<{ error: AuthError | null }> {
-  try {
-    const { error } = await supabase.auth.signOut()
-    
-    if (error) {
-      return { error: { message: error.message } }
-    }
+  /**
+   * Sign in with email and password
+   */
+  static async login(credentials: LoginCredentials) {
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: credentials.email,
+        password: credentials.password,
+      })
 
-    return { error: null }
-  } catch (error) {
-    return { 
-      error: { message: error instanceof Error ? error.message : 'Unknown error' } 
-    }
-  }
-}
+      if (error) {
+        return { success: false, error: error.message }
+      }
 
-// Get the current user
-export async function getCurrentUser(): Promise<{ user: User | null; error: AuthError | null }> {
-  try {
-    const { data: { user: authUser }, error: authError } = await supabase.auth.getUser()
-
-    if (authError) {
-      return { user: null, error: { message: authError.message } }
-    }
-
-    if (!authUser) {
-      return { user: null, error: null }
-    }
-
-    // Get user profile
-    const { data: userProfile, error: profileError } = await supabase
-      .from('users')
-      .select('*')
-      .eq('id', authUser.id)
-      .single()
-
-    if (profileError) {
-      return { user: null, error: { message: profileError.message } }
-    }
-
-    return { user: userProfile, error: null }
-  } catch (error) {
-    return { 
-      user: null, 
-      error: { message: error instanceof Error ? error.message : 'Unknown error' } 
+      return { success: true, user: data.user }
+    } catch (error) {
+      return { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Login failed' 
+      }
     }
   }
-}
 
-// Update user profile
-export async function updateUserProfile(
-  id: string, 
-  updates: UserUpdate
-): Promise<{ user: User | null; error: AuthError | null }> {
-  try {
-    const { data: userProfile, error } = await supabase
-      .from('users')
-      .update(updates)
-      .eq('id', id)
-      .select()
-      .single()
-
-    if (error) {
-      return { user: null, error: { message: error.message } }
-    }
-
-    return { user: userProfile, error: null }
-  } catch (error) {
-    return { 
-      user: null, 
-      error: { message: error instanceof Error ? error.message : 'Unknown error' } 
-    }
-  }
-}
-
-// Reset password
-export async function resetPassword(email: string): Promise<{ error: AuthError | null }> {
-  try {
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`
-    })
-
-    if (error) {
-      return { error: { message: error.message } }
-    }
-
-    return { error: null }
-  } catch (error) {
-    return { 
-      error: { message: error instanceof Error ? error.message : 'Unknown error' } 
-    }
-  }
-}
-
-// Update password
-export async function updatePassword(newPassword: string): Promise<{ error: AuthError | null }> {
-  try {
-    const { error } = await supabase.auth.updateUser({
-      password: newPassword
-    })
-
-    if (error) {
-      return { error: { message: error.message } }
-    }
-
-    return { error: null }
-  } catch (error) {
-    return { 
-      error: { message: error instanceof Error ? error.message : 'Unknown error' } 
-    }
-  }
-}
-
-// Listen to auth state changes
-export function onAuthStateChange(callback: (user: User | null) => void) {
-  return supabase.auth.onAuthStateChange(async (event, session) => {
-    if (session?.user) {
-      const { data: userProfile } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', session.user.id)
-        .single()
+  /**
+   * Sign out the current user
+   */
+  static async logout() {
+    try {
+      const { error } = await supabase.auth.signOut()
       
-      callback(userProfile)
-    } else {
-      callback(null)
+      if (error) {
+        return { success: false, error: error.message }
+      }
+
+      return { success: true }
+    } catch (error) {
+      return { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Logout failed' 
+      }
     }
-  })
+  }
+
+  /**
+   * Get current user session
+   */
+  static async getCurrentSession() {
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      return session
+    } catch (error) {
+      console.error('Failed to get session:', error)
+      return null
+    }
+  }
+
+  /**
+   * Get current user
+   */
+  static async getCurrentUser() {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      return user
+    } catch (error) {
+      console.error('Failed to get user:', error)
+      return null
+    }
+  }
+
+  /**
+   * Reset password
+   */
+  static async resetPassword(email: string) {
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`
+      })
+
+      if (error) {
+        return { success: false, error: error.message }
+      }
+
+      return { success: true }
+    } catch (error) {
+      return { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Password reset failed' 
+      }
+    }
+  }
+
+  /**
+   * Update password
+   */
+  static async updatePassword(newPassword: string) {
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword
+      })
+
+      if (error) {
+        return { success: false, error: error.message }
+      }
+
+      return { success: true }
+    } catch (error) {
+      return { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Password update failed' 
+      }
+    }
+  }
+
+  /**
+   * Subscribe to authentication state changes
+   */
+  static onAuthStateChange(callback: (event: string, session: any) => void) {
+    return supabase.auth.onAuthStateChange(callback)
+  }
+
+  /**
+   * Check if user is authenticated
+   */
+  static async isAuthenticated(): Promise<boolean> {
+    const session = await this.getCurrentSession()
+    return !!session
+  }
+
+  /**
+   * Validate email format
+   */
+  static validateEmail(email: string): boolean {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return emailRegex.test(email)
+  }
+
+  /**
+   * Validate password strength
+   */
+  static validatePassword(password: string): { 
+    valid: boolean 
+    errors: string[] 
+  } {
+    const errors: string[] = []
+    
+    if (password.length < 8) {
+      errors.push('Password must be at least 8 characters long')
+    }
+    
+    if (!/[A-Z]/.test(password)) {
+      errors.push('Password must contain at least one uppercase letter')
+    }
+    
+    if (!/[a-z]/.test(password)) {
+      errors.push('Password must contain at least one lowercase letter')
+    }
+    
+    if (!/[0-9]/.test(password)) {
+      errors.push('Password must contain at least one number')
+    }
+    
+    return {
+      valid: errors.length === 0,
+      errors
+    }
+  }
 }
+
+// Export default instance
+export const authService = AuthService
