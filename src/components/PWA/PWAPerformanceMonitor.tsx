@@ -54,7 +54,7 @@ export function PWAPerformanceMonitor() {
         
         const firstContentfulPaint = paintEntries.find(entry => 
           entry.name === 'first-contentful-paint'
-        )?.startTime || 0;
+        )?.startTime ?? 0;
 
         setMetrics({
           loadTime: navigation.loadEventEnd - navigation.fetchStart,

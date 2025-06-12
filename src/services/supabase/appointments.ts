@@ -3,8 +3,7 @@ import { supabase } from '../../integrations/supabase/client'
 import type { 
   Appointment, 
   AppointmentInsert, 
-  AppointmentUpdate,
-  Database 
+  AppointmentUpdate
 } from '../../integrations/supabase/types'
 
 export class AppointmentService {

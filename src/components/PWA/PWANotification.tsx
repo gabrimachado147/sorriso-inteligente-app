@@ -148,7 +148,9 @@ export function PWANotification({ className }: PWANotificationProps) {
                 variant="ghost"
                 size="sm"
                 className="h-6 w-6 p-0 text-green-600 hover:text-green-800"
-                onClick={() => setShowInstallPrompt(false)}
+                onClick={() => { 
+                  setShowInstallPrompt(false); 
+                }}
               >
                 <X className="h-4 w-4" />
               </Button>

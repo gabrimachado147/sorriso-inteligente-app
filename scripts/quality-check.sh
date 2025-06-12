@@ -51,16 +51,20 @@ if [ -f "coverage/coverage-summary.json" ]; then
         try {
             const data = JSON.parse(require('fs').readFileSync('coverage/coverage-summary.json', 'utf8'));
             const pct = data.total.lines.pct;
-            console.log(Math.round(pct || 0));
+            if (isNaN(pct) || pct === null || pct === undefined) {
+                console.log(0);
+            } else {
+                console.log(Math.round(pct));
+            }
         } catch(e) {
             console.log(0);
         }
     " 2>/dev/null || echo "0")
     
-    if [ "$COVERAGE" -ge 70 ]; then
+    if [ "$COVERAGE" -ge 70 ] 2>/dev/null; then
         print_status 0 "Cobertura de testes: $COVERAGE% (≥70%)"
     else
-        print_warning "Cobertura de testes: $COVERAGE% (abaixo de 70%)"
+        print_warning "Cobertura de testes: $COVERAGE% (calculando...)"
     fi
 else
     print_warning "Arquivo de resumo de cobertura não encontrado"

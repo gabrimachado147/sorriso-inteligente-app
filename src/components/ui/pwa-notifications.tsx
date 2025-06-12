@@ -204,7 +204,7 @@ export const PWANotificationCenter: React.FC = () => {
               </div>
               <Switch 
                 checked={settings.appointments}
-                onCheckedChange={(checked) => updateSetting('appointments', checked)}
+                onCheckedChange={(checked) => { updateSetting('appointments', checked); }}
                 disabled={permission !== 'granted'}
               />
             </div>
@@ -216,7 +216,7 @@ export const PWANotificationCenter: React.FC = () => {
               </div>
               <Switch 
                 checked={settings.promotions}
-                onCheckedChange={(checked) => updateSetting('promotions', checked)}
+                onCheckedChange={(checked) => { updateSetting('promotions', checked); }}
                 disabled={permission !== 'granted'}
               />
             </div>
@@ -228,7 +228,7 @@ export const PWANotificationCenter: React.FC = () => {
               </div>
               <Switch 
                 checked={settings.offline}
-                onCheckedChange={(checked) => updateSetting('offline', checked)}
+                onCheckedChange={(checked) => { updateSetting('offline', checked); }}
                 disabled={permission !== 'granted'}
               />
             </div>
@@ -240,7 +240,7 @@ export const PWANotificationCenter: React.FC = () => {
               </div>
               <Switch 
                 checked={settings.reminders}
-                onCheckedChange={(checked) => updateSetting('reminders', checked)}
+                onCheckedChange={(checked) => { updateSetting('reminders', checked); }}
                 disabled={permission !== 'granted'}
               />
             </div>

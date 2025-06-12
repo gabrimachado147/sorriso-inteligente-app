@@ -310,7 +310,9 @@ export const useClinicHours = (clinicId: string) => {
     // Check every minute
     const interval = setInterval(checkIfOpen, 60000)
     
-    return () => clearInterval(interval)
+    return () => { 
+      clearInterval(interval); 
+    };
   }, [clinicId])
 
   return { isOpen, nextOpenTime }

@@ -223,7 +223,11 @@ class PWAOfflineManager {
     if (!this.db) return [];
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction(['syncQueue'], 'readonly');
+      const transaction = this.db?.transaction(['syncQueue'], 'readonly');
+      if (!transaction) {
+        reject(new Error('Failed to create transaction'));
+        return;
+      }
       const store = transaction.objectStore('syncQueue');
       const request = store.getAll();
 

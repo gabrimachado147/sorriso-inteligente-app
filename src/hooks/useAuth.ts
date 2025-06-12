@@ -69,7 +69,7 @@ export const useAuth = (): UseAuthReturn => {
       }
     };
 
-    initAuth();
+    void initAuth();
 
     // Listen for auth state changes
     const { data: { subscription } } = AuthService.onAuthStateChange(
@@ -174,7 +174,7 @@ export const useAuth = (): UseAuthReturn => {
       const response = await AuthService.resetPassword(email);
       
       if (!response.success) {
-        setError(response.error || 'Password reset failed');
+        setError(response.error ?? 'Password reset failed');
       }
       
       return response;
@@ -193,7 +193,7 @@ export const useAuth = (): UseAuthReturn => {
       const response = await AuthService.updatePassword(newPassword);
       
       if (!response.success) {
-        setError(response.error || 'Password update failed');
+        setError(response.error ?? 'Password update failed');
       }
       
       return response;

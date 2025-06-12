@@ -519,9 +519,13 @@ export const usePWA = (): PWAHook => {
     getStorageUsage();
     
     // Update storage usage periodically
-    const interval = setInterval(getStorageUsage, 30000); // 30 seconds
+    const interval = setInterval(() => {
+      void getStorageUsage();
+    }, 30000); // 30 seconds
     
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, [getStorageUsage]);
 
   // Listen for Service Worker sync events
@@ -553,7 +557,7 @@ export const usePWA = (): PWAHook => {
     isStandalone,
     isOnline,
     prompt: deferredPrompt ? {
-      prompt: installApp,
+      prompt: () => void installApp(),
       outcome: promptOutcome
     } : null,
     installApp,
