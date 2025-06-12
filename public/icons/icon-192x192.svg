@@ -1,0 +1,46 @@
+<svg width="192" height="192" viewBox="0 0 192 192" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background with gradient -->
+  <defs>
+    <linearGradient id="bg-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#0ea5e9;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0369a1;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="tooth-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f8fafc;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Rounded rectangle background -->
+  <rect width="192" height="192" rx="24" fill="url(#bg-gradient)"/>
+  
+  <!-- White circle background for tooth -->
+  <circle cx="96" cy="96" r="62" fill="rgba(255,255,255,0.95)" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
+  
+  <!-- Tooth shape -->
+  <g transform="translate(96,96)">
+    <!-- Main tooth body -->
+    <path d="M-22 -32 C-22 -38, -18 -42, -12 -42 L12 -42 C18 -42, 22 -38, 22 -32 L22 8 C22 18, 18 28, 12 32 L8 36 C4 40, -4 40, -8 36 L-12 32 C-18 28, -22 18, -22 8 Z" 
+          fill="url(#tooth-gradient)" 
+          stroke="#0ea5e9" 
+          stroke-width="2"/>
+    
+    <!-- Tooth ridges -->
+    <line x1="-8" y1="-32" x2="-8" y2="-20" stroke="#e2e8f0" stroke-width="1.5" opacity="0.6"/>
+    <line x1="0" y1="-32" x2="0" y2="-18" stroke="#e2e8f0" stroke-width="1.5" opacity="0.6"/>
+    <line x1="8" y1="-32" x2="8" y2="-20" stroke="#e2e8f0" stroke-width="1.5" opacity="0.6"/>
+    
+    <!-- Highlight -->
+    <ellipse cx="-8" cy="-18" rx="4" ry="6" fill="rgba(255,255,255,0.4)"/>
+    
+    <!-- Root details -->
+    <path d="M-12 28 C-12 30, -10 32, -8 32 L-4 36 C-2 38, 2 38, 4 36 L8 32 C10 32, 12 30, 12 28" 
+          stroke="#0ea5e9" 
+          stroke-width="1.5" 
+          fill="none" 
+          opacity="0.7"/>
+  </g>
+  
+  <!-- Subtle glow effect -->
+  <circle cx="96" cy="96" r="62" fill="none" stroke="rgba(14,165,233,0.2)" stroke-width="4"/>
+</svg>
