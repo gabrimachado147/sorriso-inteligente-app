@@ -4,7 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Lock, User, AlertCircle } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Lock, Building2, AlertCircle } from 'lucide-react';
 import { animations } from '@/lib/animations';
 
 interface StaffLoginProps {
@@ -19,16 +20,16 @@ const STAFF_CREDENTIALS = {
   itapeva: 'ssitapeva'
 };
 
-const CLINIC_NAMES = {
-  campobelo: 'Senhor Sorriso Campobelo',
-  formiga: 'Senhor Sorriso Formiga',
-  itarare: 'Senhor Sorriso Itararé',
-  capaobonito: 'Senhor Sorriso Capão Bonito',
-  itapeva: 'Senhor Sorriso Itapeva'
-};
+const CLINIC_OPTIONS = [
+  { value: 'campobelo', label: 'Senhor Sorriso Campobelo' },
+  { value: 'formiga', label: 'Senhor Sorriso Formiga' },
+  { value: 'itarare', label: 'Senhor Sorriso Itararé' },
+  { value: 'capaobonito', label: 'Senhor Sorriso Capão Bonito' },
+  { value: 'itapeva', label: 'Senhor Sorriso Itapeva' }
+];
 
 export const StaffLogin: React.FC<StaffLoginProps> = ({ onLogin }) => {
-  const [username, setUsername] = useState('');
+  const [selectedClinic, setSelectedClinic] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -39,12 +40,18 @@ export const StaffLogin: React.FC<StaffLoginProps> = ({ onLogin }) => {
     setIsLoading(true);
 
     try {
+      if (!selectedClinic) {
+        setError('Por favor, selecione uma clínica');
+        setIsLoading(false);
+        return;
+      }
+
       const credentials = STAFF_CREDENTIALS as Record<string, string>;
       
-      if (credentials[username] === password) {
-        onLogin(username);
+      if (credentials[selectedClinic] === password) {
+        onLogin(selectedClinic);
       } else {
-        setError('Usuário ou senha inválidos');
+        setError('Senha incorreta para a clínica selecionada');
       }
     } catch (err) {
       setError('Erro ao fazer login');
@@ -64,24 +71,27 @@ export const StaffLogin: React.FC<StaffLoginProps> = ({ onLogin }) => {
           </div>
           <CardTitle className="text-2xl text-center">Acesso Funcionários</CardTitle>
           <p className="text-sm text-gray-600 text-center">
-            Entre com suas credenciais para acessar os agendamentos
+            Selecione sua clínica e digite a senha para acessar os agendamentos
           </p>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="username">Usuário</Label>
+              <Label htmlFor="clinic">Clínica</Label>
               <div className="relative">
-                <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                <Input
-                  id="username"
-                  type="text"
-                  placeholder="Digite seu usuário"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  className="pl-10"
-                  required
-                />
+                <Building2 className="absolute left-3 top-3 h-4 w-4 text-gray-400 z-10" />
+                <Select value={selectedClinic} onValueChange={setSelectedClinic}>
+                  <SelectTrigger className="pl-10">
+                    <SelectValue placeholder="Selecione sua clínica" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {CLINIC_OPTIONS.map((clinic) => (
+                      <SelectItem key={clinic.value} value={clinic.value}>
+                        {clinic.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
@@ -92,7 +102,7 @@ export const StaffLogin: React.FC<StaffLoginProps> = ({ onLogin }) => {
                 <Input
                   id="password"
                   type="password"
-                  placeholder="Digite sua senha"
+                  placeholder="Digite a senha da clínica"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="pl-10"
@@ -111,7 +121,7 @@ export const StaffLogin: React.FC<StaffLoginProps> = ({ onLogin }) => {
             <Button 
               type="submit" 
               className="w-full" 
-              disabled={isLoading}
+              disabled={isLoading || !selectedClinic}
             >
               {isLoading ? 'Entrando...' : 'Entrar'}
             </Button>
@@ -122,4 +132,4 @@ export const StaffLogin: React.FC<StaffLoginProps> = ({ onLogin }) => {
   );
 };
 
-export { CLINIC_NAMES };
+export { CLINIC_OPTIONS };
