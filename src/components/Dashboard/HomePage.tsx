@@ -37,7 +37,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
   const handleScheduleEvaluation = async () => {
     try {
       toastAppointment("Agendamento", "Redirecionando para avaliação gratuita...");
-      onNavigate('appointments');
+      onNavigate('schedule');
     } catch (error) {
       console.error('Erro ao agendar:', error);
     }
@@ -81,7 +81,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
       case 'clinics':
         handleViewUnits();
         break;
-      case 'appointments':
+      case 'schedule':
         handleScheduleEvaluation();
         break;
       case 'emergency':
@@ -99,7 +99,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
       toastAppointment("Agendamento", `Solicitação enviada para ${clinic}`);
     } catch (error) {
       console.error('Erro ao contatar clínica:', error);
-      onNavigate('appointments');
+      onNavigate('schedule');
     }
   };
 
@@ -115,7 +115,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
 
   const handleServiceSelect = (service: string) => {
     toastAppointment("Serviço", `Selecionando ${service}...`);
-    onNavigate('appointments');
+    onNavigate('schedule');
   };
 
   return (

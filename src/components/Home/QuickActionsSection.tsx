@@ -18,7 +18,7 @@ export const QuickActionsSection: React.FC<QuickActionsSectionProps> = ({
   return (
     <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 ${animations.slideInLeft}`}>
       <Card className={`${animations.cardHover} border-primary/20 hover:border-primary/40 transition-all cursor-pointer`}
-            onClick={() => onNavigate('/appointments')}>
+            onClick={() => onNavigate('/schedule')}>
         <CardHeader className="text-center pb-2">
           <Calendar className="h-8 w-8 text-primary mx-auto mb-2" />
           <CardTitle className="text-lg">Agendar</CardTitle>
@@ -29,7 +29,7 @@ export const QuickActionsSection: React.FC<QuickActionsSectionProps> = ({
           </p>
           <Button className="w-full" onClick={(e) => {
             e.stopPropagation();
-            onNavigate('/appointments');
+            onNavigate('/schedule');
           }}>
             Novo Agendamento
           </Button>

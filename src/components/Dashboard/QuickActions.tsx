@@ -36,7 +36,7 @@ export const QuickActions: React.FC<QuickActionsProps> = ({ onQuickAction }) => 
 
       <Card 
         className={`hover:shadow-lg transition-all duration-200 cursor-pointer ${animations.cardHover} min-h-[100px]`}
-        onClick={() => onQuickAction('appointments')}
+        onClick={() => onQuickAction('schedule')}
       >
         <CardContent className="p-4 text-center flex flex-col items-center justify-center h-full">
           <Calendar className="h-8 w-8 mx-auto mb-2 text-primary" />

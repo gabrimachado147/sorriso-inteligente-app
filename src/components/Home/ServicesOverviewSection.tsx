@@ -21,7 +21,7 @@ export const ServicesOverviewSection: React.FC<ServicesOverviewSectionProps> = (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {availableServices.map((service, index) => (
           <Card key={service.id} className={`${animations.cardHover} h-full cursor-pointer relative`}
-                onClick={() => onNavigate('/appointments')}>
+                onClick={() => onNavigate('/schedule')}>
             <CardHeader className="text-center pb-3">
               <div className="mx-auto mb-3 text-primary">
                 {service.icon}
@@ -35,14 +35,14 @@ export const ServicesOverviewSection: React.FC<ServicesOverviewSectionProps> = (
                 className="w-full"
                 onClick={(e) => {
                   e.stopPropagation();
-                  onNavigate('/appointments');
+                  onNavigate('/schedule');
                 }}
               >
                 Agendar
               </Button>
             </CardContent>
             
-            {/* Badge para serviços populares - removido o urgência */}
+            {/* Badge para serviços populares */}
             {['avaliacao-gratuita', 'limpeza', 'ortodontia', 'estetica-dental'].includes(service.id) && (
               <Badge 
                 variant="secondary" 
