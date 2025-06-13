@@ -5,7 +5,6 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { EnhancedSkeleton } from '@/components/ui/enhanced-skeleton';
-import { toastError } from '@/components/ui/custom-toast';
 import { animations } from '@/lib/animations';
 import { Bot, Send } from 'lucide-react';
 import { usePhoneValidation } from '@/hooks/usePhoneValidation';
@@ -23,7 +22,6 @@ const ChatBot = () => {
   const { 
     userPhone, 
     isPhoneCollected, 
-    validatePhoneNumber, 
     handlePhoneSubmission 
   } = usePhoneValidation();
 
@@ -50,10 +48,11 @@ const ChatBot = () => {
     if (formattedPhone) {
       const phoneConfirmMessage: Message = {
         id: Date.now(),
-        text: `Número confirmado: ${formattedPhone}. Agora posso ajudá-lo com seus agendamentos!`,
+        text: `Número confirmado: ${formattedPhone}. Agora posso ajudá-lo com informações sobre nossos serviços, agendamentos e clínicas! Como posso ajudá-lo?`,
         sender: 'bot',
         timestamp: new Date(),
-        type: 'general'
+        type: 'general',
+        quickReplies: ['Agendar consulta', 'Ver clínicas próximas', 'Horários disponíveis', 'Preços e planos']
       };
       
       addMessages([{
@@ -125,7 +124,7 @@ const ChatBot = () => {
         </CardTitle>
         <p className="text-sm text-gray-600">
           {isPhoneCollected 
-            ? `Conectado: ${userPhone} - Estou aqui para ajudar com seus agendamentos!`
+            ? `Conectado: ${userPhone} - Estou aqui para ajudar com seus agendamentos na Senhor Sorriso!`
             : 'Digite seu número de telefone para começarmos!'
           }
         </p>

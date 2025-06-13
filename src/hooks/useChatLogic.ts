@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { useChatHandler } from './useChatHandler';
+import { apiService } from '@/services/api';
 import { toastError, toastSuccess } from '@/components/ui/custom-toast';
 import { Message } from '@/components/Chat/types';
 
@@ -8,14 +8,14 @@ export const useChatLogic = (userPhone: string, isPhoneCollected: boolean) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
-      text: "Olá! Sou o assistente virtual da Sorriso Inteligente. Para começar, preciso do seu número de telefone para enviar as informações do agendamento.",
+      text: "Olá! Bem-vindo à Senhor Sorriso! 😊 Para começar, preciso do seu número de telefone para enviar as informações do agendamento.",
       sender: 'bot',
       timestamp: new Date(),
       type: 'welcome'
     }
   ]);
 
-  const { sendMessage, sendWhatsAppMessage, loading: chatLoading } = useChatHandler();
+  const [loading, setLoading] = useState(false);
 
   const addMessage = (message: Message) => {
     setMessages(prev => [...prev, message]);
@@ -26,7 +26,7 @@ export const useChatLogic = (userPhone: string, isPhoneCollected: boolean) => {
   };
 
   const handleSendMessage = async (messageText: string) => {
-    if (!messageText.trim() || chatLoading) return;
+    if (!messageText.trim() || loading) return;
 
     // Add user message
     const userMessage: Message = {
@@ -38,40 +38,23 @@ export const useChatLogic = (userPhone: string, isPhoneCollected: boolean) => {
     };
 
     addMessage(userMessage);
+    setLoading(true);
 
-    // Send message to webhook and handle response
     try {
-      const context = messageText.toLowerCase().includes('agendar') ? 'appointment' : 
-                    messageText.toLowerCase().includes('emergência') ? 'emergency' : 'general';
+      // Use the original API service
+      const sessionId = `session_${Date.now()}`;
+      const response = await apiService.chat.sendMessage(messageText, sessionId);
       
-      const response = await sendMessage(messageText, context, userPhone);
+      const botMessage: Message = {
+        id: Date.now() + 1,
+        text: response.content,
+        sender: 'bot',
+        timestamp: new Date(),
+        type: response.actions && response.actions.length > 0 ? 'appointment' : 'general',
+        quickReplies: response.actions?.map(action => action.label)
+      };
       
-      if (response && response.output) {
-        const botMessage: Message = {
-          id: Date.now() + 1,
-          text: response.output,
-          sender: 'bot',
-          timestamp: new Date(),
-          type: context as any
-        };
-        
-        addMessage(botMessage);
-
-        // Check if an appointment was created and send notifications
-        if (context === 'appointment' && response.output.toLowerCase().includes('agendamento confirmado')) {
-          await sendAppointmentNotifications(response.output);
-        }
-      } else {
-        const confirmationMessage: Message = {
-          id: Date.now() + 1,
-          text: "Sua mensagem foi enviada para nossa equipe. Em breve você receberá uma resposta.",
-          sender: 'bot',
-          timestamp: new Date(),
-          type: 'general'
-        };
-        
-        addMessage(confirmationMessage);
-      }
+      addMessage(botMessage);
       
     } catch (error) {
       console.error('Erro ao enviar mensagem:', error);
@@ -86,22 +69,8 @@ export const useChatLogic = (userPhone: string, isPhoneCollected: boolean) => {
       
       addMessage(errorMessage);
       toastError('Erro', 'Não foi possível enviar sua mensagem');
-    }
-  };
-
-  const sendAppointmentNotifications = async (appointmentDetails: string) => {
-    try {
-      // Send confirmation to user
-      await sendWhatsAppMessage(userPhone, `✅ *Agendamento Confirmado!*\n\n${appointmentDetails}\n\nObrigado por escolher a Sorriso Inteligente!`);
-      
-      // Send notification to clinic
-      const clinicNumber = '+5531971907025';
-      await sendWhatsAppMessage(clinicNumber, `🔔 *Novo Agendamento via Chat*\n\n👤 Cliente: ${userPhone}\n📋 Detalhes:\n${appointmentDetails}\n\n⏰ Agendado em: ${new Date().toLocaleString('pt-BR')}`);
-      
-      toastSuccess('Notificações enviadas', 'Confirmação enviada para seu WhatsApp e clínica notificada');
-    } catch (error) {
-      console.error('Erro ao enviar notificações:', error);
-      toastError('Erro nas notificações', 'Agendamento criado, mas houve erro ao enviar notificações');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -115,7 +84,7 @@ export const useChatLogic = (userPhone: string, isPhoneCollected: boolean) => {
 
   return {
     messages,
-    chatLoading,
+    chatLoading: loading,
     addMessage,
     addMessages,
     handleSendMessage,
