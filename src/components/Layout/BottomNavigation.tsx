@@ -14,6 +14,13 @@ import { animations } from '@/lib/animations';
 const BottomNavigation = () => {
   const location = useLocation();
 
+  const handleNavClick = () => {
+    // Scroll para o topo quando navegar
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
+  };
+
   const navItems = [
     { 
       icon: Home, 
@@ -63,6 +70,7 @@ const BottomNavigation = () => {
               <Link
                 key={item.path}
                 to={item.path}
+                onClick={handleNavClick}
                 className={`flex flex-col items-center justify-center px-1.5 py-2 sm:px-2 sm:py-2.5 min-w-0 flex-1 rounded-xl transition-all duration-200 ${animations.buttonHover} ${
                   item.isActive 
                     ? 'text-primary bg-primary/15 scale-105' 
