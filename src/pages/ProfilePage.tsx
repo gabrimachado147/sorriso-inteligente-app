@@ -1,32 +1,26 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
-import { Slider } from '@/components/ui/slider';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 import { 
   User, 
-  Calendar, 
   Phone, 
   Mail, 
-  MapPin,
-  Shield,
-  Bell,
-  Gamepad2,
-  Trophy,
-  Star,
-  Award,
+  Calendar, 
+  Bell, 
+  Shield, 
+  Gamepad2, 
+  Accessibility,
   History,
   Settings,
-  Accessibility,
-  Eye,
-  Type,
-  Palette,
-  Volume2
+  Award,
+  Star
 } from 'lucide-react';
 import { animations } from '@/lib/animations';
 import { useAuth } from '@/hooks/useAuth';
@@ -36,35 +30,21 @@ import { useNotificationPreferences } from '@/hooks/useNotificationPreferences';
 import { useGamificationData } from '@/hooks/useGamificationData';
 import { QuickLinks } from '@/components/Profile/QuickLinks';
 import { toastSuccess, toastError } from '@/components/ui/custom-toast';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
 
 const ProfilePage = () => {
-  const { user, logout, updatePassword } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const { profile, loading: profileLoading, updateProfile } = useProfile();
   const { appointments, loading: appointmentsLoading } = useUserAppointments();
-  const { preferences, updatePreferences } = useNotificationPreferences();
-  const { gamificationData } = useGamificationData();
+  const { preferences, loading: preferencesLoading, updatePreferences } = useNotificationPreferences();
+  const { gamificationData, loading: gamificationLoading } = useGamificationData();
   
-  const [activeTab, setActiveTab] = useState('profile');
-  const [isEditing, setIsEditing] = useState(false);
+  const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({
     nome_completo: '',
     telefone: ''
   });
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
 
-  // URL params para tabs
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const tab = urlParams.get('tab');
-    if (tab) {
-      setActiveTab(tab);
-    }
-  }, []);
-
-  useEffect(() => {
+  React.useEffect(() => {
     if (profile) {
       setFormData({
         nome_completo: profile.nome_completo || '',
@@ -77,460 +57,323 @@ const ProfilePage = () => {
     try {
       const result = await updateProfile(formData);
       if (result.success) {
-        setIsEditing(false);
-        toastSuccess('Sucesso', 'Perfil atualizado com sucesso!');
+        setEditMode(false);
+        toastSuccess('Perfil atualizado', 'Suas informações foram salvas com sucesso');
       } else {
-        toastError('Erro', result.error || 'Erro ao atualizar perfil');
+        toastError('Erro', 'Não foi possível atualizar o perfil');
       }
     } catch (error) {
-      toastError('Erro', 'Erro ao atualizar perfil');
+      toastError('Erro', 'Erro interno do sistema');
     }
   };
 
-  const handleChangePassword = async () => {
-    if (newPassword !== confirmPassword) {
-      toastError('Erro', 'As senhas não coincidem');
-      return;
-    }
-
-    if (newPassword.length < 6) {
-      toastError('Erro', 'A senha deve ter pelo menos 6 caracteres');
-      return;
-    }
-
+  const handleNotificationToggle = async (key: string, value: boolean) => {
+    if (!preferences) return;
+    
     try {
-      const result = await updatePassword(newPassword);
+      const result = await updatePreferences({ [key]: value });
       if (result.success) {
-        setNewPassword('');
-        setConfirmPassword('');
-        toastSuccess('Sucesso', 'Senha alterada com sucesso!');
-      } else {
-        toastError('Erro', result.error || 'Erro ao alterar senha');
+        toastSuccess('Configuração salva', 'Preferências de notificação atualizadas');
       }
     } catch (error) {
-      toastError('Erro', 'Erro ao alterar senha');
+      toastError('Erro', 'Não foi possível atualizar as configurações');
     }
   };
 
-  const handleLogout = async () => {
-    await logout();
-    window.location.href = '/';
-  };
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'confirmed':
-        return <Badge className="bg-green-100 text-green-800">Confirmado</Badge>;
-      case 'cancelled':
-        return <Badge className="bg-red-100 text-red-800">Cancelado</Badge>;
-      case 'completed':
-        return <Badge className="bg-blue-100 text-blue-800">Concluído</Badge>;
-      default:
-        return <Badge className="bg-yellow-100 text-yellow-800">Pendente</Badge>;
-    }
-  };
-
-  if (profileLoading) {
+  if (!isAuthenticated) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-2 text-gray-600">Carregando perfil...</p>
+      <div className="p-6 text-center">
+        <h1 className="text-2xl font-bold mb-4">Acesso Restrito</h1>
+        <p className="text-gray-600 mb-6">Você precisa estar logado para acessar esta página.</p>
+        <Button onClick={() => window.location.href = '/auth'}>
+          Fazer Login
+        </Button>
+      </div>
+    );
+  }
+
+  if (profileLoading || appointmentsLoading || preferencesLoading || gamificationLoading) {
+    return (
+      <div className="p-6">
+        <div className="animate-pulse space-y-6">
+          <div className="h-8 bg-gray-200 rounded w-1/3"></div>
+          <div className="h-32 bg-gray-200 rounded"></div>
+          <div className="h-64 bg-gray-200 rounded"></div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className={`container mx-auto px-4 py-8 ${animations.pageEnter}`}>
-      <div className="max-w-4xl mx-auto space-y-8">
-        {/* Header do Perfil */}
-        <Card className={`${animations.fadeIn}`}>
-          <CardContent className="p-6">
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-              <div className="flex items-center gap-4">
-                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
-                  <User className="h-8 w-8 text-primary" />
+    <div className={`p-6 space-y-6 ${animations.pageEnter}`}>
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold">Meu Perfil</h1>
+        <Badge variant="secondary" className="px-3 py-1">
+          {profile?.nome_completo || user?.email || 'Usuário'}
+        </Badge>
+      </div>
+
+      <Tabs defaultValue="profile" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-6">
+          <TabsTrigger value="profile" className="flex items-center gap-2">
+            <User className="h-4 w-4" />
+            Perfil
+          </TabsTrigger>
+          <TabsTrigger value="history" className="flex items-center gap-2">
+            <History className="h-4 w-4" />
+            Histórico
+          </TabsTrigger>
+          <TabsTrigger value="notifications" className="flex items-center gap-2">
+            <Bell className="h-4 w-4" />
+            Notificações
+          </TabsTrigger>
+          <TabsTrigger value="gamification" className="flex items-center gap-2">
+            <Gamepad2 className="h-4 w-4" />
+            Gamificação
+          </TabsTrigger>
+          <TabsTrigger value="accessibility" className="flex items-center gap-2">
+            <Accessibility className="h-4 w-4" />
+            Acessibilidade
+          </TabsTrigger>
+          <TabsTrigger value="security" className="flex items-center gap-2">
+            <Shield className="h-4 w-4" />
+            Segurança
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="profile" className="space-y-6">
+          <Card className={animations.fadeIn}>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <User className="h-5 w-5" />
+                  Informações Pessoais
                 </div>
+                <Button
+                  variant={editMode ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => editMode ? handleSaveProfile() : setEditMode(true)}
+                >
+                  {editMode ? 'Salvar' : 'Editar'}
+                </Button>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="nome">Nome Completo</Label>
+                  <Input
+                    id="nome"
+                    value={formData.nome_completo}
+                    onChange={(e) => setFormData(prev => ({ ...prev, nome_completo: e.target.value }))}
+                    disabled={!editMode}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="telefone">Telefone</Label>
+                  <Input
+                    id="telefone"
+                    value={formData.telefone}
+                    onChange={(e) => setFormData(prev => ({ ...prev, telefone: e.target.value }))}
+                    disabled={!editMode}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    value={user?.email || ''}
+                    disabled
+                    className="bg-gray-100"
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <QuickLinks />
+        </TabsContent>
+
+        <TabsContent value="history" className="space-y-6">
+          <Card className={animations.fadeIn}>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <History className="h-5 w-5" />
+                Histórico de Consultas
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {appointments.length === 0 ? (
+                <div className="text-center py-8">
+                  <Calendar className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                  <p className="text-gray-600">Você ainda não tem consultas agendadas</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {appointments.map((appointment) => (
+                    <div key={appointment.id} className="p-4 border rounded-lg">
+                      <div className="flex justify-between items-start mb-2">
+                        <h4 className="font-medium">{appointment.service}</h4>
+                        <Badge variant={
+                          appointment.status === 'confirmed' ? 'default' :
+                          appointment.status === 'completed' ? 'secondary' :
+                          appointment.status === 'cancelled' ? 'destructive' : 'outline'
+                        }>
+                          {appointment.status === 'confirmed' ? 'Confirmado' :
+                           appointment.status === 'completed' ? 'Concluído' :
+                           appointment.status === 'cancelled' ? 'Cancelado' : appointment.status}
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-gray-600">{appointment.clinic}</p>
+                      <p className="text-sm text-gray-600">{appointment.date} às {appointment.time}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="notifications" className="space-y-6">
+          <Card className={animations.fadeIn}>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Bell className="h-5 w-5" />
+                Preferências de Notificação
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="flex items-center justify-between">
                 <div>
-                  <h1 className="text-2xl font-bold text-gray-900">
-                    {profile?.nome_completo || 'Usuário'}
-                  </h1>
-                  <p className="text-gray-600">{user?.email}</p>
-                  <p className="text-sm text-gray-500">
-                    Membro desde {format(new Date(profile?.created_at || ''), 'MMMM yyyy', { locale: ptBR })}
-                  </p>
+                  <Label htmlFor="email-reminders">Lembretes por Email</Label>
+                  <p className="text-sm text-gray-600">Receber lembretes de consultas por email</p>
+                </div>
+                <Switch
+                  id="email-reminders"
+                  checked={preferences?.email_reminders || false}
+                  onCheckedChange={(checked) => handleNotificationToggle('email_reminders', checked)}
+                />
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label htmlFor="sms-reminders">Lembretes por SMS</Label>
+                  <p className="text-sm text-gray-600">Receber lembretes de consultas por SMS</p>
+                </div>
+                <Switch
+                  id="sms-reminders"
+                  checked={preferences?.sms_reminders || false}
+                  onCheckedChange={(checked) => handleNotificationToggle('sms_reminders', checked)}
+                />
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label htmlFor="push-notifications">Notificações Push</Label>
+                  <p className="text-sm text-gray-600">Receber notificações no navegador</p>
+                </div>
+                <Switch
+                  id="push-notifications"
+                  checked={preferences?.push_notifications || false}
+                  onCheckedChange={(checked) => handleNotificationToggle('push_notifications', checked)}
+                />
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label htmlFor="marketing-emails">Emails Promocionais</Label>
+                  <p className="text-sm text-gray-600">Receber ofertas e novidades</p>
+                </div>
+                <Switch
+                  id="marketing-emails"
+                  checked={preferences?.marketing_emails || false}
+                  onCheckedChange={(checked) => handleNotificationToggle('marketing_emails', checked)}
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="gamification" className="space-y-6">
+          <Card className={animations.fadeIn}>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Gamepad2 className="h-5 w-5" />
+                Sistema de Pontuação
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="text-center">
+                <div className="text-4xl font-bold text-primary mb-2">
+                  {gamificationData?.points || 0}
+                </div>
+                <p className="text-gray-600">Pontos Totais</p>
+                <div className="mt-4">
+                  <p className="text-sm text-gray-600 mb-2">Nível {gamificationData?.level || 1}</p>
+                  <Progress value={((gamificationData?.points || 0) % 500) / 5} className="w-full" />
                 </div>
               </div>
               
-              {gamificationData && (
-                <div className="flex items-center gap-4">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-primary">{gamificationData.points}</div>
-                    <div className="text-xs text-gray-500">Pontos</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-purple-600">Nível {gamificationData.level}</div>
-                    <div className="text-xs text-gray-500">Atual</div>
-                  </div>
+              <div>
+                <h4 className="font-medium mb-3 flex items-center gap-2">
+                  <Award className="h-4 w-4" />
+                  Conquistas
+                </h4>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {gamificationData?.badges?.map((badge, index) => (
+                    <div key={index} className="text-center p-3 bg-blue-50 rounded-lg">
+                      <Star className="h-6 w-6 mx-auto text-blue-600 mb-1" />
+                      <p className="text-xs font-medium">{badge}</p>
+                    </div>
+                  )) || (
+                    <p className="text-gray-500 col-span-full text-center">Nenhuma conquista ainda</p>
+                  )}
                 </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-        {/* Links Rápidos */}
-        <QuickLinks />
+        <TabsContent value="accessibility" className="space-y-6">
+          <Card className={animations.fadeIn}>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Accessibility className="h-5 w-5" />
+                Configurações de Acessibilidade
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="text-center py-8">
+                <Accessibility className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                <p className="text-gray-600">Configurações de acessibilidade em desenvolvimento</p>
+                <p className="text-sm text-gray-500 mt-2">
+                  Em breve você poderá personalizar a interface para suas necessidades
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-        {/* Tabs do Perfil */}
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-6">
-            <TabsTrigger value="profile">Perfil</TabsTrigger>
-            <TabsTrigger value="history">Histórico</TabsTrigger>
-            <TabsTrigger value="notifications">Notificações</TabsTrigger>
-            <TabsTrigger value="gamification">Gamificação</TabsTrigger>
-            <TabsTrigger value="accessibility">Acessibilidade</TabsTrigger>
-            <TabsTrigger value="security">Segurança</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="profile" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2">
-                    <User className="h-5 w-5" />
-                    Informações Pessoais
-                  </CardTitle>
-                  <Button
-                    variant={isEditing ? "default" : "outline"}
-                    onClick={isEditing ? handleSaveProfile : () => setIsEditing(true)}
-                  >
-                    {isEditing ? 'Salvar' : 'Editar'}
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Nome Completo</Label>
-                    <Input
-                      value={formData.nome_completo}
-                      onChange={(e) => setFormData(prev => ({ ...prev, nome_completo: e.target.value }))}
-                      disabled={!isEditing}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Telefone</Label>
-                    <Input
-                      value={formData.telefone}
-                      onChange={(e) => setFormData(prev => ({ ...prev, telefone: e.target.value }))}
-                      disabled={!isEditing}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Email</Label>
-                    <Input value={user?.email || ''} disabled />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="history" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <History className="h-5 w-5" />
-                  Histórico de Consultas
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {appointmentsLoading ? (
-                  <div className="text-center py-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-                    <p className="mt-2 text-gray-600">Carregando histórico...</p>
-                  </div>
-                ) : appointments.length === 0 ? (
-                  <div className="text-center py-8">
-                    <Calendar className="h-12 w-12 mx-auto text-gray-300 mb-4" />
-                    <p className="text-gray-500">Nenhuma consulta encontrada</p>
-                    <Button 
-                      className="mt-4" 
-                      onClick={() => window.location.href = '/schedule'}
-                    >
-                      Agendar Primeira Consulta
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {appointments.map((appointment) => (
-                      <div key={appointment.id} className="border rounded-lg p-4 hover:bg-gray-50">
-                        <div className="flex justify-between items-start">
-                          <div className="space-y-2">
-                            <h3 className="font-medium">{appointment.service}</h3>
-                            <p className="text-sm text-gray-600">{appointment.clinic}</p>
-                            <div className="flex items-center gap-4 text-sm text-gray-500">
-                              <span>📅 {appointment.date}</span>
-                              <span>🕒 {appointment.time}</span>
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            {getStatusBadge(appointment.status)}
-                            <p className="text-xs text-gray-500 mt-2">
-                              {format(new Date(appointment.created_at), 'dd/MM/yyyy', { locale: ptBR })}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="notifications" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Bell className="h-5 w-5" />
-                  Preferências de Notificação
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-1">
-                      <Label>Lembretes por Email</Label>
-                      <p className="text-sm text-gray-500">Receber lembretes de consultas por email</p>
-                    </div>
-                    <Switch
-                      checked={preferences?.email_reminders || false}
-                      onCheckedChange={(checked) => updatePreferences({ email_reminders: checked })}
-                    />
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-1">
-                      <Label>Lembretes por SMS</Label>
-                      <p className="text-sm text-gray-500">Receber lembretes de consultas por SMS</p>
-                    </div>
-                    <Switch
-                      checked={preferences?.sms_reminders || false}
-                      onCheckedChange={(checked) => updatePreferences({ sms_reminders: checked })}
-                    />
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-1">
-                      <Label>Notificações Push</Label>
-                      <p className="text-sm text-gray-500">Receber notificações no navegador</p>
-                    </div>
-                    <Switch
-                      checked={preferences?.push_notifications || false}
-                      onCheckedChange={(checked) => updatePreferences({ push_notifications: checked })}
-                    />
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-1">
-                      <Label>Emails de Marketing</Label>
-                      <p className="text-sm text-gray-500">Receber ofertas e novidades</p>
-                    </div>
-                    <Switch
-                      checked={preferences?.marketing_emails || false}
-                      onCheckedChange={(checked) => updatePreferences({ marketing_emails: checked })}
-                    />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="gamification" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Gamepad2 className="h-5 w-5" />
-                  Sistema de Gamificação
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {gamificationData ? (
-                  <div className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div className="text-center p-4 bg-blue-50 rounded-lg">
-                        <Trophy className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-                        <div className="text-2xl font-bold text-blue-600">{gamificationData.points}</div>
-                        <div className="text-sm text-gray-600">Pontos Totais</div>
-                      </div>
-                      
-                      <div className="text-center p-4 bg-purple-50 rounded-lg">
-                        <Star className="h-8 w-8 text-purple-600 mx-auto mb-2" />
-                        <div className="text-2xl font-bold text-purple-600">Nível {gamificationData.level}</div>
-                        <div className="text-sm text-gray-600">Nível Atual</div>
-                      </div>
-                      
-                      <div className="text-center p-4 bg-green-50 rounded-lg">
-                        <Award className="h-8 w-8 text-green-600 mx-auto mb-2" />
-                        <div className="text-2xl font-bold text-green-600">{gamificationData.badges.length}</div>
-                        <div className="text-sm text-gray-600">Badges</div>
-                      </div>
-                    </div>
-
-                    <div>
-                      <h4 className="font-medium mb-3">Badges Conquistadas</h4>
-                      <div className="flex flex-wrap gap-2">
-                        {gamificationData.badges.map((badge, index) => (
-                          <Badge key={index} variant="secondary" className="capitalize">
-                            🏆 {badge.replace('_', ' ')}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div>
-                      <h4 className="font-medium mb-3">Conquistas</h4>
-                      <div className="space-y-2">
-                        {gamificationData.achievements.map((achievement, index) => (
-                          <div key={index} className="flex items-center gap-2 p-2 bg-gray-50 rounded">
-                            <Award className="h-4 w-4 text-yellow-600" />
-                            <span className="capitalize">{achievement.replace('_', ' ')}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="text-center py-8">
-                    <Gamepad2 className="h-12 w-12 mx-auto text-gray-300 mb-4" />
-                    <p className="text-gray-500">Dados de gamificação não disponíveis</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="accessibility" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Accessibility className="h-5 w-5" />
-                  Configurações de Acessibilidade
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-1">
-                      <Label className="flex items-center gap-2">
-                        <Eye className="h-4 w-4" />
-                        Alto Contraste
-                      </Label>
-                      <p className="text-sm text-gray-500">Aumentar contraste para melhor visibilidade</p>
-                    </div>
-                    <Switch />
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-1">
-                      <Label className="flex items-center gap-2">
-                        <Type className="h-4 w-4" />
-                        Texto Grande
-                      </Label>
-                      <p className="text-sm text-gray-500">Aumentar tamanho do texto</p>
-                    </div>
-                    <Switch />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label className="flex items-center gap-2">
-                      <Type className="h-4 w-4" />
-                      Tamanho da Fonte
-                    </Label>
-                    <div className="px-3">
-                      <Slider
-                        value={[16]}
-                        onValueChange={() => {}}
-                        max={24}
-                        min={12}
-                        step={1}
-                        className="w-full"
-                      />
-                      <div className="flex justify-between text-sm text-gray-500 mt-1">
-                        <span>12px</span>
-                        <span>18px</span>
-                        <span>24px</span>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-1">
-                      <Label className="flex items-center gap-2">
-                        <Volume2 className="h-4 w-4" />
-                        Leitor de Tela
-                      </Label>
-                      <p className="text-sm text-gray-500">Compatibilidade com leitores de tela</p>
-                    </div>
-                    <Switch />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="security" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Shield className="h-5 w-5" />
-                  Segurança da Conta
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label>Nova Senha</Label>
-                    <Input
-                      type="password"
-                      placeholder="Digite a nova senha"
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label>Confirmar Nova Senha</Label>
-                    <Input
-                      type="password"
-                      placeholder="Confirme a nova senha"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                    />
-                  </div>
-                  
-                  <Button onClick={handleChangePassword} disabled={!newPassword || !confirmPassword}>
-                    Alterar Senha
-                  </Button>
-                </div>
-                
-                <hr />
-                
-                <div>
-                  <h4 className="font-medium text-red-600 mb-2">Zona de Perigo</h4>
-                  <p className="text-sm text-gray-600 mb-4">
-                    Desconectar da conta atual
-                  </p>
-                  <Button variant="destructive" onClick={handleLogout}>
-                    Sair da Conta
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-      </div>
+        <TabsContent value="security" className="space-y-6">
+          <Card className={animations.fadeIn}>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Shield className="h-5 w-5" />
+                Segurança da Conta
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="text-center py-8">
+                <Shield className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                <p className="text-gray-600">Configurações de segurança em desenvolvimento</p>
+                <p className="text-sm text-gray-500 mt-2">
+                  Em breve você poderá gerenciar sua senha e configurações de segurança
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

@@ -98,12 +98,12 @@ const LocationsPage = () => {
   }
 
   return (
-    <div className={`p-6 space-y-6 ${animations.pageEnter}`}>
+    <div className={`p-6 space-y-6 pb-24 ${animations.pageEnter}`}>
       {/* Header */}
       <LocationsPageHeader filteredClinicsCount={clinics.length} />
 
       {/* Lista de Unidades */}
-      <div className="space-y-4">
+      <div className="space-y-4 mb-8">
         {clinics.map((clinic, index) => (
           <ClinicCard
             key={clinic.id}

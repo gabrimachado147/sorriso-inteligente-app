@@ -18,11 +18,38 @@ export const useAppointmentSchedulerLogic = (rescheduleId: string | null) => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPhoneModal, setShowPhoneModal] = useState(false);
 
-  // Mock data - would come from API in real app
+  // Clínicas reais do Senhor Sorriso
   const availableClinics = [
-    { id: 'clinic1', name: 'Clínica Sorriso', city: 'São Paulo', state: 'SP' },
-    { id: 'clinic2', name: 'Dental Care', city: 'Rio de Janeiro', state: 'RJ' },
-    { id: 'clinic3', name: 'OdontoVida', city: 'Belo Horizonte', state: 'MG' }
+    { 
+      id: 'campo-belo', 
+      name: 'Senhor Sorriso Campo Belo', 
+      city: 'Campo Belo', 
+      state: 'MG' 
+    },
+    { 
+      id: 'formiga', 
+      name: 'Senhor Sorriso Formiga', 
+      city: 'Formiga', 
+      state: 'MG' 
+    },
+    { 
+      id: 'itarare', 
+      name: 'Senhor Sorriso Itararé', 
+      city: 'Itararé', 
+      state: 'SP' 
+    },
+    { 
+      id: 'capao-bonito', 
+      name: 'Senhor Sorriso Capão Bonito', 
+      city: 'Capão Bonito', 
+      state: 'SP' 
+    },
+    { 
+      id: 'itapeva', 
+      name: 'Senhor Sorriso Itapeva', 
+      city: 'Itapeva', 
+      state: 'SP' 
+    }
   ];
 
   const handleScheduleAppointment = () => {

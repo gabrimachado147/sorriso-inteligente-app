@@ -65,51 +65,47 @@ export const AppointmentSummary: React.FC<AppointmentSummaryProps> = ({
         <p className="text-sm text-gray-600">Confirme os dados antes de finalizar</p>
       </CardHeader>
       <CardContent className="space-y-6 p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-4">
-            <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg">
-              <Calendar className="h-5 w-5 text-blue-600 mt-0.5" />
-              <div className="flex-1">
-                <p className="font-semibold text-blue-900">Data e Horário</p>
-                <p className="text-sm text-blue-700">
-                  {format(selectedDate!, 'EEEE, dd \'de\' MMMM \'de\' yyyy', { locale: ptBR })}
-                </p>
-                <p className="text-sm font-medium text-blue-800">{selectedTime}</p>
-              </div>
-            </div>
-            
-            <div className="flex items-start gap-3 p-3 bg-green-50 rounded-lg">
-              <MapPin className="h-5 w-5 text-green-600 mt-0.5" />
-              <div className="flex-1">
-                <p className="font-semibold text-green-900">Local</p>
-                <p className="text-sm text-green-700">
-                  {clinic?.name}
-                </p>
-                <p className="text-xs text-green-600">
-                  {clinic?.city}, {clinic?.state}
-                </p>
-              </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg">
+            <Calendar className="h-5 w-5 text-blue-600 mt-0.5" />
+            <div className="flex-1">
+              <p className="font-semibold text-blue-900">Data e Horário</p>
+              <p className="text-sm text-blue-700">
+                {format(selectedDate!, 'EEEE, dd \'de\' MMMM \'de\' yyyy', { locale: ptBR })}
+              </p>
+              <p className="text-sm font-medium text-blue-800">{selectedTime}</p>
             </div>
           </div>
           
-          <div className="space-y-4">
-            <div className="flex items-start gap-3 p-3 bg-purple-50 rounded-lg">
-              <User className="h-5 w-5 text-purple-600 mt-0.5" />
-              <div className="flex-1">
-                <p className="font-semibold text-purple-900">Serviço</p>
-                <div className="flex items-center gap-2 mb-1">
-                  <p className="text-sm text-purple-700">{service?.name}</p>
-                  {service?.price === 'Gratuito' && (
-                    <Badge variant="secondary" className="text-xs bg-green-100 text-green-800">
-                      Gratuito
-                    </Badge>
-                  )}
-                </div>
-                <p className="text-xs text-purple-600">{service?.description}</p>
-                <p className="text-xs text-purple-500 mt-1">
-                  Duração: {service?.duration} minutos
-                </p>
+          <div className="flex items-start gap-3 p-3 bg-green-50 rounded-lg">
+            <MapPin className="h-5 w-5 text-green-600 mt-0.5" />
+            <div className="flex-1">
+              <p className="font-semibold text-green-900">Local</p>
+              <p className="text-sm text-green-700">
+                {clinic?.name}
+              </p>
+              <p className="text-xs text-green-600">
+                {clinic?.city}, {clinic?.state}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-3 p-3 bg-purple-50 rounded-lg">
+            <User className="h-5 w-5 text-purple-600 mt-0.5" />
+            <div className="flex-1">
+              <p className="font-semibold text-purple-900">Serviço</p>
+              <div className="flex items-center gap-2 mb-1">
+                <p className="text-sm text-purple-700">{service?.name}</p>
+                {service?.price === 'Gratuito' && (
+                  <Badge variant="secondary" className="text-xs bg-green-100 text-green-800">
+                    Gratuito
+                  </Badge>
+                )}
               </div>
+              <p className="text-xs text-purple-600">{service?.description}</p>
+              <p className="text-xs text-purple-500 mt-1">
+                Duração: {service?.duration} minutos
+              </p>
             </div>
           </div>
         </div>
