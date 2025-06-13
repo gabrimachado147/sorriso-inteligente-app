@@ -11,7 +11,11 @@ import { useProfile } from '@/hooks/useProfile';
 import { toastSuccess, toastError } from '@/components/ui/custom-toast';
 import { QuickLinks } from './QuickLinks';
 
-export const ProfileTab = () => {
+interface ProfileTabProps {
+  onTabChange: (tabValue: string) => void;
+}
+
+export const ProfileTab: React.FC<ProfileTabProps> = ({ onTabChange }) => {
   const { user } = useAuth();
   const { profile, updateProfile } = useProfile();
   const [editMode, setEditMode] = useState(false);
@@ -94,7 +98,7 @@ export const ProfileTab = () => {
         </CardContent>
       </Card>
 
-      <QuickLinks />
+      <QuickLinks onTabChange={onTabChange} />
     </div>
   );
 };

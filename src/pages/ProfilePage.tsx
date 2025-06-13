@@ -95,7 +95,7 @@ const ProfilePage = () => {
         </TabsList>
 
         <TabsContent value="profile">
-          <ProfileTab />
+          <ProfileTab onTabChange={setActiveTab} />
         </TabsContent>
 
         <TabsContent value="history">
