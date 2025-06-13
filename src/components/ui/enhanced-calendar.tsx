@@ -1,12 +1,12 @@
 
 import * as React from "react";
 import { ChevronLeft, ChevronRight, Clock } from "lucide-react";
-import { DayPicker } from "react-day-picker";
+import { DayPicker, type DayPickerSingleProps } from "react-day-picker";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import { animations } from "@/lib/animations";
 
-export type EnhancedCalendarProps = React.ComponentProps<typeof DayPicker> & {
+export type EnhancedCalendarProps = DayPickerSingleProps & {
   availableSlots?: Record<string, number>;
   popularDays?: string[];
   busyDays?: string[];
@@ -77,7 +77,7 @@ function EnhancedCalendar({
         mode="single"
         showOutsideDays={showOutsideDays}
         className={cn("p-3", className)}
-        selected={selected as Date | undefined}
+        selected={selected}
         onSelect={handleDateSelect}
         classNames={{
           months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
@@ -114,16 +114,19 @@ function EnhancedCalendar({
           ...classNames,
         }}
         components={{
-          IconLeft: ({ ...props }) => <ChevronLeft className="h-4 w-4" />,
-          IconRight: ({ ...props }) => <ChevronRight className="h-4 w-4" />,
-          Day: ({ date, ...dayProps }) => (
-            <div className={cn("relative", getDayClasses(date))}>
-              <button {...dayProps} className={cn(dayProps.className || "", "w-full h-full")}>
-                {date.getDate()}
-                {renderDaySlots(date)}
-              </button>
-            </div>
-          ),
+          IconLeft: () => <ChevronLeft className="h-4 w-4" />,
+          IconRight: () => <ChevronRight className="h-4 w-4" />,
+          Day: ({ date, ...dayProps }) => {
+            const dayClasses = getDayClasses(date);
+            return (
+              <div className={cn("relative", dayClasses)}>
+                <button {...dayProps} className={cn("w-full h-full", dayProps.className)}>
+                  {date.getDate()}
+                  {renderDaySlots(date)}
+                </button>
+              </div>
+            );
+          },
         }}
         {...props}
       />
