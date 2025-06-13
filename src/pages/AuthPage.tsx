@@ -23,13 +23,13 @@ const AuthPage = () => {
   const navigate = useNavigate();
 
   const validateForm = () => {
-    if (!isLogin && !formData.nomeCompleto.trim()) {
-      toastError('Erro', 'Por favor, digite seu nome completo');
-      return false;
-    }
-    
     if (!formData.email.trim() || !validateEmail(formData.email)) {
       toastError('Erro', 'Por favor, digite um email válido');
+      return false;
+    }
+
+    if (!isLogin && !formData.nomeCompleto.trim()) {
+      toastError('Erro', 'Por favor, digite seu nome completo');
       return false;
     }
 
@@ -199,6 +199,22 @@ const AuthPage = () => {
             )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="seu@email.com"
+                    value={formData.email}
+                    onChange={(e) => handleInputChange('email', e.target.value)}
+                    className="pl-10"
+                    required
+                  />
+                </div>
+              </div>
+
               {!isLogin && (
                 <div className="space-y-2">
                   <Label htmlFor="nome">Nome Completo</Label>
@@ -215,22 +231,6 @@ const AuthPage = () => {
                   </div>
                 </div>
               )}
-
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="seu@email.com"
-                    value={formData.email}
-                    onChange={(e) => handleInputChange('email', e.target.value)}
-                    className="pl-10"
-                    required
-                  />
-                </div>
-              </div>
 
               <div className="space-y-2">
                 <Label htmlFor="telefone">Telefone</Label>

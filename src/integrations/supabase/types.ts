@@ -282,18 +282,21 @@ export type Database = {
           embedding: string | null
           id: number
           metadata: Json | null
+          user_id: string | null
         }
         Insert: {
           content?: string | null
           embedding?: string | null
           id?: number
           metadata?: Json | null
+          user_id?: string | null
         }
         Update: {
           content?: string | null
           embedding?: string | null
           id?: number
           metadata?: Json | null
+          user_id?: string | null
         }
         Relationships: []
       }
