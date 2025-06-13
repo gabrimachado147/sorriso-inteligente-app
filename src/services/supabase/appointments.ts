@@ -4,7 +4,7 @@ import { supabase } from '../../integrations/supabase/client'
 export interface CreateAppointmentData {
   name: string
   phone: string
-  email?: string
+  email?: string | null
   service: string
   clinic: string
   date: string
@@ -17,15 +17,15 @@ export interface AppointmentRecord {
   id: string
   name: string
   phone: string
-  email?: string
+  email?: string | null
   service: string
   clinic: string
   date: string
   time: string
   status: string
-  source: string
-  webhook_session_id?: string
-  notes?: string
+  source: string | null
+  webhook_session_id?: string | null
+  notes?: string | null
   created_at: string
   updated_at: string
 }

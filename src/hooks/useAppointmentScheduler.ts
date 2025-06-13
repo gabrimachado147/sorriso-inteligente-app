@@ -32,7 +32,7 @@ export const useAppointmentScheduler = () => {
           sessionId: `session_${Date.now()}`,
           timestamp: new Date().toISOString()
         },
-        data.userInfo?.phone
+        data.phone
       );
 
       if (appointmentCreated) {

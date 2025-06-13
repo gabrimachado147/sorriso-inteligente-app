@@ -3,8 +3,9 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { MainLayout } from "@/components/Layout/MainLayout";
+import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom";
+import { Header } from "@/components/Layout/Header";
+import BottomNavigation from "@/components/Layout/BottomNavigation";
 import Index from "./pages/Index";
 import ChatPage from "./pages/ChatPage";
 import SchedulePage from "./pages/SchedulePage";
@@ -16,7 +17,7 @@ import AnalyticsPage from "./pages/AnalyticsPage";
 import GamificationPage from "./pages/GamificationPage";
 import RemindersPage from "./pages/RemindersPage";
 import AccessibilityPage from "./pages/AccessibilityPage";
-import PWASettingsPage from "./pages/PWASettingsPage";
+import { PWASettingsPage } from "./pages/PWASettingsPage";
 import AppointmentsPage from "./pages/AppointmentsPage";
 import NotFound from "./pages/NotFound";
 import "./App.css";
@@ -29,6 +30,18 @@ const queryClient = new QueryClient({
     },
   },
 });
+
+const MainLayout = () => {
+  return (
+    <div className="min-h-screen bg-background flex flex-col">
+      <Header />
+      <main className="flex-1 pb-20 md:pb-0">
+        <Outlet />
+      </main>
+      <BottomNavigation />
+    </div>
+  );
+};
 
 function App() {
   return (
@@ -50,7 +63,7 @@ function App() {
               <Route path="gamification" element={<GamificationPage />} />
               <Route path="reminders" element={<RemindersPage />} />
               <Route path="accessibility" element={<AccessibilityPage />} />
-              <Route path="pwa-settings" element={<PWASettingsPage />} />
+              <Route path="pwa-settings" element={<PWASettingsPage onNavigate={() => {}} />} />
               <Route path="appointments" element={<AppointmentsPage />} />
               <Route path="404" element={<NotFound />} />
               <Route path="*" element={<Navigate to="/404" replace />} />
