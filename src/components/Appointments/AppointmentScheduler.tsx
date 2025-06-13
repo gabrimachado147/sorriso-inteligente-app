@@ -1,153 +1,140 @@
-
-import React from 'react';
-import { useSearchParams } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Filters } from '@/components/ui/filters';
-import { EnhancedSkeleton } from '@/components/ui/enhanced-skeleton';
-import { Calendar as CalendarIcon } from 'lucide-react';
-import { animations } from '@/lib/animations';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useAppointmentScheduler } from '@/hooks/useAppointmentScheduler';
+import { useAnalytics } from '@/hooks/useAnalytics';
+import { useCalendar } from '@/hooks/useCalendar';
+import { ReminderService } from '@/services/reminders';
+import { toastSuccess } from '@/components/ui/custom-toast';
+import { ClinicSelector } from './ClinicSelector';
 import { DateSelector } from './DateSelector';
 import { TimeSelector } from './TimeSelector';
-import { ClinicSelector } from './ClinicSelector';
 import { ServiceSelector } from './ServiceSelector';
-import { AppointmentSummary } from './AppointmentSummary';
-import { RescheduleNotification } from './RescheduleNotification';
-import { SmartSuggestions } from './SmartSuggestions';
-import { PhoneConfirmationModal } from './PhoneConfirmationModal';
-import { availableServices } from './constants/services';
-import { useAppointmentSchedulerLogic } from '@/hooks/useAppointmentSchedulerLogic';
+import { CalendarIntegration } from '@/components/Calendar/CalendarIntegration';
+import { NearbyClinicas } from '@/components/Location/NearbyClinicas';
+import { ReminderSettings } from '@/components/Reminders/ReminderSettings';
+import { Calendar, MapPin, Bell, CheckCircle } from 'lucide-react';
+
+interface AppointmentData {
+  clinic: string;
+  service: string;
+  date: string;
+  time: string;
+  notes?: string;
+}
 
 const AppointmentScheduler = () => {
-  const [searchParams] = useSearchParams();
-  const rescheduleId = searchParams.get('reschedule');
-  
-  const {
-    selectedDate,
-    setSelectedDate,
-    selectedTime,
-    setSelectedTime,
-    selectedClinic,
-    setSelectedClinic,
-    selectedService,
-    setSelectedService,
-    isLoading,
-    showPhoneModal,
-    setShowPhoneModal,
-    filters,
-    setFilters,
-    availableClinics,
-    filteredServices,
-    filteredClinics,
-    handleConfirmAppointment,
-    handleScheduleAppointment,
-    handleGoBack
-  } = useAppointmentSchedulerLogic(rescheduleId);
+  const [appointmentData, setAppointmentData] = useState<AppointmentData>({
+    clinic: '',
+    service: '',
+    date: '',
+    time: '',
+    notes: '',
+  });
 
-  const handleServiceSuggestion = (serviceName: string) => {
-    const service = availableServices.find(s => s.name === serviceName);
-    if (service) {
-      setSelectedService(service.id);
+  const { scheduleAppointment, isLoading } = useAppointmentScheduler();
+  const { trackEvent } = useAnalytics();
+  const { syncAppointment } = useCalendar();
+
+  const handleScheduleAppointment = async (appointmentData: any) => {
+    try {
+      const result = await scheduleAppointment(appointmentData);
+      
+      // Criar lembretes para o agendamento
+      if (result?.id) {
+        await ReminderService.createRemindersForAppointment(result.id);
+        
+        // Sincronizar com calendário se configurado
+        const userId = 'current_user_id'; // Obter do contexto de auth
+        await syncAppointment.mutateAsync({
+          appointment: result,
+          userId
+        });
+
+        // Track analytics event
+        trackEvent('appointment_scheduled', {
+          clinic: appointmentData.clinic,
+          service: appointmentData.service,
+          date: appointmentData.date
+        });
+
+        toastSuccess('Agendamento confirmado!', 'Lembretes automáticos foram configurados');
+      }
+    } catch (error) {
+      console.error('Error scheduling appointment:', error);
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className={`p-6 space-y-6 ${animations.fadeIn}`}>
-        <EnhancedSkeleton variant="appointment-card" count={3} />
-      </div>
-    );
-  }
-
-  const selectedClinicData = availableClinics.find(c => c.id === selectedClinic);
-  const selectedServiceData = availableServices.find(s => s.id === selectedService);
-
   return (
-    <div className={`p-6 space-y-6 ${animations.pageEnter}`}>
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold flex items-center gap-2">
-          <CalendarIcon className="h-6 w-6 text-primary" />
-          {rescheduleId ? 'Reagendar Consulta' : 'Agendar Consulta'}
-        </h1>
-        <Button variant="outline" onClick={handleGoBack} className={animations.buttonHover}>
-          Voltar
-        </Button>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+      <div className="max-w-4xl mx-auto space-y-6">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Agendar Consulta</h1>
+          <p className="text-gray-600">
+            Escolha a clínica, data e horário que melhor se adequam à sua rotina
+          </p>
+        </div>
+
+        <Tabs defaultValue="schedule" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="schedule" className="flex items-center gap-2">
+              <Calendar className="w-4 h-4" />
+              Agendar
+            </TabsTrigger>
+            <TabsTrigger value="nearby" className="flex items-center gap-2">
+              <MapPin className="w-4 h-4" />
+              Próximas
+            </TabsTrigger>
+            <TabsTrigger value="reminders" className="flex items-center gap-2">
+              <Bell className="w-4 h-4" />
+              Lembretes
+            </TabsTrigger>
+            <TabsTrigger value="calendar" className="flex items-center gap-2">
+              <CheckCircle className="w-4 h-4" />
+              Calendário
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="schedule">
+            <Card>
+              <CardHeader>
+                <CardTitle>Dados do Agendamento</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <ClinicSelector />
+                <ServiceSelector />
+                <DateSelector />
+                <TimeSelector />
+                
+                <Button 
+                  onClick={handleScheduleAppointment} 
+                  className="w-full"
+                  size="lg"
+                >
+                  Confirmar Agendamento
+                </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="nearby">
+            <NearbyClinicas />
+          </TabsContent>
+
+          <TabsContent value="reminders">
+            <ReminderSettings />
+          </TabsContent>
+
+          <TabsContent value="calendar">
+            <CalendarIntegration />
+          </TabsContent>
+        </Tabs>
       </div>
-
-      {rescheduleId && (
-        <RescheduleNotification rescheduleId={rescheduleId} />
-      )}
-
-      {/* Filtros */}
-      <Card className={animations.fadeIn}>
-        <CardContent className="p-6">
-          <Filters
-            filters={filters}
-            onFiltersChange={setFilters}
-            availableClinics={availableClinics}
-            availableServices={availableServices}
-            placeholder="Buscar clínicas ou serviços..."
-            showStatusFilter={false}
-          />
-        </CardContent>
-      </Card>
-
-      {/* Sugestões Inteligentes */}
-      <SmartSuggestions
-        selectedDate={selectedDate}
-        onTimeSelect={setSelectedTime}
-        onServiceSelect={handleServiceSuggestion}
-      />
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <DateSelector 
-          selectedDate={selectedDate}
-          onDateSelect={setSelectedDate}
-        />
-        
-        <TimeSelector
-          selectedDate={selectedDate}
-          selectedTime={selectedTime}
-          onTimeSelect={setSelectedTime}
-        />
-      </div>
-
-      <ClinicSelector
-        selectedClinic={selectedClinic}
-        onClinicSelect={setSelectedClinic}
-        filteredClinics={filteredClinics}
-      />
-
-      <ServiceSelector
-        selectedService={selectedService}
-        onServiceSelect={setSelectedService}
-        filteredServices={filteredServices}
-      />
-
-      <AppointmentSummary
-        selectedDate={selectedDate}
-        selectedTime={selectedTime}
-        selectedClinic={selectedClinic}
-        selectedService={selectedService}
-        availableClinics={availableClinics}
-        availableServices={availableServices}
-        onConfirm={handleScheduleAppointment}
-      />
-
-      {/* Modal de Confirmação de Telefone */}
-      <PhoneConfirmationModal
-        isOpen={showPhoneModal}
-        onClose={() => setShowPhoneModal(false)}
-        onConfirm={handleConfirmAppointment}
-        appointmentData={{
-          date: selectedDate ? format(selectedDate, 'dd/MM/yyyy', { locale: ptBR }) : '',
-          time: selectedTime,
-          clinic: selectedClinicData?.name || '',
-          service: selectedServiceData?.name || ''
-        }}
-      />
     </div>
   );
 };

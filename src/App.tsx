@@ -1,76 +1,50 @@
 
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom";
-import { Header } from "@/components/Layout/Header";
-import BottomNavigation from "@/components/Layout/BottomNavigation";
-import Index from "./pages/Index";
-import ChatPage from "./pages/ChatPage";
-import SchedulePage from "./pages/SchedulePage";
-import ClinicsPage from "./pages/ClinicsPage";
-import EmergencyPage from "./pages/EmergencyPage";
-import ProfilePage from "./pages/ProfilePage";
-import AuthPage from "./pages/AuthPage";
-import AnalyticsPage from "./pages/AnalyticsPage";
-import GamificationPage from "./pages/GamificationPage";
-import RemindersPage from "./pages/RemindersPage";
-import AccessibilityPage from "./pages/AccessibilityPage";
-import { PWASettingsPage } from "./pages/PWASettingsPage";
-import AppointmentsPage from "./pages/AppointmentsPage";
-import NotFound from "./pages/NotFound";
-import "./App.css";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { MainLayout } from '@/components/Layout/MainLayout';
+import { Toaster } from '@/components/ui/sonner';
+
+// Import pages
+import Index from '@/pages/Index';
+import SchedulePage from '@/pages/SchedulePage';
+import AppointmentsPage from '@/pages/AppointmentsPage';
+import AdminDashboardPage from '@/pages/AdminDashboardPage';
+import ChatPage from '@/pages/ChatPage';
+import ClinicsPage from '@/pages/ClinicsPage';
+import ProfilePage from '@/pages/ProfilePage';
+import EmergencyPage from '@/pages/EmergencyPage';
+import AuthPage from '@/pages/AuthPage';
+import NotFound from '@/pages/NotFound';
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 60 * 1000, // 1 minute
+      staleTime: 1000 * 60 * 5, // 5 minutes
       retry: 1,
     },
   },
 });
 
-const MainLayout = () => {
-  return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <Header />
-      <main className="flex-1 pb-20 md:pb-0">
-        <Outlet />
-      </main>
-      <BottomNavigation />
-    </div>
-  );
-};
-
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
+      <Router>
+        <MainLayout>
           <Routes>
-            <Route path="/" element={<MainLayout />}>
-              <Route index element={<Index />} />
-              <Route path="chat" element={<ChatPage />} />
-              <Route path="schedule" element={<SchedulePage />} />
-              <Route path="clinics" element={<ClinicsPage />} />
-              <Route path="emergency" element={<EmergencyPage />} />
-              <Route path="profile" element={<ProfilePage />} />
-              <Route path="auth" element={<AuthPage />} />
-              <Route path="analytics" element={<AnalyticsPage />} />
-              <Route path="gamification" element={<GamificationPage />} />
-              <Route path="reminders" element={<RemindersPage />} />
-              <Route path="accessibility" element={<AccessibilityPage />} />
-              <Route path="pwa-settings" element={<PWASettingsPage onNavigate={() => {}} />} />
-              <Route path="appointments" element={<AppointmentsPage />} />
-              <Route path="404" element={<NotFound />} />
-              <Route path="*" element={<Navigate to="/404" replace />} />
-            </Route>
+            <Route path="/" element={<Index />} />
+            <Route path="/agendar" element={<SchedulePage />} />
+            <Route path="/agendamentos" element={<AppointmentsPage />} />
+            <Route path="/dashboard" element={<AdminDashboardPage />} />
+            <Route path="/chat" element={<ChatPage />} />
+            <Route path="/clinicas" element={<ClinicsPage />} />
+            <Route path="/perfil" element={<ProfilePage />} />
+            <Route path="/emergencia" element={<EmergencyPage />} />
+            <Route path="/auth" element={<AuthPage />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
+        </MainLayout>
+      </Router>
+      <Toaster />
     </QueryClientProvider>
   );
 }
