@@ -12,20 +12,20 @@ interface ServicesOverviewSectionProps {
 
 export const ServicesOverviewSection: React.FC<ServicesOverviewSectionProps> = ({ onNavigate }) => {
   return (
-    <div className={`mobile-spacing ${animations.slideInRight}`}>
-      <div className="text-center mb-6 md:mb-6 space-y-2">
+    <div className={`mobile-section ${animations.slideInRight}`}>
+      <div className="mobile-section-header text-center">
         <h2 className="mobile-title md:text-3xl text-primary">Nossos Serviços</h2>
         <p className="mobile-text md:text-base text-muted-foreground">Tratamentos completos para toda a família</p>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-4">
         {availableServices.map((service, index) => (
           <Card key={service.id} className={`mobile-card ${animations.cardHover} h-full cursor-pointer relative`}
                 onClick={() => onNavigate('/schedule')}>
             <CardHeader className="mobile-card-header text-center">
-              <div className="mx-auto mb-2 md:mb-3 text-primary">
+              <div className="mx-auto mb-3 md:mb-3 text-primary">
                 {React.cloneElement(service.icon, { 
-                  className: "h-6 w-6 md:h-6 md:w-6" 
+                  className: "h-7 w-7 md:h-6 md:w-6" 
                 })}
               </div>
               <CardTitle className="text-sm md:text-base leading-tight">{service.name}</CardTitle>
