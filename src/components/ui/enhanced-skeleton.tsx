@@ -1,26 +1,30 @@
-
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { animations } from '@/lib/animations';
 
 interface SkeletonProps {
   className?: string;
-  variant?: 'default' | 'card' | 'avatar' | 'text' | 'button';
+  variant?: 'default' | 'card' | 'avatar' | 'text' | 'button' | 'appointment-card' | 'chat-message' | 'clinic-card';
+  count?: number;
 }
 
 export const EnhancedSkeleton: React.FC<SkeletonProps> = ({ 
   className, 
-  variant = 'default' 
+  variant = 'default',
+  count = 1
 }) => {
   const variants = {
     default: 'h-4 w-full rounded',
     card: 'h-32 w-full rounded-lg',
     avatar: 'h-12 w-12 rounded-full',
     text: 'h-4 rounded',
-    button: 'h-10 w-24 rounded-md'
+    button: 'h-10 w-24 rounded-md',
+    'appointment-card': 'h-40 w-full rounded-lg',
+    'chat-message': 'h-16 w-full rounded-lg',
+    'clinic-card': 'h-48 w-full rounded-lg'
   };
 
-  return (
+  const skeletonElement = (
     <div
       className={cn(
         'bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 bg-[length:200%_100%]',
@@ -29,6 +33,20 @@ export const EnhancedSkeleton: React.FC<SkeletonProps> = ({
         className
       )}
     />
+  );
+
+  if (count === 1) {
+    return skeletonElement;
+  }
+
+  return (
+    <div className="space-y-4">
+      {Array.from({ length: count }).map((_, index) => (
+        <div key={index} style={{ animationDelay: `${index * 100}ms` }}>
+          {skeletonElement}
+        </div>
+      ))}
+    </div>
   );
 };
 
