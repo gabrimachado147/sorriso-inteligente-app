@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Header } from './Header';
-import { BottomNavigation } from './BottomNavigation';
+import BottomNavigation from './BottomNavigation';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -16,7 +16,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children, currentPage, o
       <main className="flex-1 pb-20 md:pb-0">
         {children}
       </main>
-      <BottomNavigation currentPage={currentPage} onPageChange={onPageChange} />
+      <BottomNavigation />
     </div>
   );
 };
