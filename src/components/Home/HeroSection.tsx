@@ -33,9 +33,9 @@ export const HeroSection: React.FC = () => {
       </p>
       
       {user && (
-        <div className={`${animations.fadeInUp} ${animations.successGlow}`}
+        <div className="bg-primary/10 px-6 py-3 rounded-lg inline-block"
              style={{ animationDelay: '800ms', animationFillMode: 'both' }}>
-          <p className="text-lg text-primary font-medium bg-primary/10 px-6 py-3 rounded-lg inline-block">
+          <p className="text-lg text-primary font-medium">
             Bem-vindo de volta, {user.user_metadata?.nome_completo || user.email}! 😊
           </p>
         </div>
