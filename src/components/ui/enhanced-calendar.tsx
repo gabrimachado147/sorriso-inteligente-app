@@ -115,8 +115,7 @@ function EnhancedCalendar({
         components={{
           IconLeft: () => <ChevronLeft className="h-4 w-4" />,
           IconRight: () => <ChevronRight className="h-4 w-4" />,
-          Day: (dayProps) => {
-            const { date, ...restProps } = dayProps;
+          Day: ({ date, ...restProps }) => {
             const dayClasses = getDayClasses(date);
             return (
               <div className={cn("relative", dayClasses)}>
