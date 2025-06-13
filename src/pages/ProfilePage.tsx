@@ -1,10 +1,9 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { User, Mail, Phone, Calendar, Edit2, LogOut, Save, X } from 'lucide-react';
+import { User, Mail, Phone, Calendar, Edit2, LogOut, Save, X, CalendarPlus } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
 import { ProtectedRoute } from '@/components/Auth/ProtectedRoute';
@@ -12,8 +11,10 @@ import { QuickLinks } from '@/components/Profile/QuickLinks';
 import { toastSuccess, toastError } from '@/components/ui/custom-toast';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { useNavigate } from 'react-router-dom';
 
 const ProfilePage = () => {
+  const navigate = useNavigate();
   const { logout } = useAuth();
   const { profile, loading, updateProfile } = useProfile();
   const [isEditing, setIsEditing] = useState(false);
@@ -82,6 +83,10 @@ const ProfilePage = () => {
   const handlePhoneChange = (value: string) => {
     const formatted = formatPhone(value);
     setEditData(prev => ({ ...prev, telefone: formatted }));
+  };
+
+  const handleScheduleWithoutAccount = () => {
+    navigate('/schedule');
   };
 
   if (loading) {
@@ -184,6 +189,14 @@ const ProfilePage = () => {
             <CardTitle>Ações</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
+            <Button 
+              className="w-full" 
+              variant="default"
+              onClick={handleScheduleWithoutAccount}
+            >
+              <CalendarPlus className="h-4 w-4 mr-2" />
+              Agendar sem criar conta
+            </Button>
             <Button className="w-full" variant="outline">
               Alterar Senha
             </Button>
