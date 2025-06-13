@@ -14,7 +14,6 @@ import { ServicesGrid } from './ServicesGrid';
 import { ReviewsSection } from './ReviewsSection';
 import { EmergencyContact } from './EmergencyContact';
 import { OnboardingOverlay } from '@/components/ui/onboarding-overlay';
-import { ThemeSelector } from '@/components/ui/theme-selector';
 
 interface HomePageProps {
   onNavigate: (page: string) => void;
@@ -120,19 +119,12 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
   };
 
   return (
-    <div className={`p-4 space-y-6 ${animations.pageEnter}`}>
+    <div className={`p-4 space-y-6 max-w-7xl mx-auto ${animations.pageEnter}`}>
       {/* Hero Section */}
       <HeroSection 
         onScheduleEvaluation={handleScheduleEvaluation}
         onViewUnits={handleViewUnits}
         schedulingLoading={schedulingLoading}
-      />
-
-      {/* Theme Selector */}
-      <ThemeSelector 
-        theme={theme}
-        currentTheme={currentTheme}
-        onThemeChange={changeTheme}
       />
 
       {/* Quick Actions */}

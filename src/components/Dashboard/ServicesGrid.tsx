@@ -14,11 +14,11 @@ export const ServicesGrid: React.FC<ServicesGridProps> = ({ onServiceSelect, loa
   if (loading) {
     return (
       <Card className={animations.fadeIn}>
-        <CardHeader>
+        <CardHeader className="text-center">
           <CardTitle>Nossos Serviços</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 max-w-6xl mx-auto">
             {Array.from({ length: 8 }).map((_, index) => (
               <ServiceCardSkeleton key={index} />
             ))}
@@ -30,15 +30,15 @@ export const ServicesGrid: React.FC<ServicesGridProps> = ({ onServiceSelect, loa
 
   return (
     <Card className={animations.fadeIn}>
-      <CardHeader>
+      <CardHeader className="text-center">
         <CardTitle>Nossos Serviços</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 max-w-6xl mx-auto">
           {availableServices.map((service, index) => (
             <Card 
               key={service.id} 
-              className={`relative cursor-pointer ${animations.serviceCardHover} ${animations.scaleIn}`}
+              className={`relative cursor-pointer ${animations.serviceCardHover} ${animations.scaleIn} hover:shadow-md transition-all duration-200 min-h-[120px]`}
               style={getStaggerStyle(index)}
               onClick={() => onServiceSelect(service.name)}
             >
@@ -47,11 +47,11 @@ export const ServicesGrid: React.FC<ServicesGridProps> = ({ onServiceSelect, loa
                   Popular
                 </div>
               )}
-              <CardContent className="p-3 text-center">
-                <div className={`text-primary mb-2 ${animations.iconHover} flex justify-center`}>
+              <CardContent className="p-3 text-center flex flex-col items-center justify-center h-full">
+                <div className={`text-primary mb-3 ${animations.iconHover} flex justify-center`}>
                   {service.icon}
                 </div>
-                <p className="text-sm font-medium">{service.name}</p>
+                <p className="text-xs sm:text-sm font-medium leading-tight">{service.name}</p>
               </CardContent>
             </Card>
           ))}
