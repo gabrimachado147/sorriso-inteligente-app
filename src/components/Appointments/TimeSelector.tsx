@@ -63,14 +63,15 @@ export const TimeSelector: React.FC<TimeSelectorProps> = ({
             {selectedDate?.getDay() === 0 ? 'Não funcionamos aos domingos' : 'Selecione uma data para ver os horários'}
           </p>
         ) : (
-          <div className="grid grid-cols-3 gap-2 max-h-64 overflow-y-auto">
+          <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-1.5">
             {timeSlots.map((time) => (
               <Button
                 key={time}
                 variant={selectedTime === time ? "default" : "outline"}
+                size="sm"
                 className={`${animations.buttonHover} ${
                   selectedTime === time ? animations.scaleIn : ''
-                }`}
+                } text-xs h-8 px-2`}
                 onClick={() => onTimeSelect(time)}
               >
                 {time}
