@@ -2,136 +2,81 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Calendar, MapPin, Phone, Star, Heart } from 'lucide-react';
+import { Calendar, Star, Clock, Users } from 'lucide-react';
 import { animations } from '@/lib/animations';
 import { useAuth } from '@/hooks/useAuth';
-import { useProfile } from '@/hooks/useProfile';
 
-export const HeroSection = () => {
+interface HeroSectionProps {
+  onScheduleClick?: () => void;
+}
+
+export const HeroSection: React.FC<HeroSectionProps> = ({ onScheduleClick }) => {
   const { user, isAuthenticated } = useAuth();
-  const { profile, loading: profileLoading } = useProfile();
 
-  // Get user's first name from profile or email
-  const getUserFirstName = () => {
-    if (profile?.nome_completo) {
-      return profile.nome_completo.split(' ')[0];
-    }
-    if (user?.email) {
-      return user.email.split('@')[0];
-    }
-    return '';
-  };
-
-  const firstName = getUserFirstName();
+  const stats = [
+    { icon: Users, label: 'Pacientes Atendidos', value: '10.000+' },
+    { icon: Star, label: 'Satisfação', value: '98%' },
+    { icon: Clock, label: 'Anos de Experiência', value: '15+' },
+    { icon: Calendar, label: 'Consultas/Mês', value: '500+' }
+  ];
 
   return (
-    <div className={`relative overflow-hidden bg-gradient-to-br from-blue-50 via-white to-green-50 ${animations.pageEnter}`}>
-      <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+    <section className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 text-white py-20 px-6 overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute inset-0 bg-black/10"></div>
+      <div className="absolute top-10 right-10 w-64 h-64 bg-white/5 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-10 left-10 w-48 h-48 bg-white/5 rounded-full blur-2xl"></div>
       
-      <div className="relative px-6 py-12 mx-auto max-w-7xl">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div className={`space-y-6 ${animations.slideInLeft}`}>
-            {isAuthenticated && !profileLoading && firstName && (
-              <div className="mb-6">
-                <p className="text-lg text-primary font-medium">
-                  Bem-vindo de volta, {firstName}! 👋
-                </p>
-              </div>
-            )}
-            
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
-              Seu <span className="text-primary">sorriso</span> é nossa 
-              <span className="text-gradient bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent"> prioridade</span>
+      <div className="relative max-w-6xl mx-auto">
+        <div className="text-center mb-16">
+          {isAuthenticated && user ? (
+            <h1 className={`text-4xl md:text-6xl font-bold mb-6 ${animations.fadeIn}`}>
+              Bem-vindo de volta, {user.user_metadata?.nome_completo || user.email?.split('@')[0] || 'usuário'}!
             </h1>
-            
-            <p className="text-xl text-gray-600 leading-relaxed max-w-xl">
-              {isAuthenticated 
-                ? "Continue cuidando da sua saúde bucal com nossos especialistas em odontologia."
-                : "Encontre os melhores dentistas e clínicas odontológicas perto de você. Agende sua consulta em minutos!"
-              }
-            </p>
+          ) : (
+            <h1 className={`text-4xl md:text-6xl font-bold mb-6 ${animations.fadeIn}`}>
+              Seu Sorriso é Nossa Prioridade
+            </h1>
+          )}
+          
+          <p className={`text-xl md:text-2xl mb-8 text-blue-100 max-w-3xl mx-auto ${animations.fadeIn}`}
+             style={{ animationDelay: '200ms' }}>
+            Cuidado odontológico de excelência com tecnologia avançada e atendimento humanizado
+          </p>
+          
+          {onScheduleClick && (
+            <Button 
+              onClick={onScheduleClick}
+              size="lg"
+              className={`bg-white text-blue-600 hover:bg-blue-50 text-lg px-8 py-4 rounded-full font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 ${animations.fadeIn}`}
+              style={{ animationDelay: '400ms' }}
+            >
+              <Calendar className="mr-2 h-5 w-5" />
+              Agendar Consulta
+            </Button>
+          )}
+        </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <Button 
-                size="lg" 
-                className={`bg-primary hover:bg-primary/90 text-white px-8 py-4 text-lg font-semibold ${animations.buttonHover}`}
-                onClick={() => window.location.href = '/schedule'}
+        {/* Stats Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          {stats.map((stat, index) => {
+            const Icon = stat.icon;
+            return (
+              <Card 
+                key={stat.label}
+                className={`bg-white/10 backdrop-blur-lg border-white/20 text-white ${animations.fadeIn}`}
+                style={{ animationDelay: `${600 + index * 100}ms` }}
               >
-                <Calendar className="mr-2 h-5 w-5" />
-                {isAuthenticated ? "Agendar Nova Consulta" : "Agendar Consulta"}
-              </Button>
-              
-              <Button 
-                variant="outline" 
-                size="lg" 
-                className={`border-2 border-primary text-primary hover:bg-primary hover:text-white px-8 py-4 text-lg font-semibold ${animations.buttonHover}`}
-                onClick={() => window.location.href = '/locations'}
-              >
-                <MapPin className="mr-2 h-5 w-5" />
-                Ver Clínicas
-              </Button>
-            </div>
-
-            <div className="flex items-center gap-6 pt-6">
-              <div className="flex items-center gap-2">
-                <div className="flex -space-x-2">
-                  {[1, 2, 3, 4].map((i) => (
-                    <div key={i} className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-400 to-green-400 border-2 border-white"></div>
-                  ))}
-                </div>
-                <span className="text-sm text-gray-600">+2.000 pacientes atendidos</span>
-              </div>
-              
-              <div className="flex items-center gap-1">
-                <div className="flex">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <Star key={star} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                  ))}
-                </div>
-                <span className="text-sm text-gray-600 ml-1">4.9/5 avaliação</span>
-              </div>
-            </div>
-          </div>
-
-          <div className={`relative ${animations.slideInRight}`}>
-            <div className="relative">
-              <img 
-                src="/lovable-uploads/ca774d8a-1da5-4d35-a302-f23676e88e03.png" 
-                alt="Dentista sorrindo" 
-                className="w-full h-auto rounded-2xl shadow-2xl"
-              />
-              
-              <Card className="absolute -bottom-6 -left-6 bg-white shadow-xl border-0">
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                      <Heart className="w-6 h-6 text-green-600" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-gray-900">Atendimento 24h</p>
-                      <p className="text-sm text-gray-600">Emergências odontológicas</p>
-                    </div>
-                  </div>
+                <CardContent className="p-6 text-center">
+                  <Icon className="h-8 w-8 mx-auto mb-3 text-blue-200" />
+                  <div className="text-2xl md:text-3xl font-bold mb-1">{stat.value}</div>
+                  <div className="text-sm text-blue-200">{stat.label}</div>
                 </CardContent>
               </Card>
-
-              <Card className="absolute -top-6 -right-6 bg-white shadow-xl border-0">
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                      <Phone className="w-6 h-6 text-blue-600" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-gray-900">Teleconsulta</p>
-                      <p className="text-sm text-gray-600">Disponível</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
+            );
+          })}
         </div>
       </div>
-    </div>
+    </section>
   );
 };

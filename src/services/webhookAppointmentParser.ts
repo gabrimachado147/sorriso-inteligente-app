@@ -1,4 +1,3 @@
-
 import { AppointmentService, CreateAppointmentData } from './supabase/appointments'
 import { toastSuccess, toastError } from '@/components/ui/custom-toast'
 

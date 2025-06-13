@@ -11,6 +11,13 @@ interface GamificationData {
   achievements: string[];
 }
 
+const ensureStringArray = (value: any): string[] => {
+  if (Array.isArray(value)) {
+    return value.filter(item => typeof item === 'string');
+  }
+  return [];
+};
+
 export const useGamificationData = () => {
   const { user, isAuthenticated } = useAuth();
   const [gamificationData, setGamificationData] = useState<GamificationData | null>(null);
@@ -42,8 +49,8 @@ export const useGamificationData = () => {
         if (data) {
           setGamificationData({
             ...data,
-            badges: Array.isArray(data.badges) ? data.badges : [],
-            achievements: Array.isArray(data.achievements) ? data.achievements : []
+            badges: ensureStringArray(data.badges),
+            achievements: ensureStringArray(data.achievements)
           });
         } else {
           // Create default gamification data
@@ -64,8 +71,8 @@ export const useGamificationData = () => {
           if (createError) throw createError;
           setGamificationData({
             ...newData,
-            badges: Array.isArray(newData.badges) ? newData.badges : [],
-            achievements: Array.isArray(newData.achievements) ? newData.achievements : []
+            badges: ensureStringArray(newData.badges),
+            achievements: ensureStringArray(newData.achievements)
           });
         }
       } catch (err) {
@@ -99,8 +106,8 @@ export const useGamificationData = () => {
       if (error) throw error;
       setGamificationData({
         ...data,
-        badges: Array.isArray(data.badges) ? data.badges : [],
-        achievements: Array.isArray(data.achievements) ? data.achievements : []
+        badges: ensureStringArray(data.badges),
+        achievements: ensureStringArray(data.achievements)
       });
       
       return { success: true, newLevel: newLevel > gamificationData.level };
@@ -126,8 +133,8 @@ export const useGamificationData = () => {
       if (error) throw error;
       setGamificationData({
         ...data,
-        badges: Array.isArray(data.badges) ? data.badges : [],
-        achievements: Array.isArray(data.achievements) ? data.achievements : []
+        badges: ensureStringArray(data.badges),
+        achievements: ensureStringArray(data.achievements)
       });
       
       return { success: true };

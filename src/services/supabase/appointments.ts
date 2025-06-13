@@ -28,6 +28,7 @@ export interface CreateAppointmentData {
   status?: string;
   notes?: string;
   source?: string;
+  webhook_session_id?: string;
 }
 
 const normalizeAppointment = (data: any): AppointmentRecord => ({
@@ -114,10 +115,18 @@ export class AppointmentService {
   static async createAppointment(data: CreateAppointmentData): Promise<AppointmentRecord> {
     try {
       const appointmentData = {
-        ...data,
+        name: data.name,
+        phone: data.phone,
+        email: data.email,
+        date: data.date,
+        time: data.time,
+        clinic: data.clinic,
+        service: data.service,
         status: data.status || 'confirmed',
+        notes: data.notes,
         source: data.source || 'pwa',
-        clinic_filter: data.clinic
+        clinic_filter: data.clinic,
+        webhook_session_id: data.webhook_session_id
       };
 
       const { data: appointment, error } = await supabase
