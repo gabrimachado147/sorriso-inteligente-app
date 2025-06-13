@@ -29,17 +29,19 @@ const ChatBot = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
-      text: "Olá! Sou o assistente virtual da Sorriso Inteligente. Como posso ajudar você hoje?",
+      text: "Olá! Sou o assistente virtual da Sorriso Inteligente. Para começar, preciso do seu número de telefone para enviar as informações do agendamento.",
       sender: 'bot',
       timestamp: new Date(),
       type: 'welcome'
     }
   ]);
   const [inputValue, setInputValue] = useState('');
+  const [userPhone, setUserPhone] = useState('');
+  const [isPhoneCollected, setIsPhoneCollected] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
-  const { sendMessage, loading: chatLoading } = useChatHandler();
+  const { sendMessage, sendWhatsAppMessage, loading: chatLoading } = useChatHandler();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -72,7 +74,27 @@ const ChatBot = () => {
     }
   ];
 
+  const validatePhoneNumber = (phone: string): boolean => {
+    // Remove all non-numeric characters
+    const cleanPhone = phone.replace(/\D/g, '');
+    // Brazilian phone numbers: 11 digits (with area code) or 10 digits (landline)
+    return cleanPhone.length >= 10 && cleanPhone.length <= 11;
+  };
+
+  const formatPhoneNumber = (phone: string): string => {
+    const cleanPhone = phone.replace(/\D/g, '');
+    // Add +55 prefix if not present
+    if (!cleanPhone.startsWith('55')) {
+      return `+55${cleanPhone}`;
+    }
+    return `+${cleanPhone}`;
+  };
+
   const handleQuickAction = async (message: string) => {
+    if (!isPhoneCollected) {
+      toastError('Telefone necessário', 'Por favor, forneça seu número de telefone primeiro.');
+      return;
+    }
     setInputValue(message);
     await handleSendMessage(message);
   };
@@ -81,7 +103,54 @@ const ChatBot = () => {
     const text = messageText || inputValue.trim();
     if (!text || chatLoading) return;
 
-    // Adicionar mensagem do usuário
+    // Handle phone number collection
+    if (!isPhoneCollected) {
+      if (validatePhoneNumber(text)) {
+        const formattedPhone = formatPhoneNumber(text);
+        setUserPhone(formattedPhone);
+        setIsPhoneCollected(true);
+        
+        const phoneConfirmMessage: Message = {
+          id: Date.now(),
+          text: `Número confirmado: ${formattedPhone}. Agora posso ajudá-lo com seus agendamentos!`,
+          sender: 'bot',
+          timestamp: new Date(),
+          type: 'general'
+        };
+        
+        setMessages(prev => [...prev, {
+          id: Date.now() - 1,
+          text,
+          sender: 'user',
+          timestamp: new Date(),
+          type: 'general'
+        }, phoneConfirmMessage]);
+        
+        setInputValue('');
+        return;
+      } else {
+        const errorMessage: Message = {
+          id: Date.now(),
+          text: "Por favor, digite um número de telefone válido (com DDD). Exemplo: (31) 99999-9999 ou 31999999999",
+          sender: 'bot',
+          timestamp: new Date(),
+          type: 'general'
+        };
+        
+        setMessages(prev => [...prev, {
+          id: Date.now() - 1,
+          text,
+          sender: 'user',
+          timestamp: new Date(),
+          type: 'general'
+        }, errorMessage]);
+        
+        setInputValue('');
+        return;
+      }
+    }
+
+    // Add user message
     const userMessage: Message = {
       id: Date.now(),
       text,
@@ -93,14 +162,13 @@ const ChatBot = () => {
     setMessages(prev => [...prev, userMessage]);
     setInputValue('');
 
-    // Enviar dados para o webhook e aguardar resposta
+    // Send message to webhook and handle response
     try {
       const context = text.toLowerCase().includes('agendar') ? 'appointment' : 
                     text.toLowerCase().includes('emergência') ? 'emergency' : 'general';
       
-      const response = await sendMessage(text, context);
+      const response = await sendMessage(text, context, userPhone);
       
-      // Verificar se há uma resposta do webhook
       if (response && response.output) {
         const botMessage: Message = {
           id: Date.now() + 1,
@@ -111,8 +179,12 @@ const ChatBot = () => {
         };
         
         setMessages(prev => [...prev, botMessage]);
+
+        // Check if an appointment was created and send notifications
+        if (context === 'appointment' && response.output.toLowerCase().includes('agendamento confirmado')) {
+          await sendAppointmentNotifications(response.output);
+        }
       } else {
-        // Caso não haja resposta específica, mostrar mensagem padrão
         const confirmationMessage: Message = {
           id: Date.now() + 1,
           text: "Sua mensagem foi enviada para nossa equipe. Em breve você receberá uma resposta.",
@@ -137,6 +209,22 @@ const ChatBot = () => {
       
       setMessages(prev => [...prev, errorMessage]);
       toastError('Erro', 'Não foi possível enviar sua mensagem');
+    }
+  };
+
+  const sendAppointmentNotifications = async (appointmentDetails: string) => {
+    try {
+      // Send confirmation to user
+      await sendWhatsAppMessage(userPhone, `✅ *Agendamento Confirmado!*\n\n${appointmentDetails}\n\nObrigado por escolher a Sorriso Inteligente!`);
+      
+      // Send notification to clinic
+      const clinicNumber = '+5531971907025';
+      await sendWhatsAppMessage(clinicNumber, `🔔 *Novo Agendamento via Chat*\n\n👤 Cliente: ${userPhone}\n📋 Detalhes:\n${appointmentDetails}\n\n⏰ Agendado em: ${new Date().toLocaleString('pt-BR')}`);
+      
+      toastSuccess('Notificações enviadas', 'Confirmação enviada para seu WhatsApp e clínica notificada');
+    } catch (error) {
+      console.error('Erro ao enviar notificações:', error);
+      toastError('Erro nas notificações', 'Agendamento criado, mas houve erro ao enviar notificações');
     }
   };
 
@@ -173,7 +261,10 @@ const ChatBot = () => {
           </Badge>
         </CardTitle>
         <p className="text-sm text-gray-600">
-          Estou aqui para ajudar com seus agendamentos e dúvidas!
+          {isPhoneCollected 
+            ? `Conectado: ${userPhone} - Estou aqui para ajudar com seus agendamentos!`
+            : 'Digite seu número de telefone para começarmos!'
+          }
         </p>
       </CardHeader>
 
@@ -220,7 +311,7 @@ const ChatBot = () => {
                           variant="outline"
                           className={`text-xs ${animations.buttonHover}`}
                           onClick={() => handleQuickAction(reply)}
-                          disabled={chatLoading}
+                          disabled={chatLoading || !isPhoneCollected}
                         >
                           {reply}
                         </Button>
@@ -258,7 +349,7 @@ const ChatBot = () => {
           <div ref={messagesEndRef} />
         </div>
 
-        {messages.length <= 1 && (
+        {isPhoneCollected && messages.length <= 2 && (
           <div className={`p-4 border-t border-gray-200 ${animations.slideInBottom}`}>
             <p className="text-sm text-gray-600 mb-3">Ações rápidas:</p>
             <div className="grid grid-cols-2 gap-2">
@@ -285,7 +376,7 @@ const ChatBot = () => {
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="Digite sua mensagem..."
+              placeholder={isPhoneCollected ? "Digite sua mensagem..." : "Digite seu número de telefone..."}
               className="flex-1"
               disabled={chatLoading}
             />

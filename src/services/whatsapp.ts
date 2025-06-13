@@ -141,13 +141,15 @@ export class WhatsAppService {
     message: string
     sessionId: string
     context?: string
+    userPhone?: string
   }): Promise<{ success: boolean; message: string; output?: string }> {
     try {
       const webhookData: WhatsAppWebhookData = {
-        phone: 'user-app', // Identifier for app users vs WhatsApp users
+        phone: data.userPhone || 'user-app', // Use user phone if provided
         message: data.message,
         sessionId: data.sessionId,
-        threadId: `thread_${data.sessionId}`
+        threadId: `thread_${data.sessionId}`,
+        name: data.userPhone ? `Cliente ${data.userPhone}` : 'Cliente App'
       }
 
       const response = await this.sendToWebhook(webhookData)

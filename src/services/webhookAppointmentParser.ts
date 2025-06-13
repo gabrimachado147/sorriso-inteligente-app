@@ -43,24 +43,26 @@ export class WebhookAppointmentParser {
   /**
    * Extrai dados de agendamento da resposta do webhook
    */
-  static parseAppointmentData(output: string, sessionId?: string): ParsedAppointmentData {
+  static parseAppointmentData(output: string, sessionId?: string, userPhone?: string): ParsedAppointmentData {
     const isAppointment = this.detectAppointment(output)
     
     if (!isAppointment) {
       return { isAppointment: false }
     }
 
-    // Padrões para extrair informações
+    // Enhanced patterns for extracting information
     const patterns = {
       name: [
         /nome[:\s]+([^,\n]+)/i,
         /paciente[:\s]+([^,\n]+)/i,
-        /para[:\s]+([^,\n]+)/i
+        /para[:\s]+([^,\n]+)/i,
+        /cliente[:\s]+([^,\n]+)/i
       ],
       phone: [
         /telefone[:\s]+([+\d\s\(\)-]+)/i,
         /contato[:\s]+([+\d\s\(\)-]+)/i,
-        /fone[:\s]+([+\d\s\(\)-]+)/i
+        /fone[:\s]+([+\d\s\(\)-]+)/i,
+        /cliente[:\s]+([+\d\s\(\)-]+)/i
       ],
       service: [
         /serviço[:\s]+([^,\n]+)/i,
@@ -111,7 +113,7 @@ export class WebhookAppointmentParser {
 
     return {
       name: extractField('name'),
-      phone: extractField('phone'),
+      phone: extractField('phone') || userPhone,
       service: extractField('service') || 'Consulta',
       clinic: extractField('clinic') || 'Senhor Sorriso',
       date: extractField('date'),
@@ -128,7 +130,7 @@ export class WebhookAppointmentParser {
     userPhone?: string
   ): Promise<boolean> {
     try {
-      const parsed = this.parseAppointmentData(webhookData.output, webhookData.sessionId)
+      const parsed = this.parseAppointmentData(webhookData.output, webhookData.sessionId, userPhone)
       
       if (!parsed.isAppointment) {
         return false
@@ -149,7 +151,7 @@ export class WebhookAppointmentParser {
         date: this.formatDate(parsed.date),
         time: parsed.time,
         webhook_session_id: webhookData.sessionId,
-        notes: `Agendamento criado via webhook. Resposta original: ${webhookData.output.slice(0, 200)}...`
+        notes: `Agendamento criado via webhook. Telefone: ${userPhone || 'N/A'}. Resposta original: ${webhookData.output.slice(0, 200)}...`
       }
 
       // Criar agendamento no Supabase
