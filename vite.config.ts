@@ -21,6 +21,8 @@ export default defineConfig(({ mode }) => {
       VitePWA({
         registerType: 'autoUpdate',
         workbox: {
+          // Increase the maximum file size limit for caching
+          maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
           globPatterns: ['**/*.{js,css,html,ico,png,svg,json,woff2}'],
           runtimeCaching: [
             {
@@ -99,14 +101,18 @@ export default defineConfig(({ mode }) => {
             icons: ['lucide-react'],
             query: ['@tanstack/react-query'],
             utils: ['clsx', 'tailwind-merge', 'date-fns'],
+            // New chunks for better splitting
+            accessibility: ['src/components/Accessibility', 'src/hooks/useAccessibility'],
+            gamification: ['src/components/Gamification', 'src/hooks/useGamification'],
+            analytics: ['src/components/Analytics', 'src/hooks/useHealthAnalytics'],
           },
           chunkFileNames: 'assets/[name]-[hash].js',
           entryFileNames: 'assets/[name]-[hash].js',
           assetFileNames: 'assets/[name]-[hash].[ext]',
         },
       },
-      // Performance optimizations
-      chunkSizeWarningLimit: 1000,
+      // Performance optimizations - increased limit
+      chunkSizeWarningLimit: 2000, // Increased from 1000 to 2000
       assetsInlineLimit: 4096,
     },
     // Environment-specific optimizations
