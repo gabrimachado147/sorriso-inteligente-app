@@ -189,6 +189,62 @@
       box-shadow: 0 0 0 8px hsl(var(--primary) / 0.5);
     }
   }
+
+  /* Otimizações específicas para mobile */
+  @media (max-width: 768px) {
+    /* Container principal mobile */
+    .mobile-container {
+      @apply px-3 py-4;
+    }
+    
+    /* Cards otimizados para mobile */
+    .mobile-card {
+      @apply p-3 space-y-2;
+    }
+    
+    /* Botões otimizados para mobile */
+    .mobile-button {
+      @apply min-h-[44px] px-4 py-2 text-sm;
+    }
+    
+    /* Inputs otimizados para mobile */
+    .mobile-input {
+      @apply h-12 px-3 text-base;
+    }
+    
+    /* Navegação otimizada para mobile */
+    .mobile-nav {
+      @apply pb-20;
+    }
+    
+    /* Espaçamentos reduzidos para mobile */
+    .mobile-spacing {
+      @apply space-y-3;
+    }
+    
+    /* Hero section mobile */
+    .mobile-hero {
+      @apply space-y-4 py-4;
+    }
+    
+    /* Grid responsivo otimizado */
+    .mobile-grid {
+      @apply grid grid-cols-1 gap-3;
+    }
+    
+    /* Tipografia mobile */
+    .mobile-title {
+      @apply text-2xl font-bold;
+    }
+    
+    .mobile-subtitle {
+      @apply text-lg;
+    }
+    
+    .mobile-text {
+      @apply text-sm leading-relaxed;
+    }
+  }
 }
 
 @keyframes slideInUp {

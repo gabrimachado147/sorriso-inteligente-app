@@ -65,60 +65,60 @@ const ProfilePage = () => {
 
   if (profileLoading || appointmentsLoading || preferencesLoading || gamificationLoading) {
     return (
-      <div className="p-6">
-        <div className="animate-pulse space-y-6">
-          <div className="h-8 bg-gray-200 rounded w-1/3"></div>
-          <div className="h-32 bg-gray-200 rounded"></div>
-          <div className="h-64 bg-gray-200 rounded"></div>
+      <div className="mobile-container">
+        <div className="animate-pulse mobile-spacing">
+          <div className="h-6 md:h-8 bg-gray-200 rounded w-1/3"></div>
+          <div className="h-20 md:h-32 bg-gray-200 rounded"></div>
+          <div className="h-40 md:h-64 bg-gray-200 rounded"></div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className={`p-6 space-y-6 ${animations.pageEnter}`}>
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <h1 className="text-3xl font-bold">Meu Perfil</h1>
-          <Badge variant="secondary" className="px-3 py-1">
+    <div className={`mobile-container mobile-spacing ${animations.pageEnter}`}>
+      <div className="flex items-center justify-between mb-4 md:mb-6">
+        <div className="flex items-center gap-2 md:gap-4">
+          <h1 className="mobile-title md:text-3xl font-bold">Meu Perfil</h1>
+          <Badge variant="secondary" className="px-2 py-1 md:px-3 text-xs md:text-sm">
             {profile?.nome_completo || user?.email || 'Usuário'}
           </Badge>
         </div>
         <Button 
           variant="outline" 
           onClick={handleLogout}
-          className="flex items-center gap-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+          className="flex items-center gap-1 md:gap-2 text-red-600 hover:text-red-700 hover:bg-red-50 text-xs md:text-sm mobile-button"
         >
-          <LogOut className="h-4 w-4" />
-          Sair
+          <LogOut className="h-3 w-3 md:h-4 md:w-4" />
+          <span className="hidden md:inline">Sair</span>
         </Button>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-6">
-          <TabsTrigger value="profile" className="flex items-center gap-2">
-            <User className="h-4 w-4" />
-            Perfil
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="mobile-spacing">
+        <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 gap-1">
+          <TabsTrigger value="profile" className="flex items-center gap-1 text-xs md:text-sm p-2 md:p-3">
+            <User className="h-3 w-3 md:h-4 md:w-4" />
+            <span className="hidden md:inline">Perfil</span>
           </TabsTrigger>
-          <TabsTrigger value="history" className="flex items-center gap-2">
-            <History className="h-4 w-4" />
-            Histórico
+          <TabsTrigger value="history" className="flex items-center gap-1 text-xs md:text-sm p-2 md:p-3">
+            <History className="h-3 w-3 md:h-4 md:w-4" />
+            <span className="hidden md:inline">Histórico</span>
           </TabsTrigger>
-          <TabsTrigger value="notifications" className="flex items-center gap-2">
-            <Bell className="h-4 w-4" />
-            Notificações
+          <TabsTrigger value="notifications" className="flex items-center gap-1 text-xs md:text-sm p-2 md:p-3">
+            <Bell className="h-3 w-3 md:h-4 md:w-4" />
+            <span className="hidden md:inline">Notificações</span>
           </TabsTrigger>
-          <TabsTrigger value="gamification" className="flex items-center gap-2">
-            <Gamepad2 className="h-4 w-4" />
-            Gamificação
+          <TabsTrigger value="gamification" className="flex items-center gap-1 text-xs md:text-sm p-2 md:p-3">
+            <Gamepad2 className="h-3 w-3 md:h-4 md:w-4" />
+            <span className="hidden md:inline">Gamificação</span>
           </TabsTrigger>
-          <TabsTrigger value="accessibility" className="flex items-center gap-2">
-            <Accessibility className="h-4 w-4" />
-            Acessibilidade
+          <TabsTrigger value="accessibility" className="flex items-center gap-1 text-xs md:text-sm p-2 md:p-3">
+            <Accessibility className="h-3 w-3 md:h-4 md:w-4" />
+            <span className="hidden md:inline">Acessibilidade</span>
           </TabsTrigger>
-          <TabsTrigger value="security" className="flex items-center gap-2">
-            <Shield className="h-4 w-4" />
-            Segurança
+          <TabsTrigger value="security" className="flex items-center gap-1 text-xs md:text-sm p-2 md:p-3">
+            <Shield className="h-3 w-3 md:h-4 md:w-4" />
+            <span className="hidden md:inline">Segurança</span>
           </TabsTrigger>
         </TabsList>
 

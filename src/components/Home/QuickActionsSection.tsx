@@ -59,7 +59,7 @@ export const QuickActionsSection: React.FC<QuickActionsSectionProps> = ({
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
       {actions.map((action, index) => {
         const Icon = action.icon;
         const isEmergency = action.title === "Emergência";
@@ -68,6 +68,7 @@ export const QuickActionsSection: React.FC<QuickActionsSectionProps> = ({
           <Card 
             key={action.title}
             className={`
+              mobile-card
               ${animations.serviceCardHover} 
               ${action.borderColor} 
               ${action.bgColor}
@@ -77,29 +78,30 @@ export const QuickActionsSection: React.FC<QuickActionsSectionProps> = ({
             style={getStaggerStyle(index, 150)}
             onClick={() => isEmergency ? onEmergencyCall() : onNavigate(action.path)}
           >
-            <CardHeader className="text-center pb-2 flex-grow">
-              <div className={`mx-auto mb-3 ${animations.iconHover}`}>
-                <Icon className={`h-8 w-8 ${isEmergency ? 'text-red-600' : 'text-primary'}`} />
+            <CardHeader className="text-center pb-1 md:pb-2 flex-grow">
+              <div className={`mx-auto mb-1 md:mb-3 ${animations.iconHover}`}>
+                <Icon className={`h-6 w-6 md:h-8 md:w-8 ${isEmergency ? 'text-red-600' : 'text-primary'}`} />
               </div>
-              <CardTitle className={`text-lg ${isEmergency ? 'text-red-600' : ''}`}>
+              <CardTitle className={`text-sm md:text-lg ${isEmergency ? 'text-red-600' : ''}`}>
                 {action.title}
               </CardTitle>
               {action.description && (
-                <p className="text-sm text-muted-foreground mb-3">
+                <p className="text-xs md:text-sm text-muted-foreground mb-1 md:mb-3 hidden md:block">
                   {action.description}
                 </p>
               )}
             </CardHeader>
-            <CardContent className="text-center pt-0 mt-auto">
+            <CardContent className="text-center pt-0 mt-auto p-2 md:p-6">
               <Button 
                 variant={action.buttonVariant}
-                className={`w-full ${animations.buttonHover}`}
+                className={`w-full text-xs md:text-sm mobile-button ${animations.buttonHover}`}
                 onClick={(e) => {
                   e.stopPropagation();
                   isEmergency ? onEmergencyCall() : onNavigate(action.path);
                 }}
               >
-                {action.buttonText}
+                <span className="hidden md:inline">{action.buttonText}</span>
+                <span className="md:hidden">{action.title}</span>
               </Button>
             </CardContent>
           </Card>

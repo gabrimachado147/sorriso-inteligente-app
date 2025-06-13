@@ -27,9 +27,11 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 to-background">
-      <div className="container mx-auto px-4 py-8 space-y-8">
+      <div className="mobile-spacing">
         {/* Hero Section */}
-        <HeroSection />
+        <div className="mobile-hero">
+          <HeroSection />
+        </div>
 
         {/* Quick Actions */}
         <QuickActionsSection 
