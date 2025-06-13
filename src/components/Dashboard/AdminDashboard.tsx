@@ -1,8 +1,11 @@
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
   BarChart3, 
   Calendar, 
@@ -14,11 +17,16 @@ import {
   AlertCircle,
   Phone,
   MapPin,
-  Activity
+  Activity,
+  Filter,
+  Search,
+  Download,
+  Refresh
 } from 'lucide-react';
 import { animations } from '@/lib/animations';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
 import { AppointmentRecord } from '@/services/supabase/appointments';
+import { useAppointments } from '@/hooks/useAppointments';
 
 interface AdminDashboardProps {
   appointments: AppointmentRecord[];
@@ -26,9 +34,50 @@ interface AdminDashboardProps {
 }
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({ appointments, stats }) => {
-  // Processamento inteligente dos dados reais
+  const [selectedClinic, setSelectedClinic] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [dateFilter, setDateFilter] = useState<string>('all');
+  const [searchTerm, setSearchTerm] = useState('');
+  
+  const { updateAppointmentStatus } = useAppointments();
+
+  // Filtros aplicados
+  const filteredAppointments = useMemo(() => {
+    return appointments.filter(apt => {
+      const matchesClinic = selectedClinic === 'all' || apt.clinic.includes(selectedClinic);
+      const matchesStatus = statusFilter === 'all' || apt.status === statusFilter;
+      const matchesSearch = !searchTerm || 
+        apt.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        apt.phone.includes(searchTerm) ||
+        apt.service.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      let matchesDate = true;
+      if (dateFilter !== 'all') {
+        const today = new Date();
+        const aptDate = new Date(apt.date);
+        
+        switch (dateFilter) {
+          case 'today':
+            matchesDate = aptDate.toDateString() === today.toDateString();
+            break;
+          case 'week':
+            const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+            matchesDate = aptDate >= weekAgo;
+            break;
+          case 'month':
+            const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+            matchesDate = aptDate >= monthAgo;
+            break;
+        }
+      }
+      
+      return matchesClinic && matchesStatus && matchesSearch && matchesDate;
+    });
+  }, [appointments, selectedClinic, statusFilter, searchTerm, dateFilter]);
+
+  // Processamento inteligente dos dados filtrados
   const dashboardData = useMemo(() => {
-    if (!appointments || appointments.length === 0) {
+    if (!filteredAppointments || filteredAppointments.length === 0) {
       return {
         totalAppointments: 0,
         todayAppointments: 0,
@@ -47,22 +96,22 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ appointments, st
     }
 
     const today = new Date().toISOString().split('T')[0];
-    const todayAppointments = appointments.filter(apt => apt.date === today);
-    const confirmedAppointments = appointments.filter(apt => apt.status === 'confirmed');
-    const cancelledAppointments = appointments.filter(apt => apt.status === 'cancelled');
-    const completedAppointments = appointments.filter(apt => apt.status === 'completed');
-    const noShowAppointments = appointments.filter(apt => apt.status === 'no_show');
-    const pendingAppointments = appointments.filter(apt => !['confirmed', 'cancelled', 'completed', 'no_show'].includes(apt.status));
+    const todayAppointments = filteredAppointments.filter(apt => apt.date === today);
+    const confirmedAppointments = filteredAppointments.filter(apt => apt.status === 'confirmed');
+    const cancelledAppointments = filteredAppointments.filter(apt => apt.status === 'cancelled');
+    const completedAppointments = filteredAppointments.filter(apt => apt.status === 'completed');
+    const noShowAppointments = filteredAppointments.filter(apt => apt.status === 'no_show');
+    const pendingAppointments = filteredAppointments.filter(apt => !['confirmed', 'cancelled', 'completed', 'no_show'].includes(apt.status));
 
     // Dados mensais dos últimos 6 meses
     const monthlyData = [];
     for (let i = 5; i >= 0; i--) {
       const date = new Date();
       date.setMonth(date.getMonth() - i);
-      const monthStr = date.toISOString().slice(0, 7); // YYYY-MM
+      const monthStr = date.toISOString().slice(0, 7);
       const monthName = date.toLocaleDateString('pt-BR', { month: 'short' });
       
-      const monthAppointments = appointments.filter(apt => 
+      const monthAppointments = filteredAppointments.filter(apt => 
         apt.created_at.startsWith(monthStr)
       );
       const monthConfirmed = monthAppointments.filter(apt => 
@@ -77,7 +126,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ appointments, st
     }
 
     // Distribuição de serviços
-    const serviceStats = appointments.reduce((acc, apt) => {
+    const serviceStats = filteredAppointments.reduce((acc, apt) => {
       acc[apt.service] = (acc[apt.service] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
@@ -92,7 +141,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ appointments, st
       .slice(0, 5);
 
     // Performance por clínica
-    const clinicStats = appointments.reduce((acc, apt) => {
+    const clinicStats = filteredAppointments.reduce((acc, apt) => {
       if (!acc[apt.clinic]) {
         acc[apt.clinic] = { total: 0, confirmed: 0 };
       }
@@ -120,16 +169,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ appointments, st
       { name: 'Concluídos', value: completedAppointments.length, color: '#3b82f6' }
     ].filter(item => item.value > 0);
 
-    const conversionRate = appointments.length > 0 ? 
-      Math.round(((confirmedAppointments.length + completedAppointments.length) / appointments.length) * 100) : 0;
+    const conversionRate = filteredAppointments.length > 0 ? 
+      Math.round(((confirmedAppointments.length + completedAppointments.length) / filteredAppointments.length) * 100) : 0;
 
-    // Agendamentos recentes (últimos 10)
-    const recentAppointments = [...appointments]
+    // Agendamentos recentes
+    const recentAppointments = [...filteredAppointments]
       .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
       .slice(0, 10);
 
     return {
-      totalAppointments: appointments.length,
+      totalAppointments: filteredAppointments.length,
       todayAppointments: todayAppointments.length,
       confirmedAppointments: confirmedAppointments.length,
       cancelledAppointments: cancelledAppointments.length,
@@ -143,6 +192,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ appointments, st
       statusData,
       recentAppointments
     };
+  }, [filteredAppointments]);
+
+  // Extrair clínicas únicas para o filtro
+  const uniqueClinics = useMemo(() => {
+    const clinics = [...new Set(appointments.map(apt => apt.clinic))];
+    return clinics.map(clinic => ({
+      value: clinic,
+      label: clinic
+    }));
   }, [appointments]);
 
   const getStatusBadge = (status: string) => {
@@ -160,15 +218,131 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ appointments, st
     }
   };
 
+  const handleUpdateStatus = async (appointmentId: string, newStatus: 'confirmed' | 'cancelled' | 'completed' | 'no_show') => {
+    try {
+      await updateAppointmentStatus.mutateAsync({ appointmentId, status: newStatus });
+    } catch (error) {
+      console.error('Erro ao atualizar status:', error);
+    }
+  };
+
+  const exportData = () => {
+    const csvContent = [
+      ['Nome', 'Telefone', 'Data', 'Horário', 'Clínica', 'Serviço', 'Status'],
+      ...filteredAppointments.map(apt => [
+        apt.name,
+        apt.phone,
+        apt.date,
+        apt.time,
+        apt.clinic,
+        apt.service,
+        apt.status
+      ])
+    ].map(row => row.join(',')).join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `agendamentos_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+  };
+
   return (
     <div className={`space-y-6 ${animations.pageEnter}`}>
-      {/* Header */}
+      {/* Header com Filtros */}
       <div className={`${animations.fadeIn}`}>
-        <h1 className="text-3xl font-bold flex items-center gap-3 mb-2">
-          <BarChart3 className="h-8 w-8 text-primary" />
-          Dashboard Administrativo 👩‍⚕️
-        </h1>
-        <p className="text-gray-600">Visão completa dos agendamentos e performance em tempo real</p>
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+          <div>
+            <h1 className="text-3xl font-bold flex items-center gap-3 mb-2">
+              <BarChart3 className="h-8 w-8 text-primary" />
+              Dashboard Administrativo 👩‍⚕️
+            </h1>
+            <p className="text-gray-600">Visão completa dos agendamentos e performance em tempo real</p>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <Button variant="outline" onClick={() => window.location.reload()}>
+              <Refresh className="h-4 w-4 mr-2" />
+              Atualizar
+            </Button>
+            <Button variant="outline" onClick={exportData}>
+              <Download className="h-4 w-4 mr-2" />
+              Exportar
+            </Button>
+          </div>
+        </div>
+
+        {/* Filtros */}
+        <Card className="mb-6">
+          <CardContent className="p-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Input
+                  placeholder="Buscar por nome, telefone..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              
+              <Select value={selectedClinic} onValueChange={setSelectedClinic}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Filtrar por clínica" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todas as Clínicas</SelectItem>
+                  {uniqueClinics.map(clinic => (
+                    <SelectItem key={clinic.value} value={clinic.value}>
+                      {clinic.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos os Status</SelectItem>
+                  <SelectItem value="confirmed">Confirmado</SelectItem>
+                  <SelectItem value="pending">Pendente</SelectItem>
+                  <SelectItem value="completed">Concluído</SelectItem>
+                  <SelectItem value="cancelled">Cancelado</SelectItem>
+                  <SelectItem value="no_show">Não Compareceu</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Select value={dateFilter} onValueChange={setDateFilter}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Período" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos os Períodos</SelectItem>
+                  <SelectItem value="today">Hoje</SelectItem>
+                  <SelectItem value="week">Última Semana</SelectItem>
+                  <SelectItem value="month">Último Mês</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  setSelectedClinic('all');
+                  setStatusFilter('all');
+                  setDateFilter('all');
+                  setSearchTerm('');
+                }}
+                className="w-full"
+              >
+                <Filter className="h-4 w-4 mr-2" />
+                Limpar Filtros
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Cards de Estatísticas */}
@@ -209,7 +383,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ appointments, st
               <div>
                 <p className="text-sm font-medium text-gray-600">Pacientes Únicos</p>
                 <p className="text-3xl font-bold text-purple-600">
-                  {new Set(appointments.map(apt => apt.phone)).size}
+                  {new Set(filteredAppointments.map(apt => apt.phone)).size}
                 </p>
               </div>
               <Users className="h-8 w-8 text-purple-500" />
@@ -238,7 +412,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ appointments, st
           <TabsTrigger value="overview">Visão Geral</TabsTrigger>
           <TabsTrigger value="performance">Performance</TabsTrigger>
           <TabsTrigger value="clinics">Clínicas</TabsTrigger>
-          <TabsTrigger value="recent">Recentes</TabsTrigger>
+          <TabsTrigger value="appointments">Agendamentos</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
@@ -417,34 +591,86 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ appointments, st
           </Card>
         </TabsContent>
 
-        <TabsContent value="recent" className="space-y-6">
+        <TabsContent value="appointments" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Agendamentos Recentes</CardTitle>
+              <CardTitle>Lista de Agendamentos ({filteredAppointments.length})</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4 max-h-[500px] overflow-y-auto">
+              <div className="space-y-4 max-h-[600px] overflow-y-auto">
                 {dashboardData.recentAppointments.length > 0 ? (
-                  dashboardData.recentAppointments.map((apt, index) => (
-                    <div key={apt.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
-                      <div className="flex items-center gap-4">
-                        <div className="w-3 h-3 bg-primary rounded-full"></div>
-                        <div>
-                          <p className="font-medium">{apt.name}</p>
-                          <div className="flex items-center gap-2 text-sm text-gray-600">
-                            <Phone className="h-4 w-4" />
-                            <span>{apt.phone}</span>
-                            <MapPin className="h-4 w-4 ml-2" />
-                            <span>{apt.clinic}</span>
+                  dashboardData.recentAppointments.map((apt) => (
+                    <div key={apt.id} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                        <div className="flex items-center gap-4">
+                          <div className="w-3 h-3 bg-primary rounded-full flex-shrink-0"></div>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-medium text-gray-900 truncate">{apt.name}</h3>
+                            <div className="flex flex-wrap items-center gap-2 text-sm text-gray-600 mt-1">
+                              <span className="flex items-center gap-1">
+                                <Phone className="h-3 w-3" />
+                                {apt.phone}
+                              </span>
+                              <span className="flex items-center gap-1">
+                                <MapPin className="h-3 w-3" />
+                                {apt.clinic}
+                              </span>
+                            </div>
+                            <p className="text-sm text-gray-600 mt-1">{apt.service}</p>
                           </div>
-                          <p className="text-sm text-gray-600">{apt.service}</p>
                         </div>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-sm font-medium">{apt.date}</p>
-                        <p className="text-xs text-gray-600">{apt.time}</p>
-                        <div className="mt-1">
-                          {getStatusBadge(apt.status)}
+                        
+                        <div className="flex flex-col lg:flex-row lg:items-center gap-4">
+                          <div className="text-center lg:text-right">
+                            <p className="text-sm font-medium">{apt.date}</p>
+                            <p className="text-xs text-gray-600">{apt.time}</p>
+                          </div>
+                          
+                          <div className="flex flex-col gap-2">
+                            {getStatusBadge(apt.status)}
+                            
+                            {apt.status === 'confirmed' && (
+                              <div className="flex gap-1">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="text-xs px-2 py-1 h-auto"
+                                  onClick={() => handleUpdateStatus(apt.id, 'completed')}
+                                >
+                                  Concluir
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="text-xs px-2 py-1 h-auto text-orange-600"
+                                  onClick={() => handleUpdateStatus(apt.id, 'no_show')}
+                                >
+                                  Não Veio
+                                </Button>
+                              </div>
+                            )}
+                            
+                            {apt.status === 'pending' && (
+                              <div className="flex gap-1">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="text-xs px-2 py-1 h-auto text-green-600"
+                                  onClick={() => handleUpdateStatus(apt.id, 'confirmed')}
+                                >
+                                  Confirmar
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="text-xs px-2 py-1 h-auto text-red-600"
+                                  onClick={() => handleUpdateStatus(apt.id, 'cancelled')}
+                                >
+                                  Cancelar
+                                </Button>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -452,7 +678,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ appointments, st
                 ) : (
                   <div className="text-center text-gray-500 py-8">
                     <Calendar className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                    <p>Nenhum agendamento encontrado</p>
+                    <p>Nenhum agendamento encontrado com os filtros aplicados</p>
                   </div>
                 )}
               </div>

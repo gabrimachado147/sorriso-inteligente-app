@@ -9,6 +9,45 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      accessibility_settings: {
+        Row: {
+          created_at: string
+          font_size: number | null
+          high_contrast: boolean | null
+          id: string
+          large_text: boolean | null
+          reduced_motion: boolean | null
+          screen_reader: boolean | null
+          theme_preference: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          font_size?: number | null
+          high_contrast?: boolean | null
+          id?: string
+          large_text?: boolean | null
+          reduced_motion?: boolean | null
+          screen_reader?: boolean | null
+          theme_preference?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          font_size?: number | null
+          high_contrast?: boolean | null
+          id?: string
+          large_text?: boolean | null
+          reduced_motion?: boolean | null
+          screen_reader?: boolean | null
+          theme_preference?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       analytics_events: {
         Row: {
           clinic_id: string | null
@@ -47,6 +86,7 @@ export type Database = {
       appointments: {
         Row: {
           clinic: string
+          clinic_filter: string | null
           created_at: string
           date: string
           email: string | null
@@ -63,6 +103,7 @@ export type Database = {
         }
         Insert: {
           clinic: string
+          clinic_filter?: string | null
           created_at?: string
           date: string
           email?: string | null
@@ -79,6 +120,7 @@ export type Database = {
         }
         Update: {
           clinic?: string
+          clinic_filter?: string | null
           created_at?: string
           date?: string
           email?: string | null
@@ -628,6 +670,39 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_preferences: {
+        Row: {
+          created_at: string
+          email_reminders: boolean | null
+          id: string
+          marketing_emails: boolean | null
+          push_notifications: boolean | null
+          sms_reminders: boolean | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email_reminders?: boolean | null
+          id?: string
+          marketing_emails?: boolean | null
+          push_notifications?: boolean | null
+          sms_reminders?: boolean | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email_reminders?: boolean | null
+          id?: string
+          marketing_emails?: boolean | null
+          push_notifications?: boolean | null
+          sms_reminders?: boolean | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -777,6 +852,68 @@ export type Database = {
           SessionId?: string | null
           thread_id?: string | null
           timeout?: string | null
+        }
+        Relationships: []
+      }
+      user_appointments: {
+        Row: {
+          appointment_id: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          appointment_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          appointment_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_appointments_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_gamification: {
+        Row: {
+          achievements: Json | null
+          badges: Json | null
+          created_at: string
+          id: string
+          level: number
+          points: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          achievements?: Json | null
+          badges?: Json | null
+          created_at?: string
+          id?: string
+          level?: number
+          points?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          achievements?: Json | null
+          badges?: Json | null
+          created_at?: string
+          id?: string
+          level?: number
+          points?: number
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }

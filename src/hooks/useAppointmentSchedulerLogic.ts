@@ -1,162 +1,104 @@
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { apiService } from '@/services/api';
+import { useAuth } from './useAuth';
+import { useProfile } from './useProfile';
 import { AppointmentService } from '@/services/supabase/appointments';
-import { toastError, toastAppointment } from '@/components/ui/custom-toast';
-import { whatsappService } from '@/services/whatsapp';
-import { format } from 'date-fns';
-import { availableServices } from '@/components/Appointments/constants/services';
+import { toastSuccess, toastError } from '@/components/ui/custom-toast';
 
 export const useAppointmentSchedulerLogic = (rescheduleId: string | null) => {
   const navigate = useNavigate();
+  const { user, isAuthenticated } = useAuth();
+  const { profile } = useProfile();
   
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
-  const [selectedTime, setSelectedTime] = useState<string>('');
-  const [selectedClinic, setSelectedClinic] = useState<string>('');
-  const [selectedService, setSelectedService] = useState<string>('');
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>();
+  const [selectedTime, setSelectedTime] = useState('');
+  const [selectedClinic, setSelectedClinic] = useState('');
+  const [selectedService, setSelectedService] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showPhoneModal, setShowPhoneModal] = useState(false);
 
-  const [availableClinics, setAvailableClinics] = useState<Array<{id: string, name: string, city: string, state: string}>>([]);
-
-  // Carregar clínicas reais ao montar o componente
-  useEffect(() => {
-    const loadClinics = async () => {
-      try {
-        setIsLoading(true);
-        const clinics = await apiService.clinics.getAll();
-        const formattedClinics = clinics.map(clinic => ({
-          id: clinic.id,
-          name: clinic.name,
-          city: clinic.city,
-          state: clinic.state
-        }));
-        setAvailableClinics(formattedClinics);
-      } catch (error) {
-        console.error('Erro ao carregar clínicas:', error);
-        toastError('Erro', 'Não foi possível carregar as clínicas');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadClinics();
-  }, []);
-
-  // Resetar horário selecionado quando a data mudar
-  useEffect(() => {
-    setSelectedTime('');
-  }, [selectedDate]);
-
-  const handleConfirmAppointment = async (userName: string, userPhone: string) => {
-    setIsLoading(true);
-    
-    try {
-      const selectedClinicData = availableClinics.find(c => c.id === selectedClinic);
-      const selectedServiceData = availableServices.find(s => s.id === selectedService);
-      
-      if (!selectedDate || !selectedClinicData || !selectedServiceData) {
-        throw new Error('Dados incompletos');
-      }
-
-      // Formatar telefone para o padrão do WhatsApp
-      const cleanPhone = userPhone.replace(/\D/g, '');
-      const formattedPhone = cleanPhone.startsWith('55') ? `+${cleanPhone}` : `+55${cleanPhone}`;
-
-      // Criar o agendamento no Supabase
-      const appointmentData = {
-        name: userName,
-        phone: formattedPhone,
-        email: null,
-        service: selectedServiceData.name,
-        clinic: `${selectedClinicData.name} - ${selectedClinicData.city}, ${selectedClinicData.state}`,
-        date: format(selectedDate, 'yyyy-MM-dd'),
-        time: selectedTime,
-        webhook_session_id: `app_${Date.now()}`,
-        notes: rescheduleId ? `Reagendamento de ${rescheduleId}` : 'Agendamento via aplicativo'
-      };
-
-      // Inserir no banco de dados
-      const createdAppointment = await AppointmentService.createAppointment(appointmentData);
-      console.log('Agendamento criado no Supabase:', createdAppointment);
-
-      const appointmentDetails = `📅 *Agendamento Confirmado*\n\n` +
-        `👤 *Cliente:* ${userName}\n` +
-        `📞 *Telefone:* ${formattedPhone}\n` +
-        `📋 *Serviço:* ${selectedServiceData.name}\n` +
-        `📍 *Clínica:* ${selectedClinicData.name} - ${selectedClinicData.city}, ${selectedClinicData.state}\n` +
-        `📅 *Data:* ${format(selectedDate, 'dd/MM/yyyy')}\n` +
-        `⏰ *Horário:* ${selectedTime}\n\n` +
-        `✅ Agendamento realizado com sucesso!\n` +
-        `📞 Contato: (31) 97190-7025`;
-
-      // Enviar confirmação para o usuário
-      try {
-        await whatsappService.sendMessage({
-          to: formattedPhone,
-          message: `✅ *Agendamento Confirmado!*\n\n` +
-            `👤 *Nome:* ${userName}\n` +
-            `📋 *Serviço:* ${selectedServiceData.name}\n` +
-            `📍 *Local:* ${selectedClinicData.name} - ${selectedClinicData.city}\n` +
-            `📅 *Data:* ${format(selectedDate, 'dd/MM/yyyy')}\n` +
-            `⏰ *Horário:* ${selectedTime}\n\n` +
-            `Obrigado por escolher a Senhor Sorriso! 😊\n` +
-            `📞 Contato: (31) 97190-7025`
-        });
-
-        // Enviar notificação para a clínica
-        const clinicNumber = '+5531971907025';
-        await whatsappService.sendMessage({
-          to: clinicNumber,
-          message: `🔔 *Novo Agendamento - ${selectedClinicData.name}*\n\n${appointmentDetails}\n\n⏰ *Agendado em:* ${new Date().toLocaleString('pt-BR')}`
-        });
-      } catch (whatsappError) {
-        console.log('Erro no WhatsApp (não crítico):', whatsappError);
-        // Continua mesmo se o WhatsApp falhar
-      }
-      
-      const actionText = rescheduleId ? 'Consulta reagendada' : 'Consulta agendada';
-      
-      // Mostrar toast de sucesso
-      toastAppointment(
-        `${actionText} com sucesso!`,
-        `Agendamento confirmado para ${userName}. Os dados foram enviados para o dashboard da clínica ${selectedClinicData.name}.`
-      );
-      
-      // Reset form and navigate back
-      setSelectedTime('');
-      setSelectedClinic('');
-      setSelectedService('');
-      setSelectedDate(new Date());
-      
-      setTimeout(() => {
-        navigate('/');
-      }, 3000);
-      
-    } catch (error) {
-      console.error('Erro ao confirmar agendamento:', error);
-      toastError(
-        'Erro ao agendar consulta',
-        'Verifique sua conexão e tente novamente. Se o problema persistir, entre em contato conosco.'
-      );
-    } finally {
-      setIsLoading(false);
-      setShowPhoneModal(false);
-    }
-  };
+  // Mock data - would come from API in real app
+  const availableClinics = [
+    { id: 'clinic1', name: 'Clínica Sorriso', city: 'São Paulo', state: 'SP' },
+    { id: 'clinic2', name: 'Dental Care', city: 'Rio de Janeiro', state: 'RJ' },
+    { id: 'clinic3', name: 'OdontoVida', city: 'Belo Horizonte', state: 'MG' }
+  ];
 
   const handleScheduleAppointment = () => {
     if (!selectedDate || !selectedTime || !selectedClinic || !selectedService) {
-      toastError('Preencha todos os campos', 'Selecione data, horário, clínica e serviço.');
+      toastError('Erro', 'Por favor, preencha todos os campos');
       return;
     }
-    
-    setShowPhoneModal(true);
+
+    // Se usuário está logado, usar dados do perfil automaticamente
+    if (isAuthenticated && profile) {
+      handleConfirmAppointment(profile.nome_completo, profile.telefone);
+    } else {
+      // Se não está logado, mostrar modal para capturar dados
+      setShowPhoneModal(true);
+    }
+  };
+
+  const handleConfirmAppointment = async (name?: string, phone?: string) => {
+    try {
+      setIsLoading(true);
+
+      const selectedClinicData = availableClinics.find(c => c.id === selectedClinic);
+      
+      // Preparar dados do agendamento
+      const appointmentData = {
+        name: name || profile?.nome_completo || '',
+        phone: phone || profile?.telefone || '',
+        date: selectedDate!.toISOString().split('T')[0],
+        time: selectedTime,
+        clinic: selectedClinicData ? `${selectedClinicData.name} - ${selectedClinicData.city}` : '',
+        service: selectedService,
+        email: user?.email || '',
+        source: 'pwa',
+        status: 'confirmed'
+      };
+
+      // Criar o agendamento
+      const result = await AppointmentService.createAppointment(appointmentData);
+
+      // Se usuário está logado, criar vínculo na tabela user_appointments
+      if (isAuthenticated && user) {
+        await AppointmentService.linkUserAppointment(user.id, result.id);
+      }
+
+      setShowPhoneModal(false);
+      
+      toastSuccess(
+        rescheduleId ? 'Consulta Reagendada!' : 'Consulta Agendada!',
+        `Sua consulta foi ${rescheduleId ? 'reagendada' : 'agendada'} para ${appointmentData.date} às ${appointmentData.time}`
+      );
+
+      // Limpar formulário
+      setSelectedDate(undefined);
+      setSelectedTime('');
+      setSelectedClinic('');
+      setSelectedService('');
+
+      // Redirecionar após sucesso
+      setTimeout(() => {
+        if (isAuthenticated) {
+          navigate('/profile'); // Usuário logado vai para o perfil onde pode ver histórico
+        } else {
+          navigate('/'); // Usuário não logado volta para home
+        }
+      }, 2000);
+
+    } catch (error) {
+      console.error('Erro ao agendar consulta:', error);
+      toastError('Erro', 'Não foi possível agendar a consulta. Tente novamente.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleGoBack = () => {
-    navigate('/');
+    navigate(-1);
   };
 
   return {

@@ -1,159 +1,217 @@
 
-import { supabase } from '../../integrations/supabase/client'
-
-export interface CreateAppointmentData {
-  name: string
-  phone: string
-  email?: string | null
-  service: string
-  clinic: string
-  date: string
-  time: string
-  webhook_session_id?: string
-  notes?: string
-}
+import { supabase } from '@/integrations/supabase/client';
 
 export interface AppointmentRecord {
-  id: string
-  name: string
-  phone: string
-  email?: string | null
-  service: string
-  clinic: string
-  date: string
-  time: string
-  status: string
-  source: string | null
-  webhook_session_id?: string | null
-  notes?: string | null
-  created_at: string
-  updated_at: string
+  id: string;
+  name: string;
+  phone: string;
+  email?: string;
+  date: string;
+  time: string;
+  clinic: string;
+  service: string;
+  status: string;
+  notes?: string;
+  source?: string;
+  created_at: string;
+  updated_at: string;
+  clinic_filter?: string;
+}
+
+export interface CreateAppointmentData {
+  name: string;
+  phone: string;
+  email?: string;
+  date: string;
+  time: string;
+  clinic: string;
+  service: string;
+  status?: string;
+  notes?: string;
+  source?: string;
 }
 
 export class AppointmentService {
   /**
-   * Criar um novo agendamento
-   */
-  static async createAppointment(data: CreateAppointmentData): Promise<AppointmentRecord> {
-    const { data: appointment, error } = await supabase
-      .from('appointments')
-      .insert({
-        name: data.name,
-        phone: data.phone,
-        email: data.email,
-        service: data.service,
-        clinic: data.clinic,
-        date: data.date,
-        time: data.time,
-        webhook_session_id: data.webhook_session_id,
-        notes: data.notes,
-        status: 'confirmed',
-        source: 'webhook'
-      })
-      .select()
-      .single()
-
-    if (error) {
-      console.error('Erro ao criar agendamento:', error)
-      throw new Error(`Erro ao criar agendamento: ${error.message}`)
-    }
-
-    return appointment
-  }
-
-  /**
-   * Buscar agendamentos por telefone
-   */
-  static async getAppointmentsByPhone(phone: string): Promise<AppointmentRecord[]> {
-    const { data: appointments, error } = await supabase
-      .from('appointments')
-      .select('*')
-      .eq('phone', phone)
-      .order('created_at', { ascending: false })
-
-    if (error) {
-      console.error('Erro ao buscar agendamentos:', error)
-      throw new Error(`Erro ao buscar agendamentos: ${error.message}`)
-    }
-
-    return appointments || []
-  }
-
-  /**
-   * Buscar todos os agendamentos
+   * Get all appointments
    */
   static async getAllAppointments(): Promise<AppointmentRecord[]> {
-    const { data: appointments, error } = await supabase
-      .from('appointments')
-      .select('*')
-      .order('created_at', { ascending: false })
+    try {
+      const { data, error } = await supabase
+        .from('appointments')
+        .select('*')
+        .order('created_at', { ascending: false });
 
-    if (error) {
-      console.error('Erro ao buscar todos os agendamentos:', error)
-      throw new Error(`Erro ao buscar agendamentos: ${error.message}`)
+      if (error) throw error;
+      return data || [];
+    } catch (error) {
+      console.error('Error fetching appointments:', error);
+      throw error;
     }
-
-    return appointments || []
   }
 
   /**
-   * Atualizar status do agendamento
+   * Get appointments by phone number
+   */
+  static async getAppointmentsByPhone(phone: string): Promise<AppointmentRecord[]> {
+    try {
+      const { data, error } = await supabase
+        .from('appointments')
+        .select('*')
+        .eq('phone', phone)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data || [];
+    } catch (error) {
+      console.error('Error fetching appointments by phone:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get user appointments (for logged in users)
+   */
+  static async getUserAppointments(userId: string): Promise<AppointmentRecord[]> {
+    try {
+      const { data, error } = await supabase
+        .from('user_appointments')
+        .select(`
+          appointment_id,
+          created_at,
+          appointments (*)
+        `)
+        .eq('user_id', userId);
+
+      if (error) throw error;
+      
+      return data?.map(item => item.appointments).filter(Boolean) || [];
+    } catch (error) {
+      console.error('Error fetching user appointments:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Create appointment
+   */
+  static async createAppointment(data: CreateAppointmentData): Promise<AppointmentRecord> {
+    try {
+      const appointmentData = {
+        ...data,
+        status: data.status || 'confirmed',
+        source: data.source || 'pwa',
+        clinic_filter: data.clinic // Para filtragem no dashboard admin
+      };
+
+      const { data: appointment, error } = await supabase
+        .from('appointments')
+        .insert(appointmentData)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return appointment;
+    } catch (error) {
+      console.error('Error creating appointment:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Link user to appointment
+   */
+  static async linkUserAppointment(userId: string, appointmentId: string): Promise<void> {
+    try {
+      const { error } = await supabase
+        .from('user_appointments')
+        .insert({
+          user_id: userId,
+          appointment_id: appointmentId
+        });
+
+      if (error && !error.message.includes('duplicate')) {
+        throw error;
+      }
+    } catch (error) {
+      console.error('Error linking user appointment:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Update appointment status
    */
   static async updateAppointmentStatus(
-    appointmentId: string, 
+    appointmentId: string,
     status: 'confirmed' | 'cancelled' | 'completed' | 'no_show'
   ): Promise<AppointmentRecord> {
-    const { data: appointment, error } = await supabase
-      .from('appointments')
-      .update({ status })
-      .eq('id', appointmentId)
-      .select()
-      .single()
+    try {
+      const { data, error } = await supabase
+        .from('appointments')
+        .update({ status })
+        .eq('id', appointmentId)
+        .select()
+        .single();
 
-    if (error) {
-      console.error('Erro ao atualizar status:', error)
-      throw new Error(`Erro ao atualizar status: ${error.message}`)
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error updating appointment status:', error);
+      throw error;
     }
-
-    return appointment
   }
 
   /**
-   * Estatísticas dos agendamentos
+   * Get appointment statistics
    */
-  static async getAppointmentStats(): Promise<{
-    total: number
-    today: number
-    confirmed: number
-    cancelled: number
-  }> {
-    const { data: appointments, error } = await supabase
-      .from('appointments')
-      .select('status, created_at')
+  static async getAppointmentStats() {
+    try {
+      const { data, error } = await supabase
+        .from('appointments')
+        .select('status, created_at, clinic');
 
-    if (error) {
-      console.error('Erro ao buscar estatísticas:', error)
-      throw new Error(`Erro ao buscar estatísticas: ${error.message}`)
+      if (error) throw error;
+
+      const today = new Date().toISOString().split('T')[0];
+      const thisMonth = new Date().toISOString().slice(0, 7);
+
+      const stats = {
+        total: data?.length || 0,
+        today: data?.filter(apt => apt.created_at.startsWith(today)).length || 0,
+        thisMonth: data?.filter(apt => apt.created_at.startsWith(thisMonth)).length || 0,
+        confirmed: data?.filter(apt => apt.status === 'confirmed').length || 0,
+        completed: data?.filter(apt => apt.status === 'completed').length || 0,
+        cancelled: data?.filter(apt => apt.status === 'cancelled').length || 0,
+        byClinic: data?.reduce((acc, apt) => {
+          acc[apt.clinic] = (acc[apt.clinic] || 0) + 1;
+          return acc;
+        }, {} as Record<string, number>) || {}
+      };
+
+      return stats;
+    } catch (error) {
+      console.error('Error fetching appointment stats:', error);
+      throw error;
     }
+  }
 
-    const today = new Date().toISOString().split('T')[0]
-    const todayAppointments = appointments?.filter(apt => 
-      apt.created_at.startsWith(today)
-    ).length || 0
+  /**
+   * Get appointments by clinic (for admin dashboard)
+   */
+  static async getAppointmentsByClinic(clinicName: string): Promise<AppointmentRecord[]> {
+    try {
+      const { data, error } = await supabase
+        .from('appointments')
+        .select('*')
+        .ilike('clinic', `%${clinicName}%`)
+        .order('created_at', { ascending: false });
 
-    const confirmedCount = appointments?.filter(apt => 
-      apt.status === 'confirmed'
-    ).length || 0
-
-    const cancelledCount = appointments?.filter(apt => 
-      apt.status === 'cancelled'
-    ).length || 0
-
-    return {
-      total: appointments?.length || 0,
-      today: todayAppointments,
-      confirmed: confirmedCount,
-      cancelled: cancelledCount
+      if (error) throw error;
+      return data || [];
+    } catch (error) {
+      console.error('Error fetching appointments by clinic:', error);
+      throw error;
     }
   }
 }

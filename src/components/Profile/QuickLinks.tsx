@@ -2,62 +2,97 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { 
+  Calendar, 
+  MessageCircle, 
+  Shield, 
+  Bell, 
+  Gamepad2, 
+  Settings,
+  History,
+  Heart,
+  Award,
+  Accessibility
+} from 'lucide-react';
+import { animations } from '@/lib/animations';
 import { useNavigate } from 'react-router-dom';
-import { Accessibility, Trophy, BarChart3, Bell } from 'lucide-react';
 
-export const QuickLinks: React.FC = () => {
+export const QuickLinks = () => {
   const navigate = useNavigate();
 
-  const links = [
+  const quickLinks = [
     {
-      icon: Accessibility,
-      title: 'Acessibilidade',
-      description: 'Configurações de acessibilidade',
-      path: '/accessibility',
-      color: 'text-blue-600'
+      icon: Calendar,
+      title: 'Agendar Consulta',
+      description: 'Marque uma nova consulta',
+      color: 'bg-blue-500',
+      action: () => navigate('/schedule')
     },
     {
-      icon: Trophy,
-      title: 'Gamificação',
-      description: 'Pontos e conquistas',
-      path: '/gamification',
-      color: 'text-yellow-600'
+      icon: History,
+      title: 'Histórico',
+      description: 'Ver consultas anteriores',
+      color: 'bg-green-500',
+      action: () => navigate('/profile?tab=history')
     },
     {
-      icon: BarChart3,
-      title: 'Analytics',
-      description: 'Dashboard de saúde',
-      path: '/analytics',
-      color: 'text-green-600'
+      icon: MessageCircle,
+      title: 'Chat Suporte',
+      description: 'Fale com nossa equipe',
+      color: 'bg-purple-500',
+      action: () => navigate('/chat')
     },
     {
       icon: Bell,
-      title: 'Lembretes',
-      description: 'Gerenciar lembretes',
-      path: '/reminders',
-      color: 'text-purple-600'
+      title: 'Notificações',
+      description: 'Configurar lembretes',
+      color: 'bg-orange-500',
+      action: () => navigate('/profile?tab=notifications')
+    },
+    {
+      icon: Gamepad2,
+      title: 'Gamificação',
+      description: 'Ver pontos e conquistas',
+      color: 'bg-pink-500',
+      action: () => navigate('/profile?tab=gamification')
+    },
+    {
+      icon: Accessibility,
+      title: 'Acessibilidade',
+      description: 'Configurações de acesso',
+      color: 'bg-indigo-500',
+      action: () => navigate('/profile?tab=accessibility')
     }
   ];
 
   return (
-    <Card>
+    <Card className={`${animations.fadeIn}`}>
       <CardHeader>
-        <CardTitle>Recursos Avançados</CardTitle>
+        <CardTitle className="flex items-center gap-2">
+          <Settings className="h-5 w-5 text-primary" />
+          Recursos Avançados
+        </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {links.map((link) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {quickLinks.map((link, index) => (
             <Button
-              key={link.path}
+              key={index}
               variant="outline"
-              className="h-auto p-4 justify-start"
-              onClick={() => navigate(link.path)}
+              className={`h-auto p-4 text-left justify-start hover:shadow-md transition-all duration-200 ${animations.buttonHover}`}
+              onClick={link.action}
             >
-              <link.icon className={`h-5 w-5 mr-3 ${link.color}`} />
-              <div className="text-left">
-                <div className="font-medium">{link.title}</div>
-                <div className="text-sm text-muted-foreground">
-                  {link.description}
+              <div className="flex items-start gap-3 w-full">
+                <div className={`p-2 rounded-lg ${link.color}`}>
+                  <link.icon className="h-4 w-4 text-white" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-sm text-gray-900 truncate">
+                    {link.title}
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {link.description}
+                  </p>
                 </div>
               </div>
             </Button>
