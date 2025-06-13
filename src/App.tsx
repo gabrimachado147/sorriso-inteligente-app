@@ -35,7 +35,7 @@ const MainLayout = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      <main className="flex-1 pb-20 md:pb-0">
+      <main className="flex-1 pb-32 md:pb-8">
         <Outlet />
       </main>
       <BottomNavigation />
