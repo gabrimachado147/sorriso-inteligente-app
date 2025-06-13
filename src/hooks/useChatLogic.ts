@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
-import { apiService } from '@/services/api';
-import { toastError, toastSuccess } from '@/components/ui/custom-toast';
+import { useChatHandler } from './useChatHandler';
+import { toastError } from '@/components/ui/custom-toast';
 import { Message } from '@/components/Chat/types';
 
 export const useChatLogic = (userPhone: string, isPhoneCollected: boolean) => {
@@ -16,6 +16,7 @@ export const useChatLogic = (userPhone: string, isPhoneCollected: boolean) => {
   ]);
 
   const [loading, setLoading] = useState(false);
+  const { sendMessage } = useChatHandler();
 
   const addMessage = (message: Message) => {
     setMessages(prev => [...prev, message]);
@@ -41,23 +42,37 @@ export const useChatLogic = (userPhone: string, isPhoneCollected: boolean) => {
     setLoading(true);
 
     try {
-      // Use the original API service
-      const sessionId = `session_${Date.now()}`;
-      const response = await apiService.chat.sendMessage(messageText, sessionId);
+      console.log('Enviando mensagem para webhook N8N:', messageText);
       
-      const botMessage: Message = {
-        id: Date.now() + 1,
-        text: response.content,
-        sender: 'bot',
-        timestamp: new Date(),
-        type: response.actions && response.actions.length > 0 ? 'appointment' : 'general',
-        quickReplies: response.actions?.map(action => action.label)
-      };
+      // Use the webhook integration from useChatHandler
+      const response = await sendMessage(
+        messageText, 
+        'general', 
+        userPhone
+      );
       
-      addMessage(botMessage);
+      if (response && response.output) {
+        const botMessage: Message = {
+          id: Date.now() + 1,
+          text: response.output,
+          sender: 'bot',
+          timestamp: new Date(),
+          type: 'general',
+          // Check if response suggests quick actions
+          quickReplies: response.output.toLowerCase().includes('agendar') || 
+                       response.output.toLowerCase().includes('consulta') || 
+                       response.output.toLowerCase().includes('clínica') ?
+                       ['Agendar consulta', 'Ver clínicas próximas', 'Horários disponíveis'] : undefined
+        };
+        
+        addMessage(botMessage);
+        console.log('Resposta do webhook N8N recebida:', response.output);
+      } else {
+        throw new Error('Resposta inválida do webhook');
+      }
       
     } catch (error) {
-      console.error('Erro ao enviar mensagem:', error);
+      console.error('Erro ao enviar mensagem para webhook N8N:', error);
       
       const errorMessage: Message = {
         id: Date.now() + 1,

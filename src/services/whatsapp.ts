@@ -1,4 +1,3 @@
-
 // WhatsApp webhook service
 export interface WhatsAppMessage {
   phone: string
@@ -46,7 +45,7 @@ export class WhatsAppService {
    */
   static async sendToWebhook(data: WhatsAppWebhookData): Promise<WhatsAppWebhookResponse> {
     try {
-      console.log('Sending data to webhook:', data)
+      console.log('Enviando dados para webhook N8N:', data)
       
       const response = await fetch(this.WEBHOOK_URL, {
         method: 'POST',
@@ -57,11 +56,11 @@ export class WhatsAppService {
       })
 
       if (!response.ok) {
-        throw new Error(`Webhook request failed: ${response.status} ${response.statusText}`)
+        throw new Error(`Webhook N8N falhou: ${response.status} ${response.statusText}`)
       }
 
       const result = await response.json()
-      console.log('Webhook response received:', result)
+      console.log('Resposta do webhook N8N recebida:', result)
       
       // O webhook retorna um array, então vamos pegar o primeiro item
       let webhookData = result
@@ -71,16 +70,16 @@ export class WhatsAppService {
       
       // Garantir que a resposta tenha o campo "output"
       const webhookResponse: WhatsAppWebhookResponse = {
-        output: webhookData.output || webhookData.message || 'Resposta recebida com sucesso',
+        output: webhookData.output || webhookData.message || 'Resposta recebida do N8N com sucesso',
         sessionId: webhookData.sessionId || data.sessionId,
         threadId: webhookData.threadId || data.threadId,
         timestamp: new Date().toISOString()
       }
 
-      console.log('Formatted webhook response:', webhookResponse)
+      console.log('Resposta formatada do webhook N8N:', webhookResponse)
       return webhookResponse
     } catch (error) {
-      console.error('Error sending data to webhook:', error)
+      console.error('Erro ao enviar dados para webhook N8N:', error)
       throw error
     }
   }
