@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -123,9 +122,6 @@ const Index = () => {
               <CardTitle className="text-lg text-red-600">Emergência</CardTitle>
             </CardHeader>
             <CardContent className="text-center">
-              <p className="text-sm text-muted-foreground mb-3">
-                Atendimento 24h disponível
-              </p>
               <Button 
                 variant="destructive" 
                 className="w-full"

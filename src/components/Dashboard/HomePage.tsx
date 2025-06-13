@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -166,7 +167,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
           <CardContent className="p-4 text-center">
             <Phone className="h-8 w-8 mx-auto mb-2 text-primary" />
             <p className="font-medium">Urgência</p>
-            <p className="text-xs text-gray-500">Atendimento 24h</p>
           </CardContent>
         </Card>
       </div>
@@ -352,7 +352,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         <CardContent className="p-4">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-semibold text-red-800">Urgência Dental 24h</h3>
+              <h3 className="font-semibold text-red-800">Urgência Dental</h3>
               <p className="text-sm text-red-600">Atendimento imediato para emergências</p>
             </div>
             <Button 
