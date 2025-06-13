@@ -3,11 +3,10 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, MapPin, Clock, User, CalendarPlus, CheckCircle } from 'lucide-react';
+import { Calendar, MapPin, Clock, User, CheckCircle } from 'lucide-react';
 import { animations } from '@/lib/animations';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { useCalendarIntegration } from '@/hooks/useCalendarIntegration';
 
 interface AppointmentSummaryProps {
   selectedDate: Date | undefined;
@@ -28,26 +27,10 @@ export const AppointmentSummary: React.FC<AppointmentSummaryProps> = ({
   availableServices,
   onConfirm
 }) => {
-  const { isSupported: isCalendarSupported, addAppointmentToCalendar } = useCalendarIntegration();
-  
   const isComplete = selectedDate && selectedTime && selectedClinic && selectedService;
   
   const clinic = availableClinics.find(c => c.id === selectedClinic);
   const service = availableServices.find(s => s.id === selectedService);
-
-  const handleAddToCalendar = async () => {
-    if (!isComplete || !clinic || !service) return;
-
-    const appointmentData = {
-      service: service.name,
-      clinic: `${clinic.name} - ${clinic.city}`,
-      date: format(selectedDate!, 'dd/MM/yyyy', { locale: ptBR }),
-      time: selectedTime,
-      duration: service.duration
-    };
-
-    await addAppointmentToCalendar(appointmentData);
-  };
 
   if (!isComplete) {
     return (
@@ -141,18 +124,6 @@ export const AppointmentSummary: React.FC<AppointmentSummaryProps> = ({
               <CheckCircle className="h-5 w-5 mr-2" />
               Confirmar Agendamento
             </Button>
-            
-            {isCalendarSupported && (
-              <Button
-                variant="outline"
-                onClick={handleAddToCalendar}
-                className={`flex items-center gap-2 ${animations.buttonHover}`}
-                size="lg"
-              >
-                <CalendarPlus className="h-4 w-4" />
-                Adicionar ao Calendário
-              </Button>
-            )}
           </div>
           
           <p className="text-xs text-gray-500 text-center mt-3">

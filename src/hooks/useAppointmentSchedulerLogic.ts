@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiService } from '@/services/api';
+import { AppointmentService } from '@/services/supabase/appointments';
 import { toastError, toastAppointment } from '@/components/ui/custom-toast';
 import { whatsappService } from '@/services/whatsapp';
 import { format } from 'date-fns';
@@ -48,7 +49,7 @@ export const useAppointmentSchedulerLogic = (rescheduleId: string | null) => {
     setSelectedTime('');
   }, [selectedDate]);
 
-  const handleConfirmAppointment = async (userPhone: string) => {
+  const handleConfirmAppointment = async (userName: string, userPhone: string) => {
     setIsLoading(true);
     
     try {
@@ -59,8 +60,30 @@ export const useAppointmentSchedulerLogic = (rescheduleId: string | null) => {
         throw new Error('Dados incompletos');
       }
 
+      // Formatar telefone para o padrão do WhatsApp
+      const cleanPhone = userPhone.replace(/\D/g, '');
+      const formattedPhone = cleanPhone.startsWith('55') ? `+${cleanPhone}` : `+55${cleanPhone}`;
+
+      // Criar o agendamento no Supabase
+      const appointmentData = {
+        name: userName,
+        phone: formattedPhone,
+        email: null,
+        service: selectedServiceData.name,
+        clinic: `${selectedClinicData.name} - ${selectedClinicData.city}, ${selectedClinicData.state}`,
+        date: format(selectedDate, 'yyyy-MM-dd'),
+        time: selectedTime,
+        webhook_session_id: `app_${Date.now()}`,
+        notes: rescheduleId ? `Reagendamento de ${rescheduleId}` : 'Agendamento via aplicativo'
+      };
+
+      // Inserir no banco de dados
+      const createdAppointment = await AppointmentService.createAppointment(appointmentData);
+      console.log('Agendamento criado no Supabase:', createdAppointment);
+
       const appointmentDetails = `📅 *Agendamento Confirmado*\n\n` +
-        `👤 *Cliente:* ${userPhone}\n` +
+        `👤 *Cliente:* ${userName}\n` +
+        `📞 *Telefone:* ${formattedPhone}\n` +
         `📋 *Serviço:* ${selectedServiceData.name}\n` +
         `📍 *Clínica:* ${selectedClinicData.name} - ${selectedClinicData.city}, ${selectedClinicData.state}\n` +
         `📅 *Data:* ${format(selectedDate, 'dd/MM/yyyy')}\n` +
@@ -69,29 +92,36 @@ export const useAppointmentSchedulerLogic = (rescheduleId: string | null) => {
         `📞 Contato: (31) 97190-7025`;
 
       // Enviar confirmação para o usuário
-      const userConfirmation = await whatsappService.sendMessage({
-        to: userPhone,
-        message: `✅ *Agendamento Confirmado!*\n\n` +
-          `📋 *Serviço:* ${selectedServiceData.name}\n` +
-          `📍 *Local:* ${selectedClinicData.name} - ${selectedClinicData.city}\n` +
-          `📅 *Data:* ${format(selectedDate, 'dd/MM/yyyy')}\n` +
-          `⏰ *Horário:* ${selectedTime}\n\n` +
-          `Obrigado por escolher a Senhor Sorriso! 😊`
-      });
+      try {
+        await whatsappService.sendMessage({
+          to: formattedPhone,
+          message: `✅ *Agendamento Confirmado!*\n\n` +
+            `👤 *Nome:* ${userName}\n` +
+            `📋 *Serviço:* ${selectedServiceData.name}\n` +
+            `📍 *Local:* ${selectedClinicData.name} - ${selectedClinicData.city}\n` +
+            `📅 *Data:* ${format(selectedDate, 'dd/MM/yyyy')}\n` +
+            `⏰ *Horário:* ${selectedTime}\n\n` +
+            `Obrigado por escolher a Senhor Sorriso! 😊\n` +
+            `📞 Contato: (31) 97190-7025`
+        });
 
-      // Enviar notificação para a clínica
-      const clinicNumber = '+5531971907025';
-      const clinicNotification = await whatsappService.sendMessage({
-        to: clinicNumber,
-        message: `🔔 *Novo Agendamento*\n\n${appointmentDetails}\n\n⏰ *Agendado em:* ${new Date().toLocaleString('pt-BR')}`
-      });
+        // Enviar notificação para a clínica
+        const clinicNumber = '+5531971907025';
+        await whatsappService.sendMessage({
+          to: clinicNumber,
+          message: `🔔 *Novo Agendamento - ${selectedClinicData.name}*\n\n${appointmentDetails}\n\n⏰ *Agendado em:* ${new Date().toLocaleString('pt-BR')}`
+        });
+      } catch (whatsappError) {
+        console.log('Erro no WhatsApp (não crítico):', whatsappError);
+        // Continua mesmo se o WhatsApp falhar
+      }
       
       const actionText = rescheduleId ? 'Consulta reagendada' : 'Consulta agendada';
       
-      // Mostrar toast de sucesso com informações da mensagem
+      // Mostrar toast de sucesso
       toastAppointment(
         `${actionText} com sucesso!`,
-        `Confirmação enviada para ${userPhone}. Verifique o WhatsApp.`
+        `Agendamento confirmado para ${userName}. Os dados foram enviados para o dashboard da clínica ${selectedClinicData.name}.`
       );
       
       // Reset form and navigate back

@@ -119,7 +119,7 @@ const AppointmentScheduler = () => {
         onConfirm={handleScheduleAppointment}
       />
 
-      {/* Modal de Confirmação de Telefone */}
+      {/* Modal de Confirmação com Nome e Telefone */}
       <PhoneConfirmationModal
         isOpen={showPhoneModal}
         onClose={() => setShowPhoneModal(false)}
@@ -127,7 +127,7 @@ const AppointmentScheduler = () => {
         appointmentData={{
           date: selectedDate ? selectedDate.toLocaleDateString('pt-BR') : '',
           time: selectedTime,
-          clinic: selectedClinicData?.name || '',
+          clinic: selectedClinicData?.name ? `${selectedClinicData.name} - ${selectedClinicData.city}` : '',
           service: selectedServiceData?.name || ''
         }}
       />
