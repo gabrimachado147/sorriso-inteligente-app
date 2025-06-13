@@ -1,3 +1,4 @@
+
 /**
  * Simplified Authentication Service for current database schema
  * Handles user authentication without custom user tables
@@ -158,7 +159,7 @@ export class AuthService {
   static async resetPassword(email: string): Promise<AuthResponse> {
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`
+        redirectTo: `${window.location.origin}/auth?mode=reset-password`
       })
 
       if (error) {
