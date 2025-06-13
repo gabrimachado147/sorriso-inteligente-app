@@ -56,7 +56,7 @@ const ProfilePage = () => {
   const handleSaveProfile = async () => {
     try {
       const result = await updateProfile(formData);
-      if (result.success) {
+      if (result && result.success) {
         setEditMode(false);
         toastSuccess('Perfil atualizado', 'Suas informações foram salvas com sucesso');
       } else {
@@ -72,7 +72,7 @@ const ProfilePage = () => {
     
     try {
       const result = await updatePreferences({ [key]: value });
-      if (result.success) {
+      if (result && result.success) {
         toastSuccess('Configuração salva', 'Preferências de notificação atualizadas');
       }
     } catch (error) {
