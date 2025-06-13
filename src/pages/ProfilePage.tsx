@@ -1,5 +1,6 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -27,6 +28,7 @@ import { SecurityTab } from '@/components/Profile/SecurityTab';
 import { toastSuccess, toastError } from '@/components/ui/custom-toast';
 
 const ProfilePage = () => {
+  const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuth();
   const { profile, loading: profileLoading } = useProfile();
   const { loading: appointmentsLoading } = useUserAppointments();
@@ -35,12 +37,19 @@ const ProfilePage = () => {
   
   const [activeTab, setActiveTab] = useState('profile');
 
+  // Redirecionar para login se não estiver autenticado
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/auth');
+    }
+  }, [isAuthenticated, navigate]);
+
   const handleLogout = async () => {
     try {
       const result = await logout();
       if (result.success) {
         toastSuccess('Logout realizado', 'Você foi desconectado com sucesso');
-        window.location.href = '/';
+        navigate('/auth');
       } else {
         toastError('Erro', 'Não foi possível fazer logout');
       }
@@ -49,16 +58,9 @@ const ProfilePage = () => {
     }
   };
 
+  // Mostrar loading enquanto verifica autenticação
   if (!isAuthenticated) {
-    return (
-      <div className="p-6 text-center">
-        <h1 className="text-2xl font-bold mb-4">Acesso Restrito</h1>
-        <p className="text-gray-600 mb-6">Você precisa estar logado para acessar esta página.</p>
-        <Button onClick={() => window.location.href = '/auth'}>
-          Fazer Login
-        </Button>
-      </div>
-    );
+    return null; // Componente será redirecionado pelo useEffect
   }
 
   if (profileLoading || appointmentsLoading || preferencesLoading || gamificationLoading) {
