@@ -115,11 +115,11 @@ function EnhancedCalendar({
         components={{
           IconLeft: () => <ChevronLeft className="h-4 w-4" />,
           IconRight: () => <ChevronRight className="h-4 w-4" />,
-          Day: ({ date, ...restProps }) => {
+          Day: ({ date, ...dayProps }) => {
             const dayClasses = getDayClasses(date);
             return (
               <div className={dayClasses}>
-                <button {...restProps} className="w-full h-full">
+                <button {...dayProps} className="w-full h-full">
                   {date.getDate()}
                   {renderDaySlots(date)}
                 </button>
