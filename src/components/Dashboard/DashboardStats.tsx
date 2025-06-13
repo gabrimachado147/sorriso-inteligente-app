@@ -3,10 +3,10 @@ import React from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Calendar, CheckCircle, XCircle, Clock, Star, TrendingUp } from 'lucide-react'
 import { EnhancedSkeleton } from '@/components/ui/enhanced-skeleton'
-import type { DashboardStats } from '@/services/analytics'
+import type { AnalyticsDashboardStats } from '@/services/analytics'
 
 interface DashboardStatsProps {
-  stats?: DashboardStats
+  stats?: AnalyticsDashboardStats
   loading: boolean
 }
 

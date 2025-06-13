@@ -1,7 +1,7 @@
 
 import { supabase } from '@/integrations/supabase/client'
 
-export interface DashboardStats {
+export interface AnalyticsDashboardStats {
   total_appointments: number
   pending_appointments: number
   completed_appointments: number
@@ -20,25 +20,25 @@ export interface AppointmentsByPeriod {
   id: string
   date: string
   status: string
-  clinic_id: string
+  clinic: string
 }
 
 export class AnalyticsService {
-  static async getDashboardStats(clinicId?: string): Promise<DashboardStats> {
+  static async getDashboardStats(clinicId?: string): Promise<AnalyticsDashboardStats> {
     try {
       let query = supabase
         .from('appointments')
         .select('status')
 
       if (clinicId) {
-        query = query.eq('clinic_id', clinicId)
+        query = query.eq('clinic', clinicId)
       }
 
       const { data: appointments } = await query
 
       const total_appointments = appointments?.length || 0
       const pending_appointments = appointments?.filter(apt => apt.status === 'pending')?.length || 0
-      const completed_appointments = appointments?.filter(apt => apt.status === 'completed')?.length || 0
+      const completed_appointments = appointments?.filter(apt => apt.status === 'confirmed')?.length || 0
       const cancelled_appointments = appointments?.filter(apt => apt.status === 'cancelled')?.length || 0
 
       // Calcular média de avaliações
@@ -103,12 +103,12 @@ export class AnalyticsService {
     try {
       let query = supabase
         .from('appointments')
-        .select('id, date, status, clinic_id')
+        .select('id, date, status, clinic')
         .gte('date', startDate)
         .lte('date', endDate)
 
       if (clinicId) {
-        query = query.eq('clinic_id', clinicId)
+        query = query.eq('clinic', clinicId)
       }
 
       const { data, error } = await query

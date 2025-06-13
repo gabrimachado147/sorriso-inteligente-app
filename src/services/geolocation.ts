@@ -18,6 +18,7 @@ export interface ClinicWithDistance {
   latitude?: number
   longitude?: number
   distance: number
+  estimated_travel_time?: string
   working_hours?: any
 }
 
@@ -86,7 +87,8 @@ export class GeolocationService {
           return {
             ...clinic,
             distance,
-            email: clinic.email || undefined
+            email: clinic.email || undefined,
+            estimated_travel_time: `${Math.round(distance * 2)} min`
           } as ClinicWithDistance
         })
         .filter(clinic => clinic.distance <= maxDistance)
@@ -117,11 +119,20 @@ export class GeolocationService {
     return degrees * (Math.PI / 180)
   }
 
+  static openGoogleMapsRoute(clinic: { latitude: number; longitude: number; name: string }) {
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${clinic.latitude},${clinic.longitude}&travelmode=driving`
+    window.open(url, '_blank')
+  }
+
+  static openAppleMapsRoute(clinic: { latitude: number; longitude: number; name: string }) {
+    const url = `http://maps.apple.com/?daddr=${clinic.latitude},${clinic.longitude}&dirflg=d`
+    window.open(url, '_blank')
+  }
+
   static async getRouteToClinic(
     userLocation: UserLocation,
     clinicLocation: { latitude: number; longitude: number }
   ) {
-    // Integração com Google Maps Directions API (implementar quando necessário)
     const googleMapsUrl = `https://www.google.com/maps/dir/${userLocation.latitude},${userLocation.longitude}/${clinicLocation.latitude},${clinicLocation.longitude}`
     return { url: googleMapsUrl }
   }

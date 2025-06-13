@@ -26,11 +26,15 @@ export const AppointmentScheduler = () => {
     }
 
     const appointmentData = {
-      clinic_id: selectedClinic,
-      service: selectedService,
+      serviceId: selectedService,
+      clinicId: selectedClinic,
       date: selectedDate.toISOString().split('T')[0],
       time: selectedTime,
-      user_id: 'mock-user-id' // Em produção, vem do contexto de auth
+      userInfo: {
+        name: 'Mock User',
+        phone: '(11) 99999-9999',
+        email: 'user@example.com'
+      }
     };
 
     const result = await scheduleAppointment(appointmentData);
@@ -70,6 +74,17 @@ export const AppointmentScheduler = () => {
     );
   }
 
+  // Mock data for demonstration
+  const availableClinics = [
+    { id: 'clinic1', name: 'Clínica Centro', city: 'São Paulo', state: 'SP' },
+    { id: 'clinic2', name: 'Clínica Norte', city: 'Rio de Janeiro', state: 'RJ' }
+  ];
+
+  const availableServices = [
+    { id: 'service1', name: 'Consulta Geral', description: 'Consulta médica geral', duration: 30, price: 'R$ 150,00' },
+    { id: 'service2', name: 'Avaliação Gratuita', description: 'Primeira consulta gratuita', duration: 45, price: 'Gratuito' }
+  ];
+
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <Card>
@@ -85,7 +100,7 @@ export const AppointmentScheduler = () => {
               <ClinicSelector 
                 selectedClinic={selectedClinic}
                 onClinicSelect={setSelectedClinic}
-                filteredClinics={[]}
+                filteredClinics={availableClinics}
               />
               <ServiceSelector 
                 selectedService={selectedService}
@@ -104,10 +119,13 @@ export const AppointmentScheduler = () => {
             
             <div>
               <AppointmentSummary
-                clinic={selectedClinic}
-                service={selectedService}
-                date={selectedDate}
-                time={selectedTime}
+                selectedClinic={selectedClinic}
+                selectedService={selectedService}
+                selectedDate={selectedDate}
+                selectedTime={selectedTime}
+                availableClinics={availableClinics}
+                availableServices={availableServices}
+                onConfirm={handleSchedule}
               />
             </div>
           </div>
