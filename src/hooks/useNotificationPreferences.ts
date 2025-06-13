@@ -38,7 +38,17 @@ export const useNotificationPreferences = () => {
       }
 
       if (data) {
-        setPreferences(data);
+        const formattedData: NotificationPreferences = {
+          id: data.id,
+          user_id: data.user_id,
+          email_reminders: data.email_reminders ?? true,
+          push_notifications: data.push_notifications ?? true,
+          sms_reminders: data.sms_reminders ?? true,
+          marketing_emails: data.marketing_emails ?? false,
+          created_at: data.created_at,
+          updated_at: data.updated_at
+        };
+        setPreferences(formattedData);
       } else {
         // Criar preferências padrão se não existirem
         const defaultPreferences = {
@@ -56,7 +66,17 @@ export const useNotificationPreferences = () => {
           .single();
 
         if (!createError && newData) {
-          setPreferences(newData);
+          const formattedNewData: NotificationPreferences = {
+            id: newData.id,
+            user_id: newData.user_id,
+            email_reminders: newData.email_reminders ?? true,
+            push_notifications: newData.push_notifications ?? true,
+            sms_reminders: newData.sms_reminders ?? true,
+            marketing_emails: newData.marketing_emails ?? false,
+            created_at: newData.created_at,
+            updated_at: newData.updated_at
+          };
+          setPreferences(formattedNewData);
         }
       }
     } catch (error) {
@@ -85,8 +105,18 @@ export const useNotificationPreferences = () => {
       }
 
       if (data) {
-        setPreferences(data);
-        return { success: true, data };
+        const formattedData: NotificationPreferences = {
+          id: data.id,
+          user_id: data.user_id,
+          email_reminders: data.email_reminders ?? true,
+          push_notifications: data.push_notifications ?? true,
+          sms_reminders: data.sms_reminders ?? true,
+          marketing_emails: data.marketing_emails ?? false,
+          created_at: data.created_at,
+          updated_at: data.updated_at
+        };
+        setPreferences(formattedData);
+        return { success: true, data: formattedData };
       }
 
       return { success: false, error: 'No data returned' };

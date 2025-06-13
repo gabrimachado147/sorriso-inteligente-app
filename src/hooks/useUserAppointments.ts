@@ -1,11 +1,11 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from './useAuth';
-import { AppointmentService } from '@/services/supabase/appointments';
+import { AppointmentService, AppointmentRecord } from '@/services/supabase/appointments';
 
 export const useUserAppointments = () => {
   const { user } = useAuth();
-  const [appointments, setAppointments] = useState([]);
+  const [appointments, setAppointments] = useState<AppointmentRecord[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchUserAppointments = async () => {

@@ -14,100 +14,76 @@ import {
 } from 'lucide-react';
 
 export const availableServices = [
-  { 
-    id: 'avaliacao-gratuita', 
-    name: 'Avaliação Gratuita', 
-    description: 'Consulta inicial completa para avaliação do estado bucal',
+  {
+    id: 'avaliacao-gratuita',
+    name: 'Avaliação Gratuita',
+    description: 'Consulta inicial completa sem custo',
     duration: 30,
     price: 'Gratuito',
-    icon: <Search className="h-6 w-6" /> 
+    category: 'preventivo',
+    icon: <Search className="h-6 w-6" />
   },
-  { 
-    id: 'limpeza', 
-    name: 'Limpeza Dental', 
-    description: 'Profilaxia dental com remoção de tártaro e polimento',
+  {
+    id: 'limpeza-dental',
+    name: 'Limpeza Dental',
+    description: 'Profilaxia e remoção de tártaro',
     duration: 45,
-    price: 'R$ 80,00',
-    icon: <Sparkles className="h-6 w-6" /> 
+    price: 'A partir de R$ 80',
+    category: 'preventivo',
+    icon: <Sparkles className="h-6 w-6" />
   },
-  { 
-    id: 'restauracao', 
-    name: 'Restauração', 
-    description: 'Tratamento de cáries com resinas compostas',
+  {
+    id: 'restauracao',
+    name: 'Restauração',
+    description: 'Tratamento de cáries e restaurações',
     duration: 60,
-    price: 'R$ 120,00',
-    icon: <Wrench className="h-6 w-6" /> 
+    price: 'A partir de R$ 120',
+    category: 'restaurativo',
+    icon: <Wrench className="h-6 w-6" />
   },
-  { 
-    id: 'ortodontia', 
-    name: 'Ortodontia', 
-    description: 'Consulta ortodôntica para alinhamento dental',
+  {
+    id: 'ortodontia-consulta',
+    name: 'Consulta Ortodontia',
+    description: 'Avaliação para aparelho ortodôntico',
     duration: 45,
-    price: 'R$ 150,00',
-    icon: <Smile className="h-6 w-6" /> 
+    price: 'A partir de R$ 100',
+    category: 'ortodontia',
+    icon: <Smile className="h-6 w-6" />
   },
-  { 
-    id: 'implantodontia', 
-    name: 'Implantodontia', 
+  {
+    id: 'clareamento',
+    name: 'Clareamento Dental',
+    description: 'Clareamento dental profissional',
+    duration: 90,
+    price: 'A partir de R$ 300',
+    category: 'estético',
+    icon: <Sparkles className="h-6 w-6" />
+  },
+  {
+    id: 'implante-consulta',
+    name: 'Consulta Implantodontia',
     description: 'Avaliação para implantes dentários',
     duration: 60,
-    price: 'R$ 200,00',
-    icon: <Settings className="h-6 w-6" /> 
+    price: 'A partir de R$ 150',
+    category: 'implantodontia',
+    icon: <Settings className="h-6 w-6" />
   },
-  { 
-    id: 'estetica-dental', 
-    name: 'Estética Dental', 
-    description: 'Tratamentos estéticos como clareamento e facetas',
-    duration: 90,
-    price: 'R$ 250,00',
-    icon: <Sparkles className="h-6 w-6" /> 
-  },
-  { 
-    id: 'proteses-fixas', 
-    name: 'Próteses Fixas', 
-    description: 'Consulta para próteses e coroas dentárias',
-    duration: 75,
-    price: 'R$ 300,00',
-    icon: <Shield className="h-6 w-6" /> 
-  },
-  { 
-    id: 'endodontia', 
-    name: 'Endodontia', 
-    description: 'Tratamento de canal radicular',
-    duration: 120,
-    price: 'R$ 180,00',
-    icon: <Stethoscope className="h-6 w-6" /> 
-  },
-  { 
-    id: 'odontopediatria', 
-    name: 'Odontopediatria', 
-    description: 'Atendimento odontológico especializado para crianças',
-    duration: 45,
-    price: 'R$ 100,00',
-    icon: <Baby className="h-6 w-6" /> 
-  },
-  { 
-    id: 'periodontia', 
-    name: 'Periodontia', 
-    description: 'Tratamento de doenças da gengiva',
-    duration: 60,
-    price: 'R$ 140,00',
-    icon: <Heart className="h-6 w-6" /> 
-  },
-  { 
-    id: 'clareamento', 
-    name: 'Clareamento Dental', 
-    description: 'Procedimento de clareamento dental profissional',
-    duration: 90,
-    price: 'R$ 200,00',
-    icon: <Sparkles className="h-6 w-6" /> 
-  },
-  { 
-    id: 'urgencia', 
-    name: 'Atendimento de Urgência', 
-    description: 'Atendimento imediato para dores e emergências',
+  {
+    id: 'urgencia',
+    name: 'Atendimento de Urgência',
+    description: 'Para casos de dor e emergências',
     duration: 30,
-    price: 'R$ 80,00',
-    icon: <AlertTriangle className="h-6 w-6" /> 
+    price: 'A partir de R$ 100',
+    category: 'urgencia',
+    icon: <AlertTriangle className="h-6 w-6" />
   }
+];
+
+export const serviceCategories = [
+  { id: 'preventivo', name: 'Preventivo', color: 'bg-green-100 text-green-800' },
+  { id: 'restaurativo', name: 'Restaurativo', color: 'bg-blue-100 text-blue-800' },
+  { id: 'ortodontia', name: 'Ortodontia', color: 'bg-purple-100 text-purple-800' },
+  { id: 'estético', name: 'Estético', color: 'bg-pink-100 text-pink-800' },
+  { id: 'implantodontia', name: 'Implantodontia', color: 'bg-orange-100 text-orange-800' },
+  { id: 'urgencia', name: 'Urgência', color: 'bg-red-100 text-red-800' }
 ];
