@@ -49,7 +49,7 @@ export const QuickActionsSection: React.FC<QuickActionsSectionProps> = ({
     {
       icon: Phone,
       title: "Emergência",
-      description: "Atendimento 24h disponível",
+      description: "",
       buttonText: "Contatar Agora",
       buttonVariant: "destructive" as const,
       path: "",
@@ -84,9 +84,11 @@ export const QuickActionsSection: React.FC<QuickActionsSectionProps> = ({
               <CardTitle className={`text-lg ${isEmergency ? 'text-red-600' : ''}`}>
                 {action.title}
               </CardTitle>
-              <p className="text-sm text-muted-foreground mb-3">
-                {action.description}
-              </p>
+              {action.description && (
+                <p className="text-sm text-muted-foreground mb-3">
+                  {action.description}
+                </p>
+              )}
             </CardHeader>
             <CardContent className="text-center pt-0 mt-auto">
               <Button 
