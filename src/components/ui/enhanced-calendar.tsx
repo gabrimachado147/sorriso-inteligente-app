@@ -74,7 +74,6 @@ function EnhancedCalendar({
   return (
     <div className={cn(animations.calendar, "p-3")}>
       <DayPicker
-        mode="single"
         showOutsideDays={showOutsideDays}
         className={cn("p-3", className)}
         selected={selected}
@@ -121,7 +120,7 @@ function EnhancedCalendar({
             const dayClasses = getDayClasses(date);
             return (
               <div className={cn("relative", dayClasses)}>
-                <button {...restProps} className={cn("w-full h-full", restProps.className)}>
+                <button {...restProps} className={cn("w-full h-full")}>
                   {date.getDate()}
                   {renderDaySlots(date)}
                 </button>
