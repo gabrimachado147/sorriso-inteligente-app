@@ -1,40 +1,88 @@
 
-import React from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+import React, { useState, useMemo } from 'react'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Calendar, Clock, Phone, User, MapPin, Activity } from 'lucide-react'
+import { Calendar, User, MapPin, Activity, LogOut } from 'lucide-react'
 import { useAppointments } from '@/hooks/useAppointments'
 import { EnhancedSkeleton } from '@/components/ui/enhanced-skeleton'
 import { animations } from '@/lib/animations'
-import { format } from 'date-fns'
-import { ptBR } from 'date-fns/locale'
+import { StaffLogin, CLINIC_NAMES } from '@/components/Auth/StaffLogin'
+import { AppointmentsTable } from '@/components/Appointments/AppointmentsTable'
+import { AppointmentsFilters } from '@/components/Appointments/AppointmentsFilters'
 
 const AppointmentsPage = () => {
+  const [loggedInUser, setLoggedInUser] = useState<string | null>(
+    localStorage.getItem('staff_logged_in')
+  )
+  const [searchTerm, setSearchTerm] = useState('')
+  const [selectedClinic, setSelectedClinic] = useState('all')
+  const [selectedStatus, setSelectedStatus] = useState('all')
+  const [selectedDate, setSelectedDate] = useState('')
+
   const { appointments, isLoading, stats, statsLoading, updateAppointmentStatus } = useAppointments()
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'confirmed': return 'bg-green-500'
-      case 'cancelled': return 'bg-red-500'
-      case 'completed': return 'bg-blue-500'
-      case 'no_show': return 'bg-gray-500'
-      default: return 'bg-yellow-500'
-    }
+  const handleLogin = (username: string) => {
+    setLoggedInUser(username)
+    localStorage.setItem('staff_logged_in', username)
   }
 
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'confirmed': return 'Confirmado'
-      case 'cancelled': return 'Cancelado'
-      case 'completed': return 'Concluído'
-      case 'no_show': return 'Não Compareceu'
-      default: return 'Pendente'
-    }
+  const handleLogout = () => {
+    setLoggedInUser(null)
+    localStorage.removeItem('staff_logged_in')
   }
+
+  // Filter appointments based on user's clinic
+  const userClinicName = loggedInUser ? CLINIC_NAMES[loggedInUser as keyof typeof CLINIC_NAMES] : ''
+  
+  const filteredAppointments = useMemo(() => {
+    let filtered = appointments
+
+    // Filter by user's clinic first (only show appointments for their clinic)
+    if (loggedInUser && userClinicName) {
+      filtered = filtered.filter(apt => 
+        apt.clinic.toLowerCase().includes(loggedInUser) || 
+        apt.clinic.toLowerCase().includes(userClinicName.toLowerCase())
+      )
+    }
+
+    // Apply additional filters
+    if (searchTerm) {
+      const search = searchTerm.toLowerCase()
+      filtered = filtered.filter(apt => 
+        apt.name.toLowerCase().includes(search) ||
+        apt.phone.includes(search) ||
+        apt.email?.toLowerCase().includes(search) ||
+        apt.service.toLowerCase().includes(search)
+      )
+    }
+
+    if (selectedClinic !== 'all') {
+      filtered = filtered.filter(apt => apt.clinic === selectedClinic)
+    }
+
+    if (selectedStatus !== 'all') {
+      filtered = filtered.filter(apt => apt.status === selectedStatus)
+    }
+
+    if (selectedDate) {
+      filtered = filtered.filter(apt => apt.date === selectedDate)
+    }
+
+    return filtered
+  }, [appointments, loggedInUser, userClinicName, searchTerm, selectedClinic, selectedStatus, selectedDate])
+
+  // Get unique clinics from appointments for filter
+  const availableClinics = useMemo(() => {
+    const clinics = new Set(appointments.map(apt => apt.clinic))
+    return Array.from(clinics).sort()
+  }, [appointments])
 
   const handleStatusChange = (appointmentId: string, newStatus: 'confirmed' | 'cancelled' | 'completed' | 'no_show') => {
     updateAppointmentStatus.mutate({ appointmentId, status: newStatus })
+  }
+
+  if (!loggedInUser) {
+    return <StaffLogin onLogin={handleLogin} />
   }
 
   if (isLoading) {
@@ -48,10 +96,19 @@ const AppointmentsPage = () => {
   return (
     <div className={`p-6 space-y-6 ${animations.pageEnter}`}>
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold flex items-center gap-2">
-          <Calendar className="h-6 w-6 text-primary" />
-          Agendamentos
-        </h1>
+        <div>
+          <h1 className="text-2xl font-bold flex items-center gap-2">
+            <Calendar className="h-6 w-6 text-primary" />
+            Agendamentos - {userClinicName}
+          </h1>
+          <p className="text-gray-600 mt-1">
+            Logado como: <span className="font-medium">{loggedInUser}</span>
+          </p>
+        </div>
+        <Button variant="outline" onClick={handleLogout} className="flex items-center gap-2">
+          <LogOut className="h-4 w-4" />
+          Sair
+        </Button>
       </div>
 
       {/* Estatísticas */}
@@ -63,7 +120,7 @@ const AppointmentsPage = () => {
                 <Activity className="h-5 w-5 text-blue-500" />
                 <div>
                   <p className="text-sm text-gray-600">Total</p>
-                  <p className="text-2xl font-bold">{stats.total}</p>
+                  <p className="text-2xl font-bold">{filteredAppointments.length}</p>
                 </div>
               </div>
             </CardContent>
@@ -75,7 +132,11 @@ const AppointmentsPage = () => {
                 <Calendar className="h-5 w-5 text-green-500" />
                 <div>
                   <p className="text-sm text-gray-600">Hoje</p>
-                  <p className="text-2xl font-bold">{stats.today}</p>
+                  <p className="text-2xl font-bold">
+                    {filteredAppointments.filter(apt => 
+                      apt.date === new Date().toISOString().split('T')[0]
+                    ).length}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -87,7 +148,9 @@ const AppointmentsPage = () => {
                 <User className="h-5 w-5 text-blue-500" />
                 <div>
                   <p className="text-sm text-gray-600">Confirmados</p>
-                  <p className="text-2xl font-bold">{stats.confirmed}</p>
+                  <p className="text-2xl font-bold">
+                    {filteredAppointments.filter(apt => apt.status === 'confirmed').length}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -96,10 +159,12 @@ const AppointmentsPage = () => {
           <Card className={animations.fadeIn}>
             <CardContent className="p-4">
               <div className="flex items-center gap-2">
-                <Clock className="h-5 w-5 text-red-500" />
+                <MapPin className="h-5 w-5 text-red-500" />
                 <div>
                   <p className="text-sm text-gray-600">Cancelados</p>
-                  <p className="text-2xl font-bold">{stats.cancelled}</p>
+                  <p className="text-2xl font-bold">
+                    {filteredAppointments.filter(apt => apt.status === 'cancelled').length}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -107,125 +172,27 @@ const AppointmentsPage = () => {
         </div>
       )}
 
-      {/* Lista de Agendamentos */}
-      <div className="space-y-4">
-        {appointments.length === 0 ? (
-          <Card className={animations.fadeIn}>
-            <CardContent className="p-8 text-center">
-              <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-600 mb-2">
-                Nenhum agendamento encontrado
-              </h3>
-              <p className="text-gray-500">
-                Os agendamentos criados via webhook aparecerão aqui.
-              </p>
-            </CardContent>
-          </Card>
-        ) : (
-          appointments.map((appointment, index) => (
-            <Card key={appointment.id} className={`${animations.fadeIn} ${animations.cardHover}`}
-                  style={{ animationDelay: `${index * 100}ms` }}>
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2">
-                    <User className="h-5 w-5" />
-                    {appointment.name}
-                  </CardTitle>
-                  <Badge className={`${getStatusColor(appointment.status)} text-white`}>
-                    {getStatusText(appointment.status)}
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-sm">
-                      <Phone className="h-4 w-4 text-gray-500" />
-                      <span>{appointment.phone}</span>
-                    </div>
-                    
-                    {appointment.email && (
-                      <div className="flex items-center gap-2 text-sm">
-                        <span className="text-gray-500">📧</span>
-                        <span>{appointment.email}</span>
-                      </div>
-                    )}
+      {/* Filtros */}
+      <AppointmentsFilters
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        selectedClinic={selectedClinic}
+        onClinicChange={setSelectedClinic}
+        selectedStatus={selectedStatus}
+        onStatusChange={setSelectedStatus}
+        selectedDate={selectedDate}
+        onDateChange={setSelectedDate}
+        clinics={availableClinics}
+        totalCount={appointments.length}
+        filteredCount={filteredAppointments.length}
+      />
 
-                    <div className="flex items-center gap-2 text-sm">
-                      <MapPin className="h-4 w-4 text-gray-500" />
-                      <span>{appointment.clinic}</span>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-sm">
-                      <Calendar className="h-4 w-4 text-gray-500" />
-                      <span>{format(new Date(appointment.date), 'dd/MM/yyyy', { locale: ptBR })}</span>
-                    </div>
-
-                    <div className="flex items-center gap-2 text-sm">
-                      <Clock className="h-4 w-4 text-gray-500" />
-                      <span>{appointment.time}</span>
-                    </div>
-
-                    <div className="flex items-center gap-2 text-sm">
-                      <Activity className="h-4 w-4 text-gray-500" />
-                      <span>{appointment.service}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {appointment.notes && (
-                  <div className="bg-gray-50 p-3 rounded-lg">
-                    <p className="text-sm text-gray-600">
-                      <strong>Observações:</strong> {appointment.notes.slice(0, 150)}...
-                    </p>
-                  </div>
-                )}
-
-                <div className="flex gap-2 pt-2">
-                  {appointment.status === 'confirmed' && (
-                    <>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleStatusChange(appointment.id, 'completed')}
-                        disabled={updateAppointmentStatus.isPending}
-                      >
-                        Concluído
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        onClick={() => handleStatusChange(appointment.id, 'cancelled')}
-                        disabled={updateAppointmentStatus.isPending}
-                      >
-                        Cancelar
-                      </Button>
-                    </>
-                  )}
-                  
-                  {appointment.status === 'cancelled' && (
-                    <Button
-                      size="sm"
-                      variant="default"
-                      onClick={() => handleStatusChange(appointment.id, 'confirmed')}
-                      disabled={updateAppointmentStatus.isPending}
-                    >
-                      Reativar
-                    </Button>
-                  )}
-                </div>
-
-                <div className="text-xs text-gray-400 border-t pt-2">
-                  Criado: {format(new Date(appointment.created_at), 'dd/MM/yyyy HH:mm', { locale: ptBR })}
-                  {appointment.source && ` • Origem: ${appointment.source}`}
-                </div>
-              </CardContent>
-            </Card>
-          ))
-        )}
-      </div>
+      {/* Tabela de Agendamentos */}
+      <AppointmentsTable
+        appointments={filteredAppointments}
+        onStatusChange={handleStatusChange}
+        isUpdating={updateAppointmentStatus.isPending}
+      />
     </div>
   )
 }
