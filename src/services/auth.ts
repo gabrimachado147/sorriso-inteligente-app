@@ -153,7 +153,7 @@ export class AuthService {
   }
 
   /**
-   * Reset password - Fixed to include proper redirect URL
+   * Reset password - Updated to use custom email service
    */
   static async resetPassword(email: string): Promise<AuthResponse> {
     try {
@@ -161,18 +161,42 @@ export class AuthService {
       const currentOrigin = window.location.origin;
       const redirectUrl = `${currentOrigin}/auth?mode=reset-password`;
       
-      console.log('AuthService: Sending password reset email with redirect URL:', redirectUrl);
+      console.log('AuthService: Sending custom password reset email with redirect URL:', redirectUrl);
       
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      // First, still call Supabase to generate the reset token
+      const { error: supabaseError } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: redirectUrl
-      })
+      });
 
-      if (error) {
-        console.error('AuthService: Password reset error:', error);
-        return { success: false, error: error.message }
+      if (supabaseError) {
+        console.error('AuthService: Supabase password reset error:', supabaseError);
+        return { success: false, error: supabaseError.message };
       }
 
-      console.log('AuthService: Password reset email sent successfully');
+      // Now send our custom email through the edge function
+      try {
+        const response = await fetch(`${window.location.origin}/functions/v1/send-password-reset`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: email,
+            resetUrl: redirectUrl
+          })
+        });
+
+        if (!response.ok) {
+          console.warn('AuthService: Custom email service failed, but Supabase email was sent');
+          // Don't fail the whole process if custom email fails
+        } else {
+          console.log('AuthService: Custom password reset email sent successfully');
+        }
+      } catch (emailError) {
+        console.warn('AuthService: Custom email service error, but Supabase email was sent:', emailError);
+        // Don't fail the whole process if custom email fails
+      }
+
       return { success: true }
     } catch (error) {
       console.error('AuthService: Password reset exception:', error);
