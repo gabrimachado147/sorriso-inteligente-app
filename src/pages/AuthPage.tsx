@@ -136,6 +136,10 @@ const AuthPage = () => {
     resetForm();
   };
 
+  const handleEnterWithoutAccount = () => {
+    navigate('/');
+  };
+
   if (showEmailConfirmation) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-primary/10 to-background flex items-center justify-center p-4">
@@ -280,6 +284,17 @@ const AuthPage = () => {
               >
                 {loading ? 'Aguarde...' : (isLogin ? 'Entrar' : 'Criar Conta')}
               </Button>
+
+              {isLogin && (
+                <Button 
+                  type="button"
+                  variant="outline"
+                  className="w-full py-6 text-lg font-semibold bg-green-500 hover:bg-green-600 text-white border-green-500 hover:border-green-600"
+                  onClick={handleEnterWithoutAccount}
+                >
+                  Entrar sem conta
+                </Button>
+              )}
             </form>
 
             <div className="mt-6 text-center">
