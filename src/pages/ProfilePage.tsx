@@ -8,6 +8,7 @@ import { User, Mail, Phone, Calendar, Edit2, LogOut, Save, X } from 'lucide-reac
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
 import { ProtectedRoute } from '@/components/Auth/ProtectedRoute';
+import { QuickLinks } from '@/components/Profile/QuickLinks';
 import { toastSuccess, toastError } from '@/components/ui/custom-toast';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -174,6 +175,9 @@ const ProfilePage = () => {
             )}
           </CardContent>
         </Card>
+
+        {/* Quick Links para recursos avançados */}
+        <QuickLinks />
 
         <Card>
           <CardHeader>

@@ -2,10 +2,14 @@
 import { useState } from 'react';
 import { whatsappService, type AppointmentData } from '@/services/whatsapp';
 import { toastSuccess, toastError } from '@/components/ui/custom-toast';
+import { useGamification } from './useGamification';
+import { useHealthAnalytics } from './useHealthAnalytics';
 
 export const useAppointmentScheduler = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const { addPoints, updateStreak } = useGamification();
+  const { addHealthMetric } = useHealthAnalytics();
 
   const scheduleAppointment = async (data: AppointmentData) => {
     setLoading(true);
@@ -15,6 +19,20 @@ export const useAppointmentScheduler = () => {
       const response = await whatsappService.scheduleAppointment(data);
       
       console.log('Appointment response with output:', response);
+      
+      // Adicionar pontos de gamificação
+      const points = data.service === 'Avaliação Gratuita' ? 50 : 
+                   data.service.includes('Limpeza') ? 75 : 100;
+      
+      addPoints(points, `Consulta agendada: ${data.service}`, 'appointment');
+      updateStreak(true);
+
+      // Registrar no analytics de saúde
+      addHealthMetric({
+        type: data.service.includes('Limpeza') ? 'cleaning' : 
+              data.service.includes('Avaliação') ? 'checkup' : 'appointment',
+        service: data.service
+      });
       
       toastSuccess(
         'Consulta Agendada!', 
