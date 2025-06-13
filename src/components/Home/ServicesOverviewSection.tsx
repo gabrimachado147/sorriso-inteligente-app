@@ -13,28 +13,28 @@ interface ServicesOverviewSectionProps {
 export const ServicesOverviewSection: React.FC<ServicesOverviewSectionProps> = ({ onNavigate }) => {
   return (
     <div className={`mobile-spacing ${animations.slideInRight}`}>
-      <div className="text-center mb-4 md:mb-6">
-        <h2 className="mobile-title md:text-3xl text-primary mb-1 md:mb-2">Nossos Serviços</h2>
+      <div className="text-center mb-6 md:mb-6 space-y-2">
+        <h2 className="mobile-title md:text-3xl text-primary">Nossos Serviços</h2>
         <p className="mobile-text md:text-base text-muted-foreground">Tratamentos completos para toda a família</p>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
         {availableServices.map((service, index) => (
           <Card key={service.id} className={`mobile-card ${animations.cardHover} h-full cursor-pointer relative`}
                 onClick={() => onNavigate('/schedule')}>
-            <CardHeader className="text-center pb-1 md:pb-3">
-              <div className="mx-auto mb-1 md:mb-3 text-primary">
+            <CardHeader className="mobile-card-header text-center">
+              <div className="mx-auto mb-2 md:mb-3 text-primary">
                 {React.cloneElement(service.icon, { 
-                  className: "h-5 w-5 md:h-6 md:w-6" 
+                  className: "h-6 w-6 md:h-6 md:w-6" 
                 })}
               </div>
-              <CardTitle className="text-xs md:text-base leading-tight">{service.name}</CardTitle>
+              <CardTitle className="text-sm md:text-base leading-tight">{service.name}</CardTitle>
             </CardHeader>
-            <CardContent className="text-center pt-0 p-2 md:p-6">
+            <CardContent className="mobile-card-content text-center mt-auto">
               <Button 
                 size="sm" 
                 variant="outline" 
-                className="w-full text-xs mobile-button"
+                className="w-full mobile-button"
                 onClick={(e) => {
                   e.stopPropagation();
                   onNavigate('/schedule');
@@ -48,7 +48,7 @@ export const ServicesOverviewSection: React.FC<ServicesOverviewSectionProps> = (
             {['avaliacao-gratuita', 'limpeza-dental', 'ortodontia-consulta', 'clareamento'].includes(service.id) && (
               <Badge 
                 variant="secondary" 
-                className="absolute -top-1 -right-1 md:-top-2 md:-right-2 bg-orange-500 text-white text-xs px-1 py-0.5 md:px-2 md:py-1"
+                className="absolute -top-1 -right-1 md:-top-2 md:-right-2 bg-orange-500 text-white text-xs px-2 py-1 md:px-2 md:py-1"
               >
                 Popular
               </Badge>

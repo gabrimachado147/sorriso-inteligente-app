@@ -194,55 +194,96 @@
   @media (max-width: 768px) {
     /* Container principal mobile */
     .mobile-container {
-      @apply px-3 py-4;
+      @apply px-4 py-5;
     }
     
     /* Cards otimizados para mobile */
     .mobile-card {
-      @apply p-3 space-y-2;
+      @apply p-4 space-y-3;
+      min-height: 120px;
     }
     
     /* Botões otimizados para mobile */
     .mobile-button {
-      @apply min-h-[44px] px-4 py-2 text-sm;
+      @apply min-h-[48px] px-5 py-3 text-base;
+      font-weight: 500;
     }
     
     /* Inputs otimizados para mobile */
     .mobile-input {
-      @apply h-12 px-3 text-base;
+      @apply h-14 px-4 text-base;
     }
     
     /* Navegação otimizada para mobile */
     .mobile-nav {
-      @apply pb-20;
+      @apply pb-24;
     }
     
-    /* Espaçamentos reduzidos para mobile */
+    /* Espaçamentos aumentados para mobile */
     .mobile-spacing {
-      @apply space-y-3;
+      @apply space-y-5;
     }
     
     /* Hero section mobile */
     .mobile-hero {
-      @apply space-y-4 py-4;
+      @apply space-y-6 py-6;
     }
     
     /* Grid responsivo otimizado */
     .mobile-grid {
-      @apply grid grid-cols-1 gap-3;
+      @apply grid grid-cols-1 gap-4;
     }
     
-    /* Tipografia mobile */
+    /* Tipografia mobile - tamanhos aumentados */
     .mobile-title {
-      @apply text-2xl font-bold;
+      @apply text-2xl font-bold leading-tight;
+      line-height: 1.3;
     }
     
     .mobile-subtitle {
-      @apply text-lg;
+      @apply text-lg leading-relaxed;
+      line-height: 1.4;
     }
     
     .mobile-text {
-      @apply text-sm leading-relaxed;
+      @apply text-base leading-relaxed;
+      line-height: 1.5;
+    }
+
+    /* Espaçamentos internos específicos */
+    .mobile-card-header {
+      @apply pb-3 space-y-2;
+    }
+
+    .mobile-card-content {
+      @apply pt-2 space-y-3;
+    }
+
+    /* Tabs mobile */
+    .mobile-tabs {
+      @apply space-y-4;
+    }
+
+    .mobile-tab-content {
+      @apply pt-4 space-y-4;
+    }
+
+    /* Formulários mobile */
+    .mobile-form-spacing {
+      @apply space-y-4;
+    }
+
+    .mobile-form-group {
+      @apply space-y-2;
+    }
+
+    /* Listas mobile */
+    .mobile-list {
+      @apply space-y-3;
+    }
+
+    .mobile-list-item {
+      @apply py-3 px-4;
     }
   }
 }
