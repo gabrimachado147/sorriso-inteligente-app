@@ -4,6 +4,8 @@ import { PWADashboard, PWAQuickInstall } from '@/components/ui/pwa-dashboard';
 import { toastSuccess, toastInfo, toastAppointment, toastCall } from '@/components/ui/custom-toast';
 import { useAppointmentScheduler } from '@/hooks/useAppointmentScheduler';
 import { useChatHandler } from '@/hooks/useChatHandler';
+import { useOnboarding } from '@/hooks/useOnboarding';
+import { useAutoTheme } from '@/hooks/useAutoTheme';
 import { animations } from '@/lib/animations';
 import { HeroSection } from './HeroSection';
 import { QuickActions } from './QuickActions';
@@ -12,6 +14,8 @@ import { AppointmentsSection } from './AppointmentsSection';
 import { ServicesGrid } from './ServicesGrid';
 import { ReviewsSection } from './ReviewsSection';
 import { EmergencyContact } from './EmergencyContact';
+import { OnboardingOverlay } from '@/components/ui/onboarding-overlay';
+import { ThemeSelector } from '@/components/ui/theme-selector';
 
 interface HomePageProps {
   onNavigate: (page: string) => void;
@@ -20,6 +24,17 @@ interface HomePageProps {
 export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
   const { scheduleAppointment, loading: schedulingLoading } = useAppointmentScheduler();
   const { sendWhatsAppMessage, loading: chatLoading } = useChatHandler();
+  const { theme, currentTheme, changeTheme } = useAutoTheme();
+  const {
+    isOnboardingActive,
+    currentStep,
+    currentStepData,
+    totalSteps,
+    nextStep,
+    prevStep,
+    skipOnboarding,
+    completeOnboarding
+  } = useOnboarding();
 
   const handleScheduleEvaluation = async () => {
     try {
@@ -56,6 +71,11 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
   };
 
   const handleQuickAction = (action: string) => {
+    // Se estiver no onboarding e a ação corresponder, avançar o step
+    if (isOnboardingActive && currentStepData?.action === action) {
+      nextStep();
+    }
+
     switch (action) {
       case 'chat':
         handleOpenChat();
@@ -109,6 +129,13 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         schedulingLoading={schedulingLoading}
       />
 
+      {/* Theme Selector */}
+      <ThemeSelector 
+        theme={theme}
+        currentTheme={currentTheme}
+        onThemeChange={changeTheme}
+      />
+
       {/* Quick Actions */}
       <QuickActions onQuickAction={handleQuickAction} />
 
@@ -141,6 +168,18 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
 
       {/* PWA Quick Install Prompt */}
       <PWAQuickInstall />
+
+      {/* Onboarding Overlay */}
+      <OnboardingOverlay
+        isActive={isOnboardingActive}
+        currentStep={currentStep}
+        totalSteps={totalSteps}
+        stepData={currentStepData}
+        onNext={nextStep}
+        onPrev={prevStep}
+        onSkip={skipOnboarding}
+        onComplete={completeOnboarding}
+      />
     </div>
   );
 };

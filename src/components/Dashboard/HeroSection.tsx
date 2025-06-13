@@ -23,6 +23,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         <p className="mb-4 opacity-90">Seu sorriso perfeito está a um clique de distância</p>
         <div className="flex flex-col sm:flex-row gap-2">
           <Button 
+            data-onboarding="schedule-button"
             className={`bg-white text-primary hover:bg-gray-100 ${animations.buttonHover}`}
             onClick={onScheduleEvaluation}
             disabled={schedulingLoading}
@@ -31,6 +32,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             {schedulingLoading ? 'Agendando...' : 'Agendar Avaliação Gratuita'}
           </Button>
           <Button 
+            data-onboarding="units-button"
             variant="outline"
             className={`bg-transparent border-white text-white hover:bg-white hover:text-primary ${animations.buttonHover}`}
             onClick={onViewUnits}

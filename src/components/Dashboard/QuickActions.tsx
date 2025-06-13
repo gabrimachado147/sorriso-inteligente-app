@@ -12,6 +12,7 @@ export const QuickActions: React.FC<QuickActionsProps> = ({ onQuickAction }) => 
   return (
     <div className={`grid grid-cols-2 md:grid-cols-4 gap-4 ${animations.slideInBottom}`}>
       <Card 
+        data-onboarding="chat-button"
         className={`hover:shadow-lg transition-shadow cursor-pointer ${animations.cardHover}`}
         onClick={() => onQuickAction('chat')}
       >
@@ -45,6 +46,7 @@ export const QuickActions: React.FC<QuickActionsProps> = ({ onQuickAction }) => 
       </Card>
 
       <Card 
+        data-onboarding="emergency-button"
         className={`hover:shadow-lg transition-shadow cursor-pointer ${animations.cardHover}`}
         onClick={() => onQuickAction('emergency')}
       >
