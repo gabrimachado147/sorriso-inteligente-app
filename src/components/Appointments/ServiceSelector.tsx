@@ -133,7 +133,7 @@ export const ServiceSelector: React.FC<ServiceSelectorProps> = ({
                 </div>
               </Button>
               
-              {service.popular && (
+              {service.popular && !service.emergency && (
                 <Badge 
                   variant="secondary" 
                   className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs px-2 py-1"
