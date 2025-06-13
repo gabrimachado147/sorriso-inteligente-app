@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { EnhancedSkeleton } from '@/components/ui/enhanced-skeleton';
 import { animations } from '@/lib/animations';
 import { Bot, Send } from 'lucide-react';
 import { usePhoneValidation } from '@/hooks/usePhoneValidation';
@@ -16,7 +15,6 @@ import { Message } from './types';
 
 const ChatBot = () => {
   const [inputValue, setInputValue] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
   const { 
@@ -103,14 +101,6 @@ const ChatBot = () => {
       handleFormSubmit();
     }
   };
-
-  if (isLoading) {
-    return (
-      <div className="h-full p-4">
-        <EnhancedSkeleton variant="chat-message" count={3} />
-      </div>
-    );
-  }
 
   return (
     <Card className={`h-full flex flex-col ${animations.fadeIn}`}>

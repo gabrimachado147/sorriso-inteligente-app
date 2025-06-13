@@ -2,13 +2,9 @@
 import React from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Filters } from '@/components/ui/filters';
 import { EnhancedSkeleton } from '@/components/ui/enhanced-skeleton';
 import { Calendar as CalendarIcon } from 'lucide-react';
 import { animations } from '@/lib/animations';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
 import { DateSelector } from './DateSelector';
 import { TimeSelector } from './TimeSelector';
 import { ClinicSelector } from './ClinicSelector';
@@ -36,11 +32,7 @@ const AppointmentScheduler = () => {
     isLoading,
     showPhoneModal,
     setShowPhoneModal,
-    filters,
-    setFilters,
     availableClinics,
-    filteredServices,
-    filteredClinics,
     handleConfirmAppointment,
     handleScheduleAppointment,
     handleGoBack
@@ -52,6 +44,11 @@ const AppointmentScheduler = () => {
       setSelectedService(service.id);
     }
   };
+
+  // Scroll to top when component mounts
+  React.useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
 
   if (isLoading) {
     return (
@@ -80,20 +77,6 @@ const AppointmentScheduler = () => {
         <RescheduleNotification rescheduleId={rescheduleId} />
       )}
 
-      {/* Filtros */}
-      <Card className={animations.fadeIn}>
-        <CardContent className="p-6">
-          <Filters
-            filters={filters}
-            onFiltersChange={setFilters}
-            availableClinics={availableClinics}
-            availableServices={availableServices}
-            placeholder="Buscar clínicas ou serviços..."
-            showStatusFilter={false}
-          />
-        </CardContent>
-      </Card>
-
       {/* Sugestões Inteligentes */}
       <SmartSuggestions
         selectedDate={selectedDate}
@@ -117,13 +100,13 @@ const AppointmentScheduler = () => {
       <ClinicSelector
         selectedClinic={selectedClinic}
         onClinicSelect={setSelectedClinic}
-        filteredClinics={filteredClinics}
+        filteredClinics={availableClinics}
       />
 
       <ServiceSelector
         selectedService={selectedService}
         onServiceSelect={setSelectedService}
-        filteredServices={filteredServices}
+        filteredServices={availableServices}
       />
 
       <AppointmentSummary
@@ -142,7 +125,7 @@ const AppointmentScheduler = () => {
         onClose={() => setShowPhoneModal(false)}
         onConfirm={handleConfirmAppointment}
         appointmentData={{
-          date: selectedDate ? format(selectedDate, 'dd/MM/yyyy', { locale: ptBR }) : '',
+          date: selectedDate ? selectedDate.toLocaleDateString('pt-BR') : '',
           time: selectedTime,
           clinic: selectedClinicData?.name || '',
           service: selectedServiceData?.name || ''

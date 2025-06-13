@@ -1,61 +1,75 @@
 
 import React from 'react';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Calendar, MessageCircle, MapPin, Clock } from 'lucide-react';
 import { animations } from '@/lib/animations';
-import { Calendar, MessageCircle, MapPin, Phone } from 'lucide-react';
 
 interface QuickActionsProps {
-  onQuickAction: (action: string) => void;
+  onScheduleClick: () => void;
 }
 
-export const QuickActions: React.FC<QuickActionsProps> = ({ onQuickAction }) => {
+const QuickActions: React.FC<QuickActionsProps> = ({ onScheduleClick }) => {
+  const actions = [
+    {
+      icon: Calendar,
+      title: 'Agendar Consulta',
+      description: 'Reserve seu horário',
+      color: 'bg-blue-500',
+      onClick: onScheduleClick
+    },
+    {
+      icon: MessageCircle,
+      title: 'Chat',
+      description: 'Fale conosco',
+      color: 'bg-green-500',
+      onClick: () => window.location.href = '/chat'
+    },
+    {
+      icon: MapPin,
+      title: 'Clínicas',
+      description: 'Encontre a mais próxima',
+      color: 'bg-purple-500',
+      onClick: () => window.location.href = '/clinics'
+    },
+    {
+      icon: Clock,
+      title: 'Meus Agendamentos',
+      description: 'Consulte seus horários',
+      color: 'bg-orange-500',
+      onClick: () => window.location.href = '/appointments'
+    }
+  ];
+
   return (
-    <div className={`grid grid-cols-2 gap-3 max-w-2xl mx-auto ${animations.slideInBottom}`}>
-      <Card 
-        data-onboarding="chat-button"
-        className={`hover:shadow-lg transition-all duration-200 cursor-pointer ${animations.cardHover} min-h-[100px]`}
-        onClick={() => onQuickAction('chat')}
-      >
-        <CardContent className="p-4 text-center flex flex-col items-center justify-center h-full">
-          <MessageCircle className="h-8 w-8 mx-auto mb-2 text-primary" />
-          <p className="font-medium text-sm">Chat IA</p>
-          <p className="text-xs text-gray-500 mt-1">Tire suas dúvidas</p>
-        </CardContent>
-      </Card>
-
-      <Card 
-        className={`hover:shadow-lg transition-all duration-200 cursor-pointer ${animations.cardHover} min-h-[100px]`}
-        onClick={() => onQuickAction('clinics')}
-      >
-        <CardContent className="p-4 text-center flex flex-col items-center justify-center h-full">
-          <MapPin className="h-8 w-8 mx-auto mb-2 text-primary" />
-          <p className="font-medium text-sm">Unidades</p>
-          <p className="text-xs text-gray-500 mt-1">5 cidades</p>
-        </CardContent>
-      </Card>
-
-      <Card 
-        className={`hover:shadow-lg transition-all duration-200 cursor-pointer ${animations.cardHover} min-h-[100px]`}
-        onClick={() => onQuickAction('schedule')}
-      >
-        <CardContent className="p-4 text-center flex flex-col items-center justify-center h-full">
-          <Calendar className="h-8 w-8 mx-auto mb-2 text-primary" />
-          <p className="font-medium text-sm">Agendar</p>
-          <p className="text-xs text-gray-500 mt-1">Nova consulta</p>
-        </CardContent>
-      </Card>
-
-      <Card 
-        data-onboarding="emergency-button"
-        className={`hover:shadow-lg transition-all duration-200 cursor-pointer ${animations.cardHover} bg-red-50 border-red-200 min-h-[100px]`}
-        onClick={() => onQuickAction('emergency')}
-      >
-        <CardContent className="p-4 text-center flex flex-col items-center justify-center h-full">
-          <Phone className="h-8 w-8 mx-auto mb-2 text-red-600" />
-          <p className="font-medium text-sm text-red-600">Urgência</p>
-          <p className="text-xs text-red-500 mt-1">Contato rápido</p>
-        </CardContent>
-      </Card>
-    </div>
+    <section className="py-16 px-6 bg-white">
+      <div className="max-w-6xl mx-auto">
+        <h2 className="text-3xl font-bold text-center mb-12">Acesso Rápido</h2>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {actions.map((action, index) => {
+            const Icon = action.icon;
+            return (
+              <Card 
+                key={action.title}
+                className={`cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-105 ${animations.fadeIn}`}
+                style={{ animationDelay: `${index * 100}ms` }}
+                onClick={action.onClick}
+              >
+                <CardContent className="p-6 text-center">
+                  <div className={`w-16 h-16 ${action.color} rounded-full flex items-center justify-center mx-auto mb-4`}>
+                    <Icon className="h-8 w-8 text-white" />
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2">{action.title}</h3>
+                  <p className="text-gray-600 text-sm">{action.description}</p>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+      </div>
+    </section>
   );
 };
+
+export default QuickActions;

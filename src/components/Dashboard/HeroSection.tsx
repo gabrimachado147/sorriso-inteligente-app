@@ -1,71 +1,76 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { animations, microAnimations } from '@/lib/animations';
-import { Calendar, MapPin } from 'lucide-react';
+import { Calendar, MessageCircle, MapPin } from 'lucide-react';
+import { animations } from '@/lib/animations';
 
 interface HeroSectionProps {
-  onScheduleEvaluation: () => void;
-  onViewUnits: () => void;
-  schedulingLoading: boolean;
+  onScheduleClick: () => void;
 }
 
-export const HeroSection: React.FC<HeroSectionProps> = ({
-  onScheduleEvaluation,
-  onViewUnits,
-  schedulingLoading
-}) => {
+const HeroSection: React.FC<HeroSectionProps> = ({ onScheduleClick }) => {
   return (
-    <Card className={`bg-gradient-to-r from-primary to-blue-600 text-white ${microAnimations.heroSection} shadow-xl`}>
-      <CardContent className="p-6 max-w-4xl mx-auto">
-        <div className="text-center mb-6">
-          <div className="flex justify-center mb-4">
-            <div className={`w-20 h-20 sm:w-24 sm:h-24 rounded-2xl flex items-center justify-center overflow-hidden bg-white shadow-lg ${animations.scaleInBounce}`}
-                 style={{ animationDelay: '300ms', animationFillMode: 'both' }}>
-              <img 
-                src="/lovable-uploads/a077d15e-e6ba-4de3-833a-6913d8203ffd.png" 
-                alt="Senhor Sorriso Logo" 
-                className="w-full h-full object-contain"
-              />
-            </div>
-          </div>
-          
-          <div className={animations.fadeInUp} style={{ animationDelay: '500ms', animationFillMode: 'both' }}>
-            <h1 className="text-2xl sm:text-3xl font-bold mb-2">Senhor Sorriso</h1>
-            <div className="w-20 h-1 bg-white/50 mx-auto rounded-full mb-4"></div>
-          </div>
-          
-          <p className={`text-sm sm:text-base mb-4 opacity-90 px-4 ${animations.fadeInUp}`}
-             style={{ animationDelay: '700ms', animationFillMode: 'both' }}>
-            Cuidando do seu sorriso com carinho e profissionalismo. 
-            Agendamentos fáceis, atendimento de qualidade.
+    <section className={`py-16 px-6 text-center ${animations.fadeIn}`}>
+      <div className="max-w-4xl mx-auto">
+        <div className="mb-8">
+          <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-4">
+            Sorrisos que
+            <span className="text-primary block">transformam vidas</span>
+          </h1>
+          <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
+            Cuidamos do seu sorriso com excelência, tecnologia de ponta e profissionais especializados.
           </p>
         </div>
-        
-        <div className={`flex flex-col gap-3 max-w-md mx-auto ${animations.fadeInUp}`}
-             style={{ animationDelay: '900ms', animationFillMode: 'both' }}>
+
+        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
           <Button 
-            data-onboarding="schedule-button"
-            className={`w-full bg-white text-primary hover:bg-gray-100 ${animations.buttonHover} py-3 text-base font-medium shadow-lg`}
-            onClick={onScheduleEvaluation}
-            disabled={schedulingLoading}
+            size="lg" 
+            className={`px-8 py-4 text-lg ${animations.buttonHover}`}
+            onClick={onScheduleClick}
           >
-            <Calendar className="h-5 w-5 mr-2" />
-            {schedulingLoading ? 'Agendando...' : 'Agendar Avaliação Gratuita'}
+            <Calendar className="mr-2 h-5 w-5" />
+            Agendar Consulta
           </Button>
           
           <Button 
-            data-onboarding="units-button"
-            variant="outline"
-            className={`w-full bg-transparent border-white text-white hover:bg-white hover:text-primary ${animations.buttonHover} py-3 text-base font-medium`}
-            onClick={onViewUnits}
+            size="lg" 
+            variant="outline" 
+            className={`px-8 py-4 text-lg ${animations.buttonHover}`}
+            onClick={() => window.location.href = '/chat'}
           >
-            <MapPin className="h-5 w-5 mr-2" />
-            Ver Nossas Unidades
+            <MessageCircle className="mr-2 h-5 w-5" />
+            Falar com Assistente
           </Button>
         </div>
-      </CardContent>
-    </Card>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16">
+          <div className={`text-center ${animations.slideInBottom}`}>
+            <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Calendar className="h-8 w-8 text-primary" />
+            </div>
+            <h3 className="text-xl font-semibold mb-2">Agendamento Online</h3>
+            <p className="text-gray-600">Reserve sua consulta de forma rápida e prática</p>
+          </div>
+
+          <div className={`text-center ${animations.slideInBottom}`} style={{ animationDelay: '100ms' }}>
+            <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <MessageCircle className="h-8 w-8 text-primary" />
+            </div>
+            <h3 className="text-xl font-semibold mb-2">Assistente Virtual</h3>
+            <p className="text-gray-600">Tire suas dúvidas e receba orientações personalizadas</p>
+          </div>
+
+          <div className={`text-center ${animations.slideInBottom}`} style={{ animationDelay: '200ms' }}>
+            <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <MapPin className="h-8 w-8 text-primary" />
+            </div>
+            <h3 className="text-xl font-semibold mb-2">Múltiplas Unidades</h3>
+            <p className="text-gray-600">Encontre a clínica mais próxima de você</p>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 };
+
+export default HeroSection;

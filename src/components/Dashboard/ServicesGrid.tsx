@@ -1,62 +1,109 @@
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { animations, getStaggerStyle } from '@/lib/animations';
-import { ServiceCardSkeleton } from '@/components/ui/enhanced-skeleton';
-import { availableServices } from '@/components/Appointments/constants/services';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Calendar, Clock, Star } from 'lucide-react';
+import { animations } from '@/lib/animations';
 
 interface ServicesGridProps {
-  onServiceSelect: (service: string) => void;
-  loading?: boolean;
+  onScheduleClick: () => void;
 }
 
-export const ServicesGrid: React.FC<ServicesGridProps> = ({ onServiceSelect, loading = false }) => {
-  if (loading) {
-    return (
-      <Card className={animations.fadeIn}>
-        <CardHeader className="text-center">
-          <CardTitle>Nossos Serviços</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 max-w-6xl mx-auto">
-            {Array.from({ length: 8 }).map((_, index) => (
-              <ServiceCardSkeleton key={index} />
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
+const ServicesGrid: React.FC<ServicesGridProps> = ({ onScheduleClick }) => {
+  const services = [
+    {
+      name: 'Avaliação Odontológica',
+      description: 'Consulta completa com diagnóstico detalhado',
+      duration: '30 min',
+      price: 'Gratuito',
+      popular: true,
+      rating: 4.9
+    },
+    {
+      name: 'Limpeza Dental',
+      description: 'Profilaxia profissional e orientações',
+      duration: '45 min',
+      price: 'R$ 150',
+      popular: false,
+      rating: 4.8
+    },
+    {
+      name: 'Ortodontia',
+      description: 'Aparelhos ortodônticos e acompanhamento',
+      duration: '60 min',
+      price: 'Consultar',
+      popular: true,
+      rating: 4.9
+    },
+    {
+      name: 'Implante Dentário',
+      description: 'Reabilitação com implantes de titânio',
+      duration: '90 min',
+      price: 'Consultar',
+      popular: false,
+      rating: 5.0
+    }
+  ];
 
   return (
-    <Card className={animations.fadeIn}>
-      <CardHeader className="text-center">
-        <CardTitle>Nossos Serviços</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 max-w-6xl mx-auto">
-          {availableServices.map((service, index) => (
+    <section className="py-16 px-6 bg-gray-50">
+      <div className="max-w-6xl mx-auto">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold mb-4">Nossos Serviços</h2>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            Oferecemos uma ampla gama de tratamentos odontológicos com tecnologia de ponta
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {services.map((service, index) => (
             <Card 
-              key={service.id} 
-              className={`relative cursor-pointer ${animations.serviceCardHover} ${animations.scaleIn} hover:shadow-md transition-all duration-200 min-h-[120px]`}
-              style={getStaggerStyle(index)}
-              onClick={() => onServiceSelect(service.name)}
+              key={service.name}
+              className={`transition-all duration-300 hover:shadow-lg hover:scale-105 relative ${animations.fadeIn}`}
+              style={{ animationDelay: `${index * 100}ms` }}
             >
-              {['avaliacao-gratuita', 'limpeza', 'ortodontia', 'estetica-dental', 'clareamento'].includes(service.id) && (
-                <div className={`absolute -top-2 -right-2 bg-orange-500 text-white text-xs px-2 py-1 rounded-full ${animations.fadeInFast}`}>
+              {service.popular && (
+                <Badge className="absolute top-3 right-3 bg-primary">
                   Popular
-                </div>
+                </Badge>
               )}
-              <CardContent className="p-3 text-center flex flex-col items-center justify-center h-full">
-                <div className={`text-primary mb-3 ${animations.iconHover} flex justify-center`}>
-                  {service.icon}
+              
+              <CardContent className="p-6">
+                <div className="mb-4">
+                  <h3 className="text-lg font-semibold mb-2">{service.name}</h3>
+                  <p className="text-gray-600 text-sm mb-3">{service.description}</p>
+                  
+                  <div className="flex items-center gap-4 text-sm text-gray-500 mb-3">
+                    <div className="flex items-center gap-1">
+                      <Clock className="h-4 w-4" />
+                      {service.duration}
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                      {service.rating}
+                    </div>
+                  </div>
+                  
+                  <div className="text-lg font-bold text-primary mb-4">
+                    {service.price}
+                  </div>
                 </div>
-                <p className="text-xs sm:text-sm font-medium leading-tight">{service.name}</p>
+                
+                <Button 
+                  className={`w-full ${animations.buttonHover}`}
+                  onClick={onScheduleClick}
+                >
+                  <Calendar className="mr-2 h-4 w-4" />
+                  Agendar
+                </Button>
               </CardContent>
             </Card>
           ))}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 };
+
+export default ServicesGrid;
