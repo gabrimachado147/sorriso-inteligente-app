@@ -16,6 +16,7 @@ import { ClinicSelector } from './ClinicSelector';
 import { ServiceSelector } from './ServiceSelector';
 import { AppointmentSummary } from './AppointmentSummary';
 import { RescheduleNotification } from './RescheduleNotification';
+import { SmartSuggestions } from './SmartSuggestions';
 import { availableServices } from './constants/services';
 import { useAppointmentSchedulerLogic } from '@/hooks/useAppointmentSchedulerLogic';
 
@@ -44,6 +45,13 @@ const AppointmentScheduler = () => {
     handleScheduleAppointment,
     handleGoBack
   } = useAppointmentSchedulerLogic(rescheduleId);
+
+  const handleServiceSuggestion = (serviceName: string) => {
+    const service = availableServices.find(s => s.name === serviceName);
+    if (service) {
+      setSelectedService(service.id);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -82,6 +90,13 @@ const AppointmentScheduler = () => {
           />
         </CardContent>
       </Card>
+
+      {/* Sugestões Inteligentes */}
+      <SmartSuggestions
+        selectedDate={selectedDate}
+        onTimeSelect={setSelectedTime}
+        onServiceSelect={handleServiceSuggestion}
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <DateSelector 
