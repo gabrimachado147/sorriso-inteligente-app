@@ -74,6 +74,7 @@ function EnhancedCalendar({
   return (
     <div className={cn(animations.calendar, "p-3")}>
       <DayPicker
+        mode="single"
         showOutsideDays={showOutsideDays}
         className={cn("p-3", className)}
         selected={selected}
