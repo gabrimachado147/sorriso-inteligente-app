@@ -1,4 +1,3 @@
-
 /**
  * Simplified Authentication Service for current database schema
  * Handles user authentication without custom user tables
@@ -45,7 +44,7 @@ export class AuthService {
             nome_completo: credentials.name,
             telefone: credentials.phone
           },
-          emailRedirectTo: `${window.location.origin}/`
+          emailRedirectTo: `${window.location.origin}/auth?mode=reset-password`
         }
       })
 
@@ -154,20 +153,29 @@ export class AuthService {
   }
 
   /**
-   * Reset password
+   * Reset password - Fixed to include proper redirect URL
    */
   static async resetPassword(email: string): Promise<AuthResponse> {
     try {
+      // Get the current origin to build the redirect URL
+      const currentOrigin = window.location.origin;
+      const redirectUrl = `${currentOrigin}/auth?mode=reset-password`;
+      
+      console.log('AuthService: Sending password reset email with redirect URL:', redirectUrl);
+      
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth?mode=reset-password`
+        redirectTo: redirectUrl
       })
 
       if (error) {
+        console.error('AuthService: Password reset error:', error);
         return { success: false, error: error.message }
       }
 
+      console.log('AuthService: Password reset email sent successfully');
       return { success: true }
     } catch (error) {
+      console.error('AuthService: Password reset exception:', error);
       return { 
         success: false, 
         error: error instanceof Error ? error.message : 'Password reset failed' 

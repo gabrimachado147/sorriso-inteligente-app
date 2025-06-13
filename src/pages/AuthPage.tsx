@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -38,10 +37,22 @@ const AuthPage = () => {
   } = useAuth();
   const navigate = useNavigate();
 
-  // Check if we're in password reset mode
+  // Check if we're in password reset mode or have auth tokens
   useEffect(() => {
     const mode = searchParams.get('mode');
-    if (mode === 'reset-password') {
+    const accessToken = searchParams.get('access_token');
+    const refreshToken = searchParams.get('refresh_token');
+    const type = searchParams.get('type');
+    
+    console.log('AuthPage: URL params detected:', { mode, accessToken: !!accessToken, refreshToken: !!refreshToken, type });
+    
+    // If we have tokens from email link, set the session
+    if (accessToken && refreshToken && type === 'recovery') {
+      console.log('AuthPage: Password recovery tokens detected, showing new password form');
+      setShowNewPasswordForm(true);
+      setDebugInfo('Link de redefinição de senha detectado. Digite sua nova senha abaixo.');
+    } else if (mode === 'reset-password') {
+      console.log('AuthPage: Reset password mode detected');
       setShowNewPasswordForm(true);
     }
   }, [searchParams]);
@@ -192,17 +203,26 @@ const AuthPage = () => {
 
     setLoading(true);
     try {
+      console.log('AuthPage: Attempting to update password');
       const result = await updatePassword(newPassword);
+      console.log('AuthPage: Update password result:', result);
+      
       if (result.success) {
         toastSuccess('Sucesso', 'Senha atualizada com sucesso!');
+        setDebugInfo('Senha atualizada! Redirecionando para a página inicial...');
         setTimeout(() => {
           navigate('/', { replace: true });
         }, 1500);
       } else {
+        console.error('AuthPage: Password update failed:', result.error);
         toastError('Erro', result.error || 'Erro ao atualizar senha');
+        setDebugInfo(`Erro ao atualizar senha: ${result.error}`);
       }
     } catch (error) {
-      toastError('Erro', 'Erro ao processar solicitação');
+      console.error('AuthPage: Password update exception:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Erro ao processar solicitação';
+      toastError('Erro', errorMessage);
+      setDebugInfo(`Erro inesperado: ${errorMessage}`);
     } finally {
       setLoading(false);
     }
@@ -243,6 +263,14 @@ const AuthPage = () => {
               </p>
             </CardHeader>
             <CardContent>
+              {debugInfo && (
+                <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+                  <div className="flex items-center gap-2 text-blue-700">
+                    <AlertCircle className="h-4 w-4" />
+                    <span className="text-sm">{debugInfo}</span>
+                  </div>
+                </div>
+              )}
               <form onSubmit={handleNewPasswordSubmit} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="newPassword">Nova Senha</Label>
