@@ -88,6 +88,11 @@ const defaultServices: Service[] = [
     icon: <Heart className="h-6 w-6" /> 
   },
   { 
+    id: 'clareamento-dental', 
+    name: 'Clareamento Dental', 
+    icon: <Sparkles className="h-6 w-6" /> 
+  },
+  { 
     id: 'urgencia', 
     name: 'Atendimento de Urgência', 
     icon: <AlertTriangle className="h-6 w-6" />, 
@@ -122,14 +127,14 @@ export const ServiceSelector: React.FC<ServiceSelectorProps> = ({
                 } ${service.emergency ? 'border-red-200 hover:border-red-300' : ''}`}
                 onClick={() => onServiceSelect(service.id)}
               >
-                <div className="text-center space-y-2">
-                  <div className={`mx-auto ${
+                <div className="flex flex-col items-center text-center space-y-3">
+                  <div className={`${
                     service.emergency ? 'text-red-600' : 
                     selectedService === service.id ? 'text-white' : 'text-primary'
                   }`}>
                     {service.icon}
                   </div>
-                  <p className="font-medium text-sm">{service.name}</p>
+                  <p className="font-medium text-sm leading-tight">{service.name}</p>
                 </div>
               </Button>
               

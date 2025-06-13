@@ -76,68 +76,51 @@ export const AppointmentSummary: React.FC<AppointmentSummaryProps> = ({
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-3">
-            <div className="flex items-center gap-3">
-              <Calendar className="h-5 w-5 text-primary" />
-              <div>
-                <p className="font-medium">Data</p>
-                <p className="text-sm text-gray-600">
-                  {format(selectedDate!, 'EEEE, dd \'de\' MMMM \'de\' yyyy', { locale: ptBR })}
-                </p>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-3">
-              <Clock className="h-5 w-5 text-primary" />
-              <div>
-                <p className="font-medium">Horário</p>
-                <p className="text-sm text-gray-600">{selectedTime}</p>
-              </div>
+        <div className="space-y-4">
+          <div className="flex items-start gap-3">
+            <Calendar className="h-5 w-5 text-primary mt-0.5" />
+            <div className="flex-1">
+              <p className="font-medium">Data</p>
+              <p className="text-sm text-gray-600">
+                {format(selectedDate!, 'EEEE, dd \'de\' MMMM \'de\' yyyy', { locale: ptBR })}
+              </p>
             </div>
           </div>
           
-          <div className="space-y-3">
-            <div className="flex items-center gap-3">
-              <MapPin className="h-5 w-5 text-primary" />
-              <div>
-                <p className="font-medium">Unidade</p>
-                <p className="text-sm text-gray-600">
-                  {clinic?.name} - {clinic?.city}, {clinic?.state}
-                </p>
-              </div>
+          <div className="flex items-start gap-3">
+            <Clock className="h-5 w-5 text-primary mt-0.5" />
+            <div className="flex-1">
+              <p className="font-medium">Horário</p>
+              <p className="text-sm text-gray-600">{selectedTime}</p>
             </div>
-            
-            <div className="flex items-center gap-3">
-              <User className="h-5 w-5 text-primary" />
-              <div>
-                <p className="font-medium">Serviço</p>
-                <div className="flex items-center gap-2">
-                  <p className="text-sm text-gray-600">{service?.name}</p>
-                  {service?.price === 'Gratuito' && (
-                    <Badge variant="secondary" className="text-xs">
-                      Gratuito
-                    </Badge>
-                  )}
-                </div>
-                <p className="text-xs text-gray-500">{service?.description}</p>
+          </div>
+          
+          <div className="flex items-start gap-3">
+            <MapPin className="h-5 w-5 text-primary mt-0.5" />
+            <div className="flex-1">
+              <p className="font-medium">Unidade</p>
+              <p className="text-sm text-gray-600">
+                {clinic?.name} - {clinic?.city}, {clinic?.state}
+              </p>
+            </div>
+          </div>
+          
+          <div className="flex items-start gap-3">
+            <User className="h-5 w-5 text-primary mt-0.5" />
+            <div className="flex-1">
+              <p className="font-medium">Serviço</p>
+              <div className="flex items-center gap-2">
+                <p className="text-sm text-gray-600">{service?.name}</p>
+                {service?.price === 'Gratuito' && (
+                  <Badge variant="secondary" className="text-xs">
+                    Gratuito
+                  </Badge>
+                )}
               </div>
+              <p className="text-xs text-gray-500">{service?.description}</p>
             </div>
           </div>
         </div>
-
-        {service?.duration && (
-          <div className="p-3 bg-blue-50 rounded-lg">
-            <p className="text-sm">
-              <strong>Duração estimada:</strong> {service.duration} minutos
-            </p>
-            {service.price !== 'Gratuito' && (
-              <p className="text-sm">
-                <strong>Valor:</strong> {service.price}
-              </p>
-            )}
-          </div>
-        )}
 
         <div className="flex flex-col sm:flex-row gap-3 pt-4">
           <Button 

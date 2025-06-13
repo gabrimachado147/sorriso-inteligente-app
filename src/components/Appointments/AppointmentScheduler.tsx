@@ -4,7 +4,6 @@ import { useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Filters } from '@/components/ui/filters';
-import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { EnhancedSkeleton } from '@/components/ui/enhanced-skeleton';
 import { Calendar as CalendarIcon } from 'lucide-react';
 import { animations } from '@/lib/animations';
@@ -17,6 +16,7 @@ import { ServiceSelector } from './ServiceSelector';
 import { AppointmentSummary } from './AppointmentSummary';
 import { RescheduleNotification } from './RescheduleNotification';
 import { SmartSuggestions } from './SmartSuggestions';
+import { PhoneConfirmationModal } from './PhoneConfirmationModal';
 import { availableServices } from './constants/services';
 import { useAppointmentSchedulerLogic } from '@/hooks/useAppointmentSchedulerLogic';
 
@@ -34,8 +34,8 @@ const AppointmentScheduler = () => {
     selectedService,
     setSelectedService,
     isLoading,
-    showConfirmModal,
-    setShowConfirmModal,
+    showPhoneModal,
+    setShowPhoneModal,
     filters,
     setFilters,
     availableClinics,
@@ -60,6 +60,9 @@ const AppointmentScheduler = () => {
       </div>
     );
   }
+
+  const selectedClinicData = availableClinics.find(c => c.id === selectedClinic);
+  const selectedServiceData = availableServices.find(s => s.id === selectedService);
 
   return (
     <div className={`p-6 space-y-6 ${animations.pageEnter}`}>
@@ -133,17 +136,16 @@ const AppointmentScheduler = () => {
         onConfirm={handleScheduleAppointment}
       />
 
-      {/* Modal de Confirmação */}
-      <ConfirmationModal
-        isOpen={showConfirmModal}
-        onClose={() => setShowConfirmModal(false)}
+      {/* Modal de Confirmação de Telefone */}
+      <PhoneConfirmationModal
+        isOpen={showPhoneModal}
+        onClose={() => setShowPhoneModal(false)}
         onConfirm={handleConfirmAppointment}
-        type="appointment"
-        data={{
+        appointmentData={{
           date: selectedDate ? format(selectedDate, 'dd/MM/yyyy', { locale: ptBR }) : '',
           time: selectedTime,
-          clinic: availableClinics.find(c => c.id === selectedClinic)?.name || '',
-          service: availableServices.find(s => s.id === selectedService)?.name || ''
+          clinic: selectedClinicData?.name || '',
+          service: selectedServiceData?.name || ''
         }}
       />
     </div>
