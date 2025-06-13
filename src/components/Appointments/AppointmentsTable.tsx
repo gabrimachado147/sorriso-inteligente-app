@@ -1,8 +1,8 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import {
   Table,
   TableBody,
@@ -11,50 +11,56 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Calendar, Clock, Phone, User, MapPin, Activity } from 'lucide-react';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Calendar, Clock, MapPin, User, Phone, Mail } from 'lucide-react';
 import { animations } from '@/lib/animations';
-
-interface Appointment {
-  id: string;
-  name: string;
-  phone: string;
-  email?: string;
-  service: string;
-  clinic: string;
-  date: string;
-  time: string;
-  status: string;
-  notes?: string;
-  created_at: string;
-  source?: string;
-}
+import { AppointmentRecord } from '@/services/supabase/appointments';
 
 interface AppointmentsTableProps {
-  appointments: Appointment[];
-  onStatusChange: (appointmentId: string, status: 'confirmed' | 'cancelled' | 'completed' | 'no_show') => void;
+  appointments: AppointmentRecord[];
+  onStatusChange: (appointmentId: string, newStatus: 'confirmed' | 'cancelled' | 'completed' | 'no_show') => void;
   isUpdating: boolean;
 }
 
 const getStatusColor = (status: string) => {
   switch (status) {
-    case 'confirmed': return 'bg-green-500';
-    case 'cancelled': return 'bg-red-500';
-    case 'completed': return 'bg-blue-500';
-    case 'no_show': return 'bg-gray-500';
-    default: return 'bg-yellow-500';
+    case 'confirmed':
+      return 'bg-green-100 text-green-800';
+    case 'cancelled':
+      return 'bg-red-100 text-red-800';
+    case 'completed':
+      return 'bg-blue-100 text-blue-800';
+    case 'no_show':
+      return 'bg-yellow-100 text-yellow-800';
+    default:
+      return 'bg-gray-100 text-gray-800';
   }
 };
 
-const getStatusText = (status: string) => {
+const getStatusLabel = (status: string) => {
   switch (status) {
-    case 'confirmed': return 'Confirmado';
-    case 'cancelled': return 'Cancelado';
-    case 'completed': return 'Concluído';
-    case 'no_show': return 'Não Compareceu';
-    default: return 'Pendente';
+    case 'confirmed':
+      return 'Confirmado';
+    case 'cancelled':
+      return 'Cancelado';
+    case 'completed':
+      return 'Concluído';
+    case 'no_show':
+      return 'Não Compareceu';
+    default:
+      return status;
   }
+};
+
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('pt-BR');
 };
 
 export const AppointmentsTable: React.FC<AppointmentsTableProps> = ({
@@ -67,11 +73,11 @@ export const AppointmentsTable: React.FC<AppointmentsTableProps> = ({
       <Card className={animations.fadeIn}>
         <CardContent className="p-8 text-center">
           <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-600 mb-2">
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
             Nenhum agendamento encontrado
           </h3>
-          <p className="text-gray-500">
-            Os agendamentos aparecerão aqui conforme forem criados.
+          <p className="text-gray-600">
+            Não há agendamentos que correspondam aos filtros selecionados.
           </p>
         </CardContent>
       </Card>
@@ -94,104 +100,90 @@ export const AppointmentsTable: React.FC<AppointmentsTableProps> = ({
                 <TableHead>Paciente</TableHead>
                 <TableHead>Contato</TableHead>
                 <TableHead>Data/Hora</TableHead>
-                <TableHead>Clínica</TableHead>
                 <TableHead>Serviço</TableHead>
+                <TableHead>Clínica</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {appointments.map((appointment) => (
-                <TableRow key={appointment.id}>
+                <TableRow key={appointment.id} className={animations.fadeIn}>
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <User className="h-4 w-4 text-gray-400" />
                       <div>
                         <p className="font-medium">{appointment.name}</p>
-                        {appointment.email && (
-                          <p className="text-sm text-gray-500">{appointment.email}</p>
-                        )}
+                        <p className="text-sm text-gray-600">
+                          ID: {appointment.id.slice(0, 8)}...
+                        </p>
                       </div>
-                    </div>
-                  </TableCell>
-                  
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Phone className="h-4 w-4 text-gray-400" />
-                      <span className="text-sm">{appointment.phone}</span>
                     </div>
                   </TableCell>
                   
                   <TableCell>
                     <div className="space-y-1">
-                      <div className="flex items-center gap-1 text-sm">
-                        <Calendar className="h-3 w-3 text-gray-400" />
-                        {format(new Date(appointment.date), 'dd/MM/yyyy', { locale: ptBR })}
+                      <div className="flex items-center gap-2 text-sm">
+                        <Phone className="h-3 w-3 text-gray-400" />
+                        {appointment.phone}
                       </div>
-                      <div className="flex items-center gap-1 text-sm">
+                      {appointment.email && (
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <Mail className="h-3 w-3 text-gray-400" />
+                          {appointment.email}
+                        </div>
+                      )}
+                    </div>
+                  </TableCell>
+
+                  <TableCell>
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2 text-sm">
+                        <Calendar className="h-3 w-3 text-gray-400" />
+                        {formatDate(appointment.date)}
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
                         <Clock className="h-3 w-3 text-gray-400" />
                         {appointment.time}
                       </div>
                     </div>
                   </TableCell>
-                  
+
+                  <TableCell>
+                    <p className="text-sm font-medium">{appointment.service}</p>
+                  </TableCell>
+
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <MapPin className="h-4 w-4 text-gray-400" />
-                      <span className="text-sm">{appointment.clinic}</span>
+                      <p className="text-sm">{appointment.clinic}</p>
                     </div>
                   </TableCell>
-                  
+
                   <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Activity className="h-4 w-4 text-gray-400" />
-                      <span className="text-sm">{appointment.service}</span>
-                    </div>
-                  </TableCell>
-                  
-                  <TableCell>
-                    <Badge className={`${getStatusColor(appointment.status)} text-white`}>
-                      {getStatusText(appointment.status)}
+                    <Badge className={getStatusColor(appointment.status)}>
+                      {getStatusLabel(appointment.status)}
                     </Badge>
                   </TableCell>
-                  
+
                   <TableCell>
-                    <div className="flex gap-1">
-                      {appointment.status === 'confirmed' && (
-                        <>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => onStatusChange(appointment.id, 'completed')}
-                            disabled={isUpdating}
-                            className="text-xs"
-                          >
-                            Concluir
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="destructive"
-                            onClick={() => onStatusChange(appointment.id, 'cancelled')}
-                            disabled={isUpdating}
-                            className="text-xs"
-                          >
-                            Cancelar
-                          </Button>
-                        </>
-                      )}
-                      
-                      {appointment.status === 'cancelled' && (
-                        <Button
-                          size="sm"
-                          variant="default"
-                          onClick={() => onStatusChange(appointment.id, 'confirmed')}
-                          disabled={isUpdating}
-                          className="text-xs"
-                        >
-                          Reativar
-                        </Button>
-                      )}
-                    </div>
+                    <Select
+                      value={appointment.status}
+                      onValueChange={(newStatus: 'confirmed' | 'cancelled' | 'completed' | 'no_show') =>
+                        onStatusChange(appointment.id, newStatus)
+                      }
+                      disabled={isUpdating}
+                    >
+                      <SelectTrigger className="w-32">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="confirmed">Confirmado</SelectItem>
+                        <SelectItem value="cancelled">Cancelado</SelectItem>
+                        <SelectItem value="completed">Concluído</SelectItem>
+                        <SelectItem value="no_show">Não Compareceu</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </TableCell>
                 </TableRow>
               ))}
