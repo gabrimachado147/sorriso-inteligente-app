@@ -26,15 +26,13 @@ export const AppointmentScheduler = () => {
     }
 
     const appointmentData = {
-      serviceId: selectedService,
-      clinicId: selectedClinic,
+      name: 'Mock User',
+      phone: '(11) 99999-9999',
+      email: 'user@example.com',
+      service: selectedService,
+      clinic: selectedClinic,
       date: selectedDate.toISOString().split('T')[0],
-      time: selectedTime,
-      userInfo: {
-        name: 'Mock User',
-        phone: '(11) 99999-9999',
-        email: 'user@example.com'
-      }
+      time: selectedTime
     };
 
     const result = await scheduleAppointment(appointmentData);

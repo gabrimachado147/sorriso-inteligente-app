@@ -7,6 +7,7 @@ import { useAppointmentsByPeriod } from '@/hooks/useAnalytics'
 import { EnhancedSkeleton } from '@/components/ui/enhanced-skeleton'
 import { format, subDays, eachDayOfInterval } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
+import type { AppointmentsByPeriod } from '@/services/analytics'
 
 interface AppointmentsChartProps {
   clinicId?: string
@@ -38,15 +39,15 @@ export const AppointmentsChart: React.FC<AppointmentsChartProps> = ({ clinicId }
 
     return days.map(day => {
       const dayStr = format(day, 'yyyy-MM-dd')
-      const dayAppointments = appointments.filter(apt => apt.date === dayStr)
+      const dayAppointments = appointments.filter((apt: AppointmentsByPeriod) => apt.date === dayStr)
       
       return {
         date: format(day, 'dd/MM', { locale: ptBR }),
         total: dayAppointments.length,
-        confirmed: dayAppointments.filter(apt => apt.status === 'confirmed').length,
-        pending: dayAppointments.filter(apt => apt.status === 'pending').length,
-        cancelled: dayAppointments.filter(apt => apt.status === 'cancelled').length,
-        completed: dayAppointments.filter(apt => apt.status === 'completed').length
+        confirmed: dayAppointments.filter((apt: AppointmentsByPeriod) => apt.status === 'confirmed').length,
+        pending: dayAppointments.filter((apt: AppointmentsByPeriod) => apt.status === 'pending').length,
+        cancelled: dayAppointments.filter((apt: AppointmentsByPeriod) => apt.status === 'cancelled').length,
+        completed: dayAppointments.filter((apt: AppointmentsByPeriod) => apt.status === 'completed').length
       }
     })
   }

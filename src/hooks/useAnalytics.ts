@@ -19,13 +19,6 @@ export const useAnalytics = (clinicId?: string) => {
     queryFn: () => AnalyticsService.getChatConversionReport(clinicId),
   })
 
-  const getAppointmentsByPeriod = (startDate: string, endDate: string) => {
-    return useQuery({
-      queryKey: ['appointments-by-period', startDate, endDate, clinicId],
-      queryFn: () => AnalyticsService.getAppointmentsByPeriod(startDate, endDate, clinicId),
-    })
-  }
-
   const trackEvent = (eventType: string, data: Record<string, any>) => {
     return AnalyticsService.trackEvent(eventType, data, clinicId)
   }
@@ -35,9 +28,15 @@ export const useAnalytics = (clinicId?: string) => {
     chatConversion,
     statsLoading,
     conversionLoading,
-    getAppointmentsByPeriod,
     trackEvent
   }
+}
+
+export const useAppointmentsByPeriod = (startDate: string, endDate: string, clinicId?: string) => {
+  return useQuery({
+    queryKey: ['appointments-by-period', startDate, endDate, clinicId],
+    queryFn: () => AnalyticsService.getAppointmentsByPeriod(startDate, endDate, clinicId),
+  })
 }
 
 export const useHealthAnalytics = () => {
