@@ -20,18 +20,21 @@ export const useAppointmentScheduler = () => {
       
       console.log('Appointment response with output:', response);
       
-      // Adicionar pontos de gamificação
-      const points = data.service === 'Avaliação Gratuita' ? 50 : 
-                   data.service.includes('Limpeza') ? 75 : 100;
+      // Verificar se o serviço existe antes de usar
+      const service = data.service || 'Consulta';
       
-      addPoints(points, `Consulta agendada: ${data.service}`, 'appointment');
+      // Adicionar pontos de gamificação
+      const points = service === 'Avaliação Gratuita' ? 50 : 
+                   service.includes('Limpeza') ? 75 : 100;
+      
+      addPoints(points, `Consulta agendada: ${service}`, 'appointment');
       updateStreak(true);
 
       // Registrar no analytics de saúde
       addHealthMetric({
-        type: data.service.includes('Limpeza') ? 'cleaning' : 
-              data.service.includes('Avaliação') ? 'checkup' : 'appointment',
-        service: data.service
+        type: service.includes('Limpeza') ? 'cleaning' : 
+              service.includes('Avaliação') ? 'checkup' : 'appointment',
+        service: service
       });
       
       toastSuccess(
