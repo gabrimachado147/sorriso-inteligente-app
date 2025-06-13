@@ -65,84 +65,84 @@ const ProfilePage = () => {
 
   if (profileLoading || appointmentsLoading || preferencesLoading || gamificationLoading) {
     return (
-      <div className="mobile-container">
-        <div className="animate-pulse mobile-spacing">
-          <div className="h-8 md:h-8 bg-gray-200 rounded w-1/3"></div>
-          <div className="h-24 md:h-32 bg-gray-200 rounded"></div>
-          <div className="h-48 md:h-64 bg-gray-200 rounded"></div>
+      <div className="p-6">
+        <div className="animate-pulse space-y-6">
+          <div className="h-8 bg-gray-200 rounded w-1/3"></div>
+          <div className="h-32 bg-gray-200 rounded"></div>
+          <div className="h-64 bg-gray-200 rounded"></div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className={`mobile-container mobile-spacing ${animations.pageEnter}`}>
-      <div className="flex items-center justify-between mb-6 md:mb-6">
-        <div className="flex items-center gap-3 md:gap-4">
-          <h1 className="mobile-title md:text-3xl font-bold">Meu Perfil</h1>
-          <Badge variant="secondary" className="px-3 py-1 md:px-3 text-sm md:text-sm">
+    <div className={`p-6 space-y-6 ${animations.pageEnter}`}>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <h1 className="text-3xl font-bold">Meu Perfil</h1>
+          <Badge variant="secondary" className="px-3 py-1">
             {profile?.nome_completo || user?.email || 'Usuário'}
           </Badge>
         </div>
         <Button 
           variant="outline" 
           onClick={handleLogout}
-          className="flex items-center gap-2 md:gap-2 text-red-600 hover:text-red-700 hover:bg-red-50 mobile-button"
+          className="flex items-center gap-2 text-red-600 hover:text-red-700 hover:bg-red-50"
         >
-          <LogOut className="h-4 w-4 md:h-4 md:w-4" />
-          <span className="hidden md:inline">Sair</span>
+          <LogOut className="h-4 w-4" />
+          Sair
         </Button>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="mobile-tabs">
-        <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 gap-1">
-          <TabsTrigger value="profile" className="flex items-center gap-1 text-xs md:text-sm p-3 md:p-3">
-            <User className="h-4 w-4 md:h-4 md:w-4" />
-            <span className="hidden md:inline">Perfil</span>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <TabsList className="grid w-full grid-cols-6">
+          <TabsTrigger value="profile" className="flex items-center gap-2">
+            <User className="h-4 w-4" />
+            Perfil
           </TabsTrigger>
-          <TabsTrigger value="history" className="flex items-center gap-1 text-xs md:text-sm p-3 md:p-3">
-            <History className="h-4 w-4 md:h-4 md:w-4" />
-            <span className="hidden md:inline">Histórico</span>
+          <TabsTrigger value="history" className="flex items-center gap-2">
+            <History className="h-4 w-4" />
+            Histórico
           </TabsTrigger>
-          <TabsTrigger value="notifications" className="flex items-center gap-1 text-xs md:text-sm p-3 md:p-3">
-            <Bell className="h-4 w-4 md:h-4 md:w-4" />
-            <span className="hidden md:inline">Notificações</span>
+          <TabsTrigger value="notifications" className="flex items-center gap-2">
+            <Bell className="h-4 w-4" />
+            Notificações
           </TabsTrigger>
-          <TabsTrigger value="gamification" className="flex items-center gap-1 text-xs md:text-sm p-3 md:p-3">
-            <Gamepad2 className="h-4 w-4 md:h-4 md:w-4" />
-            <span className="hidden md:inline">Gamificação</span>
+          <TabsTrigger value="gamification" className="flex items-center gap-2">
+            <Gamepad2 className="h-4 w-4" />
+            Gamificação
           </TabsTrigger>
-          <TabsTrigger value="accessibility" className="flex items-center gap-1 text-xs md:text-sm p-3 md:p-3">
-            <Accessibility className="h-4 w-4 md:h-4 md:w-4" />
-            <span className="hidden md:inline">Acessibilidade</span>
+          <TabsTrigger value="accessibility" className="flex items-center gap-2">
+            <Accessibility className="h-4 w-4" />
+            Acessibilidade
           </TabsTrigger>
-          <TabsTrigger value="security" className="flex items-center gap-1 text-xs md:text-sm p-3 md:p-3">
-            <Shield className="h-4 w-4 md:h-4 md:w-4" />
-            <span className="hidden md:inline">Segurança</span>
+          <TabsTrigger value="security" className="flex items-center gap-2">
+            <Shield className="h-4 w-4" />
+            Segurança
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="profile" className="mobile-tab-content">
+        <TabsContent value="profile">
           <ProfileTab onTabChange={setActiveTab} />
         </TabsContent>
 
-        <TabsContent value="history" className="mobile-tab-content">
+        <TabsContent value="history">
           <HistoryTab />
         </TabsContent>
 
-        <TabsContent value="notifications" className="mobile-tab-content">
+        <TabsContent value="notifications">
           <NotificationsTab />
         </TabsContent>
 
-        <TabsContent value="gamification" className="mobile-tab-content">
+        <TabsContent value="gamification">
           <GamificationTab />
         </TabsContent>
 
-        <TabsContent value="accessibility" className="mobile-tab-content">
+        <TabsContent value="accessibility">
           <AccessibilityTab />
         </TabsContent>
 
-        <TabsContent value="security" className="mobile-tab-content">
+        <TabsContent value="security">
           <SecurityTab />
         </TabsContent>
       </Tabs>
