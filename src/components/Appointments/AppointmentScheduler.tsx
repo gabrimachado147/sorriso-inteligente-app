@@ -1,144 +1,155 @@
 
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import React from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { useAppointmentScheduler } from '@/hooks/useAppointmentScheduler';
-import { CalendarIntegration } from '@/components/Calendar/CalendarIntegration';
-import { ClinicSelector } from './ClinicSelector';
-import { ServiceSelector } from './ServiceSelector';
+import { Card, CardContent } from '@/components/ui/card';
+import { Filters } from '@/components/ui/filters';
+import { EnhancedSkeleton } from '@/components/ui/enhanced-skeleton';
+import { Calendar as CalendarIcon } from 'lucide-react';
+import { animations } from '@/lib/animations';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import { DateSelector } from './DateSelector';
 import { TimeSelector } from './TimeSelector';
+import { ClinicSelector } from './ClinicSelector';
+import { ServiceSelector } from './ServiceSelector';
 import { AppointmentSummary } from './AppointmentSummary';
-import { Calendar, CheckCircle } from 'lucide-react';
+import { RescheduleNotification } from './RescheduleNotification';
+import { SmartSuggestions } from './SmartSuggestions';
+import { PhoneConfirmationModal } from './PhoneConfirmationModal';
+import { availableServices } from './constants/services';
+import { useAppointmentSchedulerLogic } from '@/hooks/useAppointmentSchedulerLogic';
 
-export const AppointmentScheduler = () => {
-  const [selectedClinic, setSelectedClinic] = useState('');
-  const [selectedService, setSelectedService] = useState('');
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>();
-  const [selectedTime, setSelectedTime] = useState('');
-  const [currentStep, setCurrentStep] = useState(1);
+const AppointmentScheduler = () => {
+  const [searchParams] = useSearchParams();
+  const rescheduleId = searchParams.get('reschedule');
   
-  const { scheduleAppointment, loading, success } = useAppointmentScheduler();
+  const {
+    selectedDate,
+    setSelectedDate,
+    selectedTime,
+    setSelectedTime,
+    selectedClinic,
+    setSelectedClinic,
+    selectedService,
+    setSelectedService,
+    isLoading,
+    showPhoneModal,
+    setShowPhoneModal,
+    filters,
+    setFilters,
+    availableClinics,
+    filteredServices,
+    filteredClinics,
+    handleConfirmAppointment,
+    handleScheduleAppointment,
+    handleGoBack
+  } = useAppointmentSchedulerLogic(rescheduleId);
 
-  const handleSchedule = async () => {
-    if (!selectedClinic || !selectedService || !selectedDate || !selectedTime) {
-      return;
-    }
-
-    const appointmentData = {
-      name: 'Mock User',
-      phone: '(11) 99999-9999',
-      email: 'user@example.com',
-      service: selectedService,
-      clinic: selectedClinic,
-      date: selectedDate.toISOString().split('T')[0],
-      time: selectedTime
-    };
-
-    const result = await scheduleAppointment(appointmentData);
-    
-    if (result.success) {
-      setCurrentStep(5); // Ir para confirmação
+  const handleServiceSuggestion = (serviceName: string) => {
+    const service = availableServices.find(s => s.name === serviceName);
+    if (service) {
+      setSelectedService(service.id);
     }
   };
 
-  const resetForm = () => {
-    setSelectedClinic('');
-    setSelectedService('');
-    setSelectedDate(undefined);
-    setSelectedTime('');
-    setCurrentStep(1);
-  };
-
-  if (success && currentStep === 5) {
+  if (isLoading) {
     return (
-      <Card className="max-w-2xl mx-auto">
-        <CardContent className="text-center py-8">
-          <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-green-700 mb-2">
-            Agendamento Confirmado!
-          </h2>
-          <p className="text-gray-600 mb-6">
-            Seu agendamento foi realizado com sucesso. Você receberá uma confirmação por WhatsApp.
-          </p>
-          <div className="space-y-4">
-            <CalendarIntegration />
-            <Button onClick={resetForm} variant="outline">
-              Agendar Outro Horário
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      <div className={`p-6 space-y-6 ${animations.fadeIn}`}>
+        <EnhancedSkeleton variant="appointment-card" count={3} />
+      </div>
     );
   }
 
-  // Mock data for demonstration
-  const availableClinics = [
-    { id: 'clinic1', name: 'Clínica Centro', city: 'São Paulo', state: 'SP' },
-    { id: 'clinic2', name: 'Clínica Norte', city: 'Rio de Janeiro', state: 'RJ' }
-  ];
-
-  const availableServices = [
-    { id: 'service1', name: 'Consulta Geral', description: 'Consulta médica geral', duration: 30, price: 'R$ 150,00' },
-    { id: 'service2', name: 'Avaliação Gratuita', description: 'Primeira consulta gratuita', duration: 45, price: 'Gratuito' }
-  ];
+  const selectedClinicData = availableClinics.find(c => c.id === selectedClinic);
+  const selectedServiceData = availableServices.find(s => s.id === selectedService);
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Calendar className="w-5 h-5" />
-            Agendar Consulta
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              <ClinicSelector 
-                selectedClinic={selectedClinic}
-                onClinicSelect={setSelectedClinic}
-                filteredClinics={availableClinics}
-              />
-              <ServiceSelector 
-                selectedService={selectedService}
-                onServiceSelect={setSelectedService}
-              />
-              <DateSelector 
-                selectedDate={selectedDate}
-                onDateSelect={setSelectedDate}
-              />
-              <TimeSelector 
-                selectedDate={selectedDate}
-                selectedTime={selectedTime}
-                onTimeSelect={setSelectedTime}
-              />
-            </div>
-            
-            <div>
-              <AppointmentSummary
-                selectedClinic={selectedClinic}
-                selectedService={selectedService}
-                selectedDate={selectedDate}
-                selectedTime={selectedTime}
-                availableClinics={availableClinics}
-                availableServices={availableServices}
-                onConfirm={handleSchedule}
-              />
-            </div>
-          </div>
+    <div className={`p-6 space-y-6 ${animations.pageEnter}`}>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold flex items-center gap-2">
+          <CalendarIcon className="h-6 w-6 text-primary" />
+          {rescheduleId ? 'Reagendar Consulta' : 'Agendar Consulta'}
+        </h1>
+        <Button variant="outline" onClick={handleGoBack} className={animations.buttonHover}>
+          Voltar
+        </Button>
+      </div>
 
-          <div className="flex justify-end gap-4">
-            <Button 
-              onClick={handleSchedule}
-              disabled={!selectedClinic || !selectedService || !selectedDate || !selectedTime || loading}
-              className="px-8"
-            >
-              {loading ? 'Agendando...' : 'Confirmar Agendamento'}
-            </Button>
-          </div>
+      {rescheduleId && (
+        <RescheduleNotification rescheduleId={rescheduleId} />
+      )}
+
+      {/* Filtros */}
+      <Card className={animations.fadeIn}>
+        <CardContent className="p-6">
+          <Filters
+            filters={filters}
+            onFiltersChange={setFilters}
+            availableClinics={availableClinics}
+            availableServices={availableServices}
+            placeholder="Buscar clínicas ou serviços..."
+            showStatusFilter={false}
+          />
         </CardContent>
       </Card>
+
+      {/* Sugestões Inteligentes */}
+      <SmartSuggestions
+        selectedDate={selectedDate}
+        onTimeSelect={setSelectedTime}
+        onServiceSelect={handleServiceSuggestion}
+      />
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <DateSelector 
+          selectedDate={selectedDate}
+          onDateSelect={setSelectedDate}
+        />
+        
+        <TimeSelector
+          selectedDate={selectedDate}
+          selectedTime={selectedTime}
+          onTimeSelect={setSelectedTime}
+        />
+      </div>
+
+      <ClinicSelector
+        selectedClinic={selectedClinic}
+        onClinicSelect={setSelectedClinic}
+        filteredClinics={filteredClinics}
+      />
+
+      <ServiceSelector
+        selectedService={selectedService}
+        onServiceSelect={setSelectedService}
+        filteredServices={filteredServices}
+      />
+
+      <AppointmentSummary
+        selectedDate={selectedDate}
+        selectedTime={selectedTime}
+        selectedClinic={selectedClinic}
+        selectedService={selectedService}
+        availableClinics={availableClinics}
+        availableServices={availableServices}
+        onConfirm={handleScheduleAppointment}
+      />
+
+      {/* Modal de Confirmação de Telefone */}
+      <PhoneConfirmationModal
+        isOpen={showPhoneModal}
+        onClose={() => setShowPhoneModal(false)}
+        onConfirm={handleConfirmAppointment}
+        appointmentData={{
+          date: selectedDate ? format(selectedDate, 'dd/MM/yyyy', { locale: ptBR }) : '',
+          time: selectedTime,
+          clinic: selectedClinicData?.name || '',
+          service: selectedServiceData?.name || ''
+        }}
+      />
     </div>
   );
 };
+
+export default AppointmentScheduler;

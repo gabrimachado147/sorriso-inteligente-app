@@ -9,41 +9,6 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      analytics_events: {
-        Row: {
-          clinic_id: string | null
-          created_at: string
-          data: Json | null
-          event_type: string
-          id: string
-          user_id: string | null
-        }
-        Insert: {
-          clinic_id?: string | null
-          created_at?: string
-          data?: Json | null
-          event_type: string
-          id?: string
-          user_id?: string | null
-        }
-        Update: {
-          clinic_id?: string | null
-          created_at?: string
-          data?: Json | null
-          event_type?: string
-          id?: string
-          user_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "analytics_events_clinic_id_fkey"
-            columns: ["clinic_id"]
-            isOneToOne: false
-            referencedRelation: "clinics"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       appointments: {
         Row: {
           clinic: string
@@ -164,42 +129,6 @@ export type Database = {
         }
         Relationships: []
       }
-      calendar_integrations: {
-        Row: {
-          access_token: string
-          calendar_id: string | null
-          created_at: string
-          expires_at: string | null
-          id: string
-          is_active: boolean | null
-          provider: string
-          refresh_token: string | null
-          user_id: string | null
-        }
-        Insert: {
-          access_token: string
-          calendar_id?: string | null
-          created_at?: string
-          expires_at?: string | null
-          id?: string
-          is_active?: boolean | null
-          provider: string
-          refresh_token?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          access_token?: string
-          calendar_id?: string | null
-          created_at?: string
-          expires_at?: string | null
-          id?: string
-          is_active?: boolean | null
-          provider?: string
-          refresh_token?: string | null
-          user_id?: string | null
-        }
-        Relationships: []
-      }
       chat_messages: {
         Row: {
           active: boolean | null
@@ -269,92 +198,6 @@ export type Database = {
           click_id?: string | null
           created_at?: string | null
           id?: string
-        }
-        Relationships: []
-      }
-      clinic_schedules: {
-        Row: {
-          clinic_id: string | null
-          created_at: string
-          day_of_week: number
-          end_time: string
-          id: string
-          is_available: boolean | null
-          start_time: string
-        }
-        Insert: {
-          clinic_id?: string | null
-          created_at?: string
-          day_of_week: number
-          end_time: string
-          id?: string
-          is_available?: boolean | null
-          start_time: string
-        }
-        Update: {
-          clinic_id?: string | null
-          created_at?: string
-          day_of_week?: number
-          end_time?: string
-          id?: string
-          is_available?: boolean | null
-          start_time?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "clinic_schedules_clinic_id_fkey"
-            columns: ["clinic_id"]
-            isOneToOne: false
-            referencedRelation: "clinics"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      clinics: {
-        Row: {
-          address: string
-          city: string
-          created_at: string
-          email: string | null
-          id: string
-          is_active: boolean | null
-          latitude: number | null
-          longitude: number | null
-          name: string
-          phone: string
-          state: string
-          updated_at: string
-          working_hours: Json | null
-        }
-        Insert: {
-          address: string
-          city: string
-          created_at?: string
-          email?: string | null
-          id?: string
-          is_active?: boolean | null
-          latitude?: number | null
-          longitude?: number | null
-          name: string
-          phone: string
-          state: string
-          updated_at?: string
-          working_hours?: Json | null
-        }
-        Update: {
-          address?: string
-          city?: string
-          created_at?: string
-          email?: string | null
-          id?: string
-          is_active?: boolean | null
-          latitude?: number | null
-          longitude?: number | null
-          name?: string
-          phone?: string
-          state?: string
-          updated_at?: string
-          working_hours?: Json | null
         }
         Relationships: []
       }
@@ -652,89 +495,6 @@ export type Database = {
         }
         Relationships: []
       }
-      reminders: {
-        Row: {
-          appointment_id: string | null
-          created_at: string
-          id: string
-          method: string
-          reminder_type: string
-          sent_at: string | null
-          status: string | null
-        }
-        Insert: {
-          appointment_id?: string | null
-          created_at?: string
-          id?: string
-          method: string
-          reminder_type: string
-          sent_at?: string | null
-          status?: string | null
-        }
-        Update: {
-          appointment_id?: string | null
-          created_at?: string
-          id?: string
-          method?: string
-          reminder_type?: string
-          sent_at?: string | null
-          status?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "reminders_appointment_id_fkey"
-            columns: ["appointment_id"]
-            isOneToOne: false
-            referencedRelation: "appointments"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      reviews: {
-        Row: {
-          appointment_id: string | null
-          clinic_id: string | null
-          comment: string | null
-          created_at: string
-          id: string
-          rating: number
-          user_id: string | null
-        }
-        Insert: {
-          appointment_id?: string | null
-          clinic_id?: string | null
-          comment?: string | null
-          created_at?: string
-          id?: string
-          rating: number
-          user_id?: string | null
-        }
-        Update: {
-          appointment_id?: string | null
-          clinic_id?: string | null
-          comment?: string | null
-          created_at?: string
-          id?: string
-          rating?: number
-          user_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "reviews_appointment_id_fkey"
-            columns: ["appointment_id"]
-            isOneToOne: false
-            referencedRelation: "appointments"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "reviews_clinic_id_fkey"
-            columns: ["clinic_id"]
-            isOneToOne: false
-            referencedRelation: "clinics"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       SessionID: {
         Row: {
           created_at: string
@@ -780,42 +540,6 @@ export type Database = {
         }
         Relationships: []
       }
-      user_profiles: {
-        Row: {
-          created_at: string
-          date_of_birth: string | null
-          emergency_contact: string | null
-          full_name: string | null
-          id: string
-          medical_notes: string | null
-          phone: string | null
-          preferences: Json | null
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          date_of_birth?: string | null
-          emergency_contact?: string | null
-          full_name?: string | null
-          id: string
-          medical_notes?: string | null
-          phone?: string | null
-          preferences?: Json | null
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          date_of_birth?: string | null
-          emergency_contact?: string | null
-          full_name?: string | null
-          id?: string
-          medical_notes?: string | null
-          phone?: string | null
-          preferences?: Json | null
-          updated_at?: string
-        }
-        Relationships: []
-      }
     }
     Views: {
       [_ in never]: never
@@ -824,10 +548,6 @@ export type Database = {
       binary_quantize: {
         Args: { "": string } | { "": unknown }
         Returns: unknown
-      }
-      calculate_distance: {
-        Args: { lat1: number; lon1: number; lat2: number; lon2: number }
-        Returns: number
       }
       halfvec_avg: {
         Args: { "": number[] }

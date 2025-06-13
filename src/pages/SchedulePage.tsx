@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { AppointmentScheduler } from '@/components/Appointments/AppointmentScheduler';
+import AppointmentScheduler from '@/components/Appointments/AppointmentScheduler';
 
 const SchedulePage = () => {
   return <AppointmentScheduler />;
