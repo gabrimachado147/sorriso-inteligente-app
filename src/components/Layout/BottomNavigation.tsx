@@ -22,12 +22,6 @@ const BottomNavigation = () => {
       isActive: location.pathname === '/'
     },
     { 
-      icon: MessageCircle, 
-      label: 'Chat', 
-      path: '/chat',
-      isActive: location.pathname === '/chat'
-    },
-    { 
       icon: Calendar, 
       label: 'Agendar', 
       path: '/schedule',
@@ -40,16 +34,22 @@ const BottomNavigation = () => {
       isActive: location.pathname === '/clinics'
     },
     { 
-      icon: BarChart3, 
-      label: 'Administrativo', 
-      path: '/appointments',
-      isActive: location.pathname === '/appointments'
+      icon: MessageCircle, 
+      label: 'Chat', 
+      path: '/chat',
+      isActive: location.pathname === '/chat'
     },
     { 
       icon: User, 
       label: 'Perfil', 
       path: '/profile',
       isActive: location.pathname === '/profile'
+    },
+    { 
+      icon: BarChart3, 
+      label: 'Administrativo', 
+      path: '/appointments',
+      isActive: location.pathname === '/appointments'
     }
   ];
 
