@@ -4,152 +4,75 @@ import { useAuth } from './useAuth';
 import { supabase } from '@/integrations/supabase/client';
 
 interface GamificationData {
-  id?: string;
+  id: string;
+  user_id: string;
   points: number;
   level: number;
-  badges: string[];
   achievements: string[];
+  badges: string[];
+  created_at: string;
+  updated_at: string;
 }
 
-const ensureStringArray = (value: any): string[] => {
-  if (Array.isArray(value)) {
-    return value.filter(item => typeof item === 'string');
-  }
-  return [];
-};
-
 export const useGamificationData = () => {
-  const { user, isAuthenticated } = useAuth();
+  const { user } = useAuth();
   const [gamificationData, setGamificationData] = useState<GamificationData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const loadGamificationData = async () => {
-      if (!isAuthenticated || !user) {
-        setGamificationData(null);
-        setLoading(false);
+  const fetchGamificationData = async () => {
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('user_gamification')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error fetching gamification data:', error);
         return;
       }
 
-      try {
-        setLoading(true);
-        setError(null);
+      if (data) {
+        setGamificationData(data);
+      } else {
+        // Criar dados de gamificação padrão se não existirem
+        const defaultData = {
+          user_id: user.id,
+          points: 0,
+          level: 1,
+          achievements: [],
+          badges: []
+        };
 
-        const { data, error } = await supabase
+        const { data: newData, error: createError } = await supabase
           .from('user_gamification')
-          .select('*')
-          .eq('user_id', user.id)
+          .insert(defaultData)
+          .select()
           .single();
 
-        if (error && error.code !== 'PGRST116') {
-          throw error;
+        if (!createError && newData) {
+          setGamificationData(newData);
         }
-
-        if (data) {
-          setGamificationData({
-            ...data,
-            badges: ensureStringArray(data.badges),
-            achievements: ensureStringArray(data.achievements)
-          });
-        } else {
-          // Create default gamification data
-          const defaultData = {
-            user_id: user.id,
-            points: 100,
-            level: 1,
-            badges: ['welcome'],
-            achievements: ['first_login']
-          };
-
-          const { data: newData, error: createError } = await supabase
-            .from('user_gamification')
-            .insert(defaultData)
-            .select()
-            .single();
-
-          if (createError) throw createError;
-          setGamificationData({
-            ...newData,
-            badges: ensureStringArray(newData.badges),
-            achievements: ensureStringArray(newData.achievements)
-          });
-        }
-      } catch (err) {
-        console.error('Error loading gamification data:', err);
-        setError('Erro ao carregar dados de gamificação');
-      } finally {
-        setLoading(false);
       }
-    };
-
-    loadGamificationData();
-  }, [user, isAuthenticated]);
-
-  const addPoints = async (points: number) => {
-    if (!user || !gamificationData) return;
-
-    try {
-      const newPoints = gamificationData.points + points;
-      const newLevel = Math.floor(newPoints / 500) + 1;
-
-      const { data, error } = await supabase
-        .from('user_gamification')
-        .update({ 
-          points: newPoints,
-          level: newLevel 
-        })
-        .eq('user_id', user.id)
-        .select()
-        .single();
-
-      if (error) throw error;
-      setGamificationData({
-        ...data,
-        badges: ensureStringArray(data.badges),
-        achievements: ensureStringArray(data.achievements)
-      });
-      
-      return { success: true, newLevel: newLevel > gamificationData.level };
-    } catch (err) {
-      console.error('Error adding points:', err);
-      return { success: false };
+    } catch (error) {
+      console.error('Error in fetchGamificationData:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const addBadge = async (badge: string) => {
-    if (!user || !gamificationData) return;
-
-    try {
-      const newBadges = [...gamificationData.badges, badge];
-
-      const { data, error } = await supabase
-        .from('user_gamification')
-        .update({ badges: newBadges })
-        .eq('user_id', user.id)
-        .select()
-        .single();
-
-      if (error) throw error;
-      setGamificationData({
-        ...data,
-        badges: ensureStringArray(data.badges),
-        achievements: ensureStringArray(data.achievements)
-      });
-      
-      return { success: true };
-    } catch (err) {
-      console.error('Error adding badge:', err);
-      return { success: false };
-    }
-  };
+  useEffect(() => {
+    fetchGamificationData();
+  }, [user]);
 
   return {
     gamificationData,
     loading,
-    error,
-    addPoints,
-    addBadge,
-    clearError: () => setError(null)
+    refetch: fetchGamificationData
   };
 };

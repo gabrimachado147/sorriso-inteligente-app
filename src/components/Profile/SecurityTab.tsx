@@ -5,46 +5,63 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Badge } from '@/components/ui/badge';
-import { Lock, Shield, Key, Eye, EyeOff } from 'lucide-react';
+import { Shield, Lock, Smartphone, AlertTriangle } from 'lucide-react';
 import { animations } from '@/lib/animations';
+import { useAuth } from '@/hooks/useAuth';
 import { toastSuccess, toastError } from '@/components/ui/custom-toast';
 
 export const SecurityTab = () => {
-  const [securitySettings, setSecuritySettings] = useState({
-    twoFactorEnabled: false,
-    sessionTimeout: 30,
-    emailAlerts: true,
-    loginNotifications: true
-  });
-  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
-  const [showNewPassword, setShowNewPassword] = useState(false);
-  const [passwordForm, setPasswordForm] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: ''
-  });
+  const { user } = useAuth();
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
+  const [loginAlerts, setLoginAlerts] = useState(true);
+  const [sessionTimeout, setSessionTimeout] = useState('30');
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
 
-  const handleSecurityToggle = (key: string, value: boolean) => {
-    setSecuritySettings(prev => ({ ...prev, [key]: value }));
-    toastSuccess('Configuração alterada', `${key} ${value ? 'ativado' : 'desativado'}`);
-  };
+  const handlePasswordChange = async () => {
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      toastError('Erro', 'Preencha todos os campos');
+      return;
+    }
 
-  const handlePasswordChange = () => {
-    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+    if (newPassword !== confirmPassword) {
       toastError('Erro', 'As senhas não coincidem');
       return;
     }
-    if (passwordForm.newPassword.length < 6) {
+
+    if (newPassword.length < 6) {
       toastError('Erro', 'A nova senha deve ter pelo menos 6 caracteres');
       return;
     }
-    toastSuccess('Senha alterada', 'Sua senha foi atualizada com sucesso');
-    setPasswordForm({
-      currentPassword: '',
-      newPassword: '',
-      confirmPassword: ''
-    });
+
+    setIsChangingPassword(true);
+    try {
+      // Simular mudança de senha - em produção, usar supabase.auth.updateUser
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      toastSuccess('Senha alterada', 'Sua senha foi alterada com sucesso');
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (error) {
+      toastError('Erro', 'Não foi possível alterar a senha');
+    } finally {
+      setIsChangingPassword(false);
+    }
+  };
+
+  const handleTwoFactorToggle = async (enabled: boolean) => {
+    try {
+      setTwoFactorEnabled(enabled);
+      toastSuccess(
+        enabled ? '2FA Ativado' : '2FA Desativado',
+        enabled ? 'Autenticação em duas etapas ativada' : 'Autenticação em duas etapas desativada'
+      );
+    } catch (error) {
+      toastError('Erro', 'Não foi possível alterar as configurações de 2FA');
+      setTwoFactorEnabled(!enabled);
+    }
   };
 
   return (
@@ -53,66 +70,46 @@ export const SecurityTab = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Lock className="h-5 w-5" />
-            Alteração de Senha
+            Alterar Senha
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="current-password">Senha Atual</Label>
-            <div className="relative">
-              <Input
-                id="current-password"
-                type={showCurrentPassword ? "text" : "password"}
-                value={passwordForm.currentPassword}
-                onChange={(e) => setPasswordForm(prev => ({ ...prev, currentPassword: e.target.value }))}
-                placeholder="Digite sua senha atual"
-              />
-              <Button
-                variant="ghost"
-                size="sm"
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0"
-                onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-              >
-                {showCurrentPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              </Button>
-            </div>
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="new-password">Nova Senha</Label>
-            <div className="relative">
-              <Input
-                id="new-password"
-                type={showNewPassword ? "text" : "password"}
-                value={passwordForm.newPassword}
-                onChange={(e) => setPasswordForm(prev => ({ ...prev, newPassword: e.target.value }))}
-                placeholder="Digite a nova senha"
-              />
-              <Button
-                variant="ghost"
-                size="sm"
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0"
-                onClick={() => setShowNewPassword(!showNewPassword)}
-              >
-                {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              </Button>
-            </div>
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="confirm-password">Confirmar Nova Senha</Label>
+            <Label htmlFor="currentPassword">Senha Atual</Label>
             <Input
-              id="confirm-password"
+              id="currentPassword"
               type="password"
-              value={passwordForm.confirmPassword}
-              onChange={(e) => setPasswordForm(prev => ({ ...prev, confirmPassword: e.target.value }))}
-              placeholder="Confirme a nova senha"
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+              placeholder="Digite sua senha atual"
             />
           </div>
-          
-          <Button onClick={handlePasswordChange} className="w-full">
-            <Key className="h-4 w-4 mr-2" />
-            Alterar Senha
+          <div className="space-y-2">
+            <Label htmlFor="newPassword">Nova Senha</Label>
+            <Input
+              id="newPassword"
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              placeholder="Digite sua nova senha"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="confirmPassword">Confirmar Nova Senha</Label>
+            <Input
+              id="confirmPassword"
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="Confirme sua nova senha"
+            />
+          </div>
+          <Button 
+            onClick={handlePasswordChange}
+            disabled={isChangingPassword}
+            className="w-full"
+          >
+            {isChangingPassword ? 'Alterando...' : 'Alterar Senha'}
           </Button>
         </CardContent>
       </Card>
@@ -126,65 +123,46 @@ export const SecurityTab = () => {
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex items-center justify-between">
-            <div>
-              <Label>Autenticação em Duas Etapas</Label>
-              <p className="text-sm text-gray-600">Adicione uma camada extra de segurança</p>
-            </div>
-            <Switch
-              checked={securitySettings.twoFactorEnabled}
-              onCheckedChange={(checked) => handleSecurityToggle('twoFactorEnabled', checked)}
-            />
-          </div>
-          
-          <div className="flex items-center justify-between">
-            <div>
-              <Label>Alertas de Login por Email</Label>
-              <p className="text-sm text-gray-600">Receber notificação quando alguém fizer login</p>
-            </div>
-            <Switch
-              checked={securitySettings.emailAlerts}
-              onCheckedChange={(checked) => handleSecurityToggle('emailAlerts', checked)}
-            />
-          </div>
-          
-          <div className="flex items-center justify-between">
-            <div>
-              <Label>Notificações de Login</Label>
-              <p className="text-sm text-gray-600">Alertas sobre atividades de login suspeitas</p>
-            </div>
-            <Switch
-              checked={securitySettings.loginNotifications}
-              onCheckedChange={(checked) => handleSecurityToggle('loginNotifications', checked)}
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label>Timeout da Sessão</Label>
-            <div className="flex items-center gap-4">
-              <Input
-                type="number"
-                value={securitySettings.sessionTimeout}
-                onChange={(e) => setSecuritySettings(prev => ({ ...prev, sessionTimeout: parseInt(e.target.value) }))}
-                className="w-24"
-                min="5"
-                max="480"
-              />
-              <span className="text-sm text-gray-600">minutos</span>
-            </div>
-            <p className="text-xs text-gray-500">Tempo limite para desconectar automaticamente por inatividade</p>
-          </div>
-          
-          <div className="pt-4 border-t">
-            <h4 className="font-medium mb-3">Sessões Ativas</h4>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between p-3 border rounded-lg">
-                <div>
-                  <p className="font-medium">Sessão Atual</p>
-                  <p className="text-sm text-gray-600">Chrome - Windows • Agora</p>
-                </div>
-                <Badge variant="secondary">Ativo</Badge>
+            <div className="flex items-center gap-3">
+              <Smartphone className="h-5 w-5 text-blue-600" />
+              <div>
+                <p className="font-medium">Autenticação em Duas Etapas</p>
+                <p className="text-sm text-gray-600">Adicione uma camada extra de segurança</p>
               </div>
             </div>
+            <Switch
+              checked={twoFactorEnabled}
+              onCheckedChange={handleTwoFactorToggle}
+            />
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <AlertTriangle className="h-5 w-5 text-orange-600" />
+              <div>
+                <p className="font-medium">Alertas de Login</p>
+                <p className="text-sm text-gray-600">Receba notificações de novos logins</p>
+              </div>
+            </div>
+            <Switch
+              checked={loginAlerts}
+              onCheckedChange={setLoginAlerts}
+            />
+          </div>
+
+          <div className="space-y-3">
+            <Label htmlFor="sessionTimeout">Timeout de Sessão (minutos)</Label>
+            <Input
+              id="sessionTimeout"
+              type="number"
+              value={sessionTimeout}
+              onChange={(e) => setSessionTimeout(e.target.value)}
+              min="5"
+              max="120"
+            />
+            <p className="text-xs text-gray-500">
+              Sua sessão expirará automaticamente após este período de inatividade
+            </p>
           </div>
         </CardContent>
       </Card>

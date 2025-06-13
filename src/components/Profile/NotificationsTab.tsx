@@ -1,28 +1,57 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Bell } from 'lucide-react';
+import { Bell, Mail, MessageSquare, Smartphone } from 'lucide-react';
 import { animations } from '@/lib/animations';
 import { useNotificationPreferences } from '@/hooks/useNotificationPreferences';
 import { toastSuccess, toastError } from '@/components/ui/custom-toast';
 
 export const NotificationsTab = () => {
-  const { preferences, updatePreferences } = useNotificationPreferences();
+  const { preferences, updatePreferences, loading } = useNotificationPreferences();
+  const [localPreferences, setLocalPreferences] = useState({
+    email_reminders: true,
+    push_notifications: true,
+    sms_reminders: true,
+    marketing_emails: false
+  });
 
-  const handleNotificationToggle = async (key: string, value: boolean) => {
-    if (!preferences) return;
-    
+  useEffect(() => {
+    if (preferences) {
+      setLocalPreferences({
+        email_reminders: preferences.email_reminders ?? true,
+        push_notifications: preferences.push_notifications ?? true,
+        sms_reminders: preferences.sms_reminders ?? true,
+        marketing_emails: preferences.marketing_emails ?? false
+      });
+    }
+  }, [preferences]);
+
+  const handlePreferenceChange = async (key: string, value: boolean) => {
+    const newPreferences = { ...localPreferences, [key]: value };
+    setLocalPreferences(newPreferences);
+
     try {
-      const result = await updatePreferences({ [key]: value });
+      const result = await updatePreferences(newPreferences);
       if (result && result.success) {
-        toastSuccess('Configuração salva', 'Preferências de notificação atualizadas');
+        toastSuccess('Preferências atualizadas', 'Suas configurações foram salvas');
       }
     } catch (error) {
-      toastError('Erro', 'Não foi possível atualizar as configurações');
+      // Reverter mudança em caso de erro
+      setLocalPreferences(localPreferences);
+      toastError('Erro', 'Não foi possível salvar as configurações');
     }
   };
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="animate-pulse">
+          <div className="h-32 bg-gray-200 rounded"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -35,50 +64,58 @@ export const NotificationsTab = () => {
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex items-center justify-between">
-            <div>
-              <Label htmlFor="email-reminders">Lembretes por Email</Label>
-              <p className="text-sm text-gray-600">Receber lembretes de consultas por email</p>
+            <div className="flex items-center gap-3">
+              <Mail className="h-5 w-5 text-blue-600" />
+              <div>
+                <p className="font-medium">Lembretes por Email</p>
+                <p className="text-sm text-gray-600">Receba lembretes de consultas por email</p>
+              </div>
             </div>
             <Switch
-              id="email-reminders"
-              checked={preferences?.email_reminders || false}
-              onCheckedChange={(checked) => handleNotificationToggle('email_reminders', checked)}
+              checked={localPreferences.email_reminders}
+              onCheckedChange={(value) => handlePreferenceChange('email_reminders', value)}
             />
           </div>
-          
+
           <div className="flex items-center justify-between">
-            <div>
-              <Label htmlFor="sms-reminders">Lembretes por SMS</Label>
-              <p className="text-sm text-gray-600">Receber lembretes de consultas por SMS</p>
+            <div className="flex items-center gap-3">
+              <Smartphone className="h-5 w-5 text-green-600" />
+              <div>
+                <p className="font-medium">Notificações Push</p>
+                <p className="text-sm text-gray-600">Receba notificações no dispositivo</p>
+              </div>
             </div>
             <Switch
-              id="sms-reminders"
-              checked={preferences?.sms_reminders || false}
-              onCheckedChange={(checked) => handleNotificationToggle('sms_reminders', checked)}
+              checked={localPreferences.push_notifications}
+              onCheckedChange={(value) => handlePreferenceChange('push_notifications', value)}
             />
           </div>
-          
+
           <div className="flex items-center justify-between">
-            <div>
-              <Label htmlFor="push-notifications">Notificações Push</Label>
-              <p className="text-sm text-gray-600">Receber notificações no navegador</p>
+            <div className="flex items-center gap-3">
+              <MessageSquare className="h-5 w-5 text-purple-600" />
+              <div>
+                <p className="font-medium">SMS</p>
+                <p className="text-sm text-gray-600">Receba lembretes por SMS</p>
+              </div>
             </div>
             <Switch
-              id="push-notifications"
-              checked={preferences?.push_notifications || false}
-              onCheckedChange={(checked) => handleNotificationToggle('push_notifications', checked)}
+              checked={localPreferences.sms_reminders}
+              onCheckedChange={(value) => handlePreferenceChange('sms_reminders', value)}
             />
           </div>
-          
+
           <div className="flex items-center justify-between">
-            <div>
-              <Label htmlFor="marketing-emails">Emails Promocionais</Label>
-              <p className="text-sm text-gray-600">Receber ofertas e novidades</p>
+            <div className="flex items-center gap-3">
+              <Mail className="h-5 w-5 text-orange-600" />
+              <div>
+                <p className="font-medium">Emails Promocionais</p>
+                <p className="text-sm text-gray-600">Receba ofertas e novidades</p>
+              </div>
             </div>
             <Switch
-              id="marketing-emails"
-              checked={preferences?.marketing_emails || false}
-              onCheckedChange={(checked) => handleNotificationToggle('marketing_emails', checked)}
+              checked={localPreferences.marketing_emails}
+              onCheckedChange={(value) => handlePreferenceChange('marketing_emails', value)}
             />
           </div>
         </CardContent>
