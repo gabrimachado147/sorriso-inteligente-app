@@ -1,7 +1,7 @@
 
 import { useMemo } from 'react';
 import { AppointmentRecord } from '@/services/supabase/appointments';
-import { CLINIC_NAMES } from '@/components/Auth/StaffLogin';
+import { CLINIC_OPTIONS } from '@/components/Auth/StaffLogin';
 
 interface UseAppointmentsFiltersProps {
   appointments: AppointmentRecord[];
@@ -20,6 +20,14 @@ export const useAppointmentsFilters = ({
   selectedStatus,
   selectedDate
 }: UseAppointmentsFiltersProps) => {
+  // Converter CLINIC_OPTIONS array para objeto para compatibilidade
+  const CLINIC_NAMES = useMemo(() => {
+    return CLINIC_OPTIONS.reduce((acc, clinic) => {
+      acc[clinic.value] = clinic.label;
+      return acc;
+    }, {} as Record<string, string>);
+  }, []);
+
   const userClinicName = loggedInUser ? CLINIC_NAMES[loggedInUser as keyof typeof CLINIC_NAMES] : '';
 
   const filteredAppointments = useMemo(() => {
