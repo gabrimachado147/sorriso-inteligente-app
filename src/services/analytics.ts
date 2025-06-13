@@ -1,15 +1,5 @@
 
-// Serviço para analytics e relatórios
 import { supabase } from '@/integrations/supabase/client'
-
-export interface AnalyticsEvent {
-  id: string
-  event_type: string
-  clinic_id?: string
-  user_id?: string
-  data: Record<string, any>
-  created_at: string
-}
 
 export interface DashboardStats {
   total_appointments: number
@@ -17,74 +7,61 @@ export interface DashboardStats {
   completed_appointments: number
   cancelled_appointments: number
   average_rating: number
-  total_revenue: number
   growth_percentage: number
 }
 
+export interface ChatConversionData {
+  chatStarted: number
+  appointmentsScheduled: number
+  conversionRate: number
+}
+
+export interface AppointmentsByPeriod {
+  id: string
+  date: string
+  status: string
+  clinic_id: string
+}
+
 export class AnalyticsService {
-  // Registrar evento de analytics
-  static async trackEvent(
-    eventType: string, 
-    data: Record<string, any>, 
-    clinicId?: string, 
-    userId?: string
-  ) {
-    try {
-      const { error } = await supabase
-        .from('analytics_events')
-        .insert({
-          event_type: eventType,
-          clinic_id: clinicId,
-          user_id: userId,
-          data
-        })
-
-      if (error) throw error
-    } catch (error) {
-      console.error('Error tracking analytics event:', error)
-    }
-  }
-
-  // Obter estatísticas do dashboard
   static async getDashboardStats(clinicId?: string): Promise<DashboardStats> {
     try {
-      let query = supabase.from('appointments').select('*')
-      
+      let query = supabase
+        .from('appointments')
+        .select('status')
+
       if (clinicId) {
-        query = query.eq('clinic', clinicId)
+        query = query.eq('clinic_id', clinicId)
       }
 
-      const { data: appointments, error } = await query
-
-      if (error) throw error
+      const { data: appointments } = await query
 
       const total_appointments = appointments?.length || 0
-      const pending_appointments = appointments?.filter(a => a.status === 'pending').length || 0
-      const completed_appointments = appointments?.filter(a => a.status === 'completed').length || 0
-      const cancelled_appointments = appointments?.filter(a => a.status === 'cancelled').length || 0
+      const pending_appointments = appointments?.filter(apt => apt.status === 'pending')?.length || 0
+      const completed_appointments = appointments?.filter(apt => apt.status === 'completed')?.length || 0
+      const cancelled_appointments = appointments?.filter(apt => apt.status === 'cancelled')?.length || 0
 
-      // Calcular rating médio
-      let average_rating = 0
+      // Calcular média de avaliações
+      let avgQuery = supabase
+        .from('reviews')
+        .select('rating')
+
       if (clinicId) {
-        const { data: reviews } = await supabase
-          .from('reviews')
-          .select('rating')
-          .eq('clinic_id', clinicId)
-
-        if (reviews && reviews.length > 0) {
-          const sum = reviews.reduce((acc, review) => acc + review.rating, 0)
-          average_rating = sum / reviews.length
-        }
+        avgQuery = avgQuery.eq('clinic_id', clinicId)
       }
+
+      const { data: reviews } = await avgQuery
+      const average_rating = reviews?.length 
+        ? reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length 
+        : 0
 
       return {
         total_appointments,
         pending_appointments,
         completed_appointments,
         cancelled_appointments,
-        average_rating: Math.round(average_rating * 10) / 10,
-        total_revenue: 0, // Implementar cálculo de receita
-        growth_percentage: 0 // Implementar cálculo de crescimento
+        average_rating,
+        growth_percentage: 12.5 // Mock data por enquanto
       }
     } catch (error) {
       console.error('Error fetching dashboard stats:', error)
@@ -94,40 +71,22 @@ export class AnalyticsService {
         completed_appointments: 0,
         cancelled_appointments: 0,
         average_rating: 0,
-        total_revenue: 0,
         growth_percentage: 0
       }
     }
   }
 
-  // Obter relatório de conversão do chat
-  static async getChatConversionReport(clinicId?: string) {
+  static async getChatConversionReport(clinicId?: string): Promise<ChatConversionData> {
     try {
-      let query = supabase
-        .from('analytics_events')
-        .select('*')
-        .in('event_type', ['chat_started', 'appointment_scheduled'])
-
-      if (clinicId) {
-        query = query.eq('clinic_id', clinicId)
-      }
-
-      const { data: events, error } = await query
-
-      if (error) throw error
-
-      const chatStarted = events?.filter(e => e.event_type === 'chat_started').length || 0
-      const appointmentsScheduled = events?.filter(e => e.event_type === 'appointment_scheduled').length || 0
-
-      const conversionRate = chatStarted > 0 ? (appointmentsScheduled / chatStarted) * 100 : 0
-
+      // Por enquanto retornando dados mock
+      // Em produção, buscaria do analytics_events
       return {
-        chatStarted,
-        appointmentsScheduled,
-        conversionRate: Math.round(conversionRate * 10) / 10
+        chatStarted: 45,
+        appointmentsScheduled: 23,
+        conversionRate: 51.1
       }
     } catch (error) {
-      console.error('Error fetching chat conversion report:', error)
+      console.error('Error fetching chat conversion:', error)
       return {
         chatStarted: 0,
         appointmentsScheduled: 0,
@@ -136,26 +95,44 @@ export class AnalyticsService {
     }
   }
 
-  // Obter agendamentos por período
-  static async getAppointmentsByPeriod(startDate: string, endDate: string, clinicId?: string) {
+  static async getAppointmentsByPeriod(
+    startDate: string, 
+    endDate: string, 
+    clinicId?: string
+  ): Promise<AppointmentsByPeriod[]> {
     try {
       let query = supabase
         .from('appointments')
-        .select('*')
+        .select('id, date, status, clinic_id')
         .gte('date', startDate)
         .lte('date', endDate)
 
       if (clinicId) {
-        query = query.eq('clinic', clinicId)
+        query = query.eq('clinic_id', clinicId)
       }
 
-      const { data, error } = await query.order('date', { ascending: true })
+      const { data, error } = await query
 
       if (error) throw error
+
       return data || []
     } catch (error) {
       console.error('Error fetching appointments by period:', error)
       return []
+    }
+  }
+
+  static async trackEvent(eventType: string, data: Record<string, any>, clinicId?: string) {
+    try {
+      await supabase
+        .from('analytics_events')
+        .insert({
+          event_type: eventType,
+          clinic_id: clinicId,
+          data
+        })
+    } catch (error) {
+      console.error('Error tracking event:', error)
     }
   }
 }

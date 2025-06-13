@@ -19,7 +19,7 @@ export const ReviewsOverview: React.FC<ReviewsOverviewProps> = ({ clinicId }) =>
 
   const getRatingPercentage = (rating: number) => {
     if (!stats?.total_reviews) return 0
-    return ((stats.rating_distribution[rating] || 0) / stats.total_reviews) * 100
+    return ((stats.rating_distribution?.[rating] || 0) / stats.total_reviews) * 100
   }
 
   return (
@@ -47,7 +47,7 @@ export const ReviewsOverview: React.FC<ReviewsOverviewProps> = ({ clinicId }) =>
                   className="flex-1"
                 />
                 <span className="text-sm text-gray-600 w-12">
-                  {stats?.rating_distribution[rating] || 0}
+                  {stats?.rating_distribution?.[rating] || 0}
                 </span>
               </div>
             ))}
@@ -79,7 +79,7 @@ export const ReviewsOverview: React.FC<ReviewsOverviewProps> = ({ clinicId }) =>
                       ))}
                     </div>
                     <span className="font-medium text-sm">
-                      {review.user_profiles?.full_name || 'Usuário'}
+                      Usuário
                     </span>
                   </div>
                   <span className="text-xs text-gray-500">

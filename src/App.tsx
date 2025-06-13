@@ -29,7 +29,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <Router>
-        <MainLayout>
+        <MainLayout currentPage="home" onPageChange={() => {}}>
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/agendar" element={<SchedulePage />} />

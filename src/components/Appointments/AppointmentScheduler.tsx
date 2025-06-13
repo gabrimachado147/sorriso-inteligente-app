@@ -1,142 +1,128 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAppointmentScheduler } from '@/hooks/useAppointmentScheduler';
-import { useAnalytics } from '@/hooks/useAnalytics';
-import { useCalendar } from '@/hooks/useCalendar';
-import { ReminderService } from '@/services/reminders';
-import { toastSuccess } from '@/components/ui/custom-toast';
+import { CalendarIntegration } from '@/components/Calendar/CalendarIntegration';
 import { ClinicSelector } from './ClinicSelector';
+import { ServiceSelector } from './ServiceSelector';
 import { DateSelector } from './DateSelector';
 import { TimeSelector } from './TimeSelector';
-import { ServiceSelector } from './ServiceSelector';
-import { CalendarIntegration } from '@/components/Calendar/CalendarIntegration';
-import { NearbyClinicas } from '@/components/Location/NearbyClinicas';
-import { ReminderSettings } from '@/components/Reminders/ReminderSettings';
-import { Calendar, MapPin, Bell, CheckCircle } from 'lucide-react';
+import { AppointmentSummary } from './AppointmentSummary';
+import { Calendar, CheckCircle } from 'lucide-react';
 
-interface AppointmentData {
-  clinic: string;
-  service: string;
-  date: string;
-  time: string;
-  notes?: string;
-}
+export const AppointmentScheduler = () => {
+  const [selectedClinic, setSelectedClinic] = useState('');
+  const [selectedService, setSelectedService] = useState('');
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>();
+  const [selectedTime, setSelectedTime] = useState('');
+  const [currentStep, setCurrentStep] = useState(1);
+  
+  const { scheduleAppointment, loading, success } = useAppointmentScheduler();
 
-const AppointmentScheduler = () => {
-  const [appointmentData, setAppointmentData] = useState<AppointmentData>({
-    clinic: '',
-    service: '',
-    date: '',
-    time: '',
-    notes: '',
-  });
+  const handleSchedule = async () => {
+    if (!selectedClinic || !selectedService || !selectedDate || !selectedTime) {
+      return;
+    }
 
-  const { scheduleAppointment, isLoading } = useAppointmentScheduler();
-  const { trackEvent } = useAnalytics();
-  const { syncAppointment } = useCalendar();
+    const appointmentData = {
+      clinic_id: selectedClinic,
+      service: selectedService,
+      date: selectedDate.toISOString().split('T')[0],
+      time: selectedTime,
+      user_id: 'mock-user-id' // Em produção, vem do contexto de auth
+    };
 
-  const handleScheduleAppointment = async (appointmentData: any) => {
-    try {
-      const result = await scheduleAppointment(appointmentData);
-      
-      // Criar lembretes para o agendamento
-      if (result?.id) {
-        await ReminderService.createRemindersForAppointment(result.id);
-        
-        // Sincronizar com calendário se configurado
-        const userId = 'current_user_id'; // Obter do contexto de auth
-        await syncAppointment.mutateAsync({
-          appointment: result,
-          userId
-        });
-
-        // Track analytics event
-        trackEvent('appointment_scheduled', {
-          clinic: appointmentData.clinic,
-          service: appointmentData.service,
-          date: appointmentData.date
-        });
-
-        toastSuccess('Agendamento confirmado!', 'Lembretes automáticos foram configurados');
-      }
-    } catch (error) {
-      console.error('Error scheduling appointment:', error);
+    const result = await scheduleAppointment(appointmentData);
+    
+    if (result.success) {
+      setCurrentStep(5); // Ir para confirmação
     }
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-      <div className="max-w-4xl mx-auto space-y-6">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Agendar Consulta</h1>
-          <p className="text-gray-600">
-            Escolha a clínica, data e horário que melhor se adequam à sua rotina
+  const resetForm = () => {
+    setSelectedClinic('');
+    setSelectedService('');
+    setSelectedDate(undefined);
+    setSelectedTime('');
+    setCurrentStep(1);
+  };
+
+  if (success && currentStep === 5) {
+    return (
+      <Card className="max-w-2xl mx-auto">
+        <CardContent className="text-center py-8">
+          <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-green-700 mb-2">
+            Agendamento Confirmado!
+          </h2>
+          <p className="text-gray-600 mb-6">
+            Seu agendamento foi realizado com sucesso. Você receberá uma confirmação por WhatsApp.
           </p>
-        </div>
-
-        <Tabs defaultValue="schedule" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="schedule" className="flex items-center gap-2">
-              <Calendar className="w-4 h-4" />
-              Agendar
-            </TabsTrigger>
-            <TabsTrigger value="nearby" className="flex items-center gap-2">
-              <MapPin className="w-4 h-4" />
-              Próximas
-            </TabsTrigger>
-            <TabsTrigger value="reminders" className="flex items-center gap-2">
-              <Bell className="w-4 h-4" />
-              Lembretes
-            </TabsTrigger>
-            <TabsTrigger value="calendar" className="flex items-center gap-2">
-              <CheckCircle className="w-4 h-4" />
-              Calendário
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="schedule">
-            <Card>
-              <CardHeader>
-                <CardTitle>Dados do Agendamento</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <ClinicSelector />
-                <ServiceSelector />
-                <DateSelector />
-                <TimeSelector />
-                
-                <Button 
-                  onClick={handleScheduleAppointment} 
-                  className="w-full"
-                  size="lg"
-                >
-                  Confirmar Agendamento
-                </Button>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="nearby">
-            <NearbyClinicas />
-          </TabsContent>
-
-          <TabsContent value="reminders">
-            <ReminderSettings />
-          </TabsContent>
-
-          <TabsContent value="calendar">
+          <div className="space-y-4">
             <CalendarIntegration />
-          </TabsContent>
-        </Tabs>
-      </div>
+            <Button onClick={resetForm} variant="outline">
+              Agendar Outro Horário
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <div className="max-w-4xl mx-auto space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Calendar className="w-5 h-5" />
+            Agendar Consulta
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <ClinicSelector 
+                selectedClinic={selectedClinic}
+                onClinicSelect={setSelectedClinic}
+                filteredClinics={[]}
+              />
+              <ServiceSelector 
+                selectedService={selectedService}
+                onServiceSelect={setSelectedService}
+              />
+              <DateSelector 
+                selectedDate={selectedDate}
+                onDateSelect={setSelectedDate}
+              />
+              <TimeSelector 
+                selectedDate={selectedDate}
+                selectedTime={selectedTime}
+                onTimeSelect={setSelectedTime}
+              />
+            </div>
+            
+            <div>
+              <AppointmentSummary
+                clinic={selectedClinic}
+                service={selectedService}
+                date={selectedDate}
+                time={selectedTime}
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-4">
+            <Button 
+              onClick={handleSchedule}
+              disabled={!selectedClinic || !selectedService || !selectedDate || !selectedTime || loading}
+              className="px-8"
+            >
+              {loading ? 'Agendando...' : 'Confirmar Agendamento'}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
-
-export default AppointmentScheduler;

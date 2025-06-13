@@ -1,5 +1,4 @@
 
-// Serviço para geolocalização
 import { supabase } from '@/integrations/supabase/client'
 
 export interface UserLocation {
@@ -16,18 +15,17 @@ export interface ClinicWithDistance {
   state: string
   phone: string
   email?: string
-  latitude: number
-  longitude: number
+  latitude?: number
+  longitude?: number
   distance: number
-  estimated_travel_time?: string
+  working_hours?: any
 }
 
 export class GeolocationService {
-  // Obter localização atual do usuário
   static async getCurrentLocation(): Promise<UserLocation> {
     return new Promise((resolve, reject) => {
       if (!navigator.geolocation) {
-        reject(new Error('Geolocation is not supported by this browser'))
+        reject(new Error('Geolocalização não é suportada neste navegador'))
         return
       }
 
@@ -40,19 +38,33 @@ export class GeolocationService {
           })
         },
         (error) => {
-          reject(new Error(`Geolocation error: ${error.message}`))
+          let message = 'Erro ao obter localização'
+          switch (error.code) {
+            case error.PERMISSION_DENIED:
+              message = 'Permissão de localização negada'
+              break
+            case error.POSITION_UNAVAILABLE:
+              message = 'Localização indisponível'
+              break
+            case error.TIMEOUT:
+              message = 'Tempo limite excedido'
+              break
+          }
+          reject(new Error(message))
         },
         {
           enableHighAccuracy: true,
           timeout: 10000,
-          maximumAge: 300000 // 5 minutes
+          maximumAge: 300000
         }
       )
     })
   }
 
-  // Buscar clínicas próximas
-  static async getNearbyClinicles(userLocation: UserLocation, maxDistance: number = 50): Promise<ClinicWithDistance[]> {
+  static async getNearbyClinicles(
+    userLocation: UserLocation, 
+    maxDistance: number = 50
+  ): Promise<ClinicWithDistance[]> {
     try {
       const { data: clinics, error } = await supabase
         .from('clinics')
@@ -61,20 +73,24 @@ export class GeolocationService {
 
       if (error) throw error
 
-      const clinicsWithDistance = clinics?.map(clinic => {
-        const distance = this.calculateDistance(
-          userLocation.latitude,
-          userLocation.longitude,
-          clinic.latitude,
-          clinic.longitude
-        )
+      const clinicsWithDistance = clinics
+        ?.filter(clinic => clinic.latitude && clinic.longitude)
+        .map(clinic => {
+          const distance = this.calculateDistance(
+            userLocation.latitude,
+            userLocation.longitude,
+            clinic.latitude as number,
+            clinic.longitude as number
+          )
 
-        return {
-          ...clinic,
-          distance: Math.round(distance * 10) / 10
-        }
-      }).filter(clinic => clinic.distance <= maxDistance)
-      .sort((a, b) => a.distance - b.distance) || []
+          return {
+            ...clinic,
+            distance,
+            email: clinic.email || undefined
+          } as ClinicWithDistance
+        })
+        .filter(clinic => clinic.distance <= maxDistance)
+        .sort((a, b) => a.distance - b.distance) || []
 
       return clinicsWithDistance
     } catch (error) {
@@ -83,61 +99,30 @@ export class GeolocationService {
     }
   }
 
-  // Calcular distância entre duas coordenadas (fórmula de Haversine)
-  private static calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  static calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
     const R = 6371 // Raio da Terra em km
-    const dLat = this.deg2rad(lat2 - lat1)
-    const dLon = this.deg2rad(lon2 - lon1)
-    const a = 
-      Math.sin(dLat/2) * Math.sin(dLat/2) +
-      Math.cos(this.deg2rad(lat1)) * Math.cos(this.deg2rad(lat2)) * 
-      Math.sin(dLon/2) * Math.sin(dLon/2)
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
+    const dLat = this.degreesToRadians(lat2 - lat1)
+    const dLon = this.degreesToRadians(lon2 - lon1)
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(this.degreesToRadians(lat1)) *
+        Math.cos(this.degreesToRadians(lat2)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2)
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
     return R * c
   }
 
-  private static deg2rad(deg: number): number {
-    return deg * (Math.PI/180)
+  private static degreesToRadians(degrees: number): number {
+    return degrees * (Math.PI / 180)
   }
 
-  // Obter tempo estimado de viagem usando Google Maps API
-  static async getTravelTime(origin: UserLocation, destination: { latitude: number, longitude: number }): Promise<string> {
-    try {
-      // Esta seria uma integração real com Google Maps API
-      // Por enquanto, retornamos uma estimativa básica
-      const distance = this.calculateDistance(
-        origin.latitude,
-        origin.longitude,
-        destination.latitude,
-        destination.longitude
-      )
-
-      // Estimativa básica: 40km/h de velocidade média
-      const timeInHours = distance / 40
-      const timeInMinutes = Math.round(timeInHours * 60)
-
-      if (timeInMinutes < 60) {
-        return `${timeInMinutes} min`
-      } else {
-        const hours = Math.floor(timeInMinutes / 60)
-        const minutes = timeInMinutes % 60
-        return `${hours}h ${minutes}min`
-      }
-    } catch (error) {
-      console.error('Error calculating travel time:', error)
-      return 'N/A'
-    }
-  }
-
-  // Abrir rotas no Google Maps
-  static openGoogleMapsRoute(destination: { latitude: number, longitude: number, name: string }) {
-    const url = `https://www.google.com/maps/dir/?api=1&destination=${destination.latitude},${destination.longitude}&destination_place_id=${encodeURIComponent(destination.name)}`
-    window.open(url, '_blank')
-  }
-
-  // Abrir rotas no Apple Maps (para dispositivos iOS)
-  static openAppleMapsRoute(destination: { latitude: number, longitude: number, name: string }) {
-    const url = `http://maps.apple.com/?daddr=${destination.latitude},${destination.longitude}&dirflg=d`
-    window.open(url, '_blank')
+  static async getRouteToClinic(
+    userLocation: UserLocation,
+    clinicLocation: { latitude: number; longitude: number }
+  ) {
+    // Integração com Google Maps Directions API (implementar quando necessário)
+    const googleMapsUrl = `https://www.google.com/maps/dir/${userLocation.latitude},${userLocation.longitude}/${clinicLocation.latitude},${clinicLocation.longitude}`
+    return { url: googleMapsUrl }
   }
 }
