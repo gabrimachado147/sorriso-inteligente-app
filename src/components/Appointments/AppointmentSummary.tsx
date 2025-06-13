@@ -68,7 +68,7 @@ export const AppointmentSummary: React.FC<AppointmentSummaryProps> = ({
   }
 
   return (
-    <Card className={`${animations.slideInUp} border-l-4 border-l-primary`}>
+    <Card className={`${animations.slideInBottom} border-l-4 border-l-primary`}>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Calendar className="h-5 w-5" />
