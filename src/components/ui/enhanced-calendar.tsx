@@ -35,7 +35,10 @@ function EnhancedCalendar({
   };
 
   const getDayStatus = (date: Date) => {
+    console.log('getDayStatus called with:', date);
     const dateStr = date.toISOString().split('T')[0];
+    console.log('dateStr:', dateStr);
+    
     if (busyDays.includes(dateStr)) return 'busy';
     if (popularDays.includes(dateStr)) return 'popular';
     if (availableSlots[dateStr] && availableSlots[dateStr] > 0) return 'available';
@@ -115,11 +118,12 @@ function EnhancedCalendar({
         components={{
           IconLeft: () => <ChevronLeft className="h-4 w-4" />,
           IconRight: () => <ChevronRight className="h-4 w-4" />,
-          Day: ({ date, ...dayProps }) => {
+          Day: (props) => {
+            const { date } = props;
             const dayClasses = getDayClasses(date);
             return (
               <div className={dayClasses}>
-                <button {...dayProps} className="w-full h-full">
+                <button className="w-full h-full" onClick={() => handleDateSelect(date)}>
                   {date.getDate()}
                   {renderDaySlots(date)}
                 </button>
