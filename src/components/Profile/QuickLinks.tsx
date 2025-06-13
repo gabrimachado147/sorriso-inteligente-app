@@ -33,7 +33,20 @@ export const QuickLinks = () => {
       title: 'Histórico',
       description: 'Ver consultas anteriores',
       color: 'bg-green-500',
-      action: () => navigate('/profile?tab=history')
+      action: () => {
+        // Navigate to the history tab within the profile page
+        const profileUrl = new URL(window.location.href);
+        profileUrl.hash = '#history';
+        window.location.href = profileUrl.toString();
+        
+        // Trigger tab change programmatically
+        setTimeout(() => {
+          const historyTab = document.querySelector('[value="history"]') as HTMLElement;
+          if (historyTab) {
+            historyTab.click();
+          }
+        }, 100);
+      }
     },
     {
       icon: MessageCircle,
@@ -47,33 +60,72 @@ export const QuickLinks = () => {
       title: 'Notificações',
       description: 'Configurar lembretes',
       color: 'bg-orange-500',
-      action: () => navigate('/profile?tab=notifications')
+      action: () => {
+        // Navigate to the notifications tab within the profile page
+        const profileUrl = new URL(window.location.href);
+        profileUrl.hash = '#notifications';
+        window.location.href = profileUrl.toString();
+        
+        // Trigger tab change programmatically
+        setTimeout(() => {
+          const notificationsTab = document.querySelector('[value="notifications"]') as HTMLElement;
+          if (notificationsTab) {
+            notificationsTab.click();
+          }
+        }, 100);
+      }
     },
     {
       icon: Gamepad2,
       title: 'Gamificação',
       description: 'Ver pontos e conquistas',
       color: 'bg-pink-500',
-      action: () => navigate('/profile?tab=gamification')
+      action: () => {
+        // Navigate to the gamification tab within the profile page
+        const profileUrl = new URL(window.location.href);
+        profileUrl.hash = '#gamification';
+        window.location.href = profileUrl.toString();
+        
+        // Trigger tab change programmatically
+        setTimeout(() => {
+          const gamificationTab = document.querySelector('[value="gamification"]') as HTMLElement;
+          if (gamificationTab) {
+            gamificationTab.click();
+          }
+        }, 100);
+      }
     },
     {
       icon: Accessibility,
       title: 'Acessibilidade',
       description: 'Configurações de acesso',
       color: 'bg-indigo-500',
-      action: () => navigate('/profile?tab=accessibility')
+      action: () => {
+        // Navigate to the accessibility tab within the profile page
+        const profileUrl = new URL(window.location.href);
+        profileUrl.hash = '#accessibility';
+        window.location.href = profileUrl.toString();
+        
+        // Trigger tab change programmatically
+        setTimeout(() => {
+          const accessibilityTab = document.querySelector('[value="accessibility"]') as HTMLElement;
+          if (accessibilityTab) {
+            accessibilityTab.click();
+          }
+        }, 100);
+      }
     }
   ];
 
   return (
-    <Card className={`${animations.fadeIn}`}>
+    <Card className={`${animations.fadeIn} mb-8`}>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Settings className="h-5 w-5 text-primary" />
           Recursos Avançados
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pb-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {quickLinks.map((link, index) => (
             <Button
