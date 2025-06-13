@@ -17,7 +17,11 @@ import {
 import { animations } from '@/lib/animations';
 import { useNavigate } from 'react-router-dom';
 
-export const QuickLinks = () => {
+interface QuickLinksProps {
+  onTabChange?: (tabValue: string) => void;
+}
+
+export const QuickLinks: React.FC<QuickLinksProps> = ({ onTabChange }) => {
   const navigate = useNavigate();
 
   const quickLinks = [
@@ -34,18 +38,9 @@ export const QuickLinks = () => {
       description: 'Ver consultas anteriores',
       color: 'bg-green-500',
       action: () => {
-        // Navigate to the history tab within the profile page
-        const profileUrl = new URL(window.location.href);
-        profileUrl.hash = '#history';
-        window.location.href = profileUrl.toString();
-        
-        // Trigger tab change programmatically
-        setTimeout(() => {
-          const historyTab = document.querySelector('[value="history"]') as HTMLElement;
-          if (historyTab) {
-            historyTab.click();
-          }
-        }, 100);
+        if (onTabChange) {
+          onTabChange('history');
+        }
       }
     },
     {
@@ -61,18 +56,9 @@ export const QuickLinks = () => {
       description: 'Configurar lembretes',
       color: 'bg-orange-500',
       action: () => {
-        // Navigate to the notifications tab within the profile page
-        const profileUrl = new URL(window.location.href);
-        profileUrl.hash = '#notifications';
-        window.location.href = profileUrl.toString();
-        
-        // Trigger tab change programmatically
-        setTimeout(() => {
-          const notificationsTab = document.querySelector('[value="notifications"]') as HTMLElement;
-          if (notificationsTab) {
-            notificationsTab.click();
-          }
-        }, 100);
+        if (onTabChange) {
+          onTabChange('notifications');
+        }
       }
     },
     {
@@ -81,18 +67,9 @@ export const QuickLinks = () => {
       description: 'Ver pontos e conquistas',
       color: 'bg-pink-500',
       action: () => {
-        // Navigate to the gamification tab within the profile page
-        const profileUrl = new URL(window.location.href);
-        profileUrl.hash = '#gamification';
-        window.location.href = profileUrl.toString();
-        
-        // Trigger tab change programmatically
-        setTimeout(() => {
-          const gamificationTab = document.querySelector('[value="gamification"]') as HTMLElement;
-          if (gamificationTab) {
-            gamificationTab.click();
-          }
-        }, 100);
+        if (onTabChange) {
+          onTabChange('gamification');
+        }
       }
     },
     {
@@ -101,18 +78,9 @@ export const QuickLinks = () => {
       description: 'Configurações de acesso',
       color: 'bg-indigo-500',
       action: () => {
-        // Navigate to the accessibility tab within the profile page
-        const profileUrl = new URL(window.location.href);
-        profileUrl.hash = '#accessibility';
-        window.location.href = profileUrl.toString();
-        
-        // Trigger tab change programmatically
-        setTimeout(() => {
-          const accessibilityTab = document.querySelector('[value="accessibility"]') as HTMLElement;
-          if (accessibilityTab) {
-            accessibilityTab.click();
-          }
-        }, 100);
+        if (onTabChange) {
+          onTabChange('accessibility');
+        }
       }
     }
   ];

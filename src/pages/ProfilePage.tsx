@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -39,6 +38,7 @@ const ProfilePage = () => {
   const { gamificationData, loading: gamificationLoading } = useGamificationData();
   
   const [editMode, setEditMode] = useState(false);
+  const [activeTab, setActiveTab] = useState('profile');
   const [formData, setFormData] = useState({
     nome_completo: '',
     telefone: ''
@@ -52,6 +52,10 @@ const ProfilePage = () => {
       });
     }
   }, [profile]);
+
+  const handleTabChange = (tabValue: string) => {
+    setActiveTab(tabValue);
+  };
 
   const handleSaveProfile = async () => {
     try {
@@ -113,7 +117,7 @@ const ProfilePage = () => {
         </Badge>
       </div>
 
-      <Tabs defaultValue="profile" className="space-y-6">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="profile" className="flex items-center gap-2">
             <User className="h-4 w-4" />
@@ -191,7 +195,7 @@ const ProfilePage = () => {
             </CardContent>
           </Card>
 
-          <QuickLinks />
+          <QuickLinks onTabChange={handleTabChange} />
         </TabsContent>
 
         <TabsContent value="history" className="space-y-6">
