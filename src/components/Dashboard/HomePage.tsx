@@ -41,16 +41,13 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
 
   const handleEmergencyCall = async () => {
     try {
-      const emergencyNumber = import.meta.env.VITE_WA_BUSINESS_JID || '553171147487@s.whatsapp.net';
-      await sendWhatsAppMessage(
-        emergencyNumber, 
-        'URGÊNCIA DENTAL: Preciso de atendimento de emergência. Por favor, me orientem sobre o procedimento.'
-      );
+      const message = encodeURIComponent("URGÊNCIA DENTAL: Preciso de atendimento de emergência. Por favor, me orientem sobre o procedimento.");
+      window.open(`https://wa.me/5531971147487?text=${message}`, '_blank');
       toastCall("Emergência", "Conectando com atendimento 24h...");
     } catch (error) {
       console.error('Erro ao chamar emergência:', error);
       // Fallback para chamada telefônica
-      window.open('tel:+551199999-0000', '_self');
+      window.open('tel:+5531971147487', '_self');
     }
   };
 
@@ -75,10 +72,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
 
   const handleScheduleClinic = async (clinic: string, phone: string) => {
     try {
-      await sendWhatsAppMessage(
-        `55${phone.replace(/\D/g, '')}@s.whatsapp.net`,
-        `Olá! Gostaria de agendar uma consulta na unidade ${clinic}. Poderiam me informar os horários disponíveis?`
-      );
+      const message = encodeURIComponent(`Olá! Gostaria de agendar uma consulta na unidade ${clinic}. Poderiam me informar os horários disponíveis?`);
+      window.open(`https://wa.me/5531971147487?text=${message}`, '_blank');
       toastAppointment("Agendamento", `Solicitação enviada para ${clinic}`);
     } catch (error) {
       console.error('Erro ao contatar clínica:', error);
@@ -201,12 +196,12 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                 <div>
                   <p className="font-medium">Campo Belo - MG</p>
                   <p className="text-sm text-gray-600">Av. Afonso Pena, 151</p>
-                  <p className="text-xs text-gray-500">(35) 99869-5479</p>
+                  <p className="text-xs text-gray-500">(31) 97114-7487</p>
                 </div>
                 <Button 
                   size="sm" 
                   variant="outline"
-                  onClick={() => handleScheduleClinic('Campo Belo', '(35) 99869-5479')}
+                  onClick={() => handleScheduleClinic('Campo Belo', '(31) 97114-7487')}
                   className={animations.buttonHover}
                 >
                   Agendar
@@ -219,12 +214,12 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                 <div>
                   <p className="font-medium">Formiga - MG</p>
                   <p className="text-sm text-gray-600">R. Barão de Piumhy, 198</p>
-                  <p className="text-xs text-gray-500">(35) 9969-5479</p>
+                  <p className="text-xs text-gray-500">(31) 97114-7487</p>
                 </div>
                 <Button 
                   size="sm" 
                   variant="outline"
-                  onClick={() => handleScheduleClinic('Formiga', '(35) 9969-5479')}
+                  onClick={() => handleScheduleClinic('Formiga', '(31) 97114-7487')}
                   className={animations.buttonHover}
                 >
                   Agendar
@@ -366,7 +361,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
               disabled={chatLoading}
             >
               <Phone className="h-4 w-4 mr-2" />
-              {chatLoading ? 'Conectando...' : 'Ligar Agora'}
+              {chatLoading ? 'Conectando...' : 'Contatar Agora'}
             </Button>
           </div>
         </CardContent>

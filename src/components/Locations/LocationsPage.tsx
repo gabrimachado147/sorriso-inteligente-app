@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,7 +7,7 @@ import { Filters, FilterState } from "@/components/ui/filters";
 import { EnhancedSkeleton } from "@/components/ui/enhanced-skeleton";
 import { toastSuccess, toastCall, toastLocation, toastAppointment } from "@/components/ui/custom-toast";
 import { animations } from "@/lib/animations";
-import { MapPin, Phone, MessageSquare, Navigation, Clock, Users, Mail } from "lucide-react";
+import { MapPin, Phone, MessageSquare, Navigation, Clock, Users } from "lucide-react";
 import { apiService } from "@/services/api";
 
 interface Clinic {
@@ -95,18 +96,10 @@ const LocationsPage = () => {
     toastCall("Ligação iniciada", `Discando para ${clinicName}: ${phone}`);
   };
 
-  const handleWhatsApp = (whatsapp: string, clinicName: string) => {
-    const phoneNumber = whatsapp.replace(/\D/g, '');
-    const message = encodeURIComponent(`Olá! Gostaria de agendar uma consulta na unidade ${clinicName}.`);
-    window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
+  const handleWhatsApp = (clinicName: string) => {
+    const message = encodeURIComponent("Olá, gostaria de saber mais sobre os serviços.");
+    window.open(`https://wa.me/5531971147487?text=${message}`, '_blank');
     toastSuccess("WhatsApp aberto", `Iniciando conversa com ${clinicName}`);
-  };
-
-  const handleEmail = (email: string, clinicName: string) => {
-    const subject = encodeURIComponent(`Agendamento de consulta - ${clinicName}`);
-    const body = encodeURIComponent(`Olá! Gostaria de agendar uma consulta na unidade ${clinicName}. Aguardo retorno.`);
-    window.open(`mailto:${email}?subject=${subject}&body=${body}`, '_self');
-    toastSuccess("E-mail aberto", `Enviando e-mail para ${clinicName}`);
   };
 
   const handleRoute = (address: string, city: string, state: string, clinicName: string) => {
@@ -200,18 +193,14 @@ const LocationsPage = () => {
                   </div>
 
                   {/* Informações de Contato */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                     <div className="flex items-center gap-2">
                       <Phone className="h-4 w-4 text-primary" />
                       <span>{clinic.phone}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <MessageSquare className="h-4 w-4 text-green-600" />
-                      <span>{clinic.whatsapp}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Mail className="h-4 w-4 text-primary" />
-                      <span className="truncate">{clinic.email}</span>
+                      <span>(31) 97114-7487</span>
                     </div>
                   </div>
 
@@ -258,20 +247,10 @@ const LocationsPage = () => {
                       size="sm"
                       variant="outline"
                       className={`bg-green-50 border-green-200 text-green-700 hover:bg-green-100 ${animations.buttonHover}`}
-                      onClick={() => handleWhatsApp(clinic.whatsapp, clinic.name)}
+                      onClick={() => handleWhatsApp(clinic.name)}
                     >
                       <MessageSquare className="h-4 w-4 mr-1" />
                       WhatsApp
-                    </Button>
-
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className={`bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100 ${animations.buttonHover}`}
-                      onClick={() => handleEmail(clinic.email, clinic.name)}
-                    >
-                      <Mail className="h-4 w-4 mr-1" />
-                      E-mail
                     </Button>
                     
                     <Button
