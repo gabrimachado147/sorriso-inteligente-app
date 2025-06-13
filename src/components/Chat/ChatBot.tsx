@@ -40,42 +40,15 @@ const ChatBot = () => {
     scrollToBottom();
   }, [messages]);
 
-  const handlePhoneInput = (phoneText: string) => {
+  const handlePhoneInput = async (phoneText: string) => {
     const formattedPhone = handlePhoneSubmission(phoneText);
     
     if (formattedPhone) {
-      const phoneConfirmMessage: Message = {
-        id: Date.now(),
-        text: `Número confirmado: ${formattedPhone}. Agora posso ajudá-lo com informações sobre nossos serviços, agendamentos e clínicas! Como posso ajudá-lo?`,
-        sender: 'bot',
-        timestamp: new Date(),
-        type: 'general',
-        quickReplies: ['Agendar consulta', 'Ver clínicas próximas', 'Horários disponíveis', 'Preços e planos']
-      };
-      
-      addMessages([{
-        id: Date.now() - 1,
-        text: phoneText,
-        sender: 'user',
-        timestamp: new Date(),
-        type: 'general'
-      }, phoneConfirmMessage]);
+      // Send phone confirmation to webhook instead of local response
+      await handleSendMessage(`Meu telefone é: ${formattedPhone}`);
     } else {
-      const errorMessage: Message = {
-        id: Date.now(),
-        text: "Por favor, digite um número de telefone válido (com DDD). Exemplo: (31) 99999-9999 ou 31999999999",
-        sender: 'bot',
-        timestamp: new Date(),
-        type: 'general'
-      };
-      
-      addMessages([{
-        id: Date.now() - 1,
-        text: phoneText,
-        sender: 'user',
-        timestamp: new Date(),
-        type: 'general'
-      }, errorMessage]);
+      // Send invalid phone message to webhook to get proper response
+      await handleSendMessage(phoneText);
     }
   };
 
@@ -85,12 +58,12 @@ const ChatBot = () => {
 
     // Handle phone number collection
     if (!isPhoneCollected) {
-      handlePhoneInput(text);
+      await handlePhoneInput(text);
       setInputValue('');
       return;
     }
 
-    // Handle regular chat messages
+    // Handle regular chat messages via webhook
     await handleSendMessage(text);
     setInputValue('');
   };

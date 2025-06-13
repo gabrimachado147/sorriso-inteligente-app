@@ -44,7 +44,7 @@ export const useChatLogic = (userPhone: string, isPhoneCollected: boolean) => {
     try {
       console.log('Enviando mensagem para webhook N8N:', messageText);
       
-      // Use the webhook integration from useChatHandler
+      // Send directly to N8N webhook - no local processing
       const response = await sendMessage(
         messageText, 
         'general', 
@@ -57,18 +57,13 @@ export const useChatLogic = (userPhone: string, isPhoneCollected: boolean) => {
           text: response.output,
           sender: 'bot',
           timestamp: new Date(),
-          type: 'general',
-          // Check if response suggests quick actions
-          quickReplies: response.output.toLowerCase().includes('agendar') || 
-                       response.output.toLowerCase().includes('consulta') || 
-                       response.output.toLowerCase().includes('clínica') ?
-                       ['Agendar consulta', 'Ver clínicas próximas', 'Horários disponíveis'] : undefined
+          type: 'general'
         };
         
         addMessage(botMessage);
         console.log('Resposta do webhook N8N recebida:', response.output);
       } else {
-        throw new Error('Resposta inválida do webhook');
+        throw new Error('Resposta inválida do webhook N8N');
       }
       
     } catch (error) {
