@@ -9,7 +9,8 @@ import {
   Shield, 
   Gamepad2, 
   Accessibility,
-  History
+  History,
+  LogOut
 } from 'lucide-react';
 import { animations } from '@/lib/animations';
 import { useAuth } from '@/hooks/useAuth';
@@ -23,15 +24,30 @@ import { NotificationsTab } from '@/components/Profile/NotificationsTab';
 import { GamificationTab } from '@/components/Profile/GamificationTab';
 import { AccessibilityTab } from '@/components/Profile/AccessibilityTab';
 import { SecurityTab } from '@/components/Profile/SecurityTab';
+import { toastSuccess, toastError } from '@/components/ui/custom-toast';
 
 const ProfilePage = () => {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
   const { profile, loading: profileLoading } = useProfile();
   const { loading: appointmentsLoading } = useUserAppointments();
   const { loading: preferencesLoading } = useNotificationPreferences();
   const { loading: gamificationLoading } = useGamificationData();
   
   const [activeTab, setActiveTab] = useState('profile');
+
+  const handleLogout = async () => {
+    try {
+      const result = await logout();
+      if (result.success) {
+        toastSuccess('Logout realizado', 'Você foi desconectado com sucesso');
+        window.location.href = '/';
+      } else {
+        toastError('Erro', 'Não foi possível fazer logout');
+      }
+    } catch (error) {
+      toastError('Erro', 'Erro interno do sistema');
+    }
+  };
 
   if (!isAuthenticated) {
     return (
@@ -60,10 +76,20 @@ const ProfilePage = () => {
   return (
     <div className={`p-6 space-y-6 ${animations.pageEnter}`}>
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Meu Perfil</h1>
-        <Badge variant="secondary" className="px-3 py-1">
-          {profile?.nome_completo || user?.email || 'Usuário'}
-        </Badge>
+        <div className="flex items-center gap-4">
+          <h1 className="text-3xl font-bold">Meu Perfil</h1>
+          <Badge variant="secondary" className="px-3 py-1">
+            {profile?.nome_completo || user?.email || 'Usuário'}
+          </Badge>
+        </div>
+        <Button 
+          variant="outline" 
+          onClick={handleLogout}
+          className="flex items-center gap-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+        >
+          <LogOut className="h-4 w-4" />
+          Sair
+        </Button>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
