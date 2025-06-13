@@ -40,28 +40,9 @@ const ChatBot = () => {
     scrollToBottom();
   }, [messages]);
 
-  const handlePhoneInput = async (phoneText: string) => {
-    const formattedPhone = handlePhoneSubmission(phoneText);
-    
-    if (formattedPhone) {
-      // Send phone confirmation to webhook instead of local response
-      await handleSendMessage(`Meu telefone é: ${formattedPhone}`);
-    } else {
-      // Send invalid phone message to webhook to get proper response
-      await handleSendMessage(phoneText);
-    }
-  };
-
   const handleFormSubmit = async (messageText?: string) => {
     const text = messageText || inputValue.trim();
     if (!text || chatLoading) return;
-
-    // Handle phone number collection
-    if (!isPhoneCollected) {
-      await handlePhoneInput(text);
-      setInputValue('');
-      return;
-    }
 
     // Handle regular chat messages via webhook
     await handleSendMessage(text);
@@ -86,10 +67,7 @@ const ChatBot = () => {
           </Badge>
         </CardTitle>
         <p className="text-sm text-gray-600">
-          {isPhoneCollected 
-            ? `Conectado: ${userPhone} - Estou aqui para ajudar com seus agendamentos na Senhor Sorriso!`
-            : 'Para começar, informe seu WhatsApp para contato!'
-          }
+          Estou aqui para ajudar com seus agendamentos na Senhor Sorriso!
         </p>
       </CardHeader>
 
@@ -102,7 +80,7 @@ const ChatBot = () => {
               index={index}
               onQuickAction={handleQuickAction}
               disabled={chatLoading}
-              isPhoneCollected={isPhoneCollected}
+              isPhoneCollected={true}
             />
           ))}
 
@@ -111,7 +89,7 @@ const ChatBot = () => {
           <div ref={messagesEndRef} />
         </div>
 
-        {isPhoneCollected && messages.length <= 2 && (
+        {messages.length <= 2 && (
           <QuickActionsGrid 
             onQuickAction={handleQuickAction}
             disabled={chatLoading}
@@ -124,7 +102,7 @@ const ChatBot = () => {
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder={isPhoneCollected ? "Digite sua mensagem..." : "Digite seu WhatsApp para contato..."}
+              placeholder="Digite aqui para conversar"
               className="flex-1"
               disabled={chatLoading}
             />
