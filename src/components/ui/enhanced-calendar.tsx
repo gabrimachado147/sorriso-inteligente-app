@@ -118,8 +118,8 @@ function EnhancedCalendar({
           Day: ({ date, ...restProps }) => {
             const dayClasses = getDayClasses(date);
             return (
-              <div className={cn("relative", dayClasses)}>
-                <button {...restProps} className={cn("w-full h-full")}>
+              <div className={dayClasses}>
+                <button {...restProps} className="w-full h-full">
                   {date.getDate()}
                   {renderDaySlots(date)}
                 </button>
