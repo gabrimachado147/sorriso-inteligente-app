@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,10 +10,12 @@ import { ArrowLeft, Phone, User, Lock, AlertCircle, Mail } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toastError, toastSuccess, toastWarning } from '@/components/ui/custom-toast';
 import { EmailConfirmationStatus } from '@/components/Auth/EmailConfirmationStatus';
+
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [showEmailConfirmation, setShowEmailConfirmation] = useState(false);
+  const [showPasswordReset, setShowPasswordReset] = useState(false);
   const [pendingEmail, setPendingEmail] = useState('');
   const [debugInfo, setDebugInfo] = useState('');
   const {
@@ -24,15 +27,29 @@ const AuthPage = () => {
   } = useAuthForm();
   const {
     login,
-    register
+    register,
+    resetPassword
   } = useAuth();
   const navigate = useNavigate();
-  const validateForm = () => {
+
+  const validateLoginForm = () => {
     if (!formData.email.trim() || !validateEmail(formData.email)) {
       toastError('Erro', 'Por favor, digite um email válido');
       return false;
     }
-    if (!isLogin && !formData.nomeCompleto.trim()) {
+    if (!formData.password.trim() || formData.password.length < 6) {
+      toastError('Erro', 'A senha deve ter pelo menos 6 caracteres');
+      return false;
+    }
+    return true;
+  };
+
+  const validateRegisterForm = () => {
+    if (!formData.email.trim() || !validateEmail(formData.email)) {
+      toastError('Erro', 'Por favor, digite um email válido');
+      return false;
+    }
+    if (!formData.nomeCompleto.trim()) {
       toastError('Erro', 'Por favor, digite seu nome completo');
       return false;
     }
@@ -51,13 +68,16 @@ const AuthPage = () => {
     }
     return true;
   };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setDebugInfo('Iniciando processo...');
-    if (!validateForm()) {
+    
+    if (isLogin ? !validateLoginForm() : !validateRegisterForm()) {
       setDebugInfo('Validação do formulário falhou');
       return;
     }
+
     setDebugInfo('Formulário validado, processando...');
     setLoading(true);
     try {
@@ -119,15 +139,42 @@ const AuthPage = () => {
       setLoading(false);
     }
   };
+
+  const handlePasswordReset = async () => {
+    if (!formData.email || !validateEmail(formData.email)) {
+      toastError('Erro', 'Digite um email válido primeiro');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const result = await resetPassword(formData.email);
+      if (result.success) {
+        toastSuccess('Email enviado!', 'Verifique sua caixa de entrada para redefinir sua senha');
+        setShowPasswordReset(true);
+        setPendingEmail(formData.email);
+      } else {
+        toastError('Erro', result.error || 'Erro ao enviar email de redefinição');
+      }
+    } catch (error) {
+      toastError('Erro', 'Erro ao processar solicitação');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleBackToLogin = () => {
     setShowEmailConfirmation(false);
+    setShowPasswordReset(false);
     setPendingEmail('');
     setIsLogin(true);
     resetForm();
   };
+
   const handleEnterWithoutAccount = () => {
     navigate('/');
   };
+
   if (showEmailConfirmation) {
     return <div className="min-h-screen bg-gradient-to-br from-primary/10 to-background flex items-center justify-center p-4">
         <div className="w-full max-w-md">
@@ -138,6 +185,48 @@ const AuthPage = () => {
         </div>
       </div>;
   }
+
+  if (showPasswordReset) {
+    return <div className="min-h-screen bg-gradient-to-br from-primary/10 to-background flex items-center justify-center p-4">
+        <div className="w-full max-w-md">
+          <Button variant="ghost" size="icon" onClick={() => navigate('/')} className="mb-4">
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <Card className="w-full">
+            <CardHeader className="text-center">
+              <div className="flex justify-center mb-4">
+                <div className="w-16 h-16 rounded-lg flex items-center justify-center overflow-hidden">
+                  <img src="/lovable-uploads/a077d15e-e6ba-4de3-833a-6913d8203ffd.png" alt="Senhor Sorriso Logo" className="w-full h-full object-contain" />
+                </div>
+              </div>
+              <CardTitle className="text-2xl font-bold text-primary">
+                Email Enviado!
+              </CardTitle>
+              <p className="text-muted-foreground">
+                Enviamos um link para redefinir sua senha para:
+              </p>
+              <p className="text-sm font-medium text-primary mt-1">
+                {pendingEmail}
+              </p>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4 text-center">
+                <p className="text-sm text-muted-foreground">
+                  Clique no link do email para criar uma nova senha. O link é válido por 1 hora.
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Não esqueça de verificar a pasta de spam!
+                </p>
+                <Button onClick={handleBackToLogin} variant="outline" className="w-full">
+                  Voltar ao login
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>;
+  }
+
   return <div className="min-h-screen bg-gradient-to-br from-primary/10 to-background flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <Button variant="ghost" size="icon" onClick={() => navigate('/')} className="mb-4">
@@ -187,13 +276,13 @@ const AuthPage = () => {
                   </div>
                 </div>}
 
-              <div className="space-y-2">
-                <Label htmlFor="telefone">Telefone</Label>
-                <div className="relative">
-                  <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input id="telefone" placeholder="(11) 99999-9999" value={formData.telefone} onChange={e => handlePhoneChange(e.target.value)} className="pl-10" maxLength={15} required />
-                </div>
-              </div>
+              {!isLogin && <div className="space-y-2">
+                  <Label htmlFor="telefone">Telefone</Label>
+                  <div className="relative">
+                    <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input id="telefone" placeholder="(11) 99999-9999" value={formData.telefone} onChange={e => handlePhoneChange(e.target.value)} className="pl-10" maxLength={15} required={!isLogin} />
+                  </div>
+                </div>}
 
               <div className="space-y-2">
                 <Label htmlFor="password">Senha</Label>
@@ -226,14 +315,7 @@ const AuthPage = () => {
             </div>
 
             {isLogin && <div className="mt-4 text-center">
-                <Button variant="link" className="text-sm text-muted-foreground" onClick={() => {
-              if (formData.email && validateEmail(formData.email)) {
-                setPendingEmail(formData.email);
-                setShowEmailConfirmation(true);
-              } else {
-                toastError('Erro', 'Digite um email válido primeiro');
-              }
-            }}>
+                <Button variant="link" className="text-sm text-muted-foreground" onClick={handlePasswordReset} disabled={loading}>
                   Esqueci minha senha
                 </Button>
               </div>}
@@ -249,4 +331,5 @@ const AuthPage = () => {
       </div>
     </div>;
 };
+
 export default AuthPage;
