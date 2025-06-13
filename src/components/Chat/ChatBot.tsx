@@ -88,7 +88,7 @@ const ChatBot = () => {
         <p className="text-sm text-gray-600">
           {isPhoneCollected 
             ? `Conectado: ${userPhone} - Estou aqui para ajudar com seus agendamentos na Senhor Sorriso!`
-            : 'Digite seu número de telefone para começarmos!'
+            : 'Para começar, informe seu WhatsApp para contato!'
           }
         </p>
       </CardHeader>
@@ -124,7 +124,7 @@ const ChatBot = () => {
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder={isPhoneCollected ? "Digite sua mensagem..." : "Digite seu número de telefone..."}
+              placeholder={isPhoneCollected ? "Digite sua mensagem..." : "Digite seu WhatsApp para contato..."}
               className="flex-1"
               disabled={chatLoading}
             />
