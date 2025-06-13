@@ -42,14 +42,14 @@ export const useGamificationData = () => {
         if (data) {
           setGamificationData({
             ...data,
-            badges: data.badges || [],
-            achievements: data.achievements || []
+            badges: Array.isArray(data.badges) ? data.badges : [],
+            achievements: Array.isArray(data.achievements) ? data.achievements : []
           });
         } else {
           // Create default gamification data
           const defaultData = {
             user_id: user.id,
-            points: 100, // Pontos iniciais de boas-vindas
+            points: 100,
             level: 1,
             badges: ['welcome'],
             achievements: ['first_login']
@@ -64,8 +64,8 @@ export const useGamificationData = () => {
           if (createError) throw createError;
           setGamificationData({
             ...newData,
-            badges: newData.badges || [],
-            achievements: newData.achievements || []
+            badges: Array.isArray(newData.badges) ? newData.badges : [],
+            achievements: Array.isArray(newData.achievements) ? newData.achievements : []
           });
         }
       } catch (err) {
@@ -84,7 +84,7 @@ export const useGamificationData = () => {
 
     try {
       const newPoints = gamificationData.points + points;
-      const newLevel = Math.floor(newPoints / 500) + 1; // A cada 500 pontos, novo level
+      const newLevel = Math.floor(newPoints / 500) + 1;
 
       const { data, error } = await supabase
         .from('user_gamification')
@@ -99,8 +99,8 @@ export const useGamificationData = () => {
       if (error) throw error;
       setGamificationData({
         ...data,
-        badges: data.badges || [],
-        achievements: data.achievements || []
+        badges: Array.isArray(data.badges) ? data.badges : [],
+        achievements: Array.isArray(data.achievements) ? data.achievements : []
       });
       
       return { success: true, newLevel: newLevel > gamificationData.level };
@@ -126,8 +126,8 @@ export const useGamificationData = () => {
       if (error) throw error;
       setGamificationData({
         ...data,
-        badges: data.badges || [],
-        achievements: data.achievements || []
+        badges: Array.isArray(data.badges) ? data.badges : [],
+        achievements: Array.isArray(data.achievements) ? data.achievements : []
       });
       
       return { success: true };

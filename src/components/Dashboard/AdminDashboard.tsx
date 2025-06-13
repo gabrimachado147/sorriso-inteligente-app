@@ -1,4 +1,3 @@
-
 import React, { useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -21,7 +20,7 @@ import {
   Filter,
   Search,
   Download,
-  Refresh
+  RefreshCw
 } from 'lucide-react';
 import { animations } from '@/lib/animations';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
@@ -263,7 +262,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ appointments, st
           
           <div className="flex items-center gap-2">
             <Button variant="outline" onClick={() => window.location.reload()}>
-              <Refresh className="h-4 w-4 mr-2" />
+              <RefreshCw className="h-4 w-4 mr-2" />
               Atualizar
             </Button>
             <Button variant="outline" onClick={exportData}>

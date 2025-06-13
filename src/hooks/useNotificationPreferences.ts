@@ -40,7 +40,13 @@ export const useNotificationPreferences = () => {
         }
 
         if (data) {
-          setPreferences(data);
+          setPreferences({
+            id: data.id,
+            email_reminders: data.email_reminders ?? true,
+            sms_reminders: data.sms_reminders ?? true,
+            push_notifications: data.push_notifications ?? true,
+            marketing_emails: data.marketing_emails ?? false
+          });
         } else {
           // Create default preferences
           const defaultPrefs = {
@@ -58,7 +64,13 @@ export const useNotificationPreferences = () => {
             .single();
 
           if (createError) throw createError;
-          setPreferences(newPrefs);
+          setPreferences({
+            id: newPrefs.id,
+            email_reminders: newPrefs.email_reminders ?? true,
+            sms_reminders: newPrefs.sms_reminders ?? true,
+            push_notifications: newPrefs.push_notifications ?? true,
+            marketing_emails: newPrefs.marketing_emails ?? false
+          });
         }
       } catch (err) {
         console.error('Error loading notification preferences:', err);
@@ -85,7 +97,13 @@ export const useNotificationPreferences = () => {
         .single();
 
       if (error) throw error;
-      setPreferences(data);
+      setPreferences({
+        id: data.id,
+        email_reminders: data.email_reminders ?? true,
+        sms_reminders: data.sms_reminders ?? true,
+        push_notifications: data.push_notifications ?? true,
+        marketing_emails: data.marketing_emails ?? false
+      });
       return { success: true };
     } catch (err) {
       console.error('Error updating notification preferences:', err);

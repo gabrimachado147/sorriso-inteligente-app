@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 
 export interface AppointmentRecord {
@@ -31,6 +30,23 @@ export interface CreateAppointmentData {
   source?: string;
 }
 
+const normalizeAppointment = (data: any): AppointmentRecord => ({
+  id: data.id,
+  name: data.name,
+  phone: data.phone,
+  email: data.email || undefined,
+  date: data.date,
+  time: data.time,
+  clinic: data.clinic,
+  service: data.service,
+  status: data.status,
+  notes: data.notes || undefined,
+  source: data.source || undefined,
+  created_at: data.created_at,
+  updated_at: data.updated_at,
+  clinic_filter: data.clinic_filter || undefined
+});
+
 export class AppointmentService {
   /**
    * Get all appointments
@@ -43,7 +59,7 @@ export class AppointmentService {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data || [];
+      return (data || []).map(normalizeAppointment);
     } catch (error) {
       console.error('Error fetching appointments:', error);
       throw error;
@@ -62,7 +78,7 @@ export class AppointmentService {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data || [];
+      return (data || []).map(normalizeAppointment);
     } catch (error) {
       console.error('Error fetching appointments by phone:', error);
       throw error;
@@ -85,7 +101,7 @@ export class AppointmentService {
 
       if (error) throw error;
       
-      return data?.map(item => item.appointments).filter(Boolean) || [];
+      return (data?.map(item => item.appointments).filter(Boolean) || []).map(normalizeAppointment);
     } catch (error) {
       console.error('Error fetching user appointments:', error);
       throw error;
@@ -101,7 +117,7 @@ export class AppointmentService {
         ...data,
         status: data.status || 'confirmed',
         source: data.source || 'pwa',
-        clinic_filter: data.clinic // Para filtragem no dashboard admin
+        clinic_filter: data.clinic
       };
 
       const { data: appointment, error } = await supabase
@@ -111,7 +127,7 @@ export class AppointmentService {
         .single();
 
       if (error) throw error;
-      return appointment;
+      return normalizeAppointment(appointment);
     } catch (error) {
       console.error('Error creating appointment:', error);
       throw error;
@@ -155,7 +171,7 @@ export class AppointmentService {
         .single();
 
       if (error) throw error;
-      return data;
+      return normalizeAppointment(data);
     } catch (error) {
       console.error('Error updating appointment status:', error);
       throw error;
@@ -208,7 +224,7 @@ export class AppointmentService {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data || [];
+      return (data || []).map(normalizeAppointment);
     } catch (error) {
       console.error('Error fetching appointments by clinic:', error);
       throw error;

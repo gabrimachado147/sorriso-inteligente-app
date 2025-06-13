@@ -1,6 +1,5 @@
-
 import React from 'react';
-import HeroSection from './HeroSection';
+import { HeroSection } from './HeroSection';
 import QuickActions from './QuickActions';
 import ServicesGrid from './ServicesGrid';
 import { UnitsSection } from './UnitsSection';
