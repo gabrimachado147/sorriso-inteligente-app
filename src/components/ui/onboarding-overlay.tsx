@@ -55,6 +55,9 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
         };
       }
     }
+    
+    // Explicitly return undefined for cases where no cleanup is needed
+    return undefined;
   }, [isActive, stepData.target]);
 
   if (!isActive) return null;
