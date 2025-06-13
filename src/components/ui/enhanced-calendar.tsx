@@ -38,7 +38,7 @@ function EnhancedCalendar({
     const dateStr = date.toISOString().split('T')[0];
     if (busyDays.includes(dateStr)) return 'busy';
     if (popularDays.includes(dateStr)) return 'popular';
-    if (availableSlots[dateStr] > 0) return 'available';
+    if (availableSlots[dateStr] && availableSlots[dateStr] > 0) return 'available';
     return 'normal';
   };
 
