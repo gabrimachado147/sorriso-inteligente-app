@@ -42,23 +42,13 @@ export const ServicesOverviewSection: React.FC<ServicesOverviewSectionProps> = (
               </Button>
             </CardContent>
             
-            {/* Badge para serviços populares */}
-            {['avaliacao-gratuita', 'limpeza', 'ortodontia', 'estetica-dental', 'urgencia'].includes(service.id) && (
+            {/* Badge para serviços populares - removido o urgência */}
+            {['avaliacao-gratuita', 'limpeza', 'ortodontia', 'estetica-dental'].includes(service.id) && (
               <Badge 
                 variant="secondary" 
                 className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs px-2 py-1"
               >
                 Popular
-              </Badge>
-            )}
-            
-            {/* Badge para urgência */}
-            {service.id === 'urgencia' && (
-              <Badge 
-                variant="destructive" 
-                className="absolute -top-2 -left-2 bg-red-500 text-white text-xs px-2 py-1"
-              >
-                24h
               </Badge>
             )}
           </Card>

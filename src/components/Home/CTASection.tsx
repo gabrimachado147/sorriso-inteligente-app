@@ -26,11 +26,11 @@ export const CTASection: React.FC<CTASectionProps> = ({ onNavigate, onWhatsAppCo
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="text-lg px-8" onClick={() => onNavigate('/appointments')}>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Button size="lg" className="text-lg px-8 w-full sm:w-auto" onClick={() => onNavigate('/appointments')}>
               Agendar Consulta
             </Button>
-            <Button size="lg" variant="outline" className="text-lg px-8" onClick={onWhatsAppContact}>
+            <Button size="lg" variant="outline" className="text-lg px-8 w-full sm:w-auto" onClick={onWhatsAppContact}>
               Falar no WhatsApp
             </Button>
           </div>

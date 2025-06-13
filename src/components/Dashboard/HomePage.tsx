@@ -45,7 +45,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
 
   const handleViewUnits = () => {
     toastInfo("Unidades", "Carregando mapa de clínicas...");
-    onNavigate('locations');
+    onNavigate('clinics');
   };
 
   const handleOpenChat = async () => {
@@ -78,7 +78,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
       case 'chat':
         handleOpenChat();
         break;
-      case 'locations':
+      case 'clinics':
         handleViewUnits();
         break;
       case 'appointments':

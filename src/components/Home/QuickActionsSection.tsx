@@ -56,7 +56,7 @@ export const QuickActionsSection: React.FC<QuickActionsSectionProps> = ({
       </Card>
 
       <Card className={`${animations.cardHover} border-primary/20 hover:border-primary/40 transition-all cursor-pointer`}
-            onClick={() => onNavigate('/locations')}>
+            onClick={() => onNavigate('/clinics')}>
         <CardHeader className="text-center pb-2">
           <MapPin className="h-8 w-8 text-primary mx-auto mb-2" />
           <CardTitle className="text-lg">Unidades</CardTitle>
@@ -67,7 +67,7 @@ export const QuickActionsSection: React.FC<QuickActionsSectionProps> = ({
           </p>
           <Button variant="outline" className="w-full" onClick={(e) => {
             e.stopPropagation();
-            onNavigate('/locations');
+            onNavigate('/clinics');
           }}>
             Ver Locais
           </Button>

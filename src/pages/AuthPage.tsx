@@ -184,8 +184,16 @@ const AuthPage = () => {
               {isLogin ? 'Entrar' : 'Criar Conta'}
             </CardTitle>
             <p className="text-muted-foreground">
-              {isLogin ? 'Acesse sua conta' : 'Cadastre-se no Senhor Sorriso'}
+              {isLogin 
+                ? 'Acesse sua conta para acompanhar consultas' 
+                : 'Crie uma conta para acompanhar suas consultas e receber benefícios exclusivos'
+              }
             </p>
+            {!isLogin && (
+              <p className="text-sm text-muted-foreground bg-blue-50 p-3 rounded-md border border-blue-200">
+                💡 <strong>Opcional:</strong> Você pode agendar consultas sem criar conta, mas com uma conta você poderá acompanhar seu histórico e receber benefícios.
+              </p>
+            )}
           </CardHeader>
 
           <CardContent>
@@ -309,6 +317,19 @@ const AuthPage = () => {
                 </Button>
               </div>
             )}
+
+            <div className="mt-4 text-center border-t pt-4">
+              <Button 
+                variant="outline" 
+                className="w-full"
+                onClick={() => navigate('/appointments')}
+              >
+                Agendar sem criar conta
+              </Button>
+              <p className="text-xs text-muted-foreground mt-2">
+                Você pode agendar uma consulta sem criar conta
+              </p>
+            </div>
           </CardContent>
         </Card>
       </div>
