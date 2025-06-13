@@ -1,4 +1,6 @@
 
+import * as React from 'react';
+
 interface NotificationOptions {
   title: string;
   body: string;
@@ -6,7 +8,6 @@ interface NotificationOptions {
   badge?: string;
   tag?: string;
   data?: any;
-  actions?: NotificationAction[];
   requireInteraction?: boolean;
 }
 

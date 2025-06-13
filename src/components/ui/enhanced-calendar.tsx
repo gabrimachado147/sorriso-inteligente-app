@@ -1,6 +1,6 @@
 
 import * as React from "react";
-import { ChevronLeft, ChevronRight, Clock, Users } from "lucide-react";
+import { ChevronLeft, ChevronRight, Clock } from "lucide-react";
 import { DayPicker } from "react-day-picker";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
@@ -10,7 +10,7 @@ export type EnhancedCalendarProps = React.ComponentProps<typeof DayPicker> & {
   availableSlots?: Record<string, number>;
   popularDays?: string[];
   busyDays?: string[];
-  onDateSelect?: (date: Date) => void;
+  onDateSelect?: (date: Date | undefined) => void;
 };
 
 function EnhancedCalendar({
@@ -21,13 +21,15 @@ function EnhancedCalendar({
   popularDays = [],
   busyDays = [],
   onDateSelect,
+  selected,
+  onSelect,
   ...props
 }: EnhancedCalendarProps) {
-  const [selectedDate, setSelectedDate] = React.useState<Date | undefined>();
-
   const handleDateSelect = (date: Date | undefined) => {
-    setSelectedDate(date);
-    if (date && onDateSelect) {
+    if (onSelect) {
+      onSelect(date);
+    }
+    if (onDateSelect) {
       onDateSelect(date);
     }
   };
@@ -72,9 +74,10 @@ function EnhancedCalendar({
   return (
     <div className={cn(animations.calendar, "p-3")}>
       <DayPicker
+        mode="single"
         showOutsideDays={showOutsideDays}
         className={cn("p-3", className)}
-        selected={selectedDate}
+        selected={selected as Date | undefined}
         onSelect={handleDateSelect}
         classNames={{
           months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",

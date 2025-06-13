@@ -66,6 +66,9 @@ export const animations = {
   tabTransition: "transition-all duration-300 ease-out",
   smoothEntry: "animate-in fade-in slide-in-from-bottom-1 duration-500 ease-out",
   gentleBounce: "animate-[bounce_1s_ease-in-out_1]",
+  
+  // Animação específica para calendário
+  calendar: "animate-in fade-in zoom-in-98 duration-250 ease-out",
 };
 
 export const getPageTransition = (direction: 'enter' | 'exit' = 'enter') => {
