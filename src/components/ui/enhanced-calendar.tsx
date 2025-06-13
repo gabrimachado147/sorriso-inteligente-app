@@ -25,14 +25,16 @@ function EnhancedCalendar({
   onSelect,
   ...props
 }: EnhancedCalendarProps) {
-  const handleDateSelect = (date: Date | undefined) => {
+  const handleDateSelect = React.useCallback((date: Date | undefined, selectedDay: any, activeModifiers: any, e: React.MouseEvent) => {
+    console.log('handleDateSelect called with:', { date, selectedDay, activeModifiers });
+    
     if (onSelect) {
-      onSelect(date);
+      onSelect(date, selectedDay, activeModifiers, e);
     }
     if (onDateSelect) {
       onDateSelect(date);
     }
-  };
+  }, [onSelect, onDateSelect]);
 
   const getDayStatus = (date: Date) => {
     console.log('getDayStatus called with:', date);
@@ -123,7 +125,7 @@ function EnhancedCalendar({
             const dayClasses = getDayClasses(date);
             return (
               <div className={dayClasses}>
-                <button className="w-full h-full" onClick={() => handleDateSelect(date)}>
+                <button className="w-full h-full" onClick={(e) => handleDateSelect(date, props, {}, e)}>
                   {date.getDate()}
                   {renderDaySlots(date)}
                 </button>
