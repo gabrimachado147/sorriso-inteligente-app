@@ -101,10 +101,6 @@ export default defineConfig(({ mode }) => {
             icons: ['lucide-react'],
             query: ['@tanstack/react-query'],
             utils: ['clsx', 'tailwind-merge', 'date-fns'],
-            // New chunks for better splitting
-            accessibility: ['src/components/Accessibility', 'src/hooks/useAccessibility'],
-            gamification: ['src/components/Gamification', 'src/hooks/useGamification'],
-            analytics: ['src/components/Analytics', 'src/hooks/useHealthAnalytics'],
           },
           chunkFileNames: 'assets/[name]-[hash].js',
           entryFileNames: 'assets/[name]-[hash].js',
