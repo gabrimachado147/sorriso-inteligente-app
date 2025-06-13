@@ -1,14 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { EnhancedSkeleton } from "@/components/ui/enhanced-skeleton";
 import { toastSuccess, toastCall, toastLocation, toastAppointment } from "@/components/ui/custom-toast";
 import { animations } from "@/lib/animations";
 import { apiService } from "@/services/api";
-import { FilterState } from "@/components/ui/filters";
 import { LocationsPageHeader } from "./LocationsPageHeader";
-import { LocationsFilters } from "./LocationsFilters";
 import { ClinicCard } from "./ClinicCard";
-import { EmptyResults } from "./EmptyResults";
 
 interface Clinic {
   id: string;
@@ -31,16 +29,9 @@ interface Service {
 }
 
 const LocationsPage = () => {
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [clinics, setClinics] = useState<Clinic[]>([]);
-  const [filters, setFilters] = useState<FilterState>({
-    search: '',
-    clinic: '',
-    service: '',
-    dateFrom: undefined,
-    dateTo: undefined,
-    status: ''
-  });
 
   // Serviços atualizados com todos os tratamentos odontológicos
   const availableServices = [
@@ -74,22 +65,6 @@ const LocationsPage = () => {
     loadClinics();
   }, []);
 
-  const filteredClinics = clinics.filter(clinic => {
-    if (filters.search) {
-      const searchTerm = filters.search.toLowerCase();
-      return clinic.name.toLowerCase().includes(searchTerm) ||
-             clinic.address.toLowerCase().includes(searchTerm) ||
-             clinic.city.toLowerCase().includes(searchTerm) ||
-             clinic.state.toLowerCase().includes(searchTerm);
-    }
-    
-    if (filters.service) {
-      return clinic.services.includes(filters.service);
-    }
-    
-    return true;
-  });
-
   const handleCall = (phone: string, clinicName: string) => {
     const phoneNumber = phone.replace(/\D/g, '');
     window.open(`tel:${phoneNumber}`, '_self');
@@ -110,18 +85,8 @@ const LocationsPage = () => {
   };
 
   const handleSchedule = (clinicName: string) => {
-    toastAppointment("Agendamento", `Iniciando agendamento na ${clinicName}`);
-  };
-
-  const handleClearFilters = () => {
-    setFilters({
-      search: '',
-      clinic: '',
-      service: '',
-      dateFrom: undefined,
-      dateTo: undefined,
-      status: ''
-    });
+    navigate('/schedule');
+    toastAppointment("Agendamento", `Redirecionando para agendamento na ${clinicName}`);
   };
 
   if (isLoading) {
@@ -135,18 +100,11 @@ const LocationsPage = () => {
   return (
     <div className={`p-6 space-y-6 ${animations.pageEnter}`}>
       {/* Header */}
-      <LocationsPageHeader filteredClinicsCount={filteredClinics.length} />
-
-      {/* Filtros */}
-      <LocationsFilters 
-        filters={filters}
-        onFiltersChange={setFilters}
-        availableServices={availableServices}
-      />
+      <LocationsPageHeader filteredClinicsCount={clinics.length} />
 
       {/* Lista de Unidades */}
       <div className="space-y-4">
-        {filteredClinics.map((clinic, index) => (
+        {clinics.map((clinic, index) => (
           <ClinicCard
             key={clinic.id}
             clinic={clinic}
@@ -159,11 +117,6 @@ const LocationsPage = () => {
           />
         ))}
       </div>
-
-      {/* Resultados Vazios */}
-      {filteredClinics.length === 0 && (
-        <EmptyResults onClearFilters={handleClearFilters} />
-      )}
     </div>
   );
 };

@@ -1,4 +1,3 @@
-
 // Mock API service para simular integrações futuras
 export interface ChatMessage {
   id: string;
@@ -42,7 +41,7 @@ export interface UserProfile {
 // Simulação de delay de rede
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-// Dados reais das clínicas Senhor Sorriso
+// Dados reais das clínicas Senhor Sorriso com telefones e horários atualizados
 const realClinicsData = [
   {
     id: 'campo-belo-mg',
@@ -51,13 +50,13 @@ const realClinicsData = [
     state: 'MG',
     address: 'Avenida Afonso Pena, 151, Centro',
     fullAddress: 'Avenida Afonso Pena, 151, Centro, Campo Belo - MG, CEP 37270-000',
-    phone: '(35) 99869-5479',
+    phone: '(35) 99891-3803',
     whatsapp: '5535998695479',
     email: 'campobelo@senhorsorriso.com.br',
     coordinates: { lat: -20.8889, lng: -45.2733 },
     available: true,
     services: ['Avaliação Gratuita', 'Limpeza Dental', 'Ortodontia', 'Implantodontia', 'Clareamento'],
-    workingHours: 'Segunda a Sexta: 8h às 18h | Sábado: 8h às 12h'
+    workingHours: 'Segunda a Sexta: 8h às 19h | Sábado: 8h às 13h'
   },
   {
     id: 'formiga-mg',
@@ -66,13 +65,13 @@ const realClinicsData = [
     state: 'MG',
     address: 'Rua Barão de Piumhy, 198, Centro',
     fullAddress: 'Rua Barão de Piumhy, 198, Centro, Formiga - MG, CEP 35570-128',
-    phone: '(35) 9969-5479',
+    phone: '(37) 3443-0520',
     whatsapp: '5535996954799',
     email: 'formiga@senhorsorriso.com.br',
     coordinates: { lat: -20.4642, lng: -45.4267 },
     available: true,
     services: ['Avaliação Gratuita', 'Limpeza Dental', 'Ortodontia', 'Implantodontia', 'Clareamento'],
-    workingHours: 'Segunda a Sexta: 8h às 18h | Sábado: 8h às 12h'
+    workingHours: 'Segunda a Sexta: 8h às 19h | Sábado: 8h às 13h'
   },
   {
     id: 'itarare-sp',
@@ -81,13 +80,13 @@ const realClinicsData = [
     state: 'SP',
     address: 'Rua São Pedro, 1348 (Loja), Centro',
     fullAddress: 'Rua São Pedro, 1348 (Loja), Centro, Itararé - SP, CEP 18460-009',
-    phone: '(35) 99969-5479',
+    phone: '(15) 99862-0028',
     whatsapp: '5535999695479',
     email: 'itarare@senhorsorriso.com.br',
     coordinates: { lat: -24.1147, lng: -49.3314 },
     available: true,
     services: ['Avaliação Gratuita', 'Limpeza Dental', 'Ortodontia', 'Implantodontia', 'Clareamento'],
-    workingHours: 'Segunda a Sexta: 8h às 18h | Sábado: 8h às 12h'
+    workingHours: 'Segunda a Sexta: 8h às 19h | Sábado: 8h às 13h'
   },
   {
     id: 'capao-bonito-sp',
@@ -102,7 +101,7 @@ const realClinicsData = [
     coordinates: { lat: -24.0094, lng: -48.3506 },
     available: true,
     services: ['Avaliação Gratuita', 'Limpeza Dental', 'Ortodontia', 'Implantodontia', 'Clareamento'],
-    workingHours: 'Segunda a Sexta: 8h às 18h | Sábado: 8h às 12h'
+    workingHours: 'Segunda a Sexta: 8h às 19h | Sábado: 8h às 13h'
   },
   {
     id: 'itapeva-sp',
@@ -117,7 +116,7 @@ const realClinicsData = [
     coordinates: { lat: -23.9822, lng: -48.8764 },
     available: true,
     services: ['Avaliação Gratuita', 'Limpeza Dental', 'Ortodontia', 'Implantodontia', 'Clareamento'],
-    workingHours: 'Segunda a Sexta: 8h às 18h | Sábado: 8h às 12h'
+    workingHours: 'Segunda a Sexta: 8h às 19h | Sábado: 8h às 13h'
   }
 ];
 
