@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { whatsappService, type ChatMessage, type WhatsAppWebhookResponse } from '@/services/whatsapp';
 import { toastError, toastSuccess } from '@/components/ui/custom-toast';
+import { WebhookAppointmentParser } from '@/services/webhookAppointmentParser';
 
 export const useChatHandler = () => {
   const [loading, setLoading] = useState(false);
@@ -20,6 +21,19 @@ export const useChatHandler = () => {
       });
 
       console.log('Chat response with output:', response);
+
+      // Processar resposta para detectar agendamentos automaticamente
+      if (response.output) {
+        const appointmentCreated = await WebhookAppointmentParser.processWebhookResponse({
+          output: response.output,
+          sessionId,
+          timestamp: new Date().toISOString()
+        });
+
+        if (appointmentCreated) {
+          console.log('Agendamento automático criado via chat!');
+        }
+      }
 
       // Retorna a resposta estruturada
       return {

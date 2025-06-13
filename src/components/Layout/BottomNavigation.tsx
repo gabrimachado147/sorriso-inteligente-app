@@ -1,85 +1,95 @@
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import { toastInfo } from '@/components/ui/custom-toast';
+import { Link, useLocation } from 'react-router-dom';
+import { 
+  Home, 
+  MessageCircle, 
+  Calendar, 
+  MapPin, 
+  User,
+  CalendarCheck
+} from 'lucide-react';
 import { animations } from '@/lib/animations';
-import { Home, MessageCircle, Calendar, User, MapPin } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 
-interface BottomNavigationProps {
-  currentPage: string;
-  onPageChange: (page: string) => void;
-}
-
-export const BottomNavigation: React.FC<BottomNavigationProps> = ({ currentPage, onPageChange }) => {
-  const navigate = useNavigate();
-
-  const handleNavigation = (page: string, path: string, label: string) => {
-    toastInfo(`Navegação`, `Abrindo ${label}...`);
-    onPageChange(page);
-    navigate(path);
-  };
+const BottomNavigation = () => {
+  const location = useLocation();
 
   const navItems = [
     { 
-      id: 'home', 
-      path: '/',
       icon: Home, 
-      label: 'Início',
-      action: () => handleNavigation('home', '/', 'página inicial')
+      label: 'Início', 
+      path: '/',
+      isActive: location.pathname === '/'
     },
     { 
-      id: 'locations', 
-      path: '/locations',
-      icon: MapPin, 
-      label: 'Unidades',
-      action: () => handleNavigation('locations', '/locations', 'unidades')
-    },
-    { 
-      id: 'appointments', 
-      path: '/appointments',
-      icon: Calendar, 
-      label: 'Agendar',
-      action: () => handleNavigation('appointments', '/appointments', 'agendamento')
-    },
-    { 
-      id: 'chat', 
-      path: '/chat',
       icon: MessageCircle, 
-      label: 'Chat',
-      action: () => handleNavigation('chat', '/chat', 'chat com assistente')
+      label: 'Chat', 
+      path: '/chat',
+      isActive: location.pathname === '/chat'
     },
     { 
-      id: 'profile', 
-      path: '/profile',
-      icon: User, 
-      label: 'Perfil',
-      action: () => handleNavigation('profile', '/profile', 'perfil do usuário')
+      icon: Calendar, 
+      label: 'Agendar', 
+      path: '/schedule',
+      isActive: location.pathname === '/schedule'
     },
+    { 
+      icon: CalendarCheck, 
+      label: 'Agendados', 
+      path: '/appointments',
+      isActive: location.pathname === '/appointments'
+    },
+    { 
+      icon: MapPin, 
+      label: 'Clínicas', 
+      path: '/clinics',
+      isActive: location.pathname === '/clinics'
+    },
+    { 
+      icon: User, 
+      label: 'Perfil', 
+      path: '/profile',
+      isActive: location.pathname === '/profile'
+    }
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t md:hidden z-50">
-      <div className="flex justify-around items-center py-2">
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = currentPage === item.id;
-          
-          return (
-            <Button
-              key={item.id}
-              variant="ghost"
-              className={`flex flex-col items-center space-y-1 h-auto py-2 px-3 ${
-                isActive ? 'text-primary' : 'text-gray-500'
-              } ${animations.buttonHover}`}
-              onClick={item.action}
-            >
-              <Icon className={`h-5 w-5 ${isActive ? 'text-primary' : ''}`} />
-              <span className="text-xs">{item.label}</span>
-            </Button>
-          );
-        })}
+    <nav className={`fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 ${animations.slideInBottom}`}>
+      <div className="max-w-md mx-auto">
+        <div className="flex justify-around items-center py-2">
+          {navItems.map((item, index) => {
+            const Icon = item.icon;
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`flex flex-col items-center justify-center p-2 min-w-0 flex-1 ${animations.buttonHover} ${
+                  item.isActive 
+                    ? 'text-primary' 
+                    : 'text-gray-500 hover:text-primary'
+                }`}
+                style={{ animationDelay: `${index * 50}ms` }}
+              >
+                <Icon 
+                  className={`h-5 w-5 mb-1 transition-all duration-200 ${
+                    item.isActive ? 'scale-110' : ''
+                  }`} 
+                />
+                <span className={`text-xs font-medium transition-all duration-200 ${
+                  item.isActive ? 'font-semibold' : ''
+                }`}>
+                  {item.label}
+                </span>
+                {item.isActive && (
+                  <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-primary rounded-full"></div>
+                )}
+              </Link>
+            );
+          })}
+        </div>
       </div>
     </nav>
   );
 };
+
+export default BottomNavigation;

@@ -4,6 +4,7 @@ import { whatsappService, type AppointmentData } from '@/services/whatsapp';
 import { toastSuccess, toastError } from '@/components/ui/custom-toast';
 import { useGamification } from './useGamification';
 import { useHealthAnalytics } from './useHealthAnalytics';
+import { WebhookAppointmentParser } from '@/services/webhookAppointmentParser';
 
 export const useAppointmentScheduler = () => {
   const [loading, setLoading] = useState(false);
@@ -16,12 +17,27 @@ export const useAppointmentScheduler = () => {
     setSuccess(false);
 
     try {
+      // Enviar para o webhook
       const response = await whatsappService.scheduleAppointment(data);
       
       console.log('Appointment response with output:', response);
       
       // Verificar se o serviço existe antes de usar
       const service = data.service || 'Consulta';
+      
+      // Processar resposta do webhook para detectar agendamento
+      const appointmentCreated = await WebhookAppointmentParser.processWebhookResponse(
+        {
+          output: response.output || 'Agendamento processado',
+          sessionId: `session_${Date.now()}`,
+          timestamp: new Date().toISOString()
+        },
+        data.userInfo?.phone
+      );
+
+      if (appointmentCreated) {
+        console.log('Agendamento real criado no Supabase!');
+      }
       
       // Adicionar pontos de gamificação
       const points = service === 'Avaliação Gratuita' ? 50 : 

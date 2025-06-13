@@ -9,6 +9,57 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      appointments: {
+        Row: {
+          clinic: string
+          created_at: string
+          date: string
+          email: string | null
+          id: string
+          name: string
+          notes: string | null
+          phone: string
+          service: string
+          source: string | null
+          status: string
+          time: string
+          updated_at: string
+          webhook_session_id: string | null
+        }
+        Insert: {
+          clinic: string
+          created_at?: string
+          date: string
+          email?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          phone: string
+          service: string
+          source?: string | null
+          status?: string
+          time: string
+          updated_at?: string
+          webhook_session_id?: string | null
+        }
+        Update: {
+          clinic?: string
+          created_at?: string
+          date?: string
+          email?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          phone?: string
+          service?: string
+          source?: string | null
+          status?: string
+          time?: string
+          updated_at?: string
+          webhook_session_id?: string | null
+        }
+        Relationships: []
+      }
       BDR_PROSPECÇÃO: {
         Row: {
           created_at: string
