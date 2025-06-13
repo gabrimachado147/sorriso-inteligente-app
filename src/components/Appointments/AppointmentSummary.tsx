@@ -94,18 +94,13 @@ export const AppointmentSummary: React.FC<AppointmentSummaryProps> = ({
             <User className="h-5 w-5 text-purple-600 mt-0.5" />
             <div className="flex-1">
               <p className="font-semibold text-purple-900">Serviço</p>
-              <div className="flex items-center gap-2 mb-1">
-                <p className="text-sm text-purple-700">{service?.name}</p>
-                {service?.price === 'Gratuito' && (
-                  <Badge variant="secondary" className="text-xs bg-green-100 text-green-800">
-                    Gratuito
-                  </Badge>
-                )}
-              </div>
+              <p className="text-sm text-purple-700">{service?.name}</p>
               <p className="text-xs text-purple-600">{service?.description}</p>
-              <p className="text-xs text-purple-500 mt-1">
-                Duração: {service?.duration} minutos
-              </p>
+              {service?.price === 'Gratuito' && (
+                <Badge variant="secondary" className="text-xs bg-green-100 text-green-800 mt-1">
+                  Gratuito
+                </Badge>
+              )}
             </div>
           </div>
         </div>
