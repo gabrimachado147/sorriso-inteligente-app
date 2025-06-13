@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar, MessageCircle, MapPin, Phone } from 'lucide-react';
 import { toastInfo } from '@/components/ui/custom-toast';
-import { animations } from '@/lib/animations';
+import { animations, getStaggerStyle } from '@/lib/animations';
 
 interface QuickActionsSectionProps {
   onNavigate: (path: string) => void;
@@ -15,84 +15,94 @@ export const QuickActionsSection: React.FC<QuickActionsSectionProps> = ({
   onNavigate, 
   onEmergencyCall 
 }) => {
+  const actions = [
+    {
+      icon: Calendar,
+      title: "Agendar",
+      description: "Marque sua consulta rapidamente",
+      buttonText: "Novo Agendamento",
+      buttonVariant: "default" as const,
+      path: "/schedule",
+      borderColor: "border-primary/20 hover:border-primary/40",
+      bgColor: ""
+    },
+    {
+      icon: MessageCircle,
+      title: "Chat",
+      description: "Tire suas dúvidas conosco",
+      buttonText: "Iniciar Chat",
+      buttonVariant: "outline" as const,
+      path: "/chat",
+      borderColor: "border-primary/20 hover:border-primary/40",
+      bgColor: ""
+    },
+    {
+      icon: MapPin,
+      title: "Unidades",
+      description: "Encontre a unidade mais próxima",
+      buttonText: "Ver Locais",
+      buttonVariant: "outline" as const,
+      path: "/clinics",
+      borderColor: "border-primary/20 hover:border-primary/40",
+      bgColor: ""
+    },
+    {
+      icon: Phone,
+      title: "Emergência",
+      description: "Atendimento 24h disponível",
+      buttonText: "Contatar Agora",
+      buttonVariant: "destructive" as const,
+      path: "",
+      borderColor: "border-red-200 hover:border-red-400",
+      bgColor: "bg-red-50"
+    }
+  ];
+
   return (
-    <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 ${animations.slideInLeft}`}>
-      <Card className={`${animations.cardHover} border-primary/20 hover:border-primary/40 transition-all cursor-pointer flex flex-col h-full`}
-            onClick={() => onNavigate('/schedule')}>
-        <CardHeader className="text-center pb-2 flex-grow">
-          <Calendar className="h-8 w-8 text-primary mx-auto mb-2" />
-          <CardTitle className="text-lg">Agendar</CardTitle>
-          <p className="text-sm text-muted-foreground mb-3">
-            Marque sua consulta rapidamente
-          </p>
-        </CardHeader>
-        <CardContent className="text-center pt-0 mt-auto">
-          <Button className="w-full" onClick={(e) => {
-            e.stopPropagation();
-            onNavigate('/schedule');
-          }}>
-            Novo Agendamento
-          </Button>
-        </CardContent>
-      </Card>
-
-      <Card className={`${animations.cardHover} border-primary/20 hover:border-primary/40 transition-all cursor-pointer flex flex-col h-full`}
-            onClick={() => onNavigate('/chat')}>
-        <CardHeader className="text-center pb-2 flex-grow">
-          <MessageCircle className="h-8 w-8 text-primary mx-auto mb-2" />
-          <CardTitle className="text-lg">Chat</CardTitle>
-          <p className="text-sm text-muted-foreground mb-3">
-            Tire suas dúvidas conosco
-          </p>
-        </CardHeader>
-        <CardContent className="text-center pt-0 mt-auto">
-          <Button variant="outline" className="w-full" onClick={(e) => {
-            e.stopPropagation();
-            onNavigate('/chat');
-          }}>
-            Iniciar Chat
-          </Button>
-        </CardContent>
-      </Card>
-
-      <Card className={`${animations.cardHover} border-primary/20 hover:border-primary/40 transition-all cursor-pointer flex flex-col h-full`}
-            onClick={() => onNavigate('/clinics')}>
-        <CardHeader className="text-center pb-2 flex-grow">
-          <MapPin className="h-8 w-8 text-primary mx-auto mb-2" />
-          <CardTitle className="text-lg">Unidades</CardTitle>
-          <p className="text-sm text-muted-foreground mb-3">
-            Encontre a unidade mais próxima
-          </p>
-        </CardHeader>
-        <CardContent className="text-center pt-0 mt-auto">
-          <Button variant="outline" className="w-full" onClick={(e) => {
-            e.stopPropagation();
-            onNavigate('/clinics');
-          }}>
-            Ver Locais
-          </Button>
-        </CardContent>
-      </Card>
-
-      <Card className={`${animations.cardHover} border-red-200 hover:border-red-400 transition-all bg-red-50 cursor-pointer flex flex-col h-full`}
-            onClick={onEmergencyCall}>
-        <CardHeader className="text-center pb-2 flex-grow">
-          <Phone className="h-8 w-8 text-red-600 mx-auto mb-2" />
-          <CardTitle className="text-lg text-red-600">Emergência</CardTitle>
-        </CardHeader>
-        <CardContent className="text-center pt-0 mt-auto">
-          <Button 
-            variant="destructive" 
-            className="w-full"
-            onClick={(e) => {
-              e.stopPropagation();
-              onEmergencyCall();
-            }}
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      {actions.map((action, index) => {
+        const Icon = action.icon;
+        const isEmergency = action.title === "Emergência";
+        
+        return (
+          <Card 
+            key={action.title}
+            className={`
+              ${animations.serviceCardHover} 
+              ${action.borderColor} 
+              ${action.bgColor}
+              transition-all cursor-pointer flex flex-col h-full
+              ${animations.fadeInUp}
+            `}
+            style={getStaggerStyle(index, 150)}
+            onClick={() => isEmergency ? onEmergencyCall() : onNavigate(action.path)}
           >
-            Contatar Agora
-          </Button>
-        </CardContent>
-      </Card>
+            <CardHeader className="text-center pb-2 flex-grow">
+              <div className={`mx-auto mb-3 ${animations.iconHover}`}>
+                <Icon className={`h-8 w-8 ${isEmergency ? 'text-red-600' : 'text-primary'}`} />
+              </div>
+              <CardTitle className={`text-lg ${isEmergency ? 'text-red-600' : ''}`}>
+                {action.title}
+              </CardTitle>
+              <p className="text-sm text-muted-foreground mb-3">
+                {action.description}
+              </p>
+            </CardHeader>
+            <CardContent className="text-center pt-0 mt-auto">
+              <Button 
+                variant={action.buttonVariant}
+                className={`w-full ${animations.buttonHover}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  isEmergency ? onEmergencyCall() : onNavigate(action.path);
+                }}
+              >
+                {action.buttonText}
+              </Button>
+            </CardContent>
+          </Card>
+        );
+      })}
     </div>
   );
 };
