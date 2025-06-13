@@ -114,11 +114,11 @@ function EnhancedCalendar({
           ...classNames,
         }}
         components={{
-          IconLeft: ({ ..._props }) => <ChevronLeft className="h-4 w-4" />,
-          IconRight: ({ ..._props }) => <ChevronRight className="h-4 w-4" />,
+          IconLeft: ({ ...props }) => <ChevronLeft className="h-4 w-4" />,
+          IconRight: ({ ...props }) => <ChevronRight className="h-4 w-4" />,
           Day: ({ date, ...dayProps }) => (
             <div className={cn("relative", getDayClasses(date))}>
-              <button {...dayProps} className={cn(dayProps.className, "w-full h-full")}>
+              <button {...dayProps} className={cn(dayProps.className || "", "w-full h-full")}>
                 {date.getDate()}
                 {renderDaySlots(date)}
               </button>
