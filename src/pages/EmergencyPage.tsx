@@ -2,7 +2,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Phone, MessageCircle, MapPin, Clock } from 'lucide-react';
+import { Phone, MessageCircle, MapPin } from 'lucide-react';
 import { toastCall } from '@/components/ui/custom-toast';
 import { useChatHandler } from '@/hooks/useChatHandler';
 import { animations } from '@/lib/animations';
@@ -17,7 +17,7 @@ const EmergencyPage = () => {
         emergencyNumber, 
         'URGÊNCIA DENTAL: Preciso de atendimento de emergência imediato!'
       );
-      toastCall("Emergência", "Conectando com atendimento 24h...");
+      toastCall("Emergência", "Conectando com atendimento de urgência...");
     } catch (error) {
       // Fallback para chamada telefônica
       window.open('tel:+5535998695479', '_self');
@@ -42,7 +42,7 @@ const EmergencyPage = () => {
     <div className={`p-6 space-y-6 ${animations.pageEnter}`}>
       <div className={`${animations.fadeIn}`}>
         <h1 className="text-3xl font-bold text-red-600 mb-2">🚨 Atendimento de Emergência</h1>
-        <p className="text-gray-600">Estamos aqui para ajudar em situações urgentes 24 horas por dia</p>
+        <p className="text-gray-600">Estamos aqui para ajudar em situações urgentes</p>
       </div>
 
       {/* Contatos de Emergência */}
@@ -56,7 +56,7 @@ const EmergencyPage = () => {
           </CardHeader>
           <CardContent>
             <p className="text-red-700 mb-4">
-              Para emergências imediatas, ligue diretamente para nossa central 24h
+              Para emergências imediatas, ligue diretamente para nossa central
             </p>
             <Button 
               className={`w-full bg-red-600 hover:bg-red-700 ${animations.buttonHover}`}
@@ -76,7 +76,7 @@ const EmergencyPage = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-green-800">
               <MessageCircle className="h-6 w-6" />
-              WhatsApp 24h
+              WhatsApp
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -92,18 +92,18 @@ const EmergencyPage = () => {
               {loading ? 'Conectando...' : 'Contatar via WhatsApp'}
             </Button>
             <p className="text-sm text-green-600 mt-2 text-center">
-              Resposta em até 5 minutos
+              Resposta rápida
             </p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Unidades com Plantão - ENDEREÇOS CORRIGIDOS */}
+      {/* Unidades Disponíveis */}
       <Card className={animations.fadeIn}>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <MapPin className="h-5 w-5" />
-            Unidades com Plantão 24h
+            Nossas Unidades
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -112,30 +112,18 @@ const EmergencyPage = () => {
               <h3 className="font-semibold">Campo Belo - MG</h3>
               <p className="text-sm text-gray-600">Av. Afonso Pena, 151, Centro - Campo Belo/MG</p>
               <p className="text-sm text-gray-600">CEP: 37270-000 | Tel: (35) 99869-5479</p>
-              <div className="flex items-center gap-2 mt-2">
-                <Clock className="h-4 w-4 text-green-600" />
-                <span className="text-sm text-green-600 font-medium">Plantão 24h disponível</span>
-              </div>
             </div>
 
             <div className="p-4 border rounded-lg">
               <h3 className="font-semibold">Formiga - MG</h3>
               <p className="text-sm text-gray-600">R. Barão de Piumhy, 198, Centro - Formiga/MG</p>
               <p className="text-sm text-gray-600">CEP: 35570-128 | Tel: (35) 9969-5479</p>
-              <div className="flex items-center gap-2 mt-2">
-                <Clock className="h-4 w-4 text-green-600" />
-                <span className="text-sm text-green-600 font-medium">Plantão 24h disponível</span>
-              </div>
             </div>
 
             <div className="p-4 border rounded-lg">
               <h3 className="font-semibold">Itararé - SP</h3>
               <p className="text-sm text-gray-600">R. São Pedro, 1348 (Loja), Centro - Itararé/SP</p>
               <p className="text-sm text-gray-600">CEP: 18460-009 | Tel: (35) 99969-5479</p>
-              <div className="flex items-center gap-2 mt-2">
-                <Clock className="h-4 w-4 text-green-600" />
-                <span className="text-sm text-green-600 font-medium">Plantão 24h disponível</span>
-              </div>
             </div>
           </div>
         </CardContent>

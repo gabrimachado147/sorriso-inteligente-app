@@ -3,6 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { animations, getStaggerStyle } from '@/lib/animations';
 import { ServiceCardSkeleton } from '@/components/ui/enhanced-skeleton';
+import { availableServices } from '@/components/Appointments/constants/services';
 
 interface ServicesGridProps {
   onServiceSelect: (service: string) => void;
@@ -10,20 +11,6 @@ interface ServicesGridProps {
 }
 
 export const ServicesGrid: React.FC<ServicesGridProps> = ({ onServiceSelect, loading = false }) => {
-  const services = [
-    { name: 'Avaliação Gratuita', icon: '🔍', popular: true },
-    { name: 'Limpeza Dental', icon: '🦷', popular: true },
-    { name: 'Restauração', icon: '🔧', popular: false },
-    { name: 'Ortodontia', icon: '😬', popular: true },
-    { name: 'Implantodontia', icon: '⚙️', popular: false },
-    { name: 'Estética Dental', icon: '✨', popular: true },
-    { name: 'Próteses Fixas', icon: '🔩', popular: false },
-    { name: 'Endodontia', icon: '🩺', popular: false },
-    { name: 'Odontopediatria', icon: '👶', popular: false },
-    { name: 'Periodontia', icon: '🦷', popular: false },
-    { name: 'Urgência 24h', icon: '🚨', popular: true },
-  ];
-
   if (loading) {
     return (
       <Card className={animations.fadeIn}>
@@ -48,20 +35,22 @@ export const ServicesGrid: React.FC<ServicesGridProps> = ({ onServiceSelect, loa
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-          {services.map((service, index) => (
+          {availableServices.map((service, index) => (
             <Card 
-              key={service.name} 
+              key={service.id} 
               className={`relative cursor-pointer ${animations.serviceCardHover} ${animations.scaleIn}`}
               style={getStaggerStyle(index)}
               onClick={() => onServiceSelect(service.name)}
             >
-              {service.popular && (
+              {['avaliacao-gratuita', 'limpeza', 'ortodontia', 'estetica-dental', 'clareamento'].includes(service.id) && (
                 <div className={`absolute -top-2 -right-2 bg-orange-500 text-white text-xs px-2 py-1 rounded-full ${animations.fadeInFast}`}>
                   Popular
                 </div>
               )}
               <CardContent className="p-3 text-center">
-                <div className={`text-2xl mb-2 ${animations.iconHover}`}>{service.icon}</div>
+                <div className={`text-primary mb-2 ${animations.iconHover} flex justify-center`}>
+                  {service.icon}
+                </div>
                 <p className="text-sm font-medium">{service.name}</p>
               </CardContent>
             </Card>

@@ -95,6 +95,14 @@ export const availableServices = [
     icon: <Heart className="h-6 w-6" /> 
   },
   { 
+    id: 'clareamento', 
+    name: 'Clareamento Dental', 
+    description: 'Procedimento de clareamento dental profissional',
+    duration: 90,
+    price: 'R$ 200,00',
+    icon: <Sparkles className="h-6 w-6" /> 
+  },
+  { 
     id: 'urgencia', 
     name: 'Atendimento de Urgência', 
     description: 'Atendimento imediato para dores e emergências',

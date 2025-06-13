@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { PWADashboard, PWAQuickInstall } from '@/components/ui/pwa-dashboard';
 import { toastSuccess, toastInfo, toastAppointment, toastCall } from '@/components/ui/custom-toast';
 import { useAppointmentScheduler } from '@/hooks/useAppointmentScheduler';
 import { useChatHandler } from '@/hooks/useChatHandler';
@@ -63,7 +62,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
     try {
       const message = encodeURIComponent("URGÊNCIA DENTAL: Preciso de atendimento de emergência. Por favor, me orientem sobre o procedimento.");
       window.open(`https://wa.me/5531971147487?text=${message}`, '_blank');
-      toastCall("Emergência", "Conectando com atendimento 24h...");
+      toastCall("Emergência", "Conectando com atendimento de urgência...");
     } catch (error) {
       console.error('Erro ao chamar emergência:', error);
       window.open('tel:+5531971147487', '_self');
@@ -162,12 +161,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         onEmergencyCall={handleEmergencyCall}
         chatLoading={chatLoading}
       />
-
-      {/* PWA Dashboard */}
-      <PWADashboard onInstall={() => toastSuccess("App Instalado", "Sorriso Inteligente foi instalado com sucesso!")} />
-
-      {/* PWA Quick Install Prompt */}
-      <PWAQuickInstall />
 
       {/* Onboarding Overlay */}
       <OnboardingOverlay
