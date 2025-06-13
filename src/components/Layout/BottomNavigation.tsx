@@ -7,7 +7,7 @@ import {
   Calendar, 
   MapPin, 
   User,
-  CalendarCheck
+  BarChart3
 } from 'lucide-react';
 import { animations } from '@/lib/animations';
 
@@ -40,8 +40,8 @@ const BottomNavigation = () => {
       isActive: location.pathname === '/clinics'
     },
     { 
-      icon: CalendarCheck, 
-      label: 'Agendados', 
+      icon: BarChart3, 
+      label: 'Administrativo', 
       path: '/appointments',
       isActive: location.pathname === '/appointments'
     },

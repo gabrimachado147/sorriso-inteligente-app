@@ -34,8 +34,8 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onScheduleClick }) => {
     },
     {
       icon: Clock,
-      title: 'Meus Agendamentos',
-      description: 'Consulte seus horários',
+      title: 'Administrativo',
+      description: 'Área administrativa',
       color: 'bg-orange-500',
       onClick: () => window.location.href = '/appointments'
     }
