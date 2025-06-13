@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { animations } from '@/lib/animations';
 import { Phone } from 'lucide-react';
+import { ButtonLoading } from '@/components/ui/enhanced-loading';
 
 interface EmergencyContactProps {
   onEmergencyCall: () => void;
@@ -15,11 +16,13 @@ export const EmergencyContact: React.FC<EmergencyContactProps> = ({
   chatLoading
 }) => {
   return (
-    <Card className={`bg-red-50 border-red-200 ${animations.fadeIn}`}>
+    <Card className={`bg-red-50 border-red-200 ${animations.fadeIn} ${animations.cardHover}`}>
       <CardContent className="p-4">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="font-semibold text-red-800">Urgência Dental</h3>
+            <h3 className={`font-semibold text-red-800 ${animations.emergencyPulse}`}>
+              Urgência Dental
+            </h3>
             <p className="text-sm text-red-600">Atendimento imediato para emergências</p>
           </div>
           <Button 
@@ -27,8 +30,14 @@ export const EmergencyContact: React.FC<EmergencyContactProps> = ({
             onClick={onEmergencyCall}
             disabled={chatLoading}
           >
-            <Phone className="h-4 w-4 mr-2" />
-            {chatLoading ? 'Conectando...' : 'Contatar Agora'}
+            {chatLoading ? (
+              <ButtonLoading text="Conectando..." size="sm" />
+            ) : (
+              <>
+                <Phone className={`h-4 w-4 mr-2 ${animations.iconHover}`} />
+                Contatar Agora
+              </>
+            )}
           </Button>
         </div>
       </CardContent>

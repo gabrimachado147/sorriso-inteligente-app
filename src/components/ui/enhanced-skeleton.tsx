@@ -1,104 +1,101 @@
 
 import React from 'react';
-import { Skeleton } from '@/components/ui/skeleton';
-import { animations } from '@/lib/animations';
 import { cn } from '@/lib/utils';
+import { animations } from '@/lib/animations';
 
-interface EnhancedSkeletonProps {
-  variant: 'clinic-card' | 'appointment-card' | 'service-card' | 'chat-message' | 'list-item';
-  count?: number;
+interface SkeletonProps {
   className?: string;
+  variant?: 'default' | 'card' | 'avatar' | 'text' | 'button';
 }
 
-export const EnhancedSkeleton: React.FC<EnhancedSkeletonProps> = ({ 
-  variant, 
-  count = 1, 
-  className 
+export const EnhancedSkeleton: React.FC<SkeletonProps> = ({ 
+  className, 
+  variant = 'default' 
 }) => {
-  const renderSkeletonByVariant = () => {
-    switch (variant) {
-      case 'clinic-card':
-        return (
-          <div className={cn("border rounded-lg p-4 space-y-3", className)}>
-            <Skeleton className="h-8 w-3/4" /> {/* Nome da clínica */}
-            <Skeleton className="h-4 w-full" /> {/* Endereço linha 1 */}
-            <Skeleton className="h-4 w-2/3" /> {/* Endereço linha 2 */}
-            <div className="flex gap-2">
-              <Skeleton className="h-9 w-20" /> {/* Botão ligar */}
-              <Skeleton className="h-9 w-24" /> {/* Botão whatsapp */}
-              <Skeleton className="h-9 w-20" /> {/* Botão rota */}
-            </div>
-            <Skeleton className="h-10 w-full" /> {/* Botão agendar */}
-          </div>
-        );
-
-      case 'appointment-card':
-        return (
-          <div className={cn("border rounded-lg p-4 space-y-3", className)}>
-            <div className="flex justify-between items-start">
-              <div className="space-y-2 flex-1">
-                <Skeleton className="h-6 w-3/4" /> {/* Serviço */}
-                <Skeleton className="h-4 w-1/2" /> {/* Data */}
-                <Skeleton className="h-4 w-2/3" /> {/* Clínica */}
-              </div>
-              <Skeleton className="h-6 w-20" /> {/* Status badge */}
-            </div>
-            <div className="flex gap-2">
-              <Skeleton className="h-8 w-20" /> {/* Botão 1 */}
-              <Skeleton className="h-8 w-24" /> {/* Botão 2 */}
-            </div>
-          </div>
-        );
-
-      case 'service-card':
-        return (
-          <div className={cn("border rounded-lg p-4 space-y-3", className)}>
-            <div className="flex items-center space-x-3">
-              <Skeleton className="h-12 w-12 rounded-full" /> {/* Ícone */}
-              <div className="space-y-2 flex-1">
-                <Skeleton className="h-5 w-3/4" /> {/* Nome do serviço */}
-                <Skeleton className="h-4 w-full" /> {/* Descrição */}
-              </div>
-            </div>
-            <Skeleton className="h-4 w-1/2" /> {/* Preço */}
-          </div>
-        );
-
-      case 'chat-message':
-        return (
-          <div className={cn("flex items-start space-x-2 mb-4", className)}>
-            <Skeleton className="h-8 w-8 rounded-full" /> {/* Avatar */}
-            <div className="space-y-2 flex-1">
-              <Skeleton className="h-4 w-3/4" /> {/* Mensagem linha 1 */}
-              <Skeleton className="h-4 w-1/2" /> {/* Mensagem linha 2 */}
-            </div>
-          </div>
-        );
-
-      case 'list-item':
-        return (
-          <div className={cn("flex items-center space-x-3 py-3", className)}>
-            <Skeleton className="h-6 w-6 rounded" /> {/* Ícone */}
-            <div className="space-y-1 flex-1">
-              <Skeleton className="h-4 w-3/4" /> {/* Título */}
-              <Skeleton className="h-3 w-1/2" /> {/* Subtítulo */}
-            </div>
-            <Skeleton className="h-4 w-16" /> {/* Valor/Data */}
-          </div>
-        );
-
-      default:
-        return <Skeleton className={cn("h-4 w-full", className)} />;
-    }
+  const variants = {
+    default: 'h-4 w-full rounded',
+    card: 'h-32 w-full rounded-lg',
+    avatar: 'h-12 w-12 rounded-full',
+    text: 'h-4 rounded',
+    button: 'h-10 w-24 rounded-md'
   };
 
   return (
-    <div className={animations.pulse}>
-      {Array.from({ length: count }, (_, index) => (
-        <div key={index} className="mb-4 last:mb-0">
-          {renderSkeletonByVariant()}
+    <div
+      className={cn(
+        'bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 bg-[length:200%_100%]',
+        'animate-pulse',
+        variants[variant],
+        className
+      )}
+    />
+  );
+};
+
+// Skeleton específico para cards de serviços
+export const ServiceCardSkeleton: React.FC = () => {
+  return (
+    <div className={`space-y-3 p-4 border rounded-lg ${animations.fadeIn}`}>
+      <EnhancedSkeleton variant="avatar" className="mx-auto" />
+      <EnhancedSkeleton variant="text" className="w-3/4 mx-auto" />
+      <EnhancedSkeleton variant="button" className="w-full" />
+    </div>
+  );
+};
+
+// Skeleton para cards de unidades
+export const UnitCardSkeleton: React.FC = () => {
+  return (
+    <div className={`space-y-4 p-6 border rounded-lg ${animations.fadeIn}`}>
+      <div className="flex items-start space-x-4">
+        <EnhancedSkeleton variant="avatar" />
+        <div className="flex-1 space-y-2">
+          <EnhancedSkeleton className="w-3/4 h-5" />
+          <EnhancedSkeleton className="w-1/2" />
         </div>
-      ))}
+      </div>
+      <div className="space-y-2">
+        <EnhancedSkeleton className="w-full" />
+        <EnhancedSkeleton className="w-2/3" />
+      </div>
+      <div className="flex space-x-2">
+        <EnhancedSkeleton variant="button" />
+        <EnhancedSkeleton variant="button" />
+      </div>
+    </div>
+  );
+};
+
+// Skeleton para lista de consultas
+export const AppointmentSkeleton: React.FC = () => {
+  return (
+    <div className={`space-y-3 p-4 bg-gray-50 rounded-lg ${animations.fadeIn}`}>
+      <div className="flex justify-between items-start">
+        <div className="space-y-2 flex-1">
+          <EnhancedSkeleton className="w-3/4 h-5" />
+          <EnhancedSkeleton className="w-1/2" />
+          <EnhancedSkeleton className="w-1/3" />
+        </div>
+        <EnhancedSkeleton variant="button" className="ml-4" />
+      </div>
+    </div>
+  );
+};
+
+// Skeleton para reviews
+export const ReviewSkeleton: React.FC = () => {
+  return (
+    <div className={`space-y-3 p-3 bg-gray-50 rounded-lg ${animations.fadeIn}`}>
+      <div className="flex items-center space-x-2">
+        <div className="flex space-x-1">
+          {[1,2,3,4,5].map(i => (
+            <EnhancedSkeleton key={i} className="w-4 h-4" />
+          ))}
+        </div>
+        <EnhancedSkeleton className="w-20 h-4" />
+      </div>
+      <EnhancedSkeleton className="w-full h-4" />
+      <EnhancedSkeleton className="w-3/4 h-4" />
     </div>
   );
 };
