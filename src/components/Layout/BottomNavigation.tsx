@@ -47,7 +47,7 @@ const BottomNavigation = () => {
     },
     { 
       icon: BarChart3, 
-      label: 'Administrativo', 
+      label: 'ADM', 
       path: '/appointments',
       isActive: location.pathname === '/appointments'
     }
