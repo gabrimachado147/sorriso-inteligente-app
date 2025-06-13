@@ -1,4 +1,3 @@
-
 /**
  * Simplified Authentication Service for current database schema
  * Handles user authentication without custom user tables
@@ -44,7 +43,8 @@ export class AuthService {
           data: {
             nome_completo: credentials.name,
             telefone: credentials.phone
-          }
+          },
+          emailRedirectTo: `${window.location.origin}/`
         }
       })
 
@@ -81,7 +81,18 @@ export class AuthService {
 
       if (error) {
         console.error('AuthService: Login error:', error);
-        return { success: false, error: error.message }
+        
+        // Provide more specific error messages for production
+        let errorMessage = error.message;
+        if (error.message.includes('Invalid login credentials')) {
+          errorMessage = 'Email ou senha incorretos';
+        } else if (error.message.includes('Email not confirmed')) {
+          errorMessage = 'Email não confirmado. Verifique sua caixa de entrada.';
+        } else if (error.message.includes('Too many requests')) {
+          errorMessage = 'Muitas tentativas de login. Tente novamente em alguns minutos.';
+        }
+        
+        return { success: false, error: errorMessage }
       }
 
       console.log('AuthService: Login successful, user:', data.user?.email);
@@ -90,7 +101,7 @@ export class AuthService {
       console.error('AuthService: Login exception:', error);
       return { 
         success: false, 
-        error: error instanceof Error ? error.message : 'Login failed' 
+        error: error instanceof Error ? error.message : 'Erro de conexão. Verifique sua internet.' 
       }
     }
   }
