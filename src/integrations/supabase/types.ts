@@ -703,30 +703,6 @@ export type Database = {
         }
         Relationships: []
       }
-      profiles: {
-        Row: {
-          created_at: string
-          id: string
-          nome_completo: string
-          telefone: string
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          id: string
-          nome_completo: string
-          telefone: string
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          nome_completo?: string
-          telefone?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
       reminders: {
         Row: {
           appointment_id: string | null

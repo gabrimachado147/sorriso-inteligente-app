@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -16,12 +17,12 @@ import {
 } from 'lucide-react';
 import { animations } from '@/lib/animations';
 import { useAuth } from '@/hooks/useAuth';
-import { useProfile } from '@/hooks/useProfile';
-import { useUserAppointments } from '@/hooks/useUserAppointments';
+import { useUserProfile } from '@/hooks/useUserProfile';
+import { useRealUserAppointments } from '@/hooks/useRealUserAppointments';
 import { useNotificationPreferences } from '@/hooks/useNotificationPreferences';
 import { useGamificationData } from '@/hooks/useGamificationData';
-import { ProfileTab } from '@/components/Profile/ProfileTab';
-import { HistoryTab } from '@/components/Profile/HistoryTab';
+import { ProfileTabReal } from '@/components/Profile/ProfileTabReal';
+import { HistoryTabReal } from '@/components/Profile/HistoryTabReal';
 import { NotificationsTab } from '@/components/Profile/NotificationsTab';
 import { GamificationTab } from '@/components/Profile/GamificationTab';
 import { AccessibilityTab } from '@/components/Profile/AccessibilityTab';
@@ -31,8 +32,8 @@ import { toastSuccess, toastError } from '@/components/ui/custom-toast';
 const ProfilePage = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuth();
-  const { profile, loading: profileLoading } = useProfile();
-  const { loading: appointmentsLoading } = useUserAppointments();
+  const { profile, loading: profileLoading } = useUserProfile();
+  const { loading: appointmentsLoading } = useRealUserAppointments();
   const { loading: preferencesLoading } = useNotificationPreferences();
   const { loading: gamificationLoading } = useGamificationData();
   
@@ -81,7 +82,7 @@ const ProfilePage = () => {
         <div className="flex items-center gap-4">
           <h1 className="text-3xl font-bold">Meu Perfil</h1>
           <Badge variant="secondary" className="px-3 py-1">
-            {profile?.nome_completo || user?.email || 'Usuário'}
+            {profile?.full_name || user?.email || 'Usuário'}
           </Badge>
         </div>
         <Button 
@@ -149,11 +150,11 @@ const ProfilePage = () => {
         </TabsList>
 
         <TabsContent value="profile">
-          <ProfileTab onTabChange={setActiveTab} />
+          <ProfileTabReal onTabChange={setActiveTab} />
         </TabsContent>
 
         <TabsContent value="history">
-          <HistoryTab />
+          <HistoryTabReal />
         </TabsContent>
 
         <TabsContent value="notifications">
