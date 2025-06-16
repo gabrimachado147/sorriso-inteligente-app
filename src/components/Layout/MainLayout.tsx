@@ -11,9 +11,9 @@ interface MainLayoutProps {
 
 export const MainLayout: React.FC<MainLayoutProps> = ({ children, currentPage, onPageChange }) => {
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col w-full">
       <Header />
-      <main className="flex-1 pb-36 md:pb-12">
+      <main className="flex-1 pb-36 md:pb-12 w-full">
         {children}
       </main>
       <BottomNavigation />

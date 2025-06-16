@@ -33,9 +33,9 @@ const queryClient = new QueryClient({
 
 const MainLayout = () => {
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col w-full overflow-x-hidden">
       <Header />
-      <main className="flex-1 pb-32 md:pb-8">
+      <main className="flex-1 pb-32 md:pb-8 w-full">
         <Outlet />
       </main>
       <BottomNavigation />
@@ -50,25 +50,27 @@ function App() {
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<MainLayout />}>
-              <Route index element={<Index />} />
-              <Route path="chat" element={<ChatPage />} />
-              <Route path="schedule" element={<SchedulePage />} />
-              <Route path="clinics" element={<ClinicsPage />} />
-              <Route path="emergency" element={<EmergencyPage />} />
-              <Route path="profile" element={<ProfilePage />} />
-              <Route path="auth" element={<AuthPage />} />
-              <Route path="analytics" element={<AnalyticsPage />} />
-              <Route path="gamification" element={<GamificationPage />} />
-              <Route path="reminders" element={<RemindersPage />} />
-              <Route path="accessibility" element={<AccessibilityPage />} />
-              <Route path="pwa-settings" element={<PWASettingsPage onNavigate={() => {}} />} />
-              <Route path="appointments" element={<AppointmentsPage />} />
-              <Route path="404" element={<NotFound />} />
-              <Route path="*" element={<Navigate to="/404" replace />} />
-            </Route>
-          </Routes>
+          <div className="w-full overflow-x-hidden">
+            <Routes>
+              <Route path="/" element={<MainLayout />}>
+                <Route index element={<Index />} />
+                <Route path="chat" element={<ChatPage />} />
+                <Route path="schedule" element={<SchedulePage />} />
+                <Route path="clinics" element={<ClinicsPage />} />
+                <Route path="emergency" element={<EmergencyPage />} />
+                <Route path="profile" element={<ProfilePage />} />
+                <Route path="auth" element={<AuthPage />} />
+                <Route path="analytics" element={<AnalyticsPage />} />
+                <Route path="gamification" element={<GamificationPage />} />
+                <Route path="reminders" element={<RemindersPage />} />
+                <Route path="accessibility" element={<AccessibilityPage />} />
+                <Route path="pwa-settings" element={<PWASettingsPage onNavigate={() => {}} />} />
+                <Route path="appointments" element={<AppointmentsPage />} />
+                <Route path="404" element={<NotFound />} />
+                <Route path="*" element={<Navigate to="/404" replace />} />
+              </Route>
+            </Routes>
+          </div>
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
