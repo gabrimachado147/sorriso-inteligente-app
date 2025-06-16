@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -26,7 +25,9 @@ export const ServicesOverviewSection: React.FC<ServicesOverviewSectionProps> = (
                 onClick={() => onNavigate('/schedule')}>
             <CardHeader className="text-center pb-4">
               <div className="mx-auto mb-4 text-primary">
-                {React.cloneElement(service.icon as React.ReactElement, { className: "h-10 w-10" })}
+                {React.isValidElement(service.icon)
+                  ? React.cloneElement(service.icon, { className: "h-10 w-10" })
+                  : null}
               </div>
               <CardTitle className="text-lg mobile-text-base">{service.name}</CardTitle>
               <p className="text-sm text-muted-foreground">{service.price}</p>

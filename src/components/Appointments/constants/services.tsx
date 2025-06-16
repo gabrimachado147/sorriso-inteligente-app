@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { 
   Search, 
@@ -14,7 +13,17 @@ import {
   Shield
 } from 'lucide-react';
 
-export const availableServices = [
+export interface ServiceItem {
+  id: string;
+  name: string;
+  description: string;
+  duration: number;
+  price: string;
+  category: string;
+  icon: React.ReactElement<{ className?: string }>;
+}
+
+export const availableServices: ServiceItem[] = [
   {
     id: 'avaliacao-gratuita',
     name: 'Avaliação Gratuita',

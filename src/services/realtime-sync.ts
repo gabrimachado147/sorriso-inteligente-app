@@ -1,6 +1,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import { useOfflineManager } from './offline-manager';
 import { toastSuccess, toastError } from '@/components/ui/custom-toast';
+import type { RealtimeChannel } from '@supabase/realtime-js';
 
 export interface RealtimeSyncConfig {
   enableAppointments: boolean;
@@ -179,7 +180,7 @@ class RealtimeSyncService {
     console.log('[Realtime] Cleaning up channels...');
     
     this.channels.forEach((channel, name) => {
-      supabase.removeChannel(channel);
+      supabase.removeChannel(channel as RealtimeChannel);
       console.log(`[Realtime] Removed channel: ${name}`);
     });
     

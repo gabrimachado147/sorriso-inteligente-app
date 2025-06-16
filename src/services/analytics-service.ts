@@ -249,7 +249,7 @@ class AnalyticsService {
           .insert({
             event_type: event.event,
             user_id: event.userId || null,
-            data: event.properties || {}
+            data: event.properties as any // Supabase espera Json, que pode ser Record<string, unknown>
           });
       }
     } catch (error) {
@@ -319,14 +319,14 @@ class AnalyticsService {
     }
   }
 
-  private processAnalyticsData(events: AnalyticsEvent[]) {
+  private processAnalyticsData(events: any[]) {
     const pageViews = events.filter(e => e.event_type === 'page_view').length;
     const appointments = events.filter(e => e.event_type === 'appointment_created').length;
     const uniqueUsers = new Set(events.map(e => e.user_id).filter(Boolean)).size;
     
     const topPages = events
       .filter(e => e.event_type === 'page_view')
-      .reduce((acc, event) => {
+      .reduce((acc: Record<string, number>, event: any) => {
         const page = event.data?.page || 'unknown';
         acc[page] = (acc[page] || 0) + 1;
         return acc;
