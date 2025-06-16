@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,6 +5,7 @@ import { animations } from '@/lib/animations';
 import { Clock, Calendar } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useRealUserAppointments } from '@/hooks/useRealUserAppointments';
+import { useNavigate } from 'react-router-dom';
 
 interface AppointmentsSectionProps {
   onReschedule: () => void;
@@ -18,6 +18,11 @@ export const AppointmentsSection: React.FC<AppointmentsSectionProps> = ({
 }) => {
   const { isAuthenticated } = useAuth();
   const { appointments, loading } = useRealUserAppointments();
+  const navigate = useNavigate();
+
+  const handleLoginClick = () => {
+    navigate('/profile');
+  };
 
   if (!isAuthenticated) {
     return (
@@ -34,7 +39,7 @@ export const AppointmentsSection: React.FC<AppointmentsSectionProps> = ({
             <p className="text-gray-600 mb-4">Faça login para ver suas consultas</p>
             <Button 
               variant="outline"
-              onClick={onViewAllAppointments}
+              onClick={handleLoginClick}
               className={animations.buttonHover}
             >
               Fazer Login
