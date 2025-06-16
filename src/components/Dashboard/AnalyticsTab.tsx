@@ -30,7 +30,7 @@ export const AnalyticsTab: React.FC<AnalyticsTabProps> = ({
                   {stats?.byClinic && Object.entries(stats.byClinic).map(([clinic, count]) => (
                     <div key={clinic} className="flex justify-between">
                       <span className="text-sm">{clinic}</span>
-                      <span className="font-medium">{count}</span>
+                      <span className="font-medium">{String(count)}</span>
                     </div>
                   ))}
                 </div>
