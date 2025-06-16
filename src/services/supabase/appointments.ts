@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import type { Tables } from '@/integrations/supabase/types';
 
 export interface AppointmentRecord {
   id: string;
@@ -31,24 +32,9 @@ export interface CreateAppointmentData {
   webhook_session_id?: string;
 }
 
-type AppointmentData = {
-  id: string;
-  name: string;
-  phone: string;
-  email?: string;
-  date: string;
-  time: string;
-  clinic: string;
-  service: string;
-  status: string;
-  notes?: string;
-  source?: string;
-  created_at: string;
-  updated_at: string;
-  clinic_filter?: string;
-};
+type AppointmentRow = Tables<'appointments'>;
 
-const normalizeAppointment = (data: AppointmentData): AppointmentRecord => ({
+const normalizeAppointment = (data: AppointmentRow): AppointmentRecord => ({
   id: data.id,
   name: data.name,
   phone: data.phone,

@@ -1,3 +1,4 @@
+
 // React hooks for Supabase operations - simplified for current schema
 import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -15,14 +16,17 @@ interface ChatMessage {
   nomewpp: string | null
 }
 
-// Defina o tipo para Contact
+// Contact interface matching the database schema
 interface Contact {
-  id?: number;
+  id?: string;
   nome: string;
   email: string;
   telefone: string;
   empresa?: string;
   objetivo?: string;
+  stage?: string;
+  click_id?: string;
+  created_at?: string;
 }
 
 // Hook for managing chat messages
@@ -96,6 +100,7 @@ export const useChatMessages = (phone?: string) => {
 // Hook for managing contacts
 export const useContacts = () => {
   const queryClient = useQueryClient();
+  
   // Get all contacts
   const {
     data: contacts = [],
@@ -113,8 +118,20 @@ export const useContacts = () => {
 
   // Create contact mutation
   const createContact = useMutation({
-    mutationFn: async (contact: Contact) => {
-      const { data, error } = await supabase.from('contacts').insert(contact);
+    mutationFn: async (contact: Omit<Contact, 'id' | 'created_at'>) => {
+      const { data, error } = await supabase
+        .from('contacts')
+        .insert({
+          nome: contact.nome,
+          email: contact.email,
+          telefone: contact.telefone,
+          empresa: contact.empresa,
+          objetivo: contact.objetivo,
+          stage: contact.stage || 'incomplete'
+        })
+        .select()
+        .single();
+      
       if (error) throw error;
       return data;
     },
@@ -244,58 +261,11 @@ export const useRealtimeChat = (phone?: string) => {
   return { realtimeMessages }
 }
 
-// Hook for clinic working hours
-export const useClinicHours = (clinicId: string) => {
-  const [isOpen, setIsOpen] = useState(false)
-  const [nextOpenTime, setNextOpenTime] = useState<string>('')
-
-  useEffect(() => {
-    if (!clinicId) return
-
-    const checkIfOpen = async () => {
-      try {
-        const isCurrentlyOpen = await ClinicService.isOpenNow(clinicId)
-        setIsOpen(isCurrentlyOpen)
-
-        // Get working hours for next few days to determine next open time
-        const today = new Date()
-        const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
-        
-        for (let i = 0; i < 7; i++) {
-          const checkDate = new Date(today)
-          checkDate.setDate(today.getDate() + i)
-          const dayName = days[checkDate.getDay()]
-          
-          const hours = await ClinicService.getWorkingHours(clinicId, dayName)
-          if (hours) {
-            const openDateTime = new Date(`${checkDate.toISOString().split('T')[0]}T${hours.open}`)
-            if (openDateTime > new Date()) {
-              setNextOpenTime(openDateTime.toLocaleString())
-              break
-            }
-          }
-        }
-      } catch (error) {
-        console.error('Error checking clinic hours:', error)
-      }
-    }
-
-    checkIfOpen()
-    
-    // Check every minute
-    const interval = setInterval(checkIfOpen, 60000)
-    
-    return () => clearInterval(interval)
-  }, [clinicId])
-
-  return { isOpen, nextOpenTime }
-}
-
-// Hook for managing user profile and PWA data
+// Hook for managing user profile data using the profiles table
 export const useUserProfile = (userId?: string) => {
   const queryClient = useQueryClient()
 
-  // Get user profile
+  // Get user profile from profiles table
   const {
     data: profile,
     isLoading,
@@ -306,7 +276,7 @@ export const useUserProfile = (userId?: string) => {
       if (!userId) return null
       
       const { data, error } = await supabase
-        .from('users')
+        .from('profiles')
         .select('*')
         .eq('id', userId)
         .single()
@@ -319,11 +289,14 @@ export const useUserProfile = (userId?: string) => {
 
   // Update profile mutation
   const updateProfile = useMutation({
-    mutationFn: async (updates: Record<string, unknown>) => {
+    mutationFn: async (updates: {
+      nome_completo?: string
+      telefone?: string
+    }) => {
       if (!userId) throw new Error('User ID required')
       
       const { data, error } = await supabase
-        .from('users')
+        .from('profiles')
         .update(updates)
         .eq('id', userId)
         .select()
@@ -337,38 +310,10 @@ export const useUserProfile = (userId?: string) => {
     }
   })
 
-  // Track PWA installation
-  const trackPWAInstallation = useMutation({
-    mutationFn: async (installData: {
-      device_type?: string
-      browser?: string
-      platform?: string
-      install_source?: string
-    }) => {
-      if (!userId) throw new Error('User ID required')
-      
-      // Generate a unique installation ID
-      const installationId = `${userId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-      
-      const { data, error } = await supabase
-        .from('pwa_installations')
-        .insert({
-          user_id: userId,
-          installation_id: installationId,
-          device_info: installData,
-          ...installData
-        })
-
-      if (error) throw error
-      return data
-    }
-  })
-
   return {
     profile,
     isLoading,
     error,
-    updateProfile,
-    trackPWAInstallation
+    updateProfile
   }
 }
