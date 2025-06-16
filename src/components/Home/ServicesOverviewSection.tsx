@@ -11,6 +11,8 @@ interface ServicesOverviewSectionProps {
 }
 
 export const ServicesOverviewSection: React.FC<ServicesOverviewSectionProps> = ({ onNavigate }) => {
+  const popularServices = ['avaliacao-gratuita', 'limpeza', 'ortodontia', 'estetica-dental'];
+
   return (
     <div className={`space-y-8 px-4 ${animations.slideInRight}`}>
       <div className="text-center">
@@ -27,6 +29,7 @@ export const ServicesOverviewSection: React.FC<ServicesOverviewSectionProps> = (
                 {React.cloneElement(service.icon as React.ReactElement, { className: "h-10 w-10" })}
               </div>
               <CardTitle className="text-lg mobile-text-base">{service.name}</CardTitle>
+              <p className="text-sm text-muted-foreground">{service.price}</p>
             </CardHeader>
             <CardContent className="text-center pt-0">
               <Button 
@@ -42,8 +45,7 @@ export const ServicesOverviewSection: React.FC<ServicesOverviewSectionProps> = (
               </Button>
             </CardContent>
             
-            {/* Badge para serviços populares */}
-            {['avaliacao-gratuita', 'limpeza', 'ortodontia', 'estetica-dental'].includes(service.id) && (
+            {popularServices.includes(service.id) && (
               <Badge 
                 variant="secondary" 
                 className="absolute -top-2 -right-2 bg-orange-500 text-white text-sm px-3 py-1"

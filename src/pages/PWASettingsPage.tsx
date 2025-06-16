@@ -1,198 +1,227 @@
-import React, { useState } from 'react';
+
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { PWADashboard } from '@/components/ui/pwa-dashboard';
-import { PWAPerformanceMonitor as OldPWAPerformanceMonitor } from '@/components/ui/pwa-performance';
-import { PWANotificationCenter as OldPWANotificationCenter } from '@/components/ui/pwa-notifications';
-import { PWAPerformanceMonitor } from '@/components/PWA/PWAPerformanceMonitor';
-import { PWANotificationCenter } from '@/components/PWA/PWANotificationCenter';
-import { animations } from '@/lib/animations';
+import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
+import { Badge } from '@/components/ui/badge';
 import { 
   Settings, 
   Smartphone, 
-  Activity, 
   Bell, 
-  Database,
-  Info
+  Download, 
+  Wifi, 
+  Battery,
+  Shield,
+  Palette
 } from 'lucide-react';
+import { usePWA } from '@/hooks/usePWA';
 
 interface PWASettingsPageProps {
   onNavigate: (page: string) => void;
 }
 
 export const PWASettingsPage: React.FC<PWASettingsPageProps> = ({ onNavigate }) => {
-  const [activeTab, setActiveTab] = useState('overview');
+  const { 
+    isInstallable, 
+    isInstalled, 
+    isOnline, 
+    installApp
+  } = usePWA();
+
+  const handleNotificationRequest = () => {
+    if ('Notification' in window) {
+      Notification.requestPermission();
+    }
+  };
+
+  const getNotificationStatus = () => {
+    if (!('Notification' in window)) return 'Não suportado';
+    return Notification.permission === 'granted' ? 'Ativado' : 
+           Notification.permission === 'denied' ? 'Negado' : 'Pendente';
+  };
+
+  const getNotificationVariant = () => {
+    if (!('Notification' in window)) return 'secondary';
+    return Notification.permission === 'granted' ? 'default' :
+           Notification.permission === 'denied' ? 'destructive' : 'secondary';
+  };
 
   return (
-    <div className={`container mx-auto p-4 space-y-6 ${animations.fadeIn}`}>
-      {/* Header */}
-      <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-2xl">
+    <div className="min-h-screen bg-background w-full">
+      <div className="w-full px-4 py-6 space-y-6">
+        {/* Header */}
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mobile-text-xl flex items-center justify-center gap-2">
             <Settings className="h-6 w-6 text-primary" />
             Configurações PWA
-          </CardTitle>
-          <p className="text-gray-600">
-            Gerencie todas as funcionalidades do Progressive Web App
+          </h1>
+          <p className="text-muted-foreground mobile-text-base mt-2">
+            Configure sua experiência do aplicativo
           </p>
-        </CardHeader>
-      </Card>
+        </div>
 
-      {/* PWA Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="overview" className="flex items-center gap-2">
-            <Smartphone className="h-4 w-4" />
-            <span className="hidden sm:inline">Visão Geral</span>
-          </TabsTrigger>
-          <TabsTrigger value="performance" className="flex items-center gap-2">
-            <Activity className="h-4 w-4" />
-            <span className="hidden sm:inline">Performance</span>
-          </TabsTrigger>
-          <TabsTrigger value="notifications" className="flex items-center gap-2">
-            <Bell className="h-4 w-4" />
-            <span className="hidden sm:inline">Notificações</span>
-          </TabsTrigger>
-          <TabsTrigger value="storage" className="flex items-center gap-2">
-            <Database className="h-4 w-4" />
-            <span className="hidden sm:inline">Armazenamento</span>
-          </TabsTrigger>
-        </TabsList>
+        {/* Status do PWA */}
+        <Card className="mobile-card-spacing">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 mobile-text-lg">
+              <Smartphone className="h-5 w-5" />
+              Status do Aplicativo
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="mobile-text-base">Aplicativo Instalado</span>
+              <Badge variant={isInstalled ? "default" : "secondary"}>
+                {isInstalled ? "Sim" : "Não"}
+              </Badge>
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <span className="mobile-text-base">Status da Conexão</span>
+              <Badge variant={isOnline ? "default" : "destructive"}>
+                <Wifi className="h-3 w-3 mr-1" />
+                {isOnline ? "Online" : "Offline"}
+              </Badge>
+            </div>
 
-        {/* Overview Tab */}
-        <TabsContent value="overview" className="space-y-4">
-          <PWADashboard />
-          
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Info className="h-5 w-5" />
-                Sobre o PWA
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <h4 className="font-semibold mb-2">Funcionalidades Ativas</h4>
-                  <ul className="text-sm space-y-1 text-gray-600">
-                    <li>✅ Instalação como app nativo</li>
-                    <li>✅ Funcionamento offline</li>
-                    <li>✅ Notificações push</li>
-                    <li>✅ Sincronização em background</li>
-                    <li>✅ Cache inteligente</li>
-                    <li>✅ Atalhos de ações rápidas</li>
-                  </ul>
-                </div>
-                
-                <div>
-                  <h4 className="font-semibold mb-2">Benefícios</h4>
-                  <ul className="text-sm space-y-1 text-gray-600">
-                    <li>🚀 Carregamento mais rápido</li>
-                    <li>📱 Experiência nativa</li>
-                    <li>🔄 Sincronização automática</li>
-                    <li>🔔 Lembretes inteligentes</li>
-                    <li>💾 Uso eficiente de dados</li>
-                    <li>⚡ Performance otimizada</li>
-                  </ul>
-                </div>
+            {isInstallable && !isInstalled && (
+              <Button 
+                onClick={installApp} 
+                className="w-full mobile-button"
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Instalar Aplicativo
+              </Button>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Notificações */}
+        <Card className="mobile-card-spacing">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 mobile-text-lg">
+              <Bell className="h-5 w-5" />
+              Notificações
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="mobile-text-base font-medium">Notificações Push</p>
+                <p className="text-sm text-muted-foreground mobile-text-sm">
+                  Receba lembretes de consultas
+                </p>
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+              <Badge variant={getNotificationVariant()}>
+                {getNotificationStatus()}
+              </Badge>
+            </div>
 
-        {/* Performance Tab */}
-        <TabsContent value="performance" className="space-y-4">
-          <PWAPerformanceMonitor />
-          
-          <Card>
-            <CardHeader>
-              <CardTitle>Otimizações Implementadas</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                <div>
-                  <h5 className="font-medium mb-2">Cache Strategy</h5>
-                  <ul className="space-y-1 text-gray-600">
-                    <li>• Cache First para recursos estáticos</li>
-                    <li>• Network First para APIs</li>
-                    <li>• Stale While Revalidate para páginas</li>
-                  </ul>
-                </div>
-                
-                <div>
-                  <h5 className="font-medium mb-2">Otimizações de Build</h5>
-                  <ul className="space-y-1 text-gray-600">
-                    <li>• Code splitting por funcionalidade</li>
-                    <li>• Lazy loading de componentes</li>
-                    <li>• Minificação e compressão</li>
-                  </ul>
-                </div>
+            {Notification.permission !== 'granted' && 'Notification' in window && (
+              <Button
+                onClick={handleNotificationRequest}
+                variant="outline"
+                className="w-full mobile-button"
+              >
+                Ativar Notificações
+              </Button>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Performance */}
+        <Card className="mobile-card-spacing">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 mobile-text-lg">
+              <Battery className="h-5 w-5" />
+              Performance
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="mobile-text-base font-medium">Modo Economia de Bateria</p>
+                <p className="text-sm text-muted-foreground mobile-text-sm">
+                  Reduz animações e sincronização
+                </p>
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+              <Switch />
+            </div>
 
-        {/* Notifications Tab */}
-        <TabsContent value="notifications" className="space-y-4">
-          <PWANotificationCenter />
-        </TabsContent>
-
-        {/* Storage Tab */}
-        <TabsContent value="storage" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Database className="h-5 w-5" />
-                Gerenciamento de Armazenamento
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="text-sm text-gray-600">
-                  <p className="mb-4">
-                    O app utiliza diferentes tipos de armazenamento para oferecer 
-                    a melhor experiência offline e performance otimizada.
-                  </p>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="p-4 bg-blue-50 rounded-lg">
-                      <h5 className="font-medium text-blue-800 mb-2">Cache do Navegador</h5>
-                      <p className="text-blue-700 text-sm">
-                        Armazena recursos estáticos como CSS, JS e imagens 
-                        para carregamento mais rápido.
-                      </p>
-                    </div>
-                    
-                    <div className="p-4 bg-green-50 rounded-lg">
-                      <h5 className="font-medium text-green-800 mb-2">IndexedDB</h5>
-                      <p className="text-green-700 text-sm">
-                        Dados offline como agendamentos e informações 
-                        de clínicas para funcionar sem internet.
-                      </p>
-                    </div>
-                    
-                    <div className="p-4 bg-purple-50 rounded-lg">
-                      <h5 className="font-medium text-purple-800 mb-2">LocalStorage</h5>
-                      <p className="text-purple-700 text-sm">
-                        Configurações do usuário e preferências 
-                        que persistem entre sessões.
-                      </p>
-                    </div>
-                    
-                    <div className="p-4 bg-orange-50 rounded-lg">
-                      <h5 className="font-medium text-orange-800 mb-2">Service Worker Cache</h5>
-                      <p className="text-orange-700 text-sm">
-                        Cache avançado que permite funcionamento 
-                        offline completo do aplicativo.
-                      </p>
-                    </div>
-                  </div>
-                </div>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="mobile-text-base font-medium">Cache Offline</p>
+                <p className="text-sm text-muted-foreground mobile-text-sm">
+                  Armazena dados para uso offline
+                </p>
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+              <Switch defaultChecked />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Segurança */}
+        <Card className="mobile-card-spacing">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 mobile-text-lg">
+              <Shield className="h-5 w-5" />
+              Segurança
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="mobile-text-base font-medium">Autenticação Biométrica</p>
+                <p className="text-sm text-muted-foreground mobile-text-sm">
+                  Use impressão digital ou Face ID
+                </p>
+              </div>
+              <Switch />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="mobile-text-base font-medium">Logout Automático</p>
+                <p className="text-sm text-muted-foreground mobile-text-sm">
+                  Sair após 30 minutos de inatividade
+                </p>
+              </div>
+              <Switch defaultChecked />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Aparência */}
+        <Card className="mobile-card-spacing">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 mobile-text-lg">
+              <Palette className="h-5 w-5" />
+              Aparência
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="mobile-text-base font-medium">Tema Escuro</p>
+                <p className="text-sm text-muted-foreground mobile-text-sm">
+                  Alternar entre tema claro e escuro
+                </p>
+              </div>
+              <Switch />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="mobile-text-base font-medium">Animações</p>
+                <p className="text-sm text-muted-foreground mobile-text-sm">
+                  Ativar/desativar animações da interface
+                </p>
+              </div>
+              <Switch defaultChecked />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };

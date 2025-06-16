@@ -9,9 +9,11 @@ import {
   User
 } from 'lucide-react';
 import { animations } from '@/lib/animations';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const BottomNavigation = () => {
   const location = useLocation();
+  const isMobile = useIsMobile();
 
   const handleNavClick = () => {
     // Scroll para o topo quando navegar
@@ -53,10 +55,14 @@ const BottomNavigation = () => {
     }
   ];
 
+  if (!isMobile) {
+    return null; // Esconder navegação inferior em desktop
+  }
+
   return (
-    <nav className={`fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-gray-200 z-50 ${animations.slideInBottom}`}>
-      <div className="max-w-md mx-auto px-2">
-        <div className="flex justify-around items-center py-3">
+    <nav className={`fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-gray-200 z-50 safe-bottom ${animations.slideInBottom}`}>
+      <div className="mobile-container px-2">
+        <div className="flex justify-around items-center py-2">
           {navItems.map((item, index) => {
             const Icon = item.icon;
             return (
@@ -64,16 +70,16 @@ const BottomNavigation = () => {
                 key={item.path}
                 to={item.path}
                 onClick={handleNavClick}
-                className={`flex flex-col items-center justify-center px-3 py-2 min-w-0 flex-1 rounded-xl transition-all duration-200 ${animations.buttonHover} ${
+                className={`mobile-nav-item rounded-xl mobile-transition mobile-press mobile-focus ${
                   item.isActive 
                     ? 'text-primary bg-primary/15 scale-105' 
-                    : 'text-gray-500 hover:text-primary hover:bg-gray-50 hover:scale-105'
+                    : 'text-gray-500 hover:text-primary hover:bg-gray-50'
                 }`}
                 style={{ animationDelay: `${index * 50}ms` }}
               >
                 <div className="relative mb-1">
                   <Icon 
-                    className={`h-5 w-5 transition-all duration-200 ${
+                    className={`h-5 w-5 mobile-transition ${
                       item.isActive ? 'scale-110 drop-shadow-sm' : ''
                     }`} 
                   />
@@ -81,7 +87,7 @@ const BottomNavigation = () => {
                     <div className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full animate-pulse"></div>
                   )}
                 </div>
-                <span className={`text-xs font-medium text-center leading-tight transition-all duration-200 ${
+                <span className={`text-xs font-medium text-center leading-tight mobile-transition ${
                   item.isActive ? 'font-semibold text-primary' : ''
                 }`}>
                   {item.label}

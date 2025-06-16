@@ -21,7 +21,7 @@ const AppointmentsPage = () => {
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [selectedDate, setSelectedDate] = useState('');
 
-  const { appointments, isLoading, stats, statsLoading, updateAppointmentStatus } = useAppointments();
+  const { appointments, isLoading, stats, statsLoading, updateAppointmentStatus, updateAppointmentService } = useAppointments();
 
   const { filteredAppointments, availableClinics, userClinicName } = useAppointmentsFilters({
     appointments,
@@ -46,6 +46,10 @@ const AppointmentsPage = () => {
     updateAppointmentStatus.mutate({ appointmentId, status: newStatus });
   };
 
+  const handleServiceUpdate = (appointmentId: string, service: string, price?: number) => {
+    updateAppointmentService.mutate({ appointmentId, service, price });
+  };
+
   if (!loggedInUser) {
     return <StaffLogin onLogin={handleLogin} />;
   }
@@ -57,6 +61,16 @@ const AppointmentsPage = () => {
       </div>
     );
   }
+
+  // Convert complex stats to simple Record<string, number> for AdminDashboard
+  const simplifiedStats: Record<string, number> = stats ? {
+    total: stats.total,
+    today: stats.today,
+    thisMonth: stats.thisMonth,
+    confirmed: stats.confirmed,
+    completed: stats.completed,
+    cancelled: stats.cancelled
+  } : {};
 
   return (
     <div className={`p-6 space-y-6 ${animations.pageEnter}`}>
@@ -73,7 +87,7 @@ const AppointmentsPage = () => {
         </TabsList>
 
         <TabsContent value="dashboard">
-          <AdminDashboard appointments={appointments} stats={stats} />
+          <AdminDashboard appointments={appointments} stats={simplifiedStats} />
         </TabsContent>
 
         <TabsContent value="appointments" className="space-y-6">
@@ -101,7 +115,8 @@ const AppointmentsPage = () => {
           <AppointmentsTable
             appointments={filteredAppointments}
             onStatusChange={handleStatusChange}
-            isUpdating={updateAppointmentStatus.isPending}
+            onServiceUpdate={handleServiceUpdate}
+            isUpdating={updateAppointmentStatus.isPending || updateAppointmentService.isPending}
           />
         </TabsContent>
       </Tabs>

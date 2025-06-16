@@ -1,16 +1,17 @@
 
 import React from 'react';
 import { 
-  Stethoscope, 
   Search, 
   Sparkles, 
   Wrench, 
   Smile, 
   Settings, 
-  Shield, 
+  Stethoscope, 
   Baby, 
   Heart, 
-  AlertTriangle 
+  AlertTriangle,
+  Crown,
+  Shield
 } from 'lucide-react';
 
 export const availableServices = [
@@ -24,11 +25,11 @@ export const availableServices = [
     icon: <Search className="h-6 w-6" />
   },
   {
-    id: 'limpeza-dental',
-    name: 'Limpeza Dental',
+    id: 'limpeza',
+    name: 'Limpeza',
     description: 'Profilaxia e remoção de tártaro',
     duration: 45,
-    price: 'A partir de R$ 80',
+    price: '',
     category: 'preventivo',
     icon: <Sparkles className="h-6 w-6" />
   },
@@ -37,43 +38,79 @@ export const availableServices = [
     name: 'Restauração',
     description: 'Tratamento de cáries e restaurações',
     duration: 60,
-    price: 'A partir de R$ 120',
+    price: '',
     category: 'restaurativo',
     icon: <Wrench className="h-6 w-6" />
   },
   {
-    id: 'ortodontia-consulta',
-    name: 'Consulta Ortodontia',
+    id: 'ortodontia',
+    name: 'Ortodontia',
     description: 'Avaliação para aparelho ortodôntico',
     duration: 45,
-    price: 'A partir de R$ 100',
+    price: '',
     category: 'ortodontia',
     icon: <Smile className="h-6 w-6" />
   },
   {
-    id: 'clareamento',
-    name: 'Clareamento Dental',
-    description: 'Clareamento dental profissional',
-    duration: 90,
-    price: 'A partir de R$ 300',
-    category: 'estético',
-    icon: <Sparkles className="h-6 w-6" />
-  },
-  {
-    id: 'implante-consulta',
-    name: 'Consulta Implantodontia',
+    id: 'implantodontia',
+    name: 'Implantodontia',
     description: 'Avaliação para implantes dentários',
     duration: 60,
-    price: 'A partir de R$ 150',
+    price: '',
     category: 'implantodontia',
     icon: <Settings className="h-6 w-6" />
   },
   {
-    id: 'urgencia',
+    id: 'estetica-dental',
+    name: 'Estética Dental',
+    description: 'Clareamento e procedimentos estéticos',
+    duration: 90,
+    price: '',
+    category: 'estético',
+    icon: <Sparkles className="h-6 w-6" />
+  },
+  {
+    id: 'proteses-fixas',
+    name: 'Próteses Fixas',
+    description: 'Coroas, pontes e próteses fixas',
+    duration: 90,
+    price: '',
+    category: 'restaurativo',
+    icon: <Crown className="h-6 w-6" />
+  },
+  {
+    id: 'endodontia',
+    name: 'Endodontia',
+    description: 'Tratamento de canal',
+    duration: 90,
+    price: '',
+    category: 'restaurativo',
+    icon: <Stethoscope className="h-6 w-6" />
+  },
+  {
+    id: 'odontopediatria',
+    name: 'Odontopediatria',
+    description: 'Atendimento especializado para crianças',
+    duration: 45,
+    price: '',
+    category: 'preventivo',
+    icon: <Baby className="h-6 w-6" />
+  },
+  {
+    id: 'periodontia',
+    name: 'Periodontia',
+    description: 'Tratamento de gengivas e periodonto',
+    duration: 60,
+    price: '',
+    category: 'preventivo',
+    icon: <Shield className="h-6 w-6" />
+  },
+  {
+    id: 'atendimento-urgencia',
     name: 'Atendimento de Urgência',
     description: 'Para casos de dor e emergências',
     duration: 30,
-    price: 'A partir de R$ 100',
+    price: '',
     category: 'urgencia',
     icon: <AlertTriangle className="h-6 w-6" />
   }

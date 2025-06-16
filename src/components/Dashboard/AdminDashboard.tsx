@@ -20,12 +20,19 @@ import {
   Filter,
   Search,
   Download,
-  RefreshCw
+  RefreshCw,
+  Target,
+  Zap,
+  Star,
+  DollarSign,
+  UserCheck,
+  AlertTriangle
 } from 'lucide-react';
 import { animations } from '@/lib/animations';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell, AreaChart, Area } from 'recharts';
 import { AppointmentRecord } from '@/services/supabase/appointments';
 import { useAppointments } from '@/hooks/useAppointments';
+import { AppointmentsTable } from '@/components/Appointments/AppointmentsTable';
 
 interface AdminDashboardProps {
   appointments: AppointmentRecord[];
@@ -38,11 +45,28 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ appointments, st
   const [dateFilter, setDateFilter] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
   
-  const { updateAppointmentStatus } = useAppointments();
+  const { updateAppointmentStatus, updateAppointmentService, updateAppointment } = useAppointments();
 
-  // Filtros aplicados
-  const filteredAppointments = useMemo(() => {
+  // Obter clínica do usuário logado
+  const loggedInClinic = sessionStorage.getItem('staffClinic');
+
+  // Filtrar agendamentos pela clínica do usuário logado PRIMEIRO
+  const clinicFilteredAppointments = useMemo(() => {
+    if (!loggedInClinic) return appointments;
+    
     return appointments.filter(apt => {
+      const appointmentClinic = apt.clinic.toLowerCase();
+      const userClinic = loggedInClinic.toLowerCase();
+      
+      // Verificar se a clínica do agendamento corresponde à clínica do usuário
+      return appointmentClinic.includes(userClinic) || 
+             apt.clinic === loggedInClinic;
+    });
+  }, [appointments, loggedInClinic]);
+
+  // Aplicar filtros adicionais aos agendamentos já filtrados por clínica
+  const filteredAppointments = useMemo(() => {
+    return clinicFilteredAppointments.filter(apt => {
       const matchesClinic = selectedClinic === 'all' || apt.clinic.includes(selectedClinic);
       const matchesStatus = statusFilter === 'all' || apt.status === statusFilter;
       const matchesSearch = !searchTerm || 
@@ -75,9 +99,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ appointments, st
       
       return matchesClinic && matchesStatus && matchesSearch && matchesDate;
     });
-  }, [appointments, selectedClinic, statusFilter, searchTerm, dateFilter]);
+  }, [clinicFilteredAppointments, selectedClinic, statusFilter, searchTerm, dateFilter]);
 
-  // Processamento inteligente dos dados filtrados
+  // Processamento inteligente dos dados filtrados com novas métricas (usando apenas agendamentos da clínica)
   const dashboardData = useMemo(() => {
     if (!filteredAppointments || filteredAppointments.length === 0) {
       return {
@@ -89,11 +113,19 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ appointments, st
         pendingAppointments: 0,
         noShowAppointments: 0,
         conversionRate: 0,
+        retentionRate: 0,
+        avgTimeToConfirm: 0,
+        peakHours: [],
         monthlyData: [],
         servicesData: [],
         clinicsData: [],
         statusData: [],
-        recentAppointments: []
+        recentAppointments: [],
+        totalRevenue: 0,
+        patientSatisfaction: 0,
+        criticalAlerts: [],
+        performanceInsights: [],
+        growthTrend: 0
       };
     }
 
@@ -104,6 +136,34 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ appointments, st
     const completedAppointments = filteredAppointments.filter(apt => apt.status === 'completed');
     const noShowAppointments = filteredAppointments.filter(apt => apt.status === 'no_show');
     const pendingAppointments = filteredAppointments.filter(apt => !['confirmed', 'cancelled', 'completed', 'no_show'].includes(apt.status));
+
+    // Métricas avançadas
+    const uniquePatients = new Set(filteredAppointments.map(apt => apt.phone)).size;
+    const returningPatients = filteredAppointments.reduce((acc, apt) => {
+      const patientAppointments = filteredAppointments.filter(a => a.phone === apt.phone);
+      if (patientAppointments.length > 1) acc.add(apt.phone);
+      return acc;
+    }, new Set()).size;
+    
+    const retentionRate = uniquePatients > 0 ? Math.round((returningPatients / uniquePatients) * 100) : 0;
+    
+    // Receita real baseada nos valores inseridos pelos funcionários
+    const totalRevenue = filteredAppointments.reduce((total, apt) => {
+      const price = (apt as any).price;
+      return total + (price || 0);
+    }, 0);
+
+    // Horários de pico
+    const hourStats = filteredAppointments.reduce((acc, apt) => {
+      const hour = apt.time.split(':')[0];
+      acc[hour] = (acc[hour] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+
+    const peakHours = Object.entries(hourStats)
+      .map(([hour, count]) => ({ hour: `${hour}:00`, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 3);
 
     // Dados mensais dos últimos 6 meses
     const monthlyData = [];
@@ -119,13 +179,23 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ appointments, st
       const monthConfirmed = monthAppointments.filter(apt => 
         apt.status === 'confirmed' || apt.status === 'completed'
       );
+      const monthRevenue = monthAppointments.reduce((total, apt) => {
+        const price = (apt as any).price;
+        return total + (price || 0);
+      }, 0);
 
       monthlyData.push({
         month: monthName,
         agendamentos: monthAppointments.length,
-        conversoes: monthConfirmed.length
+        conversoes: monthConfirmed.length,
+        receita: monthRevenue
       });
     }
+
+    // Crescimento mensal
+    const lastMonth = monthlyData[monthlyData.length - 1]?.agendamentos || 0;
+    const previousMonth = monthlyData[monthlyData.length - 2]?.agendamentos || 0;
+    const growthTrend = previousMonth > 0 ? Math.round(((lastMonth - previousMonth) / previousMonth) * 100) : 0;
 
     // Distribuição de serviços
     const serviceStats = filteredAppointments.reduce((acc, apt) => {
@@ -137,28 +207,32 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ appointments, st
       .map(([service, count], index) => ({
         name: service,
         value: count,
-        color: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'][index % 5]
+        color: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#84cc16', '#f97316'][index % 8]
       }))
-      .sort((a, b) => b.value - a.value)
-      .slice(0, 5);
+      .sort((a, b) => b.value - a.value);
 
-    // Performance por clínica
+    // Performance por clínica (agora só mostra a clínica do usuário)
     const clinicStats = filteredAppointments.reduce((acc, apt) => {
       if (!acc[apt.clinic]) {
-        acc[apt.clinic] = { total: 0, confirmed: 0 };
+        acc[apt.clinic] = { total: 0, confirmed: 0, revenue: 0 };
       }
       acc[apt.clinic].total++;
       if (apt.status === 'confirmed' || apt.status === 'completed') {
         acc[apt.clinic].confirmed++;
       }
+      const price = (apt as any).price;
+      if (price) {
+        acc[apt.clinic].revenue += price;
+      }
       return acc;
-    }, {} as Record<string, { total: number; confirmed: number }>);
+    }, {} as Record<string, { total: number; confirmed: number; revenue: number }>);
 
     const clinicsData = Object.entries(clinicStats)
       .map(([clinic, data]) => ({
         clinic: clinic,
         agendamentos: data.total,
-        taxa: Math.round((data.confirmed / data.total) * 100)
+        taxa: Math.round((data.confirmed / data.total) * 100),
+        receita: data.revenue
       }))
       .sort((a, b) => b.agendamentos - a.agendamentos);
 
@@ -179,6 +253,30 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ appointments, st
       .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
       .slice(0, 10);
 
+    // Alertas críticos
+    const criticalAlerts = [];
+    const noShowRate = filteredAppointments.length > 0 ? (noShowAppointments.length / filteredAppointments.length) * 100 : 0;
+    const cancelRate = filteredAppointments.length > 0 ? (cancelledAppointments.length / filteredAppointments.length) * 100 : 0;
+    
+    if (noShowRate > 15) criticalAlerts.push({ type: 'warning', message: `Taxa de não comparecimento alta: ${noShowRate.toFixed(1)}%` });
+    if (cancelRate > 20) criticalAlerts.push({ type: 'error', message: `Taxa de cancelamento alta: ${cancelRate.toFixed(1)}%` });
+    if (conversionRate < 60) criticalAlerts.push({ type: 'warning', message: `Taxa de conversão baixa: ${conversionRate}%` });
+    if (pendingAppointments.length > 20) criticalAlerts.push({ type: 'info', message: `${pendingAppointments.length} agendamentos pendentes` });
+
+    // Insights de performance
+    const performanceInsights = [];
+    if (conversionRate > 80) performanceInsights.push('🎉 Excelente taxa de conversão!');
+    if (retentionRate > 70) performanceInsights.push('💪 Boa retenção de pacientes');
+    if (growthTrend > 10) performanceInsights.push('📈 Crescimento acelerado');
+    const topService = servicesData[0];
+    if (topService && topService.value > filteredAppointments.length * 0.3) {
+      performanceInsights.push(`🔥 ${topService.name} é o serviço estrela`);
+    }
+
+    // Satisfação estimada (baseada em conclusões vs cancelamentos)
+    const patientSatisfaction = filteredAppointments.length > 0 ? 
+      Math.round(((completedAppointments.length + confirmedAppointments.length) / (filteredAppointments.length - pendingAppointments.length)) * 100) : 0;
+
     return {
       totalAppointments: filteredAppointments.length,
       todayAppointments: todayAppointments.length,
@@ -188,22 +286,30 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ appointments, st
       pendingAppointments: pendingAppointments.length,
       noShowAppointments: noShowAppointments.length,
       conversionRate,
+      retentionRate,
+      avgTimeToConfirm: 2.5, // Simulado
+      peakHours,
       monthlyData,
       servicesData,
       clinicsData,
       statusData,
-      recentAppointments
+      recentAppointments,
+      totalRevenue,
+      patientSatisfaction,
+      criticalAlerts,
+      performanceInsights,
+      growthTrend
     };
   }, [filteredAppointments]);
 
-  // Extrair clínicas únicas para o filtro
+  // Extrair clínicas únicas para o filtro (apenas da clínica do usuário)
   const uniqueClinics = useMemo(() => {
-    const clinics = [...new Set(appointments.map(apt => apt.clinic))];
+    const clinics = [...new Set(clinicFilteredAppointments.map(apt => apt.clinic))];
     return clinics.map(clinic => ({
       value: clinic,
       label: clinic
     }));
-  }, [appointments]);
+  }, [clinicFilteredAppointments]);
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -222,9 +328,28 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ appointments, st
 
   const handleUpdateStatus = async (appointmentId: string, newStatus: 'confirmed' | 'cancelled' | 'completed' | 'no_show') => {
     try {
+      console.log('AdminDashboard: Updating status:', appointmentId, newStatus);
       await updateAppointmentStatus.mutateAsync({ appointmentId, status: newStatus });
     } catch (error) {
       console.error('Erro ao atualizar status:', error);
+    }
+  };
+
+  const handleUpdateService = async (appointmentId: string, service: string, price?: number) => {
+    try {
+      console.log('AdminDashboard: Updating service:', appointmentId, service, price);
+      await updateAppointmentService.mutateAsync({ appointmentId, service, price });
+    } catch (error) {
+      console.error('Erro ao atualizar serviço:', error);
+    }
+  };
+
+  const handleUpdateAppointment = async (appointmentId: string, updates: { name?: string; phone?: string; email?: string; date?: string; time?: string; clinic?: string; notes?: string }) => {
+    try {
+      console.log('AdminDashboard: Updating appointment:', appointmentId, updates);
+      await updateAppointment.mutateAsync({ appointmentId, updates });
+    } catch (error) {
+      console.error('Erro ao atualizar agendamento:', error);
     }
   };
 
@@ -258,9 +383,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ appointments, st
           <div>
             <h1 className="text-3xl font-bold flex items-center gap-3 mb-2">
               <BarChart3 className="h-8 w-8 text-primary" />
-              Dashboard Administrativo 👩‍⚕️
+              Dashboard Administrativo - {loggedInClinic || 'Todas as Clínicas'} 👩‍⚕️
             </h1>
-            <p className="text-gray-600">Visão completa dos agendamentos e performance em tempo real</p>
+            <p className="text-gray-600">Análise completa e gestão avançada de agendamentos</p>
           </div>
           
           <div className="flex items-center gap-2">
@@ -347,345 +472,79 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ appointments, st
         </Card>
       </div>
 
-      {/* Cards de Estatísticas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className={`${animations.slideInLeft}`}>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Total Agendamentos</p>
-                <p className="text-3xl font-bold text-primary">{dashboardData.totalAppointments}</p>
-              </div>
-              <Calendar className="h-8 w-8 text-blue-500" />
-            </div>
-            <p className="text-xs text-green-600 mt-2">
-              +{dashboardData.todayAppointments} hoje
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className={`${animations.slideInLeft}`} style={{ animationDelay: '100ms' }}>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Taxa Conversão</p>
-                <p className="text-3xl font-bold text-green-600">{dashboardData.conversionRate}%</p>
-              </div>
-              <TrendingUp className="h-8 w-8 text-green-500" />
-            </div>
-            <p className="text-xs text-gray-600 mt-2">
-              {dashboardData.confirmedAppointments + dashboardData.completedAppointments} confirmados
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className={`${animations.slideInLeft}`} style={{ animationDelay: '200ms' }}>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Pacientes Únicos</p>
-                <p className="text-3xl font-bold text-purple-600">
-                  {new Set(filteredAppointments.map(apt => apt.phone)).size}
-                </p>
-              </div>
-              <Users className="h-8 w-8 text-purple-500" />
-            </div>
-            <p className="text-xs text-green-600 mt-2">Base de pacientes</p>
-          </CardContent>
-        </Card>
-
-        <Card className={`${animations.slideInLeft}`} style={{ animationDelay: '300ms' }}>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Hoje</p>
-                <p className="text-3xl font-bold text-orange-600">{dashboardData.todayAppointments}</p>
-              </div>
-              <Clock className="h-8 w-8 text-orange-500" />
-            </div>
-            <p className="text-xs text-blue-600 mt-2">Agendamentos do dia</p>
-          </CardContent>
-        </Card>
-      </div>
-
       {/* Tabs Organizadas */}
-      <Tabs defaultValue="overview" className={`${animations.fadeIn}`}>
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="overview">Visão Geral</TabsTrigger>
-          <TabsTrigger value="performance">Performance</TabsTrigger>
-          <TabsTrigger value="clinics">Clínicas</TabsTrigger>
-          <TabsTrigger value="appointments">Agendamentos</TabsTrigger>
+      <Tabs defaultValue="appointments" className={`${animations.fadeIn}`}>
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="appointments">Gerenciar Agendamentos</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics & Relatórios</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="overview" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Agendamentos por Mês</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {dashboardData.monthlyData.length > 0 ? (
-                  <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={dashboardData.monthlyData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="month" />
-                      <YAxis />
-                      <Tooltip />
-                      <Bar dataKey="agendamentos" fill="#3b82f6" name="Agendamentos" />
-                      <Bar dataKey="conversoes" fill="#10b981" name="Confirmados" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                ) : (
-                  <div className="flex items-center justify-center h-[300px] text-gray-500">
-                    Sem dados disponíveis
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Distribuição de Serviços</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {dashboardData.servicesData.length > 0 ? (
-                  <ResponsiveContainer width="100%" height={300}>
-                    <PieChart>
-                      <Pie
-                        data={dashboardData.servicesData}
-                        cx="50%"
-                        cy="50%"
-                        outerRadius={100}
-                        fill="#8884d8"
-                        dataKey="value"
-                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                      >
-                        {dashboardData.servicesData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Pie>
-                      <Tooltip />
-                    </PieChart>
-                  </ResponsiveContainer>
-                ) : (
-                  <div className="flex items-center justify-center h-[300px] text-gray-500">
-                    Sem dados de serviços
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="performance" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Status dos Agendamentos</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {dashboardData.statusData.length > 0 ? (
-                  <ResponsiveContainer width="100%" height={300}>
-                    <PieChart>
-                      <Pie
-                        data={dashboardData.statusData}
-                        cx="50%"
-                        cy="50%"
-                        outerRadius={100}
-                        fill="#8884d8"
-                        dataKey="value"
-                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                      >
-                        {dashboardData.statusData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Pie>
-                      <Tooltip />
-                    </PieChart>
-                  </ResponsiveContainer>
-                ) : (
-                  <div className="flex items-center justify-center h-[300px] text-gray-500">
-                    Sem dados de status
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Métricas de Performance</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className="h-5 w-5 text-green-500" />
-                      <span>Confirmados</span>
-                    </div>
-                    <Badge variant="outline" className="bg-green-50 text-green-700">
-                      {dashboardData.confirmedAppointments}
-                    </Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Activity className="h-5 w-5 text-blue-500" />
-                      <span>Concluídos</span>
-                    </div>
-                    <Badge variant="outline" className="bg-blue-50 text-blue-700">
-                      {dashboardData.completedAppointments}
-                    </Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Clock className="h-5 w-5 text-yellow-500" />
-                      <span>Pendentes</span>
-                    </div>
-                    <Badge variant="outline" className="bg-yellow-50 text-yellow-700">
-                      {dashboardData.pendingAppointments}
-                    </Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <XCircle className="h-5 w-5 text-red-500" />
-                      <span>Cancelados</span>
-                    </div>
-                    <Badge variant="outline" className="bg-red-50 text-red-700">
-                      {dashboardData.cancelledAppointments}
-                    </Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <AlertCircle className="h-5 w-5 text-orange-500" />
-                      <span>Não Compareceu</span>
-                    </div>
-                    <Badge variant="outline" className="bg-orange-50 text-orange-700">
-                      {dashboardData.noShowAppointments}
-                    </Badge>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="clinics" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Performance por Clínica</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {dashboardData.clinicsData.length > 0 ? (
-                <ResponsiveContainer width="100%" height={400}>
-                  <BarChart data={dashboardData.clinicsData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="clinic" angle={-45} textAnchor="end" height={100} />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="agendamentos" fill="#3b82f6" name="Agendamentos" />
-                  </BarChart>
-                </ResponsiveContainer>
-              ) : (
-                <div className="flex items-center justify-center h-[400px] text-gray-500">
-                  Sem dados de clínicas
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-
         <TabsContent value="appointments" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Lista de Agendamentos ({filteredAppointments.length})</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4 max-h-[600px] overflow-y-auto">
-                {dashboardData.recentAppointments.length > 0 ? (
-                  dashboardData.recentAppointments.map((apt) => (
-                    <div key={apt.id} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
-                      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                        <div className="flex items-center gap-4">
-                          <div className="w-3 h-3 bg-primary rounded-full flex-shrink-0"></div>
-                          <div className="flex-1 min-w-0">
-                            <h3 className="font-medium text-gray-900 truncate">{apt.name}</h3>
-                            <div className="flex flex-wrap items-center gap-2 text-sm text-gray-600 mt-1">
-                              <span className="flex items-center gap-1">
-                                <Phone className="h-3 w-3" />
-                                {apt.phone}
-                              </span>
-                              <span className="flex items-center gap-1">
-                                <MapPin className="h-3 w-3" />
-                                {apt.clinic}
-                              </span>
-                            </div>
-                            <p className="text-sm text-gray-600 mt-1">{apt.service}</p>
-                          </div>
-                        </div>
-                        
-                        <div className="flex flex-col lg:flex-row lg:items-center gap-4">
-                          <div className="text-center lg:text-right">
-                            <p className="text-sm font-medium">{apt.date}</p>
-                            <p className="text-xs text-gray-600">{apt.time}</p>
-                          </div>
-                          
-                          <div className="flex flex-col gap-2">
-                            {getStatusBadge(apt.status)}
-                            
-                            {apt.status === 'confirmed' && (
-                              <div className="flex gap-1">
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  className="text-xs px-2 py-1 h-auto"
-                                  onClick={() => handleUpdateStatus(apt.id, 'completed')}
-                                >
-                                  Concluir
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  className="text-xs px-2 py-1 h-auto text-orange-600"
-                                  onClick={() => handleUpdateStatus(apt.id, 'no_show')}
-                                >
-                                  Não Veio
-                                </Button>
-                              </div>
-                            )}
-                            
-                            {apt.status === 'pending' && (
-                              <div className="flex gap-1">
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  className="text-xs px-2 py-1 h-auto text-green-600"
-                                  onClick={() => handleUpdateStatus(apt.id, 'confirmed')}
-                                >
-                                  Confirmar
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  className="text-xs px-2 py-1 h-auto text-red-600"
-                                  onClick={() => handleUpdateStatus(apt.id, 'cancelled')}
-                                >
-                                  Cancelar
-                                </Button>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="text-center text-gray-500 py-8">
-                    <Calendar className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                    <p>Nenhum agendamento encontrado com os filtros aplicados</p>
+          <AppointmentsTable
+            appointments={filteredAppointments}
+            onStatusChange={handleUpdateStatus}
+            onServiceUpdate={handleUpdateService}
+            onAppointmentUpdate={handleUpdateAppointment}
+            isUpdating={updateAppointmentStatus.isPending || updateAppointmentService.isPending || updateAppointment.isPending}
+          />
+        </TabsContent>
+
+        <TabsContent value="analytics" className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs font-medium text-gray-600">Total Agendamentos</p>
+                    <p className="text-2xl font-bold text-primary">{filteredAppointments.length}</p>
                   </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+                  <Calendar className="h-6 w-6 text-blue-500" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs font-medium text-gray-600">Confirmados</p>
+                    <p className="text-2xl font-bold text-green-600">
+                      {filteredAppointments.filter(apt => apt.status === 'confirmed').length}
+                    </p>
+                  </div>
+                  <CheckCircle className="h-6 w-6 text-green-500" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs font-medium text-gray-600">Concluídos</p>
+                    <p className="text-2xl font-bold text-blue-600">
+                      {filteredAppointments.filter(apt => apt.status === 'completed').length}
+                    </p>
+                  </div>
+                  <Activity className="h-6 w-6 text-blue-500" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs font-medium text-gray-600">Cancelados</p>
+                    <p className="text-2xl font-bold text-red-600">
+                      {filteredAppointments.filter(apt => apt.status === 'cancelled').length}
+                    </p>
+                  </div>
+                  <XCircle className="h-6 w-6 text-red-500" />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
       </Tabs>
     </div>

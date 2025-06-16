@@ -1,9 +1,13 @@
+
 [build]
   publish = "dist"
-  command = "npm run build"
+  command = "npm ci --include=optional && npm run build"
 
 [build.environment]
   NODE_VERSION = "18"
+  NPM_CONFIG_INCLUDE = "optional"
+  NPM_CONFIG_FUND = "false"
+  NPM_CONFIG_AUDIT = "false"
 
 [[redirects]]
   from = "/*"
@@ -27,3 +31,12 @@
     X-Frame-Options = "DENY"
     X-XSS-Protection = "1; mode=block"
     Referrer-Policy = "strict-origin-when-cross-origin"
+
+[context.production]
+  environment = { VITE_ENVIRONMENT = "production" }
+
+[context.staging]
+  environment = { VITE_ENVIRONMENT = "staging" }
+
+[context.deploy-preview]
+  environment = { VITE_ENVIRONMENT = "staging" }

@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import type { Tables } from '@/integrations/supabase/types';
 
 export interface AppointmentRecord {
   id: string;
@@ -31,24 +32,22 @@ export interface CreateAppointmentData {
   webhook_session_id?: string;
 }
 
-type AppointmentData = {
-  id: string;
-  name: string;
-  phone: string;
+export interface UpdateAppointmentData {
+  name?: string;
+  phone?: string;
   email?: string;
-  date: string;
-  time: string;
-  clinic: string;
-  service: string;
-  status: string;
+  date?: string;
+  time?: string;
+  clinic?: string;
+  service?: string;
+  status?: string;
   notes?: string;
-  source?: string;
-  created_at: string;
-  updated_at: string;
-  clinic_filter?: string;
-};
+  price?: number;
+}
 
-const normalizeAppointment = (data: AppointmentData): AppointmentRecord => ({
+type AppointmentRow = Tables<'appointments'>;
+
+const normalizeAppointment = (data: AppointmentRow): AppointmentRecord => ({
   id: data.id,
   name: data.name,
   phone: data.phone,
@@ -199,6 +198,65 @@ export class AppointmentService {
       return normalizeAppointment(data);
     } catch (error) {
       console.error('Error updating appointment status:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Update appointment service and price
+   */
+  static async updateAppointmentService(
+    appointmentId: string,
+    service: string,
+    price?: number
+  ): Promise<AppointmentRecord> {
+    try {
+      const updateData: any = { service };
+      if (price !== undefined) {
+        updateData.price = price;
+      }
+
+      const { data, error } = await supabase
+        .from('appointments')
+        .update(updateData)
+        .eq('id', appointmentId)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return normalizeAppointment(data);
+    } catch (error) {
+      console.error('Error updating appointment service:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Update appointment data (comprehensive update)
+   */
+  static async updateAppointment(
+    appointmentId: string,
+    updates: UpdateAppointmentData
+  ): Promise<AppointmentRecord> {
+    try {
+      console.log('Updating appointment:', appointmentId, updates);
+      
+      const { data, error } = await supabase
+        .from('appointments')
+        .update(updates)
+        .eq('id', appointmentId)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
+      
+      console.log('Updated appointment data:', data);
+      return normalizeAppointment(data);
+    } catch (error) {
+      console.error('Error updating appointment:', error);
       throw error;
     }
   }

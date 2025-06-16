@@ -1,12 +1,19 @@
+
 {
   "$schema": "https://json.schemastore.org/vercel",
   "version": 2,
   "framework": "vite",
-  "buildCommand": "npm run build",
+  "buildCommand": "npm ci && npm run build",
   "outputDirectory": "dist",
-  "installCommand": "npm install",
+  "installCommand": "npm ci --include=optional",
   "devCommand": "npm run dev",
   "public": true,
+  "build": {
+    "env": {
+      "NODE_VERSION": "18",
+      "NPM_CONFIG_INCLUDE": "optional"
+    }
+  },
   "rewrites": [
     {
       "source": "/(.*)",

@@ -1,177 +1,184 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { 
-  User, 
-  Bell, 
-  Shield, 
-  Gamepad2, 
-  Accessibility,
-  History,
-  LogOut,
-  Lock
-} from 'lucide-react';
-import { animations } from '@/lib/animations';
+
+import React, { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { useProfile } from '@/hooks/useProfile';
-import { useUserAppointments } from '@/hooks/useUserAppointments';
-import { useNotificationPreferences } from '@/hooks/useNotificationPreferences';
-import { useGamificationData } from '@/hooks/useGamificationData';
-import { ProfileTab } from '@/components/Profile/ProfileTab';
-import { HistoryTab } from '@/components/Profile/HistoryTab';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import { User, LogOut, History, Settings, Bell, Shield, UserCog } from 'lucide-react';
+import { ProfileTabReal } from '@/components/Profile/ProfileTabReal';
+import { HistoryTabReal } from '@/components/Profile/HistoryTabReal';
 import { NotificationsTab } from '@/components/Profile/NotificationsTab';
-import { GamificationTab } from '@/components/Profile/GamificationTab';
-import { AccessibilityTab } from '@/components/Profile/AccessibilityTab';
 import { SecurityTab } from '@/components/Profile/SecurityTab';
-import { toastSuccess, toastError } from '@/components/ui/custom-toast';
+import { AccessibilityTab } from '@/components/Profile/AccessibilityTab';
+import { AuthForm } from '@/components/Auth/AuthForm';
+import { useAuthPage } from '@/hooks/useAuthPage';
+import { useNavigate } from 'react-router-dom';
 
 const ProfilePage = () => {
-  const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuth();
-  const { profile, loading: profileLoading } = useProfile();
-  const { loading: appointmentsLoading } = useUserAppointments();
-  const { loading: preferencesLoading } = useNotificationPreferences();
-  const { loading: gamificationLoading } = useGamificationData();
-  
   const [activeTab, setActiveTab] = useState('profile');
+  const navigate = useNavigate();
+  
+  const {
+    isLogin,
+    loading,
+    formData,
+    handleInputChange,
+    handlePhoneChange,
+    handleSubmit,
+    handlePasswordReset,
+    handleToggleMode,
+    handleEnterWithoutAccount
+  } = useAuthPage();
 
-  // Redirecionar para login se não estiver autenticado
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/auth');
-    }
-  }, [isAuthenticated, navigate]);
-
-  const handleLogout = async () => {
-    try {
-      const result = await logout();
-      if (result.success) {
-        toastSuccess('Logout realizado', 'Você foi desconectado com sucesso');
-        navigate('/auth');
-      } else {
-        toastError('Erro', 'Não foi possível fazer logout');
-      }
-    } catch (error) {
-      toastError('Erro', 'Erro interno do sistema');
-    }
+  const handleStaffAccess = () => {
+    navigate('/staff-login');
   };
 
-  // Mostrar loading enquanto verifica autenticação
-  if (!isAuthenticated) {
-    return null; // Componente será redirecionado pelo useEffect
-  }
+  // Botão de acesso administrativo fixo no topo
+  const AdminAccessButton = () => (
+    <div className="fixed top-4 right-4 z-50">
+      <Button 
+        variant="default"
+        size="sm"
+        onClick={handleStaffAccess}
+        className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-lg px-3 py-2"
+      >
+        <UserCog className="h-4 w-4 mr-2" />
+        Painel Administrativo
+      </Button>
+    </div>
+  );
 
-  if (profileLoading || appointmentsLoading || preferencesLoading || gamificationLoading) {
+  if (!isAuthenticated) {
     return (
-      <div className="p-6">
-        <div className="animate-pulse space-y-6">
-          <div className="h-8 bg-gray-200 rounded w-1/3"></div>
-          <div className="h-32 bg-gray-200 rounded"></div>
+      <div className="min-h-screen bg-background w-full">
+        <AdminAccessButton />
+        <div className="w-full px-4 py-4">
+          <Card className="mobile-card-spacing">
+            <CardHeader className="text-center pb-4">
+              <CardTitle className="mobile-text-xl">Acesse sua Conta</CardTitle>
+              <p className="text-muted-foreground mobile-text-base">
+                Faça login para acessar seu perfil e histórico
+              </p>
+            </CardHeader>
+            <CardContent>
+              <AuthForm 
+                isLogin={isLogin}
+                formData={formData}
+                loading={loading}
+                onInputChange={handleInputChange}
+                onPhoneChange={handlePhoneChange}
+                onSubmit={handleSubmit}
+                onToggleMode={handleToggleMode}
+                onPasswordReset={handlePasswordReset}
+                onEnterWithoutAccount={handleEnterWithoutAccount}
+              />
+            </CardContent>
+          </Card>
         </div>
       </div>
     );
   }
 
+  const handleSignOut = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error);
+    }
+  };
+
   return (
-    <div className="p-4 space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <h1 className="text-3xl font-bold">Meu Perfil</h1>
-          <Badge variant="secondary" className="px-3 py-1">
-            {profile?.nome_completo || user?.email || 'Usuário'}
-          </Badge>
+    <div className="min-h-screen bg-background w-full">
+      <AdminAccessButton />
+      
+      <div className="w-full px-4 py-4">
+        {/* Botão de acesso para funcionários no header */}
+        <div className="flex justify-end mb-4">
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={handleStaffAccess}
+            className="bg-white/90 backdrop-blur-sm border-primary/20 hover:bg-primary/10 px-3 py-2"
+          >
+            <Shield className="h-4 w-4 mr-2" />
+            Acesso Funcionários
+          </Button>
         </div>
-        <Button 
-          variant="outline" 
-          onClick={handleLogout}
-          className="flex items-center gap-2 text-red-600 hover:text-red-700 hover:bg-red-50"
-        >
-          <LogOut className="h-4 w-4" />
-          Sair
-        </Button>
+
+        {/* Header do Perfil */}
+        <div className="text-center mb-6">
+          <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
+            <User className="h-8 w-8 text-primary" />
+          </div>
+          <h1 className="text-xl font-bold mobile-text-lg mb-1">
+            {user?.user_metadata?.nome_completo || user?.email}
+          </h1>
+          <p className="text-muted-foreground mobile-text-sm">
+            {user?.email}
+          </p>
+        </div>
+
+        {/* Tabs do Perfil */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 mb-4 h-auto">
+            <TabsTrigger value="profile" className="mobile-text-xs p-2 flex flex-col md:flex-row items-center">
+              <User className="h-4 w-4 mb-1 md:mb-0 md:mr-1" />
+              <span>Perfil</span>
+            </TabsTrigger>
+            <TabsTrigger value="history" className="mobile-text-xs p-2 flex flex-col md:flex-row items-center">
+              <History className="h-4 w-4 mb-1 md:mb-0 md:mr-1" />
+              <span>Histórico</span>
+            </TabsTrigger>
+            <TabsTrigger value="notifications" className="mobile-text-xs p-2 flex flex-col md:flex-row items-center">
+              <Bell className="h-4 w-4 mb-1 md:mb-0 md:mr-1" />
+              <span>Notificações</span>
+            </TabsTrigger>
+            <TabsTrigger value="security" className="mobile-text-xs p-2 flex flex-col md:flex-row items-center">
+              <Shield className="h-4 w-4 mb-1 md:mb-0 md:mr-1" />
+              <span>Segurança</span>
+            </TabsTrigger>
+            <TabsTrigger value="accessibility" className="mobile-text-xs p-2 flex flex-col md:flex-row items-center">
+              <Settings className="h-4 w-4 mb-1 md:mb-0 md:mr-1" />
+              <span>Acessibilidade</span>
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="profile">
+            <ProfileTabReal onTabChange={setActiveTab} />
+          </TabsContent>
+
+          <TabsContent value="history">
+            <HistoryTabReal />
+          </TabsContent>
+
+          <TabsContent value="notifications">
+            <NotificationsTab />
+          </TabsContent>
+
+          <TabsContent value="security">
+            <SecurityTab />
+          </TabsContent>
+
+          <TabsContent value="accessibility">
+            <AccessibilityTab />
+          </TabsContent>
+        </Tabs>
+
+        {/* Botão de Logout */}
+        <div className="mt-6">
+          <Button
+            onClick={handleSignOut}
+            variant="outline"
+            className="w-full mobile-button h-12"
+            size="lg"
+          >
+            <LogOut className="h-5 w-5 mr-2" />
+            Sair da Conta
+          </Button>
+        </div>
       </div>
-
-      {/* Staff Access Card */}
-      <div className={`flex justify-center ${animations.slideInTop}`}>
-        <Card className="w-full max-w-md bg-white/90 backdrop-blur-sm border-primary/20 shadow-lg mobile-card-spacing">
-          <CardHeader className="text-center pb-4">
-            <div className="flex justify-center mb-4">
-              <div className="bg-primary rounded-full p-3">
-                <Lock className="h-6 w-6 text-white" />
-              </div>
-            </div>
-            <CardTitle className="text-2xl text-primary mobile-text-xl">Acesso Funcionários</CardTitle>
-            <p className="text-muted-foreground mobile-text-base">
-              Selecione sua clínica e digite a senha para acessar os agendamentos
-            </p>
-          </CardHeader>
-          <CardContent className="text-center">
-            <Button 
-              size="lg" 
-              className="w-full text-lg font-semibold mobile-touch-target" 
-              onClick={() => navigate('/appointments')}
-            >
-              Entrar
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-6">
-          <TabsTrigger value="profile" className="flex items-center gap-2">
-            <User className="h-4 w-4" />
-            Perfil
-          </TabsTrigger>
-          <TabsTrigger value="history" className="flex items-center gap-2">
-            <History className="h-4 w-4" />
-            Histórico
-          </TabsTrigger>
-          <TabsTrigger value="notifications" className="flex items-center gap-2">
-            <Bell className="h-4 w-4" />
-            Notificações
-          </TabsTrigger>
-          <TabsTrigger value="gamification" className="flex items-center gap-2">
-            <Gamepad2 className="h-4 w-4" />
-            Gamificação
-          </TabsTrigger>
-          <TabsTrigger value="accessibility" className="flex items-center gap-2">
-            <Accessibility className="h-4 w-4" />
-            Acessibilidade
-          </TabsTrigger>
-          <TabsTrigger value="security" className="flex items-center gap-2">
-            <Shield className="h-4 w-4" />
-            Segurança
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="profile">
-          <ProfileTab onTabChange={setActiveTab} />
-        </TabsContent>
-
-        <TabsContent value="history">
-          <HistoryTab />
-        </TabsContent>
-
-        <TabsContent value="notifications">
-          <NotificationsTab />
-        </TabsContent>
-
-        <TabsContent value="gamification">
-          <GamificationTab />
-        </TabsContent>
-
-        <TabsContent value="accessibility">
-          <AccessibilityTab />
-        </TabsContent>
-
-        <TabsContent value="security">
-          <SecurityTab />
-        </TabsContent>
-      </Tabs>
     </div>
   );
 };

@@ -1,68 +1,52 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { animations, getStaggerStyle } from '@/lib/animations';
-import { Star } from 'lucide-react';
-import { ReviewSkeleton } from '@/components/ui/enhanced-skeleton';
+import { Button } from '@/components/ui/button';
+import { Star, MessageSquare } from 'lucide-react';
+import { animations } from '@/lib/animations';
+import { useAuth } from '@/hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
+import { toastInfo } from '@/components/ui/custom-toast';
 
-interface ReviewsSectionProps {
-  loading?: boolean;
-}
+export const ReviewsSection: React.FC = () => {
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
 
-export const ReviewsSection: React.FC<ReviewsSectionProps> = ({ loading = false }) => {
-  const reviews = [
-    {
-      name: 'Maria Silva',
-      rating: 5,
-      comment: 'Excelente atendimento! A avaliação gratuita me surpreendeu pela qualidade.'
-    },
-    {
-      name: 'João Santos', 
-      rating: 5,
-      comment: 'Equipe muito profissional e clínica moderna. Recomendo!'
+  const handleLeaveReview = () => {
+    if (!isAuthenticated) {
+      navigate('/profile');
+      toastInfo('Login necessário', 'Faça login para deixar uma avaliação');
+      return;
     }
-  ];
+    
+    // Aqui você pode implementar a lógica para deixar avaliação
+    toastInfo('Avaliação', 'Sistema de avaliações em desenvolvimento');
+  };
 
   return (
-    <Card className={animations.slideInBottom}>
+    <Card className={animations.slideInLeft}>
       <CardHeader>
         <CardTitle className="flex items-center">
-          <Star className={`h-5 w-5 mr-2 text-yellow-500 ${animations.toothGlow}`} />
-          Avaliações de Pacientes
+          <Star className="h-5 w-5 mr-2" />
+          Avaliações
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
-          {loading ? (
-            <>
-              <ReviewSkeleton />
-              <ReviewSkeleton />
-            </>
-          ) : (
-            reviews.map((review, index) => (
-              <div 
-                key={review.name}
-                className={`p-3 bg-gray-50 rounded-lg ${animations.cardHover}`}
-                style={getStaggerStyle(index)}
-              >
-                <div className="flex items-center mb-2">
-                  <div className="flex text-yellow-500">
-                    {[1,2,3,4,5].map(i => (
-                      <Star 
-                        key={i} 
-                        className={`h-4 w-4 fill-current ${animations.iconHover}`} 
-                        style={getStaggerStyle(i, 25)}
-                      />
-                    ))}
-                  </div>
-                  <span className="ml-2 font-medium">{review.name}</span>
-                </div>
-                <p className="text-sm text-gray-600">
-                  {review.comment}
-                </p>
-              </div>
-            ))
-          )}
+        <div className="text-center py-6">
+          <MessageSquare className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+          <p className="text-gray-600 mb-4">
+            {isAuthenticated 
+              ? 'Compartilhe sua experiência conosco' 
+              : 'Faça login para compartilhar sua experiência'
+            }
+          </p>
+          <Button 
+            variant="outline"
+            className={animations.buttonHover}
+            onClick={handleLeaveReview}
+          >
+            {isAuthenticated ? 'Deixar Avaliação' : 'Fazer Login para Avaliar'}
+          </Button>
         </div>
       </CardContent>
     </Card>

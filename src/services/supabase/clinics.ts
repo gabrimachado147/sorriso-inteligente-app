@@ -1,6 +1,6 @@
+
 // Supabase service for managing clinics using existing tables
 import { supabase } from '../../integrations/supabase/client'
-import type { Tables, TablesInsert, TablesUpdate } from '../../integrations/supabase/types'
 
 // Mock interfaces for clinic data since these tables don't exist in the database
 export interface Clinic {
@@ -209,22 +209,8 @@ export class ClinicService {
   ): Promise<{ open: string; close: string } | null> {
     console.log('Mock working hours for clinic:', clinicId, 'day:', dayOfWeek)
     
-    // Retorna horário mock se não houver integração real
-    // ou busca horário real se disponível
-    // Aqui, priorizando busca real se possível
-    try {
-      const { data, error } = await supabase
-        .from('clinics')
-        .select('opening_hours')
-        .eq('id', clinicId)
-        .single();
-      if (error) throw error;
-      const workingHours = data.opening_hours as Record<string, { open: string; close: string }> | null;
-      return workingHours?.[dayOfWeek] || { open: '08:00', close: '18:00' };
-    } catch (e) {
-      // fallback mock
-      return { open: '08:00', close: '18:00' };
-    }
+    // Return mock working hours since working_hours column doesn't exist
+    return { open: '08:00', close: '18:00' };
   }
 
   /**
@@ -258,8 +244,8 @@ export class ClinicService {
       .from('reviews')
       .select(`
         *,
-        patient:users(full_name),
-        dentist:dentists(full_name)
+        patient:user_profiles(full_name),
+        dentist:user_profiles(full_name)
       `)
       .eq('clinic_id', clinicId)
       .order('created_at', { ascending: false })

@@ -1,9 +1,9 @@
 
 import { useState, useEffect } from 'react';
-import { ProfileService, type UserProfile } from '@/services/profileService';
+import { UserProfileService, type UserProfile } from '@/services/supabase/userProfiles';
 import { useAuth } from './useAuth';
 
-export const useProfile = () => {
+export const useUserProfile = () => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -22,7 +22,7 @@ export const useProfile = () => {
         setLoading(true);
         setError(null);
         
-        const userProfile = await ProfileService.getCurrentProfile();
+        const userProfile = await UserProfileService.getCurrentProfile();
         setProfile(userProfile);
       } catch (err) {
         console.error('Error loading profile:', err);
@@ -36,15 +36,15 @@ export const useProfile = () => {
   }, [user]);
 
   // Update profile function
-  const updateProfile = async (updates: Partial<Pick<UserProfile, 'nome_completo' | 'telefone'>>) => {
+  const updateProfile = async (updates: Partial<Pick<UserProfile, 'full_name' | 'phone' | 'date_of_birth'>>) => {
     try {
       setError(null);
       
-      const result = await ProfileService.updateProfile(updates);
+      const result = await UserProfileService.updateProfile(updates);
       
       if (result.success) {
         // Reload profile to get updated data
-        const updatedProfile = await ProfileService.getCurrentProfile();
+        const updatedProfile = await UserProfileService.getCurrentProfile();
         setProfile(updatedProfile);
         return { success: true };
       } else {
@@ -58,11 +58,35 @@ export const useProfile = () => {
     }
   };
 
+  // Create profile function
+  const createProfile = async (profileData: { full_name: string; phone?: string; date_of_birth?: string }) => {
+    try {
+      setError(null);
+      
+      const result = await UserProfileService.upsertProfile(profileData);
+      
+      if (result.success) {
+        // Reload profile to get created data
+        const newProfile = await UserProfileService.getCurrentProfile();
+        setProfile(newProfile);
+        return { success: true };
+      } else {
+        setError(result.error || 'Create failed');
+        return { success: false, error: result.error };
+      }
+    } catch (err) {
+      const error = err instanceof Error ? err.message : 'Create failed';
+      setError(error);
+      return { success: false, error };
+    }
+  };
+
   return {
     profile,
     loading,
     error,
     updateProfile,
+    createProfile,
     clearError: () => setError(null)
   };
 };

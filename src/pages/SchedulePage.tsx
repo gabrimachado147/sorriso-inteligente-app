@@ -1,9 +1,9 @@
 
 import React from 'react';
-import AppointmentScheduler from '@/components/Appointments/AppointmentScheduler';
+import AppointmentSchedulerReal from '@/components/Appointments/AppointmentSchedulerReal';
 
 const SchedulePage = () => {
-  return <AppointmentScheduler />;
+  return <AppointmentSchedulerReal />;
 };
 
 export default SchedulePage;

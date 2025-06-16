@@ -1,84 +1,41 @@
 
 import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { AlertCircle } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { EmailConfirmationStatus } from '@/components/Auth/EmailConfirmationStatus';
-import { NewPasswordForm } from '@/components/Auth/NewPasswordForm';
-import { PasswordResetStatus } from '@/components/Auth/PasswordResetStatus';
-import { AuthHeader } from '@/components/Auth/AuthHeader';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AuthForm } from '@/components/Auth/AuthForm';
 import { useAuthPage } from '@/hooks/useAuthPage';
 
 const AuthPage = () => {
-  const navigate = useNavigate();
   const {
     isLogin,
     loading,
-    showEmailConfirmation,
-    showPasswordReset,
-    showNewPasswordForm,
-    pendingEmail,
-    debugInfo,
     formData,
     handleInputChange,
     handlePhoneChange,
     handleSubmit,
     handlePasswordReset,
-    handleNewPasswordSubmit,
-    handleBackToLogin,
     handleToggleMode,
     handleEnterWithoutAccount
   } = useAuthPage();
 
-  if (showNewPasswordForm) {
-    return (
-      <NewPasswordForm
-        loading={loading}
-        debugInfo={debugInfo}
-        onSubmit={handleNewPasswordSubmit}
-        onBackToLogin={handleBackToLogin}
-      />
-    );
-  }
-
-  if (showEmailConfirmation) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-primary/10 to-background flex items-center justify-center p-4">
-        <div className="w-full max-w-md">
-          <EmailConfirmationStatus email={pendingEmail} onBackToLogin={handleBackToLogin} />
-        </div>
-      </div>
-    );
-  }
-
-  if (showPasswordReset) {
-    return (
-      <PasswordResetStatus
-        email={pendingEmail}
-        onBackToLogin={handleBackToLogin}
-      />
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/10 to-background flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <Card className="w-full">
-          <AuthHeader isLogin={isLogin} />
-
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 to-background flex items-center justify-center w-full">
+      <div className="w-full px-4 py-6">
+        <Card className="w-full max-w-md mx-auto mobile-card-spacing">
+          <CardHeader className="text-center">
+            <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <img 
+                src="/lovable-uploads/a077d15e-e6ba-4de3-833a-6913d8203ffd.png" 
+                alt="Senhor Sorriso" 
+                className="w-12 h-12 object-contain"
+              />
+            </div>
+            <CardTitle className="mobile-text-xl">Bem-vindo ao Senhor Sorriso</CardTitle>
+            <p className="text-muted-foreground mobile-text-base">
+              Acesse sua conta ou crie uma nova
+            </p>
+          </CardHeader>
           <CardContent>
-            {debugInfo && (
-              <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
-                <div className="flex items-center gap-2 text-blue-700">
-                  <AlertCircle className="h-4 w-4" />
-                  <span className="text-sm">{debugInfo}</span>
-                </div>
-              </div>
-            )}
-
-            <AuthForm
+            <AuthForm 
               isLogin={isLogin}
               formData={formData}
               loading={loading}
@@ -89,15 +46,6 @@ const AuthPage = () => {
               onPasswordReset={handlePasswordReset}
               onEnterWithoutAccount={handleEnterWithoutAccount}
             />
-
-            <div className="mt-4 text-center border-t pt-4">
-              <Button variant="outline" className="w-full" onClick={() => navigate('/appointments')}>
-                Área Exclusiva Senhor Sorriso
-              </Button>
-              <p className="text-xs text-muted-foreground mt-2">
-                Você pode agendar uma consulta sem criar conta
-              </p>
-            </div>
           </CardContent>
         </Card>
       </div>

@@ -1,56 +1,67 @@
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { MapPin } from 'lucide-react';
-import { animations } from '@/lib/animations';
+import { Card, CardContent } from '@/components/ui/card';
+import { MapPin, Clock } from 'lucide-react';
 
-interface Clinic {
-  id: string;
-  name: string;
-  city: string;
-  state: string;
-}
-
-interface ClinicSelectorProps {
+export interface ClinicSelectorProps {
   selectedClinic: string;
   onClinicSelect: (clinicId: string) => void;
-  filteredClinics: Clinic[];
+  clinics?: {
+    id: string;
+    name: string;
+    city: string;
+    state: string;
+  }[];
+  filteredClinics?: {
+    id: string;
+    name: string;
+    city: string;
+    state: string;
+  }[];
 }
 
 export const ClinicSelector: React.FC<ClinicSelectorProps> = ({
   selectedClinic,
   onClinicSelect,
+  clinics,
   filteredClinics
 }) => {
+  // Use filteredClinics if provided, otherwise use clinics
+  const clinicsToShow = filteredClinics || clinics || [];
+
   return (
-    <Card className={`${animations.fadeIn} ${animations.cardHover}`}>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <MapPin className="h-5 w-5" />
-          Escolher Clínica
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {filteredClinics.map((clinic) => (
-            <Button
-              key={clinic.id}
-              variant={selectedClinic === clinic.id ? "default" : "outline"}
-              className={`h-auto p-4 ${animations.buttonHover} ${
-                selectedClinic === clinic.id ? animations.scaleIn : ''
-              }`}
-              onClick={() => onClinicSelect(clinic.id)}
-            >
-              <div className="text-center">
-                <MapPin className="h-6 w-6 mx-auto mb-2" />
-                <p className="font-medium">{clinic.name}</p>
-                <p className="text-xs text-muted-foreground">{clinic.city} - {clinic.state}</p>
+    <div className="grid grid-cols-1 gap-4 w-full">
+      {clinicsToShow.map((clinic) => (
+        <Card
+          key={clinic.id}
+          className={`cursor-pointer transition-all hover:shadow-md mobile-touch-target ${
+            selectedClinic === clinic.id
+              ? 'ring-2 ring-primary bg-primary/5'
+              : 'hover:bg-gray-50'
+          }`}
+          onClick={() => onClinicSelect(clinic.id)}
+        >
+          <CardContent className="p-4">
+            <div className="flex items-start gap-3">
+              <div className="p-2 bg-primary/10 rounded-lg flex-shrink-0">
+                <MapPin className="h-5 w-5 text-primary" />
               </div>
-            </Button>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-gray-900 mb-1 mobile-text-base truncate">
+                  {clinic.name}
+                </h3>
+                <p className="mobile-text-sm text-gray-600 mb-2 truncate">
+                  {clinic.city}, {clinic.state}
+                </p>
+                <div className="flex items-center gap-1 mobile-text-xs text-gray-500">
+                  <Clock className="h-3 w-3 flex-shrink-0" />
+                  <span>Seg-Sex: 8h-19h</span>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
   );
 };

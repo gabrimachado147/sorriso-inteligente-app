@@ -1,3 +1,4 @@
+
 /**
  * Supabase Integration Example Component
  * Demonstrates how to use authentication and database services
@@ -10,7 +11,6 @@ import { useChatMessages, useContacts, useWhatsAppLeads } from '../../hooks/useS
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Alert, AlertDescription } from '../ui/alert';
-import type { Appointment, Clinic } from '../../integrations/supabase/types';
 
 export const SupabaseIntegrationExample: React.FC = () => {
   const {
@@ -24,11 +24,8 @@ export const SupabaseIntegrationExample: React.FC = () => {
     isAuthenticated
   } = useAuth();
 
-  // Unindo funcionalidades das duas versões
   const { contacts, createContact } = useContacts();
   const { leads, createLead } = useWhatsAppLeads();
-  const [appointments, setAppointments] = useState<Appointment[]>([]);
-  const [clinics, setClinics] = useState<Clinic[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -36,15 +33,8 @@ export const SupabaseIntegrationExample: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
-      // Exemplo: carregar appointments e clinics se serviços existirem
-      if (user?.id && typeof appointmentService !== 'undefined') {
-        const userAppointments = await appointmentService.getUserAppointments(user.id);
-        setAppointments(userAppointments);
-      }
-      if (typeof clinicService !== 'undefined') {
-        const availableClinics = await clinicService.getAll();
-        setClinics(availableClinics);
-      }
+      // Mock data loading since services don't exist yet
+      console.log('Loading user data for:', user?.id);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load data');
     } finally {
@@ -286,48 +276,6 @@ export const SupabaseIntegrationExample: React.FC = () => {
                       <p className="text-sm text-gray-600">{contact.telefone}</p>
                       {contact.empresa && (
                         <p className="text-sm text-gray-500">Company: {contact.empresa}</p>
-                      )}
-                    </div>
-                    <Button 
-                      onClick={() => bookAppointment(clinic.id)}
-                      disabled={loading}
-                    >
-                      Book Appointment
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center text-gray-500">
-              No clinics available. Make sure you've loaded the sample data.
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* User Appointments */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Your Appointments</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {appointments.length > 0 ? (
-            <div className="space-y-4">
-              {appointments.map((appointment) => (
-                <div key={appointment.id} className="p-4 border rounded-lg">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <p className="font-semibold">
-                        {new Date(appointment.appointment_date).toLocaleDateString()} 
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        Status: <span className="capitalize">{appointment.status}</span>
-                      </p>
-                      {appointment.notes && (
-                        <p className="text-sm text-gray-600">
-                          Notes: {appointment.notes}
-                        </p>
                       )}
                     </div>
                     <span className={`px-2 py-1 rounded text-xs ${

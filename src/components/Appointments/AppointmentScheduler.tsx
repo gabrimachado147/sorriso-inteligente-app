@@ -100,13 +100,12 @@ const AppointmentScheduler = () => {
       <ClinicSelector
         selectedClinic={selectedClinic}
         onClinicSelect={setSelectedClinic}
-        filteredClinics={availableClinics}
+        clinics={availableClinics}
       />
 
       <ServiceSelector
         selectedService={selectedService}
         onServiceSelect={setSelectedService}
-        filteredServices={availableServices}
       />
 
       <AppointmentSummary
@@ -130,6 +129,7 @@ const AppointmentScheduler = () => {
           clinic: selectedClinicData?.name ? `${selectedClinicData.name} - ${selectedClinicData.city}` : '',
           service: selectedServiceData?.name || ''
         }}
+        isLoading={isLoading}
       />
     </div>
   );
