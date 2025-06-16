@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toastSuccess, toastInfo } from '@/components/ui/custom-toast';
@@ -10,9 +10,18 @@ export const useRealtimeAppointments = () => {
   const [realtimeConnected, setRealtimeConnected] = useState(false);
   const queryClient = useQueryClient();
   const { notifyNewAppointment } = usePushNotifications();
+  const channelRef = useRef<any>(null);
 
   useEffect(() => {
     console.log('[Realtime] Setting up appointments real-time listener...');
+
+    // Clean up existing channel if it exists
+    if (channelRef.current) {
+      console.log('[Realtime] Cleaning up existing channel...');
+      supabase.removeChannel(channelRef.current);
+      channelRef.current = null;
+      setRealtimeConnected(false);
+    }
 
     const channel = supabase
       .channel('appointments-realtime-updates')
@@ -85,22 +94,30 @@ export const useRealtimeAppointments = () => {
           
           toastInfo('Agendamento Removido', 'Um agendamento foi removido do sistema');
         }
-      )
-      .subscribe((status) => {
-        console.log('[Realtime] Subscription status:', status);
-        setRealtimeConnected(status === 'SUBSCRIBED');
-        
-        if (status === 'SUBSCRIBED') {
-          console.log('[Realtime] Successfully connected to appointments updates');
-        } else if (status === 'CHANNEL_ERROR') {
-          console.error('[Realtime] Failed to connect to appointments updates');
-        }
-      });
+      );
+
+    // Store channel reference
+    channelRef.current = channel;
+
+    // Subscribe to the channel
+    channel.subscribe((status) => {
+      console.log('[Realtime] Subscription status:', status);
+      setRealtimeConnected(status === 'SUBSCRIBED');
+      
+      if (status === 'SUBSCRIBED') {
+        console.log('[Realtime] Successfully connected to appointments updates');
+      } else if (status === 'CHANNEL_ERROR') {
+        console.error('[Realtime] Failed to connect to appointments updates');
+      }
+    });
 
     // Cleanup function
     return () => {
       console.log('[Realtime] Cleaning up appointments subscription...');
-      supabase.removeChannel(channel);
+      if (channelRef.current) {
+        supabase.removeChannel(channelRef.current);
+        channelRef.current = null;
+      }
       setRealtimeConnected(false);
     };
   }, [queryClient, notifyNewAppointment]);

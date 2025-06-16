@@ -1,19 +1,11 @@
 
-import { useState, useEffect } from 'react';
-import { toastSuccess, toastError } from '@/components/ui/custom-toast';
+import { useState, useEffect, useCallback } from 'react';
 
-export interface PushNotificationConfig {
-  title: string;
-  body: string;
-  icon?: string;
-  badge?: string;
-  tag?: string;
-  data?: any;
-  actions?: Array<{
-    action: string;
-    title: string;
-    icon?: string;
-  }>;
+interface NotificationData {
+  name: string;
+  date: string;
+  time: string;
+  clinic: string;
 }
 
 export const usePushNotifications = () => {
@@ -21,141 +13,101 @@ export const usePushNotifications = () => {
   const [isSupported, setIsSupported] = useState(false);
 
   useEffect(() => {
-    // Verificar se notificações são suportadas
-    if ('Notification' in window) {
-      setIsSupported(true);
+    // Check if notifications are supported
+    const supported = 'Notification' in window;
+    setIsSupported(supported);
+    
+    if (supported) {
       setPermission(Notification.permission);
     }
   }, []);
 
-  const requestPermission = async (): Promise<boolean> => {
+  const requestPermission = useCallback(async () => {
     if (!isSupported) {
-      toastError('Erro', 'Notificações não são suportadas neste navegador');
+      console.log('[PushNotifications] Notifications not supported');
       return false;
     }
 
     try {
       const result = await Notification.requestPermission();
       setPermission(result);
-      
-      if (result === 'granted') {
-        toastSuccess('Sucesso', 'Notificações ativadas com sucesso!');
-        return true;
-      } else {
-        toastError('Erro', 'Permissão para notificações negada');
-        return false;
-      }
+      return result === 'granted';
     } catch (error) {
-      console.error('Erro ao solicitar permissão:', error);
-      toastError('Erro', 'Erro ao solicitar permissão para notificações');
+      console.error('[PushNotifications] Error requesting permission:', error);
       return false;
     }
-  };
+  }, [isSupported]);
 
-  const showNotification = async (config: PushNotificationConfig): Promise<boolean> => {
-    if (!isSupported) {
-      console.warn('Notificações não suportadas');
-      return false;
-    }
-
+  const notifyNewAppointment = useCallback((data: NotificationData) => {
     if (permission !== 'granted') {
-      const granted = await requestPermission();
-      if (!granted) return false;
+      console.log('[PushNotifications] Permission not granted, skipping notification');
+      return;
     }
 
     try {
-      const notification = new Notification(config.title, {
-        body: config.body,
-        icon: config.icon || '/icons/icon-192x192.png',
-        badge: config.badge || '/icons/icon-72x72.png',
-        tag: config.tag || 'senhor-sorriso',
-        data: config.data,
+      const notification = new Notification('🎉 Novo Agendamento via Chat!', {
+        body: `${data.name} agendou para ${data.date} às ${data.time}\nClínica: ${data.clinic}`,
+        icon: '/icons/icon-192x192.png',
+        badge: '/icons/icon-72x72.png',
+        tag: 'new-appointment',
         requireInteraction: true,
-        silent: false
+        actions: [
+          {
+            action: 'view',
+            title: 'Ver Agendamento'
+          }
+        ]
       });
 
-      // Auto-close após 5 segundos
-      setTimeout(() => {
-        notification.close();
-      }, 5000);
-
-      // Eventos da notificação
       notification.onclick = () => {
         window.focus();
         notification.close();
-        
-        // Se há dados, navegar para URL específica
-        if (config.data?.url) {
-          window.location.href = config.data.url;
-        }
+        // Navigate to appointments page
+        window.location.href = '/admin-dashboard';
       };
 
-      return true;
+      // Auto close after 10 seconds
+      setTimeout(() => {
+        notification.close();
+      }, 10000);
+
     } catch (error) {
-      console.error('Erro ao mostrar notificação:', error);
-      return false;
+      console.error('[PushNotifications] Error showing notification:', error);
     }
-  };
+  }, [permission]);
 
-  const notifyNewAppointment = (appointmentData: {
-    name: string;
-    date: string;
-    time: string;
-    clinic: string;
-  }) => {
-    return showNotification({
-      title: '🦷 Novo Agendamento!',
-      body: `${appointmentData.name} agendou para ${appointmentData.date} às ${appointmentData.time}`,
-      tag: 'new-appointment',
-      data: {
-        type: 'appointment',
-        appointmentData,
-        url: '/admin'
-      }
-    });
-  };
+  const notifyAppointmentConfirmed = useCallback((data: NotificationData) => {
+    if (permission !== 'granted') return;
 
-  const notifyAppointmentConfirmed = (appointmentData: {
-    name: string;
-    date: string;
-    time: string;
-    clinic: string;
-  }) => {
-    return showNotification({
-      title: '✅ Agendamento Confirmado',
-      body: `Sua consulta foi confirmada para ${appointmentData.date} às ${appointmentData.time}`,
-      tag: 'appointment-confirmed',
-      data: {
-        type: 'confirmation',
-        appointmentData,
-        url: '/profile'
-      }
-    });
-  };
+    try {
+      new Notification('✅ Agendamento Confirmado', {
+        body: `${data.name} - ${data.date} às ${data.time}`,
+        icon: '/icons/icon-192x192.png',
+        tag: 'appointment-confirmed'
+      });
+    } catch (error) {
+      console.error('[PushNotifications] Error showing confirmation notification:', error);
+    }
+  }, [permission]);
 
-  const notifyAppointmentReminder = (appointmentData: {
-    name: string;
-    date: string;
-    time: string;
-    clinic: string;
-  }) => {
-    return showNotification({
-      title: '⏰ Lembrete de Consulta',
-      body: `Sua consulta é amanhã às ${appointmentData.time} na ${appointmentData.clinic}`,
-      tag: 'appointment-reminder',
-      data: {
-        type: 'reminder',
-        appointmentData,
-        url: '/profile'
-      }
-    });
-  };
+  const notifyAppointmentReminder = useCallback((data: NotificationData) => {
+    if (permission !== 'granted') return;
+
+    try {
+      new Notification('⏰ Lembrete de Consulta', {
+        body: `Sua consulta é amanhã: ${data.date} às ${data.time}`,
+        icon: '/icons/icon-192x192.png',
+        tag: 'appointment-reminder'
+      });
+    } catch (error) {
+      console.error('[PushNotifications] Error showing reminder notification:', error);
+    }
+  }, [permission]);
 
   return {
     permission,
     isSupported,
     requestPermission,
-    showNotification,
     notifyNewAppointment,
     notifyAppointmentConfirmed,
     notifyAppointmentReminder
