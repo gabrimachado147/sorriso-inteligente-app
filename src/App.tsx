@@ -23,6 +23,7 @@ import NotFound from "./pages/NotFound";
 import { useAnalytics } from "./hooks/useAnalytics";
 import { useRealtimeSync } from "./hooks/useRealtimeSync";
 import { useNotificationIntegration } from "./hooks/useNotificationIntegration";
+import { useIsMobile } from "./hooks/use-mobile";
 import "./App.css";
 
 const queryClient = new QueryClient({
@@ -35,6 +36,8 @@ const queryClient = new QueryClient({
 });
 
 const MainLayout = () => {
+  const isMobile = useIsMobile();
+  
   // Initialize analytics
   useAnalytics();
   
@@ -45,10 +48,12 @@ const MainLayout = () => {
   useNotificationIntegration();
 
   return (
-    <div className="min-h-screen bg-background flex flex-col w-full">
+    <div className="min-h-screen bg-background flex flex-col w-full safe-top safe-bottom">
       <Header />
-      <main className="flex-1 pb-32 md:pb-8 w-full">
-        <Outlet />
+      <main className={`flex-1 w-full mobile-scroll ${isMobile ? 'pb-24' : 'pb-8'}`}>
+        <div className="mobile-container">
+          <Outlet />
+        </div>
       </main>
       <BottomNavigation />
     </div>
@@ -62,7 +67,7 @@ function App() {
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <div className="w-full min-h-screen">
+          <div className="w-full min-h-screen mobile-scroll">
             <Routes>
               <Route path="/" element={<MainLayout />}>
                 <Route index element={<Index />} />

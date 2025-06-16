@@ -20,18 +20,28 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-secondary/20">
-      <div className="container mx-auto px-4 py-6 space-y-12">
-        {/* Hero Section */}
-        <HeroSection />
+      <div className="w-full mobile-scroll">
+        <div className="space-y-8 py-4">
+          {/* Hero Section */}
+          <section className="mobile-fade-in">
+            <HeroSection />
+          </section>
 
-        {/* Quick Actions */}
-        <QuickActionsSection onNavigate={navigate} onEmergencyCall={handleEmergencyCall} />
+          {/* Quick Actions */}
+          <section className="mobile-slide-up" style={{ animationDelay: '200ms' }}>
+            <QuickActionsSection onNavigate={navigate} onEmergencyCall={handleEmergencyCall} />
+          </section>
 
-        {/* Services Overview */}
-        <ServicesOverviewSection onNavigate={navigate} />
+          {/* Services Overview */}
+          <section className="mobile-slide-up" style={{ animationDelay: '400ms' }}>
+            <ServicesOverviewSection onNavigate={navigate} />
+          </section>
 
-        {/* Call to Action */}
-        <CTASection onNavigate={navigate} onWhatsAppContact={handleWhatsAppContact} />
+          {/* Call to Action */}
+          <section className="mobile-scale-in" style={{ animationDelay: '600ms' }}>
+            <CTASection onNavigate={navigate} onWhatsAppContact={handleWhatsAppContact} />
+          </section>
+        </div>
       </div>
     </div>
   );
