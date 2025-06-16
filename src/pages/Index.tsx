@@ -82,56 +82,51 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background w-full">
+    <div className="min-h-screen bg-gray-50 w-full">
       <div className="w-full space-y-8">
-        {/* Hero Section */}
-        <section className="relative bg-gradient-to-br from-primary via-blue-600 to-blue-700 text-white py-16 px-6">
-          <div className="absolute inset-0 bg-black/10"></div>
-          <div className="relative max-w-6xl mx-auto text-center">
-            <div className="flex justify-center mb-6">
-              <div className="w-20 h-20 rounded-2xl flex items-center justify-center overflow-hidden bg-white shadow-lg">
-                <img 
-                  src="/lovable-uploads/a077d15e-e6ba-4de3-833a-6913d8203ffd.png" 
-                  alt="Senhor Sorriso Logo" 
-                  className="w-full h-full object-contain"
-                />
-              </div>
-            </div>
-
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">
-              Bem-vindo à Senhor Sorriso!
-            </h1>
-            
-            <p className="text-xl md:text-2xl mb-8 text-blue-100 max-w-3xl mx-auto">
-              Seu sorriso perfeito está a um clique de distância
-            </p>
-
-            {user && (
-              <div className="bg-white/10 backdrop-blur-lg rounded-lg p-4 mb-8 inline-block">
-                <p className="text-lg font-medium">
-                  Bem-vindo de volta, {user.user_metadata?.nome_completo || user.email}! 😊
+        {/* Hero Section - Rounded Design */}
+        <section className="px-6 pt-8 pb-16">
+          <div className="max-w-4xl mx-auto">
+            <div className="relative bg-gradient-to-br from-blue-500 via-blue-600 to-purple-700 text-white p-8 md:p-12 rounded-3xl overflow-hidden">
+              <div className="absolute inset-0 bg-black/10 rounded-3xl"></div>
+              
+              <div className="relative text-center">
+                <h1 className="text-3xl md:text-5xl font-bold mb-6">
+                  Bem-vindo à Senhor Sorriso!
+                </h1>
+                
+                <p className="text-lg md:text-xl mb-8 text-blue-100 max-w-2xl mx-auto">
+                  Seu sorriso perfeito está a um clique de distância
                 </p>
-              </div>
-            )}
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-              <Button 
-                size="lg" 
-                className="bg-white text-primary hover:bg-gray-100 text-lg px-8 py-4"
-                onClick={() => handleNavigate('/schedule')}
-              >
-                <Calendar className="h-5 w-5 mr-2" />
-                Agendar Avaliação Gratuita
-              </Button>
-              <Button 
-                size="lg" 
-                variant="outline"
-                className="bg-transparent border-white text-white hover:bg-white hover:text-primary text-lg px-8 py-4"
-                onClick={() => handleNavigate('/clinics')}
-              >
-                <MapPin className="h-5 w-5 mr-2" />
-                Ver Nossas Unidades
-              </Button>
+                {user && (
+                  <div className="bg-white/10 backdrop-blur-lg rounded-lg p-4 mb-8 inline-block">
+                    <p className="text-lg font-medium">
+                      Bem-vindo de volta, {user.user_metadata?.nome_completo || user.email}! 😊
+                    </p>
+                  </div>
+                )}
+
+                <div className="flex flex-col gap-4 max-w-md mx-auto">
+                  <Button 
+                    size="lg" 
+                    className="bg-white text-blue-600 hover:bg-gray-100 text-lg px-8 py-4 rounded-2xl font-semibold w-full"
+                    onClick={() => handleNavigate('/schedule')}
+                  >
+                    <Calendar className="h-5 w-5 mr-2" />
+                    Agendar Avaliação Gratuita
+                  </Button>
+                  <Button 
+                    size="lg" 
+                    variant="outline"
+                    className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-blue-600 text-lg px-8 py-4 rounded-2xl font-semibold w-full"
+                    onClick={() => handleNavigate('/clinics')}
+                  >
+                    <MapPin className="h-5 w-5 mr-2" />
+                    Ver Nossas Unidades
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -169,7 +164,7 @@ const Index = () => {
         </section>
 
         {/* Clinics Section */}
-        <section className="py-8 px-6 bg-gray-50">
+        <section className="py-8 px-6 bg-white">
           <div className="max-w-6xl mx-auto">
             <h2 className="text-3xl font-bold text-center mb-8 flex items-center justify-center">
               <MapPin className="h-8 w-8 mr-3" />
@@ -231,7 +226,7 @@ const Index = () => {
         )}
 
         {/* Services Section */}
-        <section className="py-8 px-6">
+        <section className="py-8 px-6 bg-white">
           <div className="max-w-6xl mx-auto">
             <h2 className="text-3xl font-bold text-center mb-8">Nossos Serviços</h2>
             
