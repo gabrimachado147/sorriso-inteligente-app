@@ -1,3 +1,4 @@
+[![.github/workflows/deploy.yml](https://github.com/gabrimachado147/sorriso-inteligente-app/actions/workflows/deploy.yml/badge.svg)](https://github.com/gabrimachado147/sorriso-inteligente-app/actions/workflows/deploy.yml)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/66018b405a664453ac8626dcae05bbdc)](https://app.codacy.com/gh/gabrimachado147/sorriso-inteligente-app/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 
 # Sorriso Inteligente App
