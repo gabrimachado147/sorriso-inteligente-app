@@ -55,15 +55,26 @@ export const AdminDashboard = () => {
     console.log('[Admin Dashboard] Realtime connection status:', realtimeConnected);
   }, [realtimeConnected]);
 
-  // Log informações do usuário
+  // Log informações do usuário e dados filtrados
   useEffect(() => {
     console.log('[Admin Dashboard] User access level:', {
       loggedInUser,
       isMasterUser,
       userClinicName,
-      availableClinicsCount: availableClinics.length
+      availableClinicsCount: availableClinics.length,
+      totalAppointments: appointments.length,
+      filteredAppointments: filteredAppointments.length
     });
-  }, [loggedInUser, isMasterUser, userClinicName, availableClinics]);
+  }, [loggedInUser, isMasterUser, userClinicName, availableClinics, appointments, filteredAppointments]);
+
+  // Debug: Log de todos os agendamentos para análise
+  useEffect(() => {
+    if (appointments.length > 0) {
+      console.log('[Admin Dashboard] All appointments clinics:', 
+        appointments.map(apt => ({ id: apt.id.slice(0, 8), clinic: apt.clinic, name: apt.name }))
+      );
+    }
+  }, [appointments]);
 
   return (
     <div className="space-y-6">
@@ -83,8 +94,8 @@ export const AdminDashboard = () => {
         filteredAppointmentsCount={filteredAppointments.length}
       />
 
-      {/* Mostrar filtro de clínica apenas se houver múltiplas clínicas disponíveis */}
-      {availableClinics.length > 1 && (
+      {/* Mostrar filtro de clínica apenas para usuários master com múltiplas clínicas */}
+      {isMasterUser && availableClinics.length > 1 && (
         <ClinicFilter
           selectedClinic={selectedClinic}
           onClinicChange={setSelectedClinic}

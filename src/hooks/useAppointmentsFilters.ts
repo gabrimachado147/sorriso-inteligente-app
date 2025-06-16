@@ -41,33 +41,45 @@ export const useAppointmentsFilters = ({
   const filteredAppointments = useMemo(() => {
     let filtered = appointments;
 
+    console.log('[useAppointmentsFilters] Starting with appointments:', filtered.length);
+
     // Aplicar filtro de clínica baseado no nível de acesso
     if (!isMasterUser && loggedInUser && userClinicName) {
       // Usuário de unidade específica - mostrar apenas agendamentos da sua clínica
       console.log('[useAppointmentsFilters] Filtering for clinic user:', userClinicName);
+      
+      // Mapear as chaves de login para os nomes das clínicas nos agendamentos
+      const clinicKeyToNameMap: Record<string, string[]> = {
+        'capao-bonito': ['Senhor Sorriso Capão Bonito', 'capao bonito', 'capão bonito'],
+        'campo-belo': ['Senhor Sorriso Campo Belo', 'campo belo'],
+        'itapeva': ['Senhor Sorriso Itapeva', 'itapeva'],
+        'itarare': ['Senhor Sorriso Itararé', 'itarare', 'itararé'],
+        'formiga': ['Senhor Sorriso Formiga', 'formiga']
+      };
+
+      const allowedClinicNames = clinicKeyToNameMap[loggedInUser] || [];
+      
       filtered = filtered.filter(apt => {
-        const appointmentClinic = apt.clinic.toLowerCase();
-        const userClinicKey = loggedInUser.toLowerCase();
-        const userClinicFullName = userClinicName.toLowerCase();
+        const appointmentClinic = apt.clinic.toLowerCase().trim();
+        const matches = allowedClinicNames.some(clinicName => 
+          appointmentClinic.includes(clinicName.toLowerCase()) ||
+          clinicName.toLowerCase().includes(appointmentClinic)
+        );
         
-        // Match por chave da clínica (ex: "campobelo") ou nome completo da clínica
-        const matches = appointmentClinic.includes(userClinicKey) || 
-                       appointmentClinic.includes(userClinicFullName) ||
-                       apt.clinic === userClinicName;
-        
-        console.log('[useAppointmentsFilters] Appointment clinic check:', {
-          appointmentClinic,
-          userClinicKey,
-          userClinicFullName,
+        console.log('[useAppointmentsFilters] Checking appointment:', {
+          appointmentClinic: apt.clinic,
+          loggedInUser,
+          allowedClinicNames,
           matches
         });
         
         return matches;
       });
+      
+      console.log('[useAppointmentsFilters] After clinic filter:', filtered.length);
     } else if (isMasterUser) {
       // Usuário master (gerência) - ver todos os agendamentos
       console.log('[useAppointmentsFilters] Master user - showing all appointments');
-      // Não aplicar filtro de clínica, mostrar todos
     }
 
     // Aplicar outros filtros
@@ -105,14 +117,22 @@ export const useAppointmentsFilters = ({
       return Array.from(clinics).sort();
     } else if (loggedInUser && userClinicName) {
       // Usuário de unidade específica - mostrar apenas sua clínica
+      const clinicKeyToNameMap: Record<string, string[]> = {
+        'capao-bonito': ['Senhor Sorriso Capão Bonito'],
+        'campo-belo': ['Senhor Sorriso Campo Belo'],
+        'itapeva': ['Senhor Sorriso Itapeva'],
+        'itarare': ['Senhor Sorriso Itararé'],
+        'formiga': ['Senhor Sorriso Formiga']
+      };
+
+      const allowedClinicNames = clinicKeyToNameMap[loggedInUser] || [];
+      
       const userAppointments = appointments.filter(apt => {
-        const appointmentClinic = apt.clinic.toLowerCase();
-        const userClinicKey = loggedInUser.toLowerCase();
-        const userClinicFullName = userClinicName.toLowerCase();
-        
-        return appointmentClinic.includes(userClinicKey) || 
-               appointmentClinic.includes(userClinicFullName) ||
-               apt.clinic === userClinicName;
+        const appointmentClinic = apt.clinic.toLowerCase().trim();
+        return allowedClinicNames.some(clinicName => 
+          appointmentClinic.includes(clinicName.toLowerCase()) ||
+          clinicName.toLowerCase().includes(appointmentClinic)
+        );
       });
       
       const clinics = new Set(userAppointments.map(apt => apt.clinic));
