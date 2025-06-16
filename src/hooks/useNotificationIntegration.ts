@@ -1,43 +1,44 @@
 
 import { useEffect, useState } from 'react';
-import { useEnhancedNotifications } from '@/services/enhanced-notifications';
+import { notificationService } from '@/services/enhanced-notifications';
 import { toastSuccess, toastError, toastInfo } from '@/components/ui/custom-toast';
 
 export const useNotificationIntegration = () => {
   const [isInitialized, setIsInitialized] = useState(false);
-  const {
-    isSupported,
-    permission,
-    requestPermission,
-    scheduleAppointmentReminder,
-    notifyAppointmentConfirmed,
-    testNotification
-  } = useEnhancedNotifications();
 
   useEffect(() => {
-    if (isSupported && !isInitialized) {
-      setIsInitialized(true);
-      
-      // Auto-request permission if not already granted
-      if (permission === 'default') {
-        setTimeout(() => {
-          showPermissionPrompt();
-        }, 2000); // Wait 2 seconds after page load
+    const initializeNotifications = async () => {
+      if (notificationService.isSupported() && !isInitialized) {
+        await notificationService.initialize();
+        setIsInitialized(true);
+        
+        // Auto-request permission if not already granted
+        if (notificationService.getPermissionStatus() === 'default') {
+          setTimeout(() => {
+            showPermissionPrompt();
+          }, 2000); // Wait 2 seconds after page load
+        }
       }
-    }
-  }, [isSupported, permission, isInitialized]);
+    };
+
+    initializeNotifications();
+  }, [isInitialized]);
 
   const showPermissionPrompt = async () => {
-    const result = await requestPermission();
-    
-    if (result) {
-      toastSuccess("Notificações", "Notificações ativadas! Você receberá lembretes dos seus agendamentos.");
-      // Show test notification
-      setTimeout(() => {
-        testNotification();
-      }, 1000);
-    } else {
-      toastInfo("Notificações", "Você pode ativar as notificações a qualquer momento nas configurações.");
+    try {
+      const permission = await notificationService.requestPermission();
+      
+      if (permission === 'granted') {
+        toastSuccess("Notificações", "Notificações ativadas! Você receberá lembretes dos seus agendamentos.");
+        // Show test notification
+        setTimeout(() => {
+          testNotification();
+        }, 1000);
+      } else {
+        toastInfo("Notificações", "Você pode ativar as notificações a qualquer momento nas configurações.");
+      }
+    } catch (error) {
+      toastError("Notificações", "Erro ao solicitar permissão para notificações.");
     }
   };
 
@@ -50,15 +51,23 @@ export const useNotificationIntegration = () => {
   }) => {
     try {
       // Notify appointment confirmed
-      await notifyAppointmentConfirmed(appointmentData);
+      await notificationService.showNotification({
+        title: "Agendamento Confirmado",
+        body: `Seu agendamento de ${appointmentData.service} na ${appointmentData.clinic} foi confirmado para ${appointmentData.date} às ${appointmentData.time}.`,
+        tag: 'appointment-confirmed'
+      });
       
-      // Schedule reminder
-      const reminderResult = await scheduleAppointmentReminder(appointmentData);
+      // Schedule reminder for 1 hour before
+      const appointmentDateTime = new Date(`${appointmentData.date} ${appointmentData.time}`);
+      const reminderTime = new Date(appointmentDateTime.getTime() - 60 * 60 * 1000); // 1 hour before
+      const delayMs = reminderTime.getTime() - Date.now();
       
-      if (reminderResult.success) {
-        console.log('✅ Lembrete agendado com sucesso');
-      } else {
-        console.warn('⚠️ Não foi possível agendar lembrete:', reminderResult.error);
+      if (delayMs > 0) {
+        await notificationService.scheduleNotification({
+          title: "Lembrete de Agendamento",
+          body: `Seu agendamento de ${appointmentData.service} na ${appointmentData.clinic} é em 1 hora.`,
+          tag: 'appointment-reminder'
+        }, delayMs);
       }
       
       return true;
@@ -69,11 +78,12 @@ export const useNotificationIntegration = () => {
   };
 
   const showNotificationStatus = () => {
-    if (!isSupported) {
+    if (!notificationService.isSupported()) {
       toastError("Notificações", "Seu navegador não suporta notificações.");
       return;
     }
 
+    const permission = notificationService.getPermissionStatus();
     switch (permission) {
       case 'granted':
         toastSuccess("Notificações", "Notificações estão ativas! 🔔");
@@ -87,9 +97,21 @@ export const useNotificationIntegration = () => {
     }
   };
 
+  const testNotification = async () => {
+    try {
+      await notificationService.showNotification({
+        title: "Teste de Notificação",
+        body: "As notificações estão funcionando corretamente!",
+        tag: 'test-notification'
+      });
+    } catch (error) {
+      console.error('Erro ao enviar notificação de teste:', error);
+    }
+  };
+
   return {
-    isSupported,
-    permission,
+    isSupported: notificationService.isSupported(),
+    permission: notificationService.getPermissionStatus(),
     isInitialized,
     showPermissionPrompt,
     handleAppointmentScheduled,

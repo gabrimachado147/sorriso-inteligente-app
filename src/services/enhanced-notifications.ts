@@ -8,7 +8,6 @@ export interface NotificationConfig {
   requireInteraction?: boolean;
   silent?: boolean;
   data?: Record<string, unknown>;
-  actions?: NotificationAction[];
 }
 
 export interface NotificationAction {
@@ -63,8 +62,7 @@ export class EnhancedNotificationService {
         tag: config.tag || 'default',
         requireInteraction: config.requireInteraction || false,
         silent: config.silent || false,
-        data: config.data || {},
-        actions: config.actions || []
+        data: config.data || {}
       });
     } else {
       // Fallback to basic notification

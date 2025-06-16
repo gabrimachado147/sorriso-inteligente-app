@@ -73,7 +73,7 @@ const AppointmentsPage = () => {
         </TabsList>
 
         <TabsContent value="dashboard">
-          <AdminDashboard appointments={appointments} stats={stats} />
+          <AdminDashboard appointments={appointments} stats={stats || {}} />
         </TabsContent>
 
         <TabsContent value="appointments" className="space-y-6">
