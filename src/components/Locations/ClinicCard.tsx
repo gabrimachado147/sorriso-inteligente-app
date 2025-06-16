@@ -95,7 +95,7 @@ export const ClinicCard: React.FC<ClinicCardProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
               <div className="flex items-center gap-2">
                 <Clock className="h-4 w-4 text-primary" />
-                <span>{clinic.workingHours}</span>
+                <span>Segunda a Sexta: 8h às 19h | Sábado: 8h às 13h</span>
               </div>
               <div className="flex items-center gap-2">
                 <Users className="h-4 w-4 text-primary" />
