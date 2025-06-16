@@ -126,6 +126,12 @@ export const AuthForm: React.FC<AuthFormProps> = ({
         >
           {isLogin ? 'Criar conta agora' : 'Fazer login'}
         </Button>
+        
+        {isLogin && (
+          <p className="text-xs text-muted-foreground mt-2">
+            Você pode agendar uma consulta sem criar conta
+          </p>
+        )}
       </div>
 
       {isLogin && (
