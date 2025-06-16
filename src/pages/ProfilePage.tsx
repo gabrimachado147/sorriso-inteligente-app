@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
   User, 
   Bell, 
@@ -11,7 +12,8 @@ import {
   Gamepad2, 
   Accessibility,
   History,
-  LogOut
+  LogOut,
+  Lock
 } from 'lucide-react';
 import { animations } from '@/lib/animations';
 import { useAuth } from '@/hooks/useAuth';
@@ -92,6 +94,32 @@ const ProfilePage = () => {
           <LogOut className="h-4 w-4" />
           Sair
         </Button>
+      </div>
+
+      {/* Staff Access Card */}
+      <div className={`flex justify-center ${animations.slideInTop}`}>
+        <Card className="w-full max-w-md bg-white/90 backdrop-blur-sm border-primary/20 shadow-lg mobile-card-spacing">
+          <CardHeader className="text-center pb-4">
+            <div className="flex justify-center mb-4">
+              <div className="bg-primary rounded-full p-3">
+                <Lock className="h-6 w-6 text-white" />
+              </div>
+            </div>
+            <CardTitle className="text-2xl text-primary mobile-text-xl">Acesso Funcionários</CardTitle>
+            <p className="text-muted-foreground mobile-text-base">
+              Selecione sua clínica e digite a senha para acessar os agendamentos
+            </p>
+          </CardHeader>
+          <CardContent className="text-center">
+            <Button 
+              size="lg" 
+              className="w-full text-lg font-semibold mobile-touch-target" 
+              onClick={() => navigate('/appointments')}
+            >
+              Entrar
+            </Button>
+          </CardContent>
+        </Card>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">

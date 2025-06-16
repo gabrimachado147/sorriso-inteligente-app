@@ -6,8 +6,7 @@ import {
   MessageCircle, 
   Calendar, 
   MapPin, 
-  User,
-  BarChart3
+  User
 } from 'lucide-react';
 import { animations } from '@/lib/animations';
 
@@ -51,12 +50,6 @@ const BottomNavigation = () => {
       label: 'Perfil', 
       path: '/profile',
       isActive: location.pathname === '/profile'
-    },
-    { 
-      icon: BarChart3, 
-      label: 'ADM', 
-      path: '/appointments',
-      isActive: location.pathname === '/appointments'
     }
   ];
 
