@@ -1,13 +1,12 @@
 
 import React from 'react';
 import { 
-  Stethoscope, 
   Search, 
   Sparkles, 
   Wrench, 
   Smile, 
   Settings, 
-  Shield, 
+  Stethoscope, 
   Baby, 
   Heart, 
   AlertTriangle 
@@ -43,7 +42,7 @@ export const availableServices = [
   },
   {
     id: 'ortodontia-consulta',
-    name: 'Consulta Ortodontia',
+    name: 'Ortodontia',
     description: 'Avaliação para aparelho ortodôntico',
     duration: 45,
     price: 'A partir de R$ 100',
@@ -51,7 +50,16 @@ export const availableServices = [
     icon: <Smile className="h-6 w-6" />
   },
   {
-    id: 'clareamento',
+    id: 'implantodontia-consulta',
+    name: 'Implantodontia',
+    description: 'Avaliação para implantes dentários',
+    duration: 60,
+    price: 'A partir de R$ 150',
+    category: 'implantodontia',
+    icon: <Settings className="h-6 w-6" />
+  },
+  {
+    id: 'clareamento-dental',
     name: 'Clareamento Dental',
     description: 'Clareamento dental profissional',
     duration: 90,
@@ -60,16 +68,16 @@ export const availableServices = [
     icon: <Sparkles className="h-6 w-6" />
   },
   {
-    id: 'implante-consulta',
-    name: 'Consulta Implantodontia',
-    description: 'Avaliação para implantes dentários',
-    duration: 60,
-    price: 'A partir de R$ 150',
-    category: 'implantodontia',
-    icon: <Settings className="h-6 w-6" />
+    id: 'endodontia',
+    name: 'Endodontia',
+    description: 'Tratamento de canal',
+    duration: 90,
+    price: 'A partir de R$ 200',
+    category: 'restaurativo',
+    icon: <Stethoscope className="h-6 w-6" />
   },
   {
-    id: 'urgencia',
+    id: 'atendimento-urgencia',
     name: 'Atendimento de Urgência',
     description: 'Para casos de dor e emergências',
     duration: 30,

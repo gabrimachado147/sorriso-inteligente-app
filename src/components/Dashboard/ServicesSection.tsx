@@ -10,11 +10,13 @@ interface ServicesSectionProps {
 export const ServicesSection: React.FC<ServicesSectionProps> = ({ onServiceSelect }) => {
   const services = [
     { name: 'Avaliação Gratuita', icon: '🔍', popular: true },
-    { name: 'Limpeza Dental', icon: '🦷', popular: false },
+    { name: 'Limpeza Dental', icon: '✨', popular: true },
+    { name: 'Restauração', icon: '🔧', popular: false },
     { name: 'Ortodontia', icon: '😬', popular: true },
-    { name: 'Implantodontia', icon: '🔧', popular: false },
-    { name: 'Clareamento', icon: '✨', popular: true },
-    { name: 'Atendimento Urgência', icon: '🚨', popular: false },
+    { name: 'Implantodontia', icon: '⚙️', popular: false },
+    { name: 'Clareamento Dental', icon: '💎', popular: true },
+    { name: 'Endodontia', icon: '🦷', popular: false },
+    { name: 'Atendimento de Urgência', icon: '🚨', popular: false },
   ];
 
   return (
@@ -23,7 +25,7 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ onServiceSelec
         <CardTitle>Nossos Serviços</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
           {services.map((service, index) => (
             <Card 
               key={service.name} 
