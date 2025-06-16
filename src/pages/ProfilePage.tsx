@@ -4,7 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { User, LogOut, History, Settings, Bell, Shield } from 'lucide-react';
+import { User, LogOut, History, Settings, Bell, Shield, UserCog } from 'lucide-react';
 import { ProfileTabReal } from '@/components/Profile/ProfileTabReal';
 import { HistoryTabReal } from '@/components/Profile/HistoryTabReal';
 import { NotificationsTab } from '@/components/Profile/NotificationsTab';
@@ -35,9 +35,25 @@ const ProfilePage = () => {
     navigate('/staff-login');
   };
 
+  // Botão de acesso administrativo sempre visível no topo
+  const AdminAccessButton = () => (
+    <div className="fixed top-4 right-4 z-50">
+      <Button 
+        variant="default"
+        size="sm"
+        onClick={handleStaffAccess}
+        className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-lg"
+      >
+        <UserCog className="h-4 w-4 mr-2" />
+        Painel Administrativo
+      </Button>
+    </div>
+  );
+
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-background w-full">
+        <AdminAccessButton />
         <div className="w-full px-4 py-6">
           <Card className="mobile-card-spacing">
             <CardHeader className="text-center">
@@ -75,8 +91,10 @@ const ProfilePage = () => {
 
   return (
     <div className="min-h-screen bg-background w-full">
+      <AdminAccessButton />
+      
       <div className="w-full px-4 py-6">
-        {/* Botão de acesso para funcionários */}
+        {/* Botão de acesso para funcionários também no header */}
         <div className="flex justify-end mb-4">
           <Button 
             variant="outline" 
