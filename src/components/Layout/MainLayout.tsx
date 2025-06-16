@@ -13,7 +13,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children, currentPage, o
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      <main className="flex-1 pb-32 md:pb-8">
+      <main className="flex-1 pb-36 md:pb-12">
         {children}
       </main>
       <BottomNavigation />
