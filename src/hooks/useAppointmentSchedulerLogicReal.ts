@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from './useAuth';
 import { useUserProfile } from './useUserProfile';
 import { RealAppointmentService } from '@/services/supabase/realAppointments';
@@ -10,6 +10,7 @@ export const useAppointmentSchedulerLogicReal = (rescheduleId: string | null) =>
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
   const { profile } = useUserProfile();
+  const [searchParams] = useSearchParams();
   
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [selectedTime, setSelectedTime] = useState('');
@@ -51,6 +52,14 @@ export const useAppointmentSchedulerLogicReal = (rescheduleId: string | null) =>
       state: 'SP' 
     }
   ];
+
+  // Detectar serviço pré-selecionado via URL
+  useEffect(() => {
+    const serviceFromUrl = searchParams.get('service');
+    if (serviceFromUrl && !selectedService) {
+      setSelectedService(serviceFromUrl);
+    }
+  }, [searchParams, selectedService]);
 
   const handleScheduleAppointment = () => {
     if (!selectedDate || !selectedTime || !selectedClinic || !selectedService) {

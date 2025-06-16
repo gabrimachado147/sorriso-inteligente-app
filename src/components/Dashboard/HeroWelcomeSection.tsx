@@ -4,18 +4,26 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Calendar, MapPin } from 'lucide-react';
 import { animations } from '@/lib/animations';
+import { useNavigate } from 'react-router-dom';
 
 interface HeroWelcomeSectionProps {
-  onScheduleEvaluation: () => void;
   onViewUnits: () => void;
   schedulingLoading: boolean;
 }
 
 export const HeroWelcomeSection: React.FC<HeroWelcomeSectionProps> = ({
-  onScheduleEvaluation,
   onViewUnits,
   schedulingLoading
 }) => {
+  const navigate = useNavigate();
+
+  const handleScheduleEvaluation = () => {
+    navigate('/schedule');
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
+  };
+
   return (
     <Card className={`bg-gradient-to-r from-primary to-blue-600 text-white ${animations.fadeIn}`}>
       <CardContent className="p-6">
@@ -24,7 +32,7 @@ export const HeroWelcomeSection: React.FC<HeroWelcomeSectionProps> = ({
         <div className="flex flex-col sm:flex-row gap-2">
           <Button 
             className={`bg-white text-primary hover:bg-gray-100 ${animations.buttonHover}`}
-            onClick={onScheduleEvaluation}
+            onClick={handleScheduleEvaluation}
             disabled={schedulingLoading}
           >
             <Calendar className="h-4 w-4 mr-2" />

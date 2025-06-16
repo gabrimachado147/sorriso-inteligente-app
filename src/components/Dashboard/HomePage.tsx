@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { toastSuccess, toastInfo } from '@/components/ui/custom-toast';
+import { toastSuccess } from '@/components/ui/custom-toast';
 import { animations } from '@/lib/animations';
 import { useNavigate } from 'react-router-dom';
 import { HeroWelcomeSection } from './HeroWelcomeSection';
@@ -43,10 +43,6 @@ const HomePage = () => {
     }, 100);
   };
 
-  const handleServiceSelect = (service: string) => {
-    toastInfo('Serviço selecionado', `Você selecionou: ${service}`);
-  };
-
   const handleQuickAction = (action: string) => {
     switch(action) {
       case 'chat':
@@ -62,12 +58,8 @@ const HomePage = () => {
         navigate('/emergency');
         break;
       default:
-        toastInfo('Ação rápida', `Ação: ${action}`);
+        break;
     }
-  };
-
-  const handleScheduleEvaluation = () => {
-    toastSuccess('Agendamento', 'Avaliação gratuita agendada!');
   };
 
   const handleEmergencyCall = () => {
@@ -80,7 +72,6 @@ const HomePage = () => {
   return (
     <div className={`p-4 space-y-6 ${animations.pageEnter}`}>
       <HeroWelcomeSection 
-        onScheduleEvaluation={handleScheduleEvaluation}
         onViewUnits={handleViewUnits}
         schedulingLoading={schedulingLoading}
       />
@@ -97,7 +88,7 @@ const HomePage = () => {
         onViewAllAppointments={handleViewAllAppointments}
       />
 
-      <ServicesSection onServiceSelect={handleServiceSelect} />
+      <ServicesSection />
 
       <ReviewsSection />
 

@@ -3,13 +3,18 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { animations } from '@/lib/animations';
 import { availableServices } from '@/components/Appointments/constants/services';
+import { useNavigate } from 'react-router-dom';
 
-interface ServicesSectionProps {
-  onServiceSelect: (service: string) => void;
-}
-
-export const ServicesSection: React.FC<ServicesSectionProps> = ({ onServiceSelect }) => {
+export const ServicesSection: React.FC = () => {
+  const navigate = useNavigate();
   const popularServices = ['avaliacao-gratuita', 'limpeza', 'ortodontia', 'estetica-dental'];
+
+  const handleServiceSelect = (serviceId: string) => {
+    navigate(`/schedule?service=${serviceId}`);
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
+  };
 
   return (
     <Card className={animations.fadeIn}>
@@ -23,7 +28,7 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ onServiceSelec
               key={service.name} 
               className={`relative hover:shadow-md transition-shadow cursor-pointer ${animations.cardHover} ${animations.scaleIn}`}
               style={{ animationDelay: `${index * 100}ms` }}
-              onClick={() => onServiceSelect(service.name)}
+              onClick={() => handleServiceSelect(service.id)}
             >
               {popularServices.includes(service.id) && (
                 <div className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs px-2 py-1 rounded-full">
