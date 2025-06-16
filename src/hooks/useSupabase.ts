@@ -261,11 +261,11 @@ export const useRealtimeChat = (phone?: string) => {
   return { realtimeMessages }
 }
 
-// Hook for managing user profile data using the profiles table
+// Hook for managing user profile data using the user_profiles table (English)
 export const useUserProfile = (userId?: string) => {
   const queryClient = useQueryClient()
 
-  // Get user profile from profiles table
+  // Get user profile from user_profiles table
   const {
     data: profile,
     isLoading,
@@ -276,7 +276,7 @@ export const useUserProfile = (userId?: string) => {
       if (!userId) return null
       
       const { data, error } = await supabase
-        .from('profiles')
+        .from('user_profiles')
         .select('*')
         .eq('id', userId)
         .single()
@@ -290,13 +290,16 @@ export const useUserProfile = (userId?: string) => {
   // Update profile mutation
   const updateProfile = useMutation({
     mutationFn: async (updates: {
-      nome_completo?: string
-      telefone?: string
+      full_name?: string
+      phone?: string
+      date_of_birth?: string
+      medical_notes?: string
+      emergency_contact?: string
     }) => {
       if (!userId) throw new Error('User ID required')
       
       const { data, error } = await supabase
-        .from('profiles')
+        .from('user_profiles')
         .update(updates)
         .eq('id', userId)
         .select()

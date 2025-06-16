@@ -2,14 +2,14 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './useAuth';
-import { useProfile } from './useProfile';
+import { useUserProfile } from './useUserProfile';
 import { AppointmentService } from '@/services/supabase/appointments';
 import { toastSuccess, toastError } from '@/components/ui/custom-toast';
 
 export const useAppointmentSchedulerLogic = (rescheduleId: string | null) => {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
-  const { profile } = useProfile();
+  const { profile } = useUserProfile();
   
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [selectedTime, setSelectedTime] = useState('');
@@ -60,7 +60,7 @@ export const useAppointmentSchedulerLogic = (rescheduleId: string | null) => {
 
     // Se usuário está logado, usar dados do perfil automaticamente
     if (isAuthenticated && profile) {
-      handleConfirmAppointment(profile.nome_completo, profile.telefone);
+      handleConfirmAppointment(profile.full_name, profile.phone);
     } else {
       // Se não está logado, mostrar modal para capturar dados
       setShowPhoneModal(true);
@@ -75,8 +75,8 @@ export const useAppointmentSchedulerLogic = (rescheduleId: string | null) => {
       
       // Preparar dados do agendamento
       const appointmentData = {
-        name: name || profile?.nome_completo || '',
-        phone: phone || profile?.telefone || '',
+        name: name || profile?.full_name || '',
+        phone: phone || profile?.phone || '',
         date: selectedDate!.toISOString().split('T')[0],
         time: selectedTime,
         clinic: selectedClinicData ? `${selectedClinicData.name} - ${selectedClinicData.city}` : '',
