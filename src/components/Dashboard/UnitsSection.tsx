@@ -29,8 +29,8 @@ export const UnitsSection: React.FC<UnitsSectionProps> = ({
 
   return (
     <Card className={animations.slideInLeft}>
-      <CardHeader>
-        <CardTitle className="flex items-center">
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center text-lg">
           <MapPin className="h-5 w-5 mr-2" />
           Nossas Unidades
         </CardTitle>
@@ -39,16 +39,16 @@ export const UnitsSection: React.FC<UnitsSectionProps> = ({
         <div className="space-y-3">
           {featuredClinics.map((clinic) => (
             <div key={clinic.name} className={`p-3 border rounded-lg ${animations.cardHover}`}>
-              <div className="flex justify-between items-start">
-                <div className="flex-1">
-                  <h4 className="font-medium">{clinic.name}</h4>
-                  <p className="text-sm text-gray-600">{clinic.address}</p>
+              <div className="flex justify-between items-start gap-3">
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-medium text-sm">{clinic.name}</h4>
+                  <p className="text-xs text-gray-600 mt-1">{clinic.address}</p>
                 </div>
                 <Button 
                   size="sm" 
                   variant="outline"
                   onClick={() => onScheduleClinic(clinic.name, clinic.phone)}
-                  className={animations.buttonHover}
+                  className={`${animations.buttonHover} px-3 py-1 text-xs shrink-0`}
                 >
                   Agendar
                 </Button>
@@ -59,7 +59,7 @@ export const UnitsSection: React.FC<UnitsSectionProps> = ({
           <div className="text-center pt-2">
             <Button 
               variant="ghost" 
-              className={`text-primary ${animations.buttonHover}`}
+              className={`text-primary text-sm ${animations.buttonHover}`}
               onClick={onViewUnits}
             >
               Ver todas as unidades

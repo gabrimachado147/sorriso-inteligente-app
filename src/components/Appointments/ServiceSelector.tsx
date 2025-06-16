@@ -25,17 +25,17 @@ export const ServiceSelector: React.FC<ServiceSelectorProps> = ({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {availableServices.map((service) => (
             <div key={service.id} className="relative">
               <Button
                 variant={selectedService === service.id ? "default" : "outline"}
-                className={`h-auto p-4 w-full mobile-touch-target ${animations.buttonHover} ${
+                className={`h-auto p-3 w-full mobile-touch-target ${animations.buttonHover} ${
                   selectedService === service.id ? animations.scaleIn : ''
                 } ${service.category === 'urgencia' ? 'border-red-200 hover:border-red-300' : ''}`}
                 onClick={() => onServiceSelect(service.id)}
               >
-                <div className="flex flex-col items-center text-center space-y-3">
+                <div className="flex flex-col items-center text-center space-y-2">
                   <div className={`${
                     service.category === 'urgencia' ? 'text-red-600' : 
                     selectedService === service.id ? 'text-white' : 'text-primary'
