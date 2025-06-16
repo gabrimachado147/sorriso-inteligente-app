@@ -9,151 +9,113 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Calendar, Clock, MapPin, User2 } from 'lucide-react';
-import { animations } from '@/lib/animations';
+import { User, Phone, Calendar, Clock, MapPin, Stethoscope } from 'lucide-react';
 
-interface PhoneConfirmationModalProps {
+export interface PhoneConfirmationModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: (name: string, phone: string) => void;
+  onConfirm: (name?: string, phone?: string) => Promise<void>;
   appointmentData: {
     date: string;
     time: string;
     clinic: string;
     service: string;
   };
+  isLoading: boolean;
 }
 
 export const PhoneConfirmationModal: React.FC<PhoneConfirmationModalProps> = ({
   isOpen,
   onClose,
   onConfirm,
-  appointmentData
+  appointmentData,
+  isLoading
 }) => {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!name.trim() || !phone.trim()) {
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      await onConfirm(name.trim(), phone.trim());
-      setName('');
-      setPhone('');
-    } catch (error) {
-      console.error('Error confirming appointment:', error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const formatPhone = (value: string) => {
-    // Remove tudo que não é número
-    const numbers = value.replace(/\D/g, '');
-    
-    // Aplica a máscara (XX) XXXXX-XXXX
-    if (numbers.length <= 11) {
-      return numbers.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
-    }
-    
-    return value;
-  };
-
-  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = formatPhone(e.target.value);
-    if (formatted.length <= 15) {
-      setPhone(formatted);
-    }
+  const handleConfirm = async () => {
+    if (!name.trim() || !phone.trim()) return;
+    await onConfirm(name, phone);
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className={`sm:max-w-md ${animations.slideInBottom}`}>
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-center">Finalizar Agendamento</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            <User className="h-5 w-5" />
+            Confirmar Agendamento
+          </DialogTitle>
         </DialogHeader>
         
-        <div className="space-y-6">
+        <div className="space-y-4">
           {/* Resumo do agendamento */}
-          <div className="bg-blue-50 p-4 rounded-lg space-y-3">
-            <h3 className="font-semibold text-blue-900 mb-3">Resumo da Consulta</h3>
-            
-            <div className="flex items-center gap-3 text-sm">
-              <Calendar className="h-4 w-4 text-blue-600" />
-              <span className="text-blue-800">{appointmentData.date}</span>
-            </div>
-            
-            <div className="flex items-center gap-3 text-sm">
-              <Clock className="h-4 w-4 text-blue-600" />
-              <span className="text-blue-800">{appointmentData.time}</span>
-            </div>
-            
-            <div className="flex items-center gap-3 text-sm">
-              <MapPin className="h-4 w-4 text-blue-600" />
-              <span className="text-blue-800">{appointmentData.clinic}</span>
-            </div>
-            
-            <div className="flex items-center gap-3 text-sm">
-              <User2 className="h-4 w-4 text-blue-600" />
-              <span className="text-blue-800">{appointmentData.service}</span>
+          <div className="bg-gray-50 p-4 rounded-lg space-y-2">
+            <h3 className="font-semibold text-sm mb-2">Resumo:</h3>
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <div className="flex items-center gap-1">
+                <Calendar className="h-3 w-3" />
+                <span>{appointmentData.date}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <Clock className="h-3 w-3" />
+                <span>{appointmentData.time}</span>
+              </div>
+              <div className="flex items-center gap-1 col-span-2">
+                <MapPin className="h-3 w-3" />
+                <span className="truncate">{appointmentData.clinic}</span>
+              </div>
+              <div className="flex items-center gap-1 col-span-2">
+                <Stethoscope className="h-3 w-3" />
+                <span>{appointmentData.service}</span>
+              </div>
             </div>
           </div>
 
           {/* Formulário */}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Nome Completo *</Label>
+          <div className="space-y-3">
+            <div>
+              <Label htmlFor="name">Nome Completo</Label>
               <Input
                 id="name"
-                type="text"
+                placeholder="Digite seu nome completo"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Digite seu nome completo"
-                required
-                maxLength={100}
+                disabled={isLoading}
               />
             </div>
             
-            <div className="space-y-2">
-              <Label htmlFor="phone">Telefone/WhatsApp *</Label>
+            <div>
+              <Label htmlFor="phone">Telefone</Label>
               <Input
                 id="phone"
-                type="tel"
-                value={phone}
-                onChange={handlePhoneChange}
                 placeholder="(11) 99999-9999"
-                required
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                disabled={isLoading}
               />
-              <p className="text-xs text-gray-500">
-                Enviaremos a confirmação via WhatsApp
-              </p>
             </div>
+          </div>
 
-            <div className="flex gap-3 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={onClose}
-                className="flex-1"
-                disabled={isSubmitting}
-              >
-                Cancelar
-              </Button>
-              <Button
-                type="submit"
-                className="flex-1"
-                disabled={!name.trim() || !phone.trim() || isSubmitting}
-              >
-                {isSubmitting ? 'Confirmando...' : 'Confirmar Agendamento'}
-              </Button>
-            </div>
-          </form>
+          {/* Botões */}
+          <div className="flex gap-2 pt-4">
+            <Button
+              variant="outline"
+              onClick={onClose}
+              disabled={isLoading}
+              className="flex-1"
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleConfirm}
+              disabled={isLoading || !name.trim() || !phone.trim()}
+              className="flex-1"
+            >
+              {isLoading ? 'Confirmando...' : 'Confirmar'}
+            </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>

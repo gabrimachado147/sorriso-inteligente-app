@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -17,8 +18,11 @@ import GamificationPage from "./pages/GamificationPage";
 import RemindersPage from "./pages/RemindersPage";
 import AccessibilityPage from "./pages/AccessibilityPage";
 import { PWASettingsPage } from "./pages/PWASettingsPage";
-import AppointmentsPage from "./pages/AppointmentsPage";
+import AppointmentsPageReal from "./pages/AppointmentsPageReal";
 import NotFound from "./pages/NotFound";
+import { useAnalytics } from "./hooks/useAnalytics";
+import { useRealtimeSync } from "./hooks/useRealtimeSync";
+import { useNotificationIntegration } from "./hooks/useNotificationIntegration";
 import "./App.css";
 
 const queryClient = new QueryClient({
@@ -31,6 +35,15 @@ const queryClient = new QueryClient({
 });
 
 const MainLayout = () => {
+  // Initialize analytics
+  useAnalytics();
+  
+  // Initialize realtime sync
+  useRealtimeSync();
+  
+  // Initialize notifications
+  useNotificationIntegration();
+
   return (
     <div className="min-h-screen bg-background flex flex-col w-full">
       <Header />
@@ -64,7 +77,7 @@ function App() {
                 <Route path="reminders" element={<RemindersPage />} />
                 <Route path="accessibility" element={<AccessibilityPage />} />
                 <Route path="pwa-settings" element={<PWASettingsPage onNavigate={() => {}} />} />
-                <Route path="appointments" element={<AppointmentsPage />} />
+                <Route path="appointments" element={<AppointmentsPageReal />} />
                 <Route path="404" element={<NotFound />} />
                 <Route path="*" element={<Navigate to="/404" replace />} />
               </Route>

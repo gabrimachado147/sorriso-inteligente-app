@@ -179,7 +179,7 @@ const AppointmentSchedulerReal: React.FC<AppointmentSchedulerRealProps> = ({ res
           isOpen={showPhoneModal}
           onClose={() => setShowPhoneModal(false)}
           onConfirm={handleConfirmAppointment}
-          appointmentDetails={{
+          appointmentData={{
             date: selectedDate?.toLocaleDateString('pt-BR') || '',
             time: selectedTime,
             clinic: availableClinics.find(c => c.id === selectedClinic)?.name || '',

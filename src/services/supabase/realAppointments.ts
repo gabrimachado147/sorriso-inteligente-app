@@ -14,9 +14,6 @@ export interface RealAppointmentRecord {
   status: string;
   notes?: string;
   source?: string;
-  patient_name?: string;
-  patient_phone?: string;
-  patient_email?: string;
   created_at: string;
   updated_at: string;
   clinic_filter?: string;
@@ -40,9 +37,9 @@ type AppointmentRow = Tables<'appointments'>;
 
 const normalizeRealAppointment = (data: AppointmentRow): RealAppointmentRecord => ({
   id: data.id,
-  name: data.patient_name || data.name,
-  phone: data.patient_phone || data.phone,
-  email: data.patient_email || data.email || undefined,
+  name: data.name,
+  phone: data.phone,
+  email: data.email || undefined,
   date: data.date,
   time: data.time,
   clinic: data.clinic,
@@ -50,9 +47,6 @@ const normalizeRealAppointment = (data: AppointmentRow): RealAppointmentRecord =
   status: data.status,
   notes: data.notes || undefined,
   source: data.source || undefined,
-  patient_name: data.patient_name || undefined,
-  patient_phone: data.patient_phone || undefined,
-  patient_email: data.patient_email || undefined,
   created_at: data.created_at,
   updated_at: data.updated_at,
   clinic_filter: data.clinic_filter || undefined
@@ -92,7 +86,7 @@ export class RealAppointmentService {
       const { data, error } = await supabase
         .from('appointments')
         .select('*')
-        .or(`phone.eq.${phone},patient_phone.eq.${phone}`)
+        .eq('phone', phone)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -122,11 +116,7 @@ export class RealAppointmentService {
         notes: data.notes,
         source: data.source || 'pwa',
         clinic_filter: data.clinic,
-        webhook_session_id: data.webhook_session_id,
-        // Populando os novos campos também
-        patient_name: data.name,
-        patient_phone: data.phone,
-        patient_email: data.email
+        webhook_session_id: data.webhook_session_id
       };
 
       const { data: appointment, error } = await supabase
