@@ -18,6 +18,8 @@ export const AdminDashboard = () => {
     statsLoading, 
     refetch 
   } = useAppointments();
+  
+  // Only use one realtime hook to prevent conflicts
   const { realtimeConnected } = useRealtimeAppointments();
 
   // Filter appointments by selected clinic

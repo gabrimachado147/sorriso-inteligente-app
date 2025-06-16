@@ -6,63 +6,54 @@ import { useQueryClient } from '@tanstack/react-query';
 export const useRealtimeSync = () => {
   const queryClient = useQueryClient();
   const channelRef = useRef<any>(null);
+  const isSubscribedRef = useRef(false);
 
   useEffect(() => {
-    console.log('[RealtimeSync] Initializing realtime sync...');
-
-    // Clean up existing channel if it exists
-    if (channelRef.current) {
-      console.log('[RealtimeSync] Cleaning up existing channel...');
-      supabase.removeChannel(channelRef.current);
-      channelRef.current = null;
+    // Prevent duplicate subscriptions
+    if (isSubscribedRef.current || channelRef.current) {
+      return;
     }
 
-    const channel = supabase
-      .channel('general-realtime-sync')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'appointments'
-        },
-        (payload) => {
-          console.log('[RealtimeSync] Appointment change detected:', payload);
-          
-          // Invalidate relevant queries
-          queryClient.invalidateQueries({ queryKey: ['appointments'] });
-          queryClient.invalidateQueries({ queryKey: ['appointment-stats'] });
-          queryClient.invalidateQueries({ queryKey: ['user-appointments'] });
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'user_profiles'
-        },
-        (payload) => {
-          console.log('[RealtimeSync] Profile change detected:', payload);
-          
-          // Invalidate profile queries
-          queryClient.invalidateQueries({ queryKey: ['user-profile'] });
-        }
-      );
+    console.log('[RealtimeSync] Initializing realtime sync...');
 
-    // Store channel reference
-    channelRef.current = channel;
+    const setupChannel = () => {
+      const channel = supabase
+        .channel(`general-realtime-sync-${Date.now()}`) // Add timestamp to ensure unique channel name
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'user_profiles'
+          },
+          (payload) => {
+            console.log('[RealtimeSync] Profile change detected:', payload);
+            
+            // Invalidate profile queries
+            queryClient.invalidateQueries({ queryKey: ['user-profile'] });
+          }
+        );
 
-    // Subscribe to the channel
-    channel.subscribe((status) => {
-      console.log('[RealtimeSync] Subscription status:', status);
-      
-      if (status === 'SUBSCRIBED') {
-        console.log('[RealtimeSync] Successfully connected to realtime sync');
-      } else if (status === 'CHANNEL_ERROR') {
-        console.error('[RealtimeSync] Failed to connect to realtime sync');
+      // Store channel reference
+      channelRef.current = channel;
+
+      // Subscribe to the channel only once
+      if (!isSubscribedRef.current) {
+        channel.subscribe((status) => {
+          console.log('[RealtimeSync] Subscription status:', status);
+          
+          if (status === 'SUBSCRIBED') {
+            console.log('[RealtimeSync] Successfully connected to realtime sync');
+            isSubscribedRef.current = true;
+          } else if (status === 'CHANNEL_ERROR') {
+            console.error('[RealtimeSync] Failed to connect to realtime sync');
+            isSubscribedRef.current = false;
+          }
+        });
       }
-    });
+    };
+
+    setupChannel();
 
     // Cleanup function
     return () => {
@@ -71,6 +62,7 @@ export const useRealtimeSync = () => {
         supabase.removeChannel(channelRef.current);
         channelRef.current = null;
       }
+      isSubscribedRef.current = false;
     };
   }, [queryClient]);
 
