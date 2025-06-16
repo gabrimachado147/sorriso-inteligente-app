@@ -3,7 +3,8 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Calendar, MessageCircle, MapPin, Phone, Star, Clock, Users } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Calendar, MessageCircle, MapPin, Phone, Star, Clock, Users, Search, Sparkles, Wrench, Smile, Settings, Crown, Stethoscope, Baby, Shield, AlertTriangle } from 'lucide-react';
 import { animations } from '@/lib/animations';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -29,36 +30,28 @@ const Index = () => {
 
   const quickActions = [
     {
-      icon: Calendar,
-      title: "Agendar",
-      description: "Marque sua consulta rapidamente",
-      buttonText: "Novo Agendamento",
-      path: "/schedule",
-      variant: "default" as const
-    },
-    {
       icon: MessageCircle,
       title: "Chat IA",
-      description: "Tire suas dúvidas conosco",
-      buttonText: "Iniciar Chat",
-      path: "/chat",
-      variant: "outline" as const
+      description: "Tire suas dúvidas",
+      path: "/chat"
     },
     {
       icon: MapPin,
       title: "Unidades",
-      description: "Encontre a unidade mais próxima",
-      buttonText: "Ver Locais",
-      path: "/clinics",
-      variant: "outline" as const
+      description: "5 cidades",
+      path: "/clinics"
+    },
+    {
+      icon: Calendar,
+      title: "Agendar",
+      description: "Nova consulta",
+      path: "/schedule"
     },
     {
       icon: Phone,
-      title: "Emergência",
-      description: "Contato para urgências",
-      buttonText: "Contatar Agora",
+      title: "Urgência",
+      description: "Contato emergência",
       path: "",
-      variant: "destructive" as const,
       isEmergency: true
     }
   ];
@@ -66,21 +59,26 @@ const Index = () => {
   const featuredClinics = [
     {
       name: 'Campo Belo - MG',
-      address: 'Av. Afonso Pena, 151, Centro',
-      phone: '(35) 99891-3803'
+      address: 'Av. Afonso Pena, 151, Centro'
     },
     {
       name: 'Formiga - MG', 
-      address: 'R. Barão de Piumhy, 198, Centro',
-      phone: '(37) 3443-0520'
+      address: 'R. Barão de Piumhy, 198, Centro'
     }
   ];
 
-  const stats = [
-    { icon: Users, label: 'Pacientes Atendidos', value: '10.000+' },
-    { icon: Star, label: 'Satisfação', value: '98%' },
-    { icon: Clock, label: 'Anos de Experiência', value: '15+' },
-    { icon: Calendar, label: 'Consultas/Mês', value: '500+' }
+  const services = [
+    { icon: Search, name: 'Avaliação Gratuita', popular: true },
+    { icon: Sparkles, name: 'Limpeza', popular: true },
+    { icon: Wrench, name: 'Restauração', popular: false },
+    { icon: Smile, name: 'Ortodontia', popular: true },
+    { icon: Settings, name: 'Implantodontia', popular: false },
+    { icon: Sparkles, name: 'Estética Dental', popular: true },
+    { icon: Crown, name: 'Próteses Fixas', popular: false },
+    { icon: Stethoscope, name: 'Endodontia', popular: false },
+    { icon: Baby, name: 'Odontopediatria', popular: false },
+    { icon: Shield, name: 'Periodontia', popular: false },
+    { icon: AlertTriangle, name: 'Atendimento de Urgência', popular: false }
   ];
 
   return (
@@ -101,11 +99,11 @@ const Index = () => {
             </div>
 
             <h1 className="text-4xl md:text-5xl font-bold mb-6">
-              Senhor Sorriso
+              Bem-vindo à Senhor Sorriso!
             </h1>
             
             <p className="text-xl md:text-2xl mb-8 text-blue-100 max-w-3xl mx-auto">
-              Cuidando do seu sorriso com carinho e profissionalismo
+              Seu sorriso perfeito está a um clique de distância
             </p>
 
             {user && (
@@ -135,30 +133,12 @@ const Index = () => {
                 Ver Nossas Unidades
               </Button>
             </div>
-
-            {/* Stats Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {stats.map((stat, index) => {
-                const Icon = stat.icon;
-                return (
-                  <Card key={stat.label} className="bg-white/10 backdrop-blur-lg border-white/20 text-white">
-                    <CardContent className="p-4 text-center">
-                      <Icon className="h-6 w-6 mx-auto mb-2 text-blue-200" />
-                      <div className="text-xl font-bold mb-1">{stat.value}</div>
-                      <div className="text-xs text-blue-200">{stat.label}</div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
           </div>
         </section>
 
         {/* Quick Actions Section */}
         <section className="py-8 px-6">
           <div className="max-w-6xl mx-auto">
-            <h2 className="text-3xl font-bold text-center mb-8">Acesso Rápido</h2>
-            
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {quickActions.map((action, index) => {
                 const Icon = action.icon;
@@ -167,30 +147,19 @@ const Index = () => {
                 return (
                   <Card 
                     key={action.title}
-                    className={`cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-105 ${
+                    className={`cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-105 text-center ${
                       isEmergency ? 'border-red-200 bg-red-50' : ''
                     }`}
                     onClick={() => isEmergency ? handleEmergencyCall() : handleNavigate(action.path)}
                   >
-                    <CardContent className="p-6 text-center">
+                    <CardContent className="p-6">
                       <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${
                         isEmergency ? 'bg-red-500' : 'bg-primary'
                       }`}>
                         <Icon className="h-8 w-8 text-white" />
                       </div>
                       <h3 className="text-lg font-semibold mb-2">{action.title}</h3>
-                      <p className="text-gray-600 text-sm mb-4">{action.description}</p>
-                      <Button 
-                        variant={action.variant}
-                        size="sm"
-                        className="w-full"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          isEmergency ? handleEmergencyCall() : handleNavigate(action.path);
-                        }}
-                      >
-                        {action.buttonText}
-                      </Button>
+                      <p className="text-gray-600 text-sm">{action.description}</p>
                     </CardContent>
                   </Card>
                 );
@@ -202,36 +171,26 @@ const Index = () => {
         {/* Clinics Section */}
         <section className="py-8 px-6 bg-gray-50">
           <div className="max-w-6xl mx-auto">
-            <h2 className="text-3xl font-bold text-center mb-8">Nossas Unidades</h2>
+            <h2 className="text-3xl font-bold text-center mb-8 flex items-center justify-center">
+              <MapPin className="h-8 w-8 mr-3" />
+              Nossas Unidades
+            </h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               {featuredClinics.map((clinic) => (
                 <Card key={clinic.name} className="hover:shadow-md transition-shadow">
                   <CardHeader>
-                    <CardTitle className="flex items-center text-lg">
-                      <MapPin className="h-5 w-5 mr-2 text-primary" />
-                      {clinic.name}
-                    </CardTitle>
+                    <CardTitle className="text-lg">{clinic.name}</CardTitle>
+                    <p className="text-gray-600">{clinic.address}</p>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-gray-600 mb-4">{clinic.address}</p>
-                    <div className="flex gap-3">
-                      <Button 
-                        size="sm" 
-                        onClick={() => handleNavigate('/schedule')}
-                        className="flex-1"
-                      >
-                        Agendar
-                      </Button>
-                      <Button 
-                        size="sm" 
-                        variant="outline"
-                        onClick={() => window.open(`tel:${clinic.phone}`, '_self')}
-                      >
-                        <Phone className="h-4 w-4 mr-1" />
-                        Ligar
-                      </Button>
-                    </div>
+                    <Button 
+                      size="sm" 
+                      onClick={() => handleNavigate('/schedule')}
+                      className="w-full"
+                    >
+                      Agendar
+                    </Button>
                   </CardContent>
                 </Card>
               ))}
@@ -249,40 +208,112 @@ const Index = () => {
           </div>
         </section>
 
-        {/* CTA Section */}
-        <section className="py-16 px-6">
-          <div className="max-w-4xl mx-auto text-center">
-            <Card className="bg-primary/5 border-primary/20">
-              <CardContent className="p-8">
-                <div className="flex justify-center mb-6">
-                  <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center">
-                    <Star className="h-8 w-8 text-white" />
-                  </div>
-                </div>
-                
-                <h2 className="text-3xl font-bold text-primary mb-4">
-                  Pronto para cuidar do seu sorriso?
-                </h2>
-                
-                <p className="text-xl text-gray-600 mb-8">
-                  Agende sua consulta hoje mesmo e dê o primeiro passo para um sorriso mais saudável e bonito.
-                </p>
-                
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Button 
-                    size="lg" 
-                    className="text-lg px-10 py-4" 
+        {/* Login Section */}
+        {!user && (
+          <section className="py-8 px-6">
+            <div className="max-w-4xl mx-auto text-center">
+              <h2 className="text-3xl font-bold mb-4 flex items-center justify-center">
+                <Clock className="h-8 w-8 mr-3" />
+                Próximas Consultas
+              </h2>
+              
+              <Card className="mb-8">
+                <CardContent className="p-8">
+                  <Calendar className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                  <p className="text-gray-600 mb-4">Faça login para ver suas consultas</p>
+                  <Button onClick={() => handleNavigate('/auth')}>
+                    Fazer Login
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+          </section>
+        )}
+
+        {/* Services Section */}
+        <section className="py-8 px-6">
+          <div className="max-w-6xl mx-auto">
+            <h2 className="text-3xl font-bold text-center mb-8">Nossos Serviços</h2>
+            
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {services.map((service, index) => {
+                const Icon = service.icon;
+                return (
+                  <Card 
+                    key={service.name}
+                    className="cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-105 text-center relative"
                     onClick={() => handleNavigate('/schedule')}
                   >
-                    Agendar Consulta
+                    <CardContent className="p-6">
+                      <div className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 bg-primary">
+                        <Icon className="h-6 w-6 text-white" />
+                      </div>
+                      <h3 className="text-sm font-semibold">{service.name}</h3>
+                      
+                      {service.popular && (
+                        <Badge 
+                          variant="secondary" 
+                          className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs px-2 py-1"
+                        >
+                          Popular
+                        </Badge>
+                      )}
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* Reviews Section */}
+        <section className="py-8 px-6">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-3xl font-bold mb-4 flex items-center justify-center">
+              <Star className="h-8 w-8 mr-3" />
+              Avaliações
+            </h2>
+            
+            {!user ? (
+              <Card>
+                <CardContent className="p-8">
+                  <MessageCircle className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                  <p className="text-gray-600 mb-4">Faça login para compartilhar sua experiência</p>
+                  <Button onClick={() => handleNavigate('/auth')}>
+                    Fazer Login para Avaliar
                   </Button>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card>
+                <CardContent className="p-8">
+                  <Star className="h-16 w-16 mx-auto mb-4 text-yellow-500" />
+                  <p className="text-gray-600 mb-4">Compartilhe sua experiência conosco</p>
+                  <Button>Avaliar Atendimento</Button>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        </section>
+
+        {/* Emergency Section */}
+        <section className="py-8 px-6 bg-red-50">
+          <div className="max-w-4xl mx-auto">
+            <Card className="border-red-200 bg-red-50">
+              <CardContent className="p-8">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-xl font-bold text-red-600 mb-2">Urgência Dental</h3>
+                    <p className="text-red-700">Atendimento para emergências odontológicas</p>
+                  </div>
                   <Button 
-                    size="lg" 
-                    variant="outline" 
-                    className="text-lg px-10 py-4" 
-                    onClick={handleWhatsAppContact}
+                    variant="destructive"
+                    size="lg"
+                    onClick={handleEmergencyCall}
+                    className="ml-4"
                   >
-                    Falar no WhatsApp
+                    <Phone className="h-5 w-5 mr-2" />
+                    Contatar Agora
                   </Button>
                 </div>
               </CardContent>
