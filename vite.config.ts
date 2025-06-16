@@ -105,8 +105,8 @@ export default defineConfig(({ mode }) => {
           assetFileNames: 'assets/[name]-[hash].[ext]',
         },
       },
-      // Performance optimizations - increased limit
-      chunkSizeWarningLimit: 2000, // Increased from 1000 to 2000
+      // Performance optimizations - sync trigger comment
+      chunkSizeWarningLimit: 2000,
       assetsInlineLimit: 4096,
     },
     // Environment-specific optimizations
