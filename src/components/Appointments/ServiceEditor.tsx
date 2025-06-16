@@ -51,22 +51,26 @@ export const ServiceEditor: React.FC<ServiceEditorProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedService, setSelectedService] = useState(appointment.service);
-  const [customPrice, setCustomPrice] = useState<string>('');
-  const [showPriceField, setShowPriceField] = useState(false);
+  const [priceValue, setPriceValue] = useState<string>(
+    (appointment as any).price ? (appointment as any).price.toString() : ''
+  );
 
   const handleSave = async () => {
-    const price = customPrice ? parseFloat(customPrice.replace(',', '.')) : undefined;
+    const price = priceValue ? parseFloat(priceValue.replace(',', '.')) : undefined;
     await onUpdate(appointment.id, selectedService, price);
     setIsOpen(false);
-    setCustomPrice('');
-    setShowPriceField(false);
   };
 
   const handleCancel = () => {
     setSelectedService(appointment.service);
-    setCustomPrice('');
-    setShowPriceField(false);
+    setPriceValue((appointment as any).price ? (appointment as any).price.toString() : '');
     setIsOpen(false);
+  };
+
+  const formatCurrency = (value: string) => {
+    // Remove caracteres não numéricos exceto vírgula e ponto
+    const numbers = value.replace(/[^\d.,]/g, '');
+    return numbers;
   };
 
   return (
@@ -105,37 +109,25 @@ export const ServiceEditor: React.FC<ServiceEditorProps> = ({
             </Select>
           </div>
 
-          <div className="flex items-center justify-between">
-            <Label>Adicionar Valor</Label>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => setShowPriceField(!showPriceField)}
-            >
-              <DollarSign className="h-4 w-4 mr-1" />
-              {showPriceField ? 'Ocultar' : 'Mostrar'} Preço
-            </Button>
+          <div className="space-y-2">
+            <Label htmlFor="price" className="flex items-center gap-2">
+              <DollarSign className="h-4 w-4" />
+              Valor do Serviço (R$)
+            </Label>
+            <Input
+              id="price"
+              type="text"
+              placeholder="Ex: 150.00 ou 150,00"
+              value={priceValue}
+              onChange={(e) => {
+                const formattedValue = formatCurrency(e.target.value);
+                setPriceValue(formattedValue);
+              }}
+            />
+            <p className="text-xs text-gray-500">
+              Campo livre - Digite o valor cobrado e forma de pagamento se necessário
+            </p>
           </div>
-
-          {showPriceField && (
-            <div className="space-y-2">
-              <Label htmlFor="price">Valor do Serviço (R$)</Label>
-              <Input
-                id="price"
-                type="text"
-                placeholder="Ex: 150,00"
-                value={customPrice}
-                onChange={(e) => {
-                  const value = e.target.value.replace(/[^\d,]/g, '');
-                  setCustomPrice(value);
-                }}
-              />
-              <p className="text-xs text-gray-500">
-                Digite apenas números e vírgula para decimais
-              </p>
-            </div>
-          )}
         </div>
 
         <div className="flex gap-2 justify-end">

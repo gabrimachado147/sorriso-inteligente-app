@@ -104,7 +104,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ appointments, st
         clinicsData: [],
         statusData: [],
         recentAppointments: [],
-        revenueEstimate: 0,
+        totalRevenue: 0,
         patientSatisfaction: 0,
         criticalAlerts: [],
         performanceInsights: [],
@@ -130,23 +130,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ appointments, st
     
     const retentionRate = uniquePatients > 0 ? Math.round((returningPatients / uniquePatients) * 100) : 0;
     
-    // Estimativa de receita (valores médios por serviço)
-    const serviceValues = {
-      'Avaliação Gratuita': 0,
-      'Limpeza': 150,
-      'Clareamento': 800,
-      'Ortodontia': 2500,
-      'Implante': 3500,
-      'Canal': 1200,
-      'Extração': 300,
-      'Restauração': 250,
-      'Prótese': 1800,
-      'Cirurgia': 2000
-    };
-
-    const revenueEstimate = completedAppointments.reduce((total, apt) => {
-      const value = serviceValues[apt.service as keyof typeof serviceValues] || 400;
-      return total + value;
+    // Receita real baseada nos valores inseridos pelos funcionários
+    const totalRevenue = filteredAppointments.reduce((total, apt) => {
+      const price = (apt as any).price;
+      return total + (price || 0);
     }, 0);
 
     // Horários de pico
@@ -175,12 +162,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ appointments, st
       const monthConfirmed = monthAppointments.filter(apt => 
         apt.status === 'confirmed' || apt.status === 'completed'
       );
-      const monthRevenue = monthAppointments
-        .filter(apt => apt.status === 'completed')
-        .reduce((total, apt) => {
-          const value = serviceValues[apt.service as keyof typeof serviceValues] || 400;
-          return total + value;
-        }, 0);
+      const monthRevenue = monthAppointments.reduce((total, apt) => {
+        const price = (apt as any).price;
+        return total + (price || 0);
+      }, 0);
 
       monthlyData.push({
         month: monthName,
@@ -218,9 +203,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ appointments, st
       if (apt.status === 'confirmed' || apt.status === 'completed') {
         acc[apt.clinic].confirmed++;
       }
-      if (apt.status === 'completed') {
-        const value = serviceValues[apt.service as keyof typeof serviceValues] || 400;
-        acc[apt.clinic].revenue += value;
+      const price = (apt as any).price;
+      if (price) {
+        acc[apt.clinic].revenue += price;
       }
       return acc;
     }, {} as Record<string, { total: number; confirmed: number; revenue: number }>);
@@ -292,7 +277,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ appointments, st
       clinicsData,
       statusData,
       recentAppointments,
-      revenueEstimate,
+      totalRevenue,
       patientSatisfaction,
       criticalAlerts,
       performanceInsights,
@@ -528,9 +513,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ appointments, st
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-medium text-gray-600">Receita Estimada</p>
-                <p className="text-2xl font-bold text-green-600">R$ {(dashboardData.revenueEstimate / 1000).toFixed(0)}k</p>
-                <p className="text-xs text-gray-600 mt-1">Este mês</p>
+                <p className="text-xs font-medium text-gray-600">Receita Total</p>
+                <p className="text-2xl font-bold text-green-600">R$ {dashboardData.totalRevenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
+                <p className="text-xs text-gray-600 mt-1">Valores inseridos</p>
               </div>
               <DollarSign className="h-6 w-6 text-green-500" />
             </div>
@@ -833,9 +818,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ appointments, st
                   <div className="bg-gradient-to-r from-green-50 to-green-100 p-4 rounded-lg">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm text-gray-600">Receita Total Estimada</p>
+                        <p className="text-sm text-gray-600">Receita Total Registrada</p>
                         <p className="text-2xl font-bold text-green-600">
-                          R$ {dashboardData.revenueEstimate.toLocaleString()}
+                          R$ {dashboardData.totalRevenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                         </p>
                       </div>
                       <DollarSign className="h-8 w-8 text-green-500" />
@@ -848,8 +833,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ appointments, st
                         <p className="text-sm text-gray-600">Receita Média por Consulta</p>
                         <p className="text-xl font-bold text-blue-600">
                           R$ {dashboardData.completedAppointments > 0 ? 
-                            Math.round(dashboardData.revenueEstimate / dashboardData.completedAppointments).toLocaleString() : 
-                            '0'
+                            (dashboardData.totalRevenue / dashboardData.completedAppointments).toLocaleString('pt-BR', { minimumFractionDigits: 2 }) : 
+                            '0,00'
                           }
                         </p>
                       </div>
