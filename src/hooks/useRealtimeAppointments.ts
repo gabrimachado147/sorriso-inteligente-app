@@ -31,7 +31,7 @@ export const useRealtimeAppointments = () => {
           queryClient.invalidateQueries({ queryKey: ['appointment-stats'] });
           
           // Show notification for chat-originated appointments
-          if (newAppointment.source === 'webhook' || newAppointment.webhook_session_id) {
+          if (newAppointment.source === 'webhook' || (newAppointment as any).webhook_session_id) {
             toastSuccess(
               'Novo Agendamento via Chat!',
               `${newAppointment.name} agendou para ${newAppointment.date} às ${newAppointment.time}`
