@@ -58,6 +58,16 @@ const AppointmentsPage = () => {
     );
   }
 
+  // Convert complex stats to simple Record<string, number> for AdminDashboard
+  const simplifiedStats: Record<string, number> = stats ? {
+    total: stats.total,
+    today: stats.today,
+    thisMonth: stats.thisMonth,
+    confirmed: stats.confirmed,
+    completed: stats.completed,
+    cancelled: stats.cancelled
+  } : {};
+
   return (
     <div className={`p-6 space-y-6 ${animations.pageEnter}`}>
       <AppointmentsHeader
@@ -73,7 +83,7 @@ const AppointmentsPage = () => {
         </TabsList>
 
         <TabsContent value="dashboard">
-          <AdminDashboard appointments={appointments} stats={stats || {}} />
+          <AdminDashboard appointments={appointments} stats={simplifiedStats} />
         </TabsContent>
 
         <TabsContent value="appointments" className="space-y-6">
