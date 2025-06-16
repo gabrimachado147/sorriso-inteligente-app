@@ -1,70 +1,84 @@
 
-import { useEffect, useRef } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useQueryClient } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
+import { realtimeSyncService } from '@/services/realtime-sync';
+import { useAuth } from './useAuth';
+
+interface RealtimeSyncState {
+  isConnected: boolean;
+  lastSync: Date | null;
+  error: string | null;
+}
 
 export const useRealtimeSync = () => {
-  const queryClient = useQueryClient();
-  const channelRef = useRef<any>(null);
-  const isSubscribedRef = useRef(false);
+  const { isAuthenticated } = useAuth();
+  const [syncState, setSyncState] = useState<RealtimeSyncState>({
+    isConnected: false,
+    lastSync: null,
+    error: null
+  });
 
   useEffect(() => {
-    // Prevent duplicate subscriptions
-    if (isSubscribedRef.current || channelRef.current) {
-      return;
-    }
+    if (!isAuthenticated) return;
 
-    console.log('[RealtimeSync] Initializing realtime sync...');
-
-    const setupChannel = () => {
-      const channel = supabase
-        .channel(`general-realtime-sync-${Date.now()}`) // Add timestamp to ensure unique channel name
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'user_profiles'
-          },
-          (payload) => {
-            console.log('[RealtimeSync] Profile change detected:', payload);
-            
-            // Invalidate profile queries
-            queryClient.invalidateQueries({ queryKey: ['user-profile'] });
-          }
-        );
-
-      // Store channel reference
-      channelRef.current = channel;
-
-      // Subscribe to the channel only once
-      if (!isSubscribedRef.current) {
-        channel.subscribe((status) => {
-          console.log('[RealtimeSync] Subscription status:', status);
-          
-          if (status === 'SUBSCRIBED') {
-            console.log('[RealtimeSync] Successfully connected to realtime sync');
-            isSubscribedRef.current = true;
-          } else if (status === 'CHANNEL_ERROR') {
-            console.error('[RealtimeSync] Failed to connect to realtime sync');
-            isSubscribedRef.current = false;
-          }
+    const initializeSync = async () => {
+      try {
+        await realtimeSyncService.initializeSync({
+          enableAppointments: true,
+          enableUserProfiles: true,
+          enableNotifications: true
         });
+
+        setSyncState(prev => ({
+          ...prev,
+          isConnected: true,
+          error: null
+        }));
+
+        console.log('[Realtime] Sync initialized');
+      } catch (error) {
+        console.error('[Realtime] Failed to initialize sync:', error);
+        setSyncState(prev => ({
+          ...prev,
+          error: error instanceof Error ? error.message : 'Sync failed'
+        }));
       }
     };
 
-    setupChannel();
+    initializeSync();
 
-    // Cleanup function
+    // Listen for sync events
+    const handleAppointmentUpdate = () => {
+      setSyncState(prev => ({ ...prev, lastSync: new Date() }));
+    };
+
+    const handleProfileUpdate = () => {
+      setSyncState(prev => ({ ...prev, lastSync: new Date() }));
+    };
+
+    window.addEventListener('appointment-updated', handleAppointmentUpdate);
+    window.addEventListener('profile-updated', handleProfileUpdate);
+
     return () => {
-      console.log('[RealtimeSync] Cleaning up realtime sync...');
-      if (channelRef.current) {
-        supabase.removeChannel(channelRef.current);
-        channelRef.current = null;
-      }
-      isSubscribedRef.current = false;
+      window.removeEventListener('appointment-updated', handleAppointmentUpdate);
+      window.removeEventListener('profile-updated', handleProfileUpdate);
+      realtimeSyncService.cleanup();
     };
-  }, [queryClient]);
+  }, [isAuthenticated]);
 
-  return {};
+  const triggerSync = async () => {
+    try {
+      await realtimeSyncService.syncOfflineData();
+      setSyncState(prev => ({ ...prev, lastSync: new Date(), error: null }));
+    } catch (error) {
+      setSyncState(prev => ({
+        ...prev,
+        error: error instanceof Error ? error.message : 'Sync failed'
+      }));
+    }
+  };
+
+  return {
+    ...syncState,
+    triggerSync
+  };
 };

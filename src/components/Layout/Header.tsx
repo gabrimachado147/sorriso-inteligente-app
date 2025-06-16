@@ -18,27 +18,24 @@ export const Header: React.FC = () => {
 
   return (
     <>
-      <header className="bg-white/95 backdrop-blur-md border-b border-border/50 sticky top-0 z-40 w-full shadow-sm">
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-40 w-full">
         <div className="flex items-center justify-between p-4 w-full mobile-spacing">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden bg-primary/10 shadow-sm">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center overflow-hidden bg-primary/10">
               <img 
                 src="/lovable-uploads/a077d15e-e6ba-4de3-833a-6913d8203ffd.png" 
                 alt="Senhor Sorriso" 
-                className="w-full h-full object-contain p-1"
+                className="w-full h-full object-contain"
               />
             </div>
-            <div>
-              <h1 className="text-xl font-bold text-primary mobile-text-lg">Senhor Sorriso</h1>
-              <p className="text-xs text-muted-foreground mobile-text-xs">Cuidando do seu sorriso</p>
-            </div>
+            <h1 className="text-lg sm:text-xl font-bold text-primary mobile-text-lg">Senhor Sorriso</h1>
           </div>
 
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-3">
             <Button 
               variant="ghost" 
               size="icon" 
-              className="relative mobile-touch-target h-10 w-10 rounded-xl hover:bg-primary/10"
+              className="relative mobile-touch-target"
               onClick={() => setNotificationDrawerOpen(true)}
             >
               <Bell className="h-5 w-5" />

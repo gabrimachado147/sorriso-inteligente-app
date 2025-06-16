@@ -73,7 +73,6 @@ function App() {
             <Routes>
               <Route path="/" element={<MainLayout />}>
                 <Route index element={<Index />} />
-                <Route path="home" element={<Index />} />
                 <Route path="chat" element={<ChatPage />} />
                 <Route path="schedule" element={<SchedulePage />} />
                 <Route path="clinics" element={<ClinicsPage />} />

@@ -28,61 +28,27 @@ export const useAppointmentsFilters = ({
     }, {} as Record<string, string>);
   }, []);
 
-  // Verificar se é o login master (gerência)
-  const isMasterUser = loggedInUser === 'gerencia-ss';
-  const userClinicName = loggedInUser && !isMasterUser ? CLINIC_NAMES[loggedInUser as keyof typeof CLINIC_NAMES] : '';
-
-  console.log('[useAppointmentsFilters] User info:', { 
-    loggedInUser, 
-    isMasterUser, 
-    userClinicName 
-  });
+  const userClinicName = loggedInUser ? CLINIC_NAMES[loggedInUser as keyof typeof CLINIC_NAMES] : '';
 
   const filteredAppointments = useMemo(() => {
     let filtered = appointments;
 
-    console.log('[useAppointmentsFilters] Starting with appointments:', filtered.length);
-
-    // Aplicar filtro de clínica baseado no nível de acesso
-    if (!isMasterUser && loggedInUser && userClinicName) {
-      // Usuário de unidade específica - mostrar apenas agendamentos da sua clínica
-      console.log('[useAppointmentsFilters] Filtering for clinic user:', userClinicName);
-      
-      // Mapear as chaves de login para os nomes das clínicas nos agendamentos
-      const clinicKeyToNameMap: Record<string, string[]> = {
-        'capao-bonito': ['Senhor Sorriso Capão Bonito', 'capao bonito', 'capão bonito'],
-        'campo-belo': ['Senhor Sorriso Campo Belo', 'campo belo'],
-        'itapeva': ['Senhor Sorriso Itapeva', 'itapeva'],
-        'itarare': ['Senhor Sorriso Itararé', 'itarare', 'itararé'],
-        'formiga': ['Senhor Sorriso Formiga', 'formiga']
-      };
-
-      const allowedClinicNames = clinicKeyToNameMap[loggedInUser] || [];
-      
+    // Filter by user's clinic first (only show appointments for their clinic)
+    if (loggedInUser && userClinicName) {
       filtered = filtered.filter(apt => {
-        const appointmentClinic = apt.clinic.toLowerCase().trim();
-        const matches = allowedClinicNames.some(clinicName => 
-          appointmentClinic.includes(clinicName.toLowerCase()) ||
-          clinicName.toLowerCase().includes(appointmentClinic)
-        );
+        // Check if appointment clinic matches the user's clinic
+        const appointmentClinic = apt.clinic.toLowerCase();
+        const userClinicKey = loggedInUser.toLowerCase();
+        const userClinicFullName = userClinicName.toLowerCase();
         
-        console.log('[useAppointmentsFilters] Checking appointment:', {
-          appointmentClinic: apt.clinic,
-          loggedInUser,
-          allowedClinicNames,
-          matches
-        });
-        
-        return matches;
+        // Match by clinic key (e.g., "campobelo") or full clinic name
+        return appointmentClinic.includes(userClinicKey) || 
+               appointmentClinic.includes(userClinicFullName) ||
+               apt.clinic === userClinicName;
       });
-      
-      console.log('[useAppointmentsFilters] After clinic filter:', filtered.length);
-    } else if (isMasterUser) {
-      // Usuário master (gerência) - ver todos os agendamentos
-      console.log('[useAppointmentsFilters] Master user - showing all appointments');
     }
 
-    // Aplicar outros filtros
+    // Apply additional filters
     if (searchTerm) {
       const search = searchTerm.toLowerCase();
       filtered = filtered.filter(apt => 
@@ -105,49 +71,34 @@ export const useAppointmentsFilters = ({
       filtered = filtered.filter(apt => apt.date === selectedDate);
     }
 
-    console.log('[useAppointmentsFilters] Final filtered count:', filtered.length);
     return filtered;
-  }, [appointments, loggedInUser, isMasterUser, userClinicName, searchTerm, selectedClinic, selectedStatus, selectedDate]);
+  }, [appointments, loggedInUser, userClinicName, searchTerm, selectedClinic, selectedStatus, selectedDate]);
 
-  // Obter clínicas disponíveis baseado no nível de acesso
+  // Get unique clinics from filtered appointments for filter (only show user's clinic)
   const availableClinics = useMemo(() => {
-    if (isMasterUser) {
-      // Usuário master - mostrar todas as clínicas disponíveis
-      const clinics = new Set(appointments.map(apt => apt.clinic));
-      return Array.from(clinics).sort();
-    } else if (loggedInUser && userClinicName) {
-      // Usuário de unidade específica - mostrar apenas sua clínica
-      const clinicKeyToNameMap: Record<string, string[]> = {
-        'capao-bonito': ['Senhor Sorriso Capão Bonito'],
-        'campo-belo': ['Senhor Sorriso Campo Belo'],
-        'itapeva': ['Senhor Sorriso Itapeva'],
-        'itarare': ['Senhor Sorriso Itararé'],
-        'formiga': ['Senhor Sorriso Formiga']
-      };
-
-      const allowedClinicNames = clinicKeyToNameMap[loggedInUser] || [];
-      
+    if (loggedInUser && userClinicName) {
+      // Only show the user's clinic in the filter
       const userAppointments = appointments.filter(apt => {
-        const appointmentClinic = apt.clinic.toLowerCase().trim();
-        return allowedClinicNames.some(clinicName => 
-          appointmentClinic.includes(clinicName.toLowerCase()) ||
-          clinicName.toLowerCase().includes(appointmentClinic)
-        );
+        const appointmentClinic = apt.clinic.toLowerCase();
+        const userClinicKey = loggedInUser.toLowerCase();
+        const userClinicFullName = userClinicName.toLowerCase();
+        
+        return appointmentClinic.includes(userClinicKey) || 
+               appointmentClinic.includes(userClinicFullName) ||
+               apt.clinic === userClinicName;
       });
       
       const clinics = new Set(userAppointments.map(apt => apt.clinic));
       return Array.from(clinics).sort();
     }
     
-    // Fallback
     const clinics = new Set(appointments.map(apt => apt.clinic));
     return Array.from(clinics).sort();
-  }, [appointments, loggedInUser, isMasterUser, userClinicName]);
+  }, [appointments, loggedInUser, userClinicName]);
 
   return {
     filteredAppointments,
     availableClinics,
-    userClinicName,
-    isMasterUser
+    userClinicName
   };
 };

@@ -16,6 +16,7 @@ const BottomNavigation = () => {
   const isMobile = useIsMobile();
 
   const handleNavClick = () => {
+    // Scroll para o topo quando navegar
     setTimeout(() => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }, 100);
@@ -35,16 +36,16 @@ const BottomNavigation = () => {
       isActive: location.pathname === '/schedule'
     },
     { 
+      icon: MapPin, 
+      label: 'Clínicas', 
+      path: '/clinics',
+      isActive: location.pathname === '/clinics'
+    },
+    { 
       icon: MessageCircle, 
       label: 'Chat', 
       path: '/chat',
       isActive: location.pathname === '/chat'
-    },
-    { 
-      icon: MapPin, 
-      label: 'Unidades', 
-      path: '/clinics',
-      isActive: location.pathname === '/clinics'
     },
     { 
       icon: User, 
@@ -55,13 +56,13 @@ const BottomNavigation = () => {
   ];
 
   if (!isMobile) {
-    return null;
+    return null; // Esconder navegação inferior em desktop
   }
 
   return (
-    <nav className={`fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-border/50 z-50 safe-bottom shadow-lg ${animations.slideInBottom}`}>
-      <div className="px-2 py-1">
-        <div className="flex justify-around items-center">
+    <nav className={`fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-gray-200 z-50 safe-bottom ${animations.slideInBottom}`}>
+      <div className="mobile-container px-2">
+        <div className="flex justify-around items-center py-2">
           {navItems.map((item, index) => {
             const Icon = item.icon;
             return (
@@ -69,14 +70,11 @@ const BottomNavigation = () => {
                 key={item.path}
                 to={item.path}
                 onClick={handleNavClick}
-                className={`
-                  mobile-nav-item rounded-xl mobile-transition mobile-press mobile-focus
-                  flex flex-col items-center justify-center px-3 py-2 min-w-[64px]
-                  ${item.isActive 
-                    ? 'text-primary bg-primary/10 scale-105 shadow-sm' 
-                    : 'text-muted-foreground hover:text-primary hover:bg-muted/50'
-                  }
-                `}
+                className={`mobile-nav-item rounded-xl mobile-transition mobile-press mobile-focus ${
+                  item.isActive 
+                    ? 'text-primary bg-primary/15 scale-105' 
+                    : 'text-gray-500 hover:text-primary hover:bg-gray-50'
+                }`}
                 style={{ animationDelay: `${index * 50}ms` }}
               >
                 <div className="relative mb-1">
