@@ -82,7 +82,7 @@ const ProfilePageReal = () => {
         <div className="flex items-center gap-4">
           <h1 className="text-3xl font-bold">Meu Perfil</h1>
           <Badge variant="secondary" className="px-3 py-1">
-            {profile?.nome_completo || user?.email || 'Usuário'}
+            {profile?.full_name || user?.email || 'Usuário'}
           </Badge>
         </div>
         <Button 

@@ -20,17 +20,17 @@ export const ProfileTabReal: React.FC<ProfileTabRealProps> = ({ onTabChange }) =
   const { profile, updateProfile, createProfile, loading } = useUserProfile();
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({
-    nome_completo: '',
-    telefone: '',
-    data_nascimento: ''
+    full_name: '',
+    phone: '',
+    date_of_birth: ''
   });
 
   React.useEffect(() => {
     if (profile) {
       setFormData({
-        nome_completo: profile.nome_completo || '',
-        telefone: profile.telefone || '',
-        data_nascimento: profile.data_nascimento || ''
+        full_name: profile.full_name || '',
+        phone: profile.phone || '',
+        date_of_birth: profile.date_of_birth || ''
       });
     }
   }, [profile]);
@@ -93,8 +93,8 @@ export const ProfileTabReal: React.FC<ProfileTabRealProps> = ({ onTabChange }) =
               <Label htmlFor="nome">Nome Completo</Label>
               <Input
                 id="nome"
-                value={formData.nome_completo}
-                onChange={(e) => setFormData(prev => ({ ...prev, nome_completo: e.target.value }))}
+                value={formData.full_name}
+                onChange={(e) => setFormData(prev => ({ ...prev, full_name: e.target.value }))}
                 disabled={!editMode}
                 placeholder={!profile ? "Digite seu nome completo" : undefined}
               />
@@ -103,8 +103,8 @@ export const ProfileTabReal: React.FC<ProfileTabRealProps> = ({ onTabChange }) =
               <Label htmlFor="telefone">Telefone</Label>
               <Input
                 id="telefone"
-                value={formData.telefone}
-                onChange={(e) => setFormData(prev => ({ ...prev, telefone: e.target.value }))}
+                value={formData.phone}
+                onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
                 disabled={!editMode}
                 placeholder={!profile ? "(11) 99999-9999" : undefined}
               />
@@ -123,8 +123,8 @@ export const ProfileTabReal: React.FC<ProfileTabRealProps> = ({ onTabChange }) =
               <Input
                 id="data_nascimento"
                 type="date"
-                value={formData.data_nascimento}
-                onChange={(e) => setFormData(prev => ({ ...prev, data_nascimento: e.target.value }))}
+                value={formData.date_of_birth}
+                onChange={(e) => setFormData(prev => ({ ...prev, date_of_birth: e.target.value }))}
                 disabled={!editMode}
               />
             </div>
