@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { AppointmentService, type AppointmentRecord, type CreateAppointmentData } from '@/services/supabase/appointments'
@@ -62,6 +61,29 @@ export const useAppointments = (phone?: string) => {
     }
   })
 
+  // Update appointment service and price
+  const updateAppointmentService = useMutation({
+    mutationFn: async ({ 
+      appointmentId, 
+      service,
+      price 
+    }: { 
+      appointmentId: string
+      service: string
+      price?: number
+    }) => {
+      return AppointmentService.updateAppointmentService(appointmentId, service, price)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['appointments'] })
+      toastSuccess('Serviço Atualizado', 'Serviço e valor atualizados com sucesso')
+    },
+    onError: (error) => {
+      toastError('Erro', 'Não foi possível atualizar o serviço')
+      console.error('Erro ao atualizar serviço:', error)
+    }
+  })
+
   // Buscar estatísticas
   const {
     data: stats,
@@ -78,6 +100,7 @@ export const useAppointments = (phone?: string) => {
     refetch,
     createAppointment,
     updateAppointmentStatus,
+    updateAppointmentService,
     stats,
     statsLoading
   }

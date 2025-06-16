@@ -1,4 +1,3 @@
-
 import React, { useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -45,7 +44,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ appointments, st
   const [dateFilter, setDateFilter] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
   
-  const { updateAppointmentStatus } = useAppointments();
+  const { updateAppointmentStatus, updateAppointmentService } = useAppointments();
 
   // Filtros aplicados
   const filteredAppointments = useMemo(() => {
@@ -329,6 +328,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ appointments, st
       await updateAppointmentStatus.mutateAsync({ appointmentId, status: newStatus });
     } catch (error) {
       console.error('Erro ao atualizar status:', error);
+    }
+  };
+
+  const handleUpdateService = async (appointmentId: string, service: string, price?: number) => {
+    try {
+      await updateAppointmentService.mutateAsync({ appointmentId, service, price });
+    } catch (error) {
+      console.error('Erro ao atualizar serviço:', error);
     }
   };
 
@@ -909,98 +916,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ appointments, st
         </TabsContent>
 
         <TabsContent value="appointments" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Lista de Agendamentos ({filteredAppointments.length})</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4 max-h-[600px] overflow-y-auto">
-                {dashboardData.recentAppointments.length > 0 ? (
-                  dashboardData.recentAppointments.map((apt) => (
-                    <div key={apt.id} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
-                      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                        <div className="flex items-center gap-4">
-                          <div className="w-3 h-3 bg-primary rounded-full flex-shrink-0"></div>
-                          <div className="flex-1 min-w-0">
-                            <h3 className="font-medium text-gray-900 truncate">{apt.name}</h3>
-                            <div className="flex flex-wrap items-center gap-2 text-sm text-gray-600 mt-1">
-                              <span className="flex items-center gap-1">
-                                <Phone className="h-3 w-3" />
-                                {apt.phone}
-                              </span>
-                              <span className="flex items-center gap-1">
-                                <MapPin className="h-3 w-3" />
-                                {apt.clinic}
-                              </span>
-                            </div>
-                            <p className="text-sm text-gray-600 mt-1">{apt.service}</p>
-                          </div>
-                        </div>
-                        
-                        <div className="flex flex-col lg:flex-row lg:items-center gap-4">
-                          <div className="text-center lg:text-right">
-                            <p className="text-sm font-medium">{apt.date}</p>
-                            <p className="text-xs text-gray-600">{apt.time}</p>
-                          </div>
-                          
-                          <div className="flex flex-col gap-2">
-                            {getStatusBadge(apt.status)}
-                            
-                            {apt.status === 'confirmed' && (
-                              <div className="flex gap-1">
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  className="text-xs px-2 py-1 h-auto"
-                                  onClick={() => handleUpdateStatus(apt.id, 'completed')}
-                                >
-                                  Concluir
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  className="text-xs px-2 py-1 h-auto text-orange-600"
-                                  onClick={() => handleUpdateStatus(apt.id, 'no_show')}
-                                >
-                                  Não Veio
-                                </Button>
-                              </div>
-                            )}
-                            
-                            {apt.status === 'pending' && (
-                              <div className="flex gap-1">
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  className="text-xs px-2 py-1 h-auto text-green-600"
-                                  onClick={() => handleUpdateStatus(apt.id, 'confirmed')}
-                                >
-                                  Confirmar
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  className="text-xs px-2 py-1 h-auto text-red-600"
-                                  onClick={() => handleUpdateStatus(apt.id, 'cancelled')}
-                                >
-                                  Cancelar
-                                </Button>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="text-center text-gray-500 py-8">
-                    <Calendar className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                    <p>Nenhum agendamento encontrado com os filtros aplicados</p>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+          <AppointmentsTable
+            appointments={filteredAppointments}
+            onStatusChange={handleUpdateStatus}
+            onServiceUpdate={handleUpdateService}
+            isUpdating={updateAppointmentStatus.isPending || updateAppointmentService.isPending}
+          />
         </TabsContent>
       </Tabs>
     </div>

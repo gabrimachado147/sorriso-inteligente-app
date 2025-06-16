@@ -190,6 +190,35 @@ export class AppointmentService {
   }
 
   /**
+   * Update appointment service and price
+   */
+  static async updateAppointmentService(
+    appointmentId: string,
+    service: string,
+    price?: number
+  ): Promise<AppointmentRecord> {
+    try {
+      const updateData: any = { service };
+      if (price !== undefined) {
+        updateData.price = price;
+      }
+
+      const { data, error } = await supabase
+        .from('appointments')
+        .update(updateData)
+        .eq('id', appointmentId)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return normalizeAppointment(data);
+    } catch (error) {
+      console.error('Error updating appointment service:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Get appointment statistics
    */
   static async getAppointmentStats() {

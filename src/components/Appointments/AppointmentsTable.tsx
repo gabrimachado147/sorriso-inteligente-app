@@ -18,13 +18,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Calendar, Clock, MapPin, User, Phone, Mail } from 'lucide-react';
+import { Calendar, Clock, MapPin, User, Phone, Mail, DollarSign } from 'lucide-react';
 import { animations } from '@/lib/animations';
 import { AppointmentRecord } from '@/services/supabase/appointments';
+import { ServiceEditor } from './ServiceEditor';
 
 interface AppointmentsTableProps {
   appointments: AppointmentRecord[];
   onStatusChange: (appointmentId: string, newStatus: 'confirmed' | 'cancelled' | 'completed' | 'no_show') => void;
+  onServiceUpdate: (appointmentId: string, service: string, price?: number) => void;
   isUpdating: boolean;
 }
 
@@ -66,6 +68,7 @@ const formatDate = (dateString: string) => {
 export const AppointmentsTable: React.FC<AppointmentsTableProps> = ({
   appointments,
   onStatusChange,
+  onServiceUpdate,
   isUpdating
 }) => {
   if (appointments.length === 0) {
@@ -150,7 +153,22 @@ export const AppointmentsTable: React.FC<AppointmentsTableProps> = ({
                   </TableCell>
 
                   <TableCell>
-                    <p className="text-sm font-medium">{appointment.service}</p>
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1">
+                        <p className="text-sm font-medium">{appointment.service}</p>
+                        {(appointment as any).price && (
+                          <div className="flex items-center gap-1 text-xs text-green-600 mt-1">
+                            <DollarSign className="h-3 w-3" />
+                            R$ {(appointment as any).price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                          </div>
+                        )}
+                      </div>
+                      <ServiceEditor
+                        appointment={appointment}
+                        onUpdate={onServiceUpdate}
+                        isUpdating={isUpdating}
+                      />
+                    </div>
                   </TableCell>
 
                   <TableCell>
