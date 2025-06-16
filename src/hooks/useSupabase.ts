@@ -88,9 +88,114 @@ export const useChatMessages = (phone?: string) => {
 export const useContacts = () => {
   const queryClient = useQueryClient()
 
+<<<<<<< HEAD
   // Get all contacts
   const {
     data: contacts = [],
+=======
+  // Use getClinics hook function - takes filters as parameters
+  const useGetClinics = (filters?: {
+    specialty?: string
+    city?: string
+    emergencyOnly?: boolean
+    featured?: boolean
+    search?: string
+  }) => {
+    return useQuery({
+      queryKey: ['clinics', filters],
+      queryFn: () => ClinicService.getAll(filters),
+      staleTime: 5 * 60 * 1000 // 5 minutes
+    })
+  }
+
+  // Get featured clinics
+  const {
+    data: featuredClinics = [],
+    isLoading: isLoadingFeatured
+  } = useQuery({
+    queryKey: ['clinics', 'featured'],
+    queryFn: () => ClinicService.getFeatured(6),
+    staleTime: 10 * 60 * 1000 // 10 minutes
+  })
+
+  // Get emergency clinics
+  const {
+    data: emergencyClinics = [],
+    isLoading: isLoadingEmergency
+  } = useQuery({
+    queryKey: ['clinics', 'emergency'],
+    queryFn: () => ClinicService.getEmergencyAvailable(),
+    staleTime: 5 * 60 * 1000
+  })
+
+  // Get specialties
+  const {
+    data: specialties = [],
+    isLoading: isLoadingSpecialties
+  } = useQuery({
+    queryKey: ['specialties'],
+    queryFn: () => ClinicService.getSpecialties(),
+    staleTime: 30 * 60 * 1000 // 30 minutes
+  })
+
+  // Get cities
+  const {
+    data: cities = [],
+    isLoading: isLoadingCities
+  } = useQuery({
+    queryKey: ['cities'],
+    queryFn: () => ClinicService.getCities(),
+    staleTime: 30 * 60 * 1000
+  })
+
+  // Get clinic by ID hook function
+  const useGetClinicById = (clinicId: string) => {
+    return useQuery({
+      queryKey: ['clinic', clinicId],
+      queryFn: () => ClinicService.getById(clinicId),
+      enabled: !!clinicId,
+      staleTime: 10 * 60 * 1000
+    })
+  }
+
+  // Search clinics
+  const searchClinics = async (
+    searchTerm: string,
+    filters?: {
+      specialty?: string
+      city?: string
+      emergency?: boolean
+    }
+  ): Promise<Clinic[]> => {
+    return ClinicService.search(searchTerm, filters)
+  }
+
+  return {
+    useGetClinics,
+    featuredClinics,
+    emergencyClinics,
+    specialties,
+    cities,
+    isLoadingFeatured,
+    isLoadingEmergency,
+    isLoadingSpecialties,
+    isLoadingCities,
+    useGetClinicById,
+    searchClinics
+  }
+}
+
+// Hook for appointment statistics
+export const useAppointmentStats = (userId?: string) => {
+  const {
+    data: stats = {
+      total: 0,
+      pending: 0,
+      confirmed: 0,
+      completed: 0,
+      cancelled: 0
+    },
+>>>>>>> main
     isLoading,
     error
   } = useQuery({
@@ -291,5 +396,138 @@ export const useRealtimeChat = (phone?: string) => {
     }
   }, [phone, queryClient])
 
+<<<<<<< HEAD
   return { realtimeMessages }
+=======
+  return { realtimeAppointments }
+}
+
+// Hook for clinic working hours
+export const useClinicHours = (clinicId: string) => {
+  const [isOpen, setIsOpen] = useState(false)
+  const [nextOpenTime, setNextOpenTime] = useState<string>('')
+
+  useEffect(() => {
+    if (!clinicId) return
+
+    const checkIfOpen = async () => {
+      try {
+        const isCurrentlyOpen = await ClinicService.isOpenNow(clinicId)
+        setIsOpen(isCurrentlyOpen)
+
+        // Get working hours for next few days to determine next open time
+        const today = new Date()
+        const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
+        
+        for (let i = 0; i < 7; i++) {
+          const checkDate = new Date(today)
+          checkDate.setDate(today.getDate() + i)
+          const dayName = days[checkDate.getDay()]
+          
+          const hours = await ClinicService.getWorkingHours(clinicId, dayName)
+          if (hours) {
+            const openDateTime = new Date(`${checkDate.toISOString().split('T')[0]}T${hours.open}`)
+            if (openDateTime > new Date()) {
+              setNextOpenTime(openDateTime.toLocaleString())
+              break
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error checking clinic hours:', error)
+      }
+    }
+
+    checkIfOpen()
+    
+    // Check every minute
+    const interval = setInterval(checkIfOpen, 60000)
+    
+    return () => clearInterval(interval)
+  }, [clinicId])
+
+  return { isOpen, nextOpenTime }
+}
+
+// Hook for managing user profile and PWA data
+export const useUserProfile = (userId?: string) => {
+  const queryClient = useQueryClient()
+
+  // Get user profile
+  const {
+    data: profile,
+    isLoading,
+    error
+  } = useQuery({
+    queryKey: ['user-profile', userId],
+    queryFn: async () => {
+      if (!userId) return null
+      
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', userId)
+        .single()
+
+      if (error) throw error
+      return data
+    },
+    enabled: !!userId
+  })
+
+  // Update profile mutation
+  const updateProfile = useMutation({
+    mutationFn: async (updates: Record<string, unknown>) => {
+      if (!userId) throw new Error('User ID required')
+      
+      const { data, error } = await supabase
+        .from('users')
+        .update(updates)
+        .eq('id', userId)
+        .select()
+        .single()
+
+      if (error) throw error
+      return data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user-profile', userId] })
+    }
+  })
+
+  // Track PWA installation
+  const trackPWAInstallation = useMutation({
+    mutationFn: async (installData: {
+      device_type?: string
+      browser?: string
+      platform?: string
+      install_source?: string
+    }) => {
+      if (!userId) throw new Error('User ID required')
+      
+      // Generate a unique installation ID
+      const installationId = `${userId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+      
+      const { data, error } = await supabase
+        .from('pwa_installations')
+        .insert({
+          user_id: userId,
+          installation_id: installationId,
+          device_info: installData,
+          ...installData
+        })
+
+      if (error) throw error
+      return data
+    }
+  })
+
+  return {
+    profile,
+    isLoading,
+    error,
+    updateProfile,
+    trackPWAInstallation
+  }
+>>>>>>> main
 }

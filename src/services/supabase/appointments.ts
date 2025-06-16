@@ -84,6 +84,44 @@ export class AppointmentService {
       console.error('Error fetching appointments by phone:', error);
       throw error;
     }
+<<<<<<< HEAD
+=======
+  ): Promise<Appointment[]> {
+    let query = supabase
+      .from('appointments')
+      .select(`
+        *,
+        clinic:clinics(id, name, address, phone, whatsapp),
+        dentist:dentists(id, full_name, specialties, photo_url),
+        service:services(id, name, duration, price)
+      `)
+      .eq('patient_id', userId)
+
+    if (options?.status) {
+      query = query.in('status', options.status as Array<'scheduled' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled' | 'no_show'>)
+    }
+
+    if (options?.upcoming) {
+      const today = new Date().toISOString().split('T')[0]
+      query = query.gte('appointment_date', today)
+    }
+
+    query = query.order('appointment_date', { ascending: true })
+                 .order('appointment_time', { ascending: true })
+
+    if (options?.limit) {
+      query = query.limit(options.limit)
+    }
+
+    const { data, error } = await query
+
+    if (error) {
+      console.error('Error fetching user appointments:', error)
+      throw new Error(error.message)
+    }
+
+    return data || []
+>>>>>>> main
   }
 
   /**
@@ -100,7 +138,128 @@ export class AppointmentService {
         `)
         .eq('user_id', userId);
 
+<<<<<<< HEAD
       if (error) throw error;
+=======
+    if (error) {
+      console.error('Error fetching clinic appointments:', error)
+      throw new Error(error.message)
+    }
+
+    return data || []
+  }
+
+  /**
+   * Update appointment
+   */
+  static async update(
+    appointmentId: string, 
+    updates: AppointmentUpdate
+  ): Promise<Appointment> {
+    const { data, error } = await supabase
+      .from('appointments')
+      .update({
+        ...updates,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', appointmentId)
+      .select(`
+        *,
+        clinic:clinics(*),
+        dentist:dentists(*),
+        service:services(*)
+      `)
+      .single()
+
+    if (error) {
+      console.error('Error updating appointment:', error)
+      throw new Error(error.message)
+    }
+
+    return data
+  }
+
+  /**
+   * Cancel appointment
+   */
+  static async cancel(
+    appointmentId: string, 
+    reason?: string
+  ): Promise<Appointment> {
+    return this.update(appointmentId, {
+      status: 'cancelled',
+      notes: reason ? `Cancelled: ${reason}` : 'Cancelled'
+    })
+  }
+
+  /**
+   * Confirm appointment
+   */
+  static async confirm(appointmentId: string): Promise<Appointment> {
+    return this.update(appointmentId, {
+      status: 'confirmed'
+    })
+  }
+
+  /**
+   * Get available time slots for a clinic/dentist
+   */
+  static async getAvailableSlots(
+    clinicId: string,
+    date: string,
+    dentistId?: string,
+    duration: number = 60
+  ): Promise<string[]> {
+    // First get existing appointments for the date
+    let query = supabase
+      .from('appointments')
+      .select('appointment_date, duration_minutes')
+      .eq('clinic_id', clinicId)
+      .like('appointment_date', `${date}%`)
+      .in('status', ['scheduled', 'confirmed', 'in_progress'])
+
+    if (dentistId) {
+      query = query.eq('dentist_id', dentistId)
+    }
+
+    const { data: existingAppointments, error } = await query
+
+    if (error) {
+      console.error('Error fetching existing appointments:', error)
+      throw new Error(error.message)
+    }
+
+    // Get clinic working hours for the day
+    const { data: clinic, error: clinicError } = await supabase
+      .from('clinics')
+      .select('opening_hours')
+      .eq('id', clinicId)
+      .single()
+
+    if (clinicError) {
+      console.error('Error fetching clinic:', clinicError)
+      throw new Error(clinicError.message)
+    }
+
+    // Generate available slots based on working hours and existing appointments
+    const dayOfWeek = new Date(date).toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase()
+    const workingHours = clinic.opening_hours as Record<string, { open: string; close: string }> | null
+    
+    if (!workingHours || !workingHours[dayOfWeek]) {
+      return [] // Clinic closed on this day
+    }
+
+    const openTime = workingHours[dayOfWeek].open
+    const closeTime = workingHours[dayOfWeek].close
+    
+    // Generate time slots
+    const slots: string[] = []
+    const start = new Date(`${date}T${openTime}`)
+    const end = new Date(`${date}T${closeTime}`)
+    
+    for (let time = start; time < end; time.setMinutes(time.getMinutes() + duration)) {
+      const timeStr = time.toTimeString().slice(0, 5)
+>>>>>>> main
       
       return (data?.map(item => item.appointments).filter(Boolean) || []).map(normalizeAppointment);
     } catch (error) {

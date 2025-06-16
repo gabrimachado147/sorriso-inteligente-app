@@ -5,12 +5,13 @@
  * Copy this code into your React components as needed
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useChatMessages, useContacts, useWhatsAppLeads } from '../../hooks/useSupabase';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Alert, AlertDescription } from '../ui/alert';
+import type { Appointment, Clinic } from '../../integrations/supabase/types';
 
 export const SupabaseIntegrationExample: React.FC = () => {
   const {
@@ -24,11 +25,48 @@ export const SupabaseIntegrationExample: React.FC = () => {
     isAuthenticated
   } = useAuth();
 
+<<<<<<< HEAD
   const { contacts, createContact } = useContacts();
   const { leads, createLead } = useWhatsAppLeads();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+=======
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [clinics, setClinics] = useState<Clinic[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const loadUserData = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Load user appointments
+      if (user?.id) {
+        const userAppointments = await appointmentService.getUserAppointments(user.id);
+        setAppointments(userAppointments);
+      }
+
+      // Load available clinics
+      const availableClinics = await clinicService.getAll();
+      setClinics(availableClinics);
+
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load data');
+    } finally {
+      setLoading(false);
+    }
+  }, [user?.id]);
+
+  // Load data when user is authenticated
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      loadUserData();
+    }
+  }, [isAuthenticated, user, loadUserData]);
+
+>>>>>>> main
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     const formData = new FormData(e.target as HTMLFormElement);
@@ -252,11 +290,61 @@ export const SupabaseIntegrationExample: React.FC = () => {
                 <div key={contact.id} className="p-4 border rounded-lg">
                   <div className="flex justify-between items-start">
                     <div>
+<<<<<<< HEAD
                       <h3 className="font-semibold">{contact.nome}</h3>
                       <p className="text-sm text-gray-600">{contact.email}</p>
                       <p className="text-sm text-gray-600">{contact.telefone}</p>
                       {contact.empresa && (
                         <p className="text-sm text-gray-500">Company: {contact.empresa}</p>
+=======
+                      <h3 className="font-semibold">{clinic.name}</h3>
+                      <p className="text-sm text-gray-600">{clinic.address}</p>
+                      <p className="text-sm text-gray-600">{clinic.city}, {clinic.state}</p>
+                      <p className="text-sm">
+                        📍 {clinic.phone}
+                      </p>
+                    </div>
+                    <Button 
+                      onClick={() => bookAppointment(clinic.id)}
+                      disabled={loading}
+                    >
+                      Book Appointment
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center text-gray-500">
+              No clinics available. Make sure you've loaded the sample data.
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* User Appointments */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Your Appointments</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {appointments.length > 0 ? (
+            <div className="space-y-4">
+              {appointments.map((appointment) => (
+                <div key={appointment.id} className="p-4 border rounded-lg">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <p className="font-semibold">
+                        {new Date(appointment.appointment_date).toLocaleDateString()} 
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        Status: <span className="capitalize">{appointment.status}</span>
+                      </p>
+                      {appointment.notes && (
+                        <p className="text-sm text-gray-600">
+                          Notes: {appointment.notes}
+                        </p>
+>>>>>>> main
                       )}
                     </div>
                     <span className={`px-2 py-1 rounded text-xs ${

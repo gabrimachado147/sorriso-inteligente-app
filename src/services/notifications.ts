@@ -5,7 +5,7 @@ export interface NotificationOptions {
   icon?: string;
   badge?: string;
   tag?: string;
-  data?: any;
+  data?: Record<string, unknown>;
   actions?: Array<{
     action: string;
     title: string;
@@ -14,6 +14,19 @@ export interface NotificationOptions {
   silent?: boolean;
   vibrate?: number[];
   requireInteraction?: boolean;
+}
+
+export interface AppointmentNotificationData {
+  service: string;
+  clinic: string;
+  date: string;
+  time: string;
+}
+
+export interface PromotionNotificationData {
+  title: string;
+  description: string;
+  validUntil?: string;
 }
 
 export class PWANotificationManager {
@@ -266,9 +279,9 @@ export const useNotifications = () => {
   return {
     requestPermission: () => manager.requestPermission(),
     showNotification: (options: NotificationOptions) => manager.showNotification(options),
-    notifyAppointmentReminder: (data: any) => manager.notifyAppointmentReminder(data),
-    notifyAppointmentConfirmed: (data: any) => manager.notifyAppointmentConfirmed(data),
-    notifyPromotion: (data: any) => manager.notifyPromotion(data),
+    notifyAppointmentReminder: (data: AppointmentNotificationData) => manager.notifyAppointmentReminder(data),
+    notifyAppointmentConfirmed: (data: AppointmentNotificationData) => manager.notifyAppointmentConfirmed(data),
+    notifyPromotion: (data: PromotionNotificationData) => manager.notifyPromotion(data),
     notifyOfflineMode: () => manager.notifyOfflineMode(),
     notifyUpdateAvailable: () => manager.notifyUpdateAvailable(),
     clearNotifications: (tag?: string) => manager.clearNotifications(tag),

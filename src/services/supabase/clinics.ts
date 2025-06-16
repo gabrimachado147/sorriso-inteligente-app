@@ -35,6 +35,25 @@ export interface Dentist {
   active: boolean
 }
 
+interface ClinicReview {
+  id: string;
+  patient_id: string;
+  dentist_id: string | null;
+  clinic_id: string;
+  appointment_id: string | null;
+  rating: number;
+  comment: string | null;
+  created_at: string;
+  updated_at: string;
+  is_verified: boolean;
+  patient: {
+    full_name: string | null;
+  } | null;
+  dentist: {
+    full_name: string | null;
+  } | null;
+}
+
 export class ClinicService {
   /**
    * Get all clinics with filters
@@ -189,10 +208,26 @@ export class ClinicService {
     clinicId: string, 
     dayOfWeek: string
   ): Promise<{ open: string; close: string } | null> {
+<<<<<<< HEAD
     console.log('Mock working hours for clinic:', clinicId, 'day:', dayOfWeek)
     
     // Return mock working hours
     return { open: '08:00', close: '18:00' }
+=======
+    const { data, error } = await supabase
+      .from('clinics')
+      .select('opening_hours')
+      .eq('id', clinicId)
+      .single()
+
+    if (error) {
+      console.error('Error fetching clinic working hours:', error)
+      throw new Error(error.message)
+    }
+
+    const workingHours = data.opening_hours as Record<string, { open: string; close: string }> | null
+    return workingHours?.[dayOfWeek] || null
+>>>>>>> main
   }
 
   /**
@@ -221,6 +256,7 @@ export class ClinicService {
       limit?: number
       rating?: number
     }
+<<<<<<< HEAD
   ): Promise<any[]> {
     console.log('Mock reviews for clinic:', clinicId, 'options:', options)
     
@@ -234,6 +270,35 @@ export class ClinicService {
         patient: { full_name: 'Maria Silva' }
       }
     ]
+=======
+  ): Promise<Record<string, unknown>[]> {
+    let query = supabase
+      .from('reviews')
+      .select(`
+        *,
+        patient:users(full_name),
+        dentist:dentists(full_name)
+      `)
+      .eq('clinic_id', clinicId)
+      .order('created_at', { ascending: false })
+
+    if (options?.rating) {
+      query = query.eq('rating', options.rating)
+    }
+
+    if (options?.limit) {
+      query = query.limit(options.limit)
+    }
+
+    const { data, error } = await query
+
+    if (error) {
+      console.error('Error fetching clinic reviews:', error)
+      throw new Error(error.message)
+    }
+
+    return data || []
+>>>>>>> main
   }
 
   /**

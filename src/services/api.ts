@@ -7,7 +7,7 @@ export interface ChatMessage {
   actions?: Array<{
     type: 'schedule' | 'call' | 'location';
     label: string;
-    data?: any;
+    data?: Record<string, unknown>;
   }>;
 }
 
@@ -205,7 +205,7 @@ export const apiService = {
       return baseSlots.filter(() => Math.random() > 0.3); // Remove alguns aleatoriamente
     },
 
-    getUserAppointments: async (userId: string): Promise<any[]> => {
+    getUserAppointments: async (userId: string): Promise<Record<string, unknown>[]> => {
       await delay(600);
       return [
         {

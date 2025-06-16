@@ -1,11 +1,10 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { animations } from '@/lib/animations';
-import { Bot, Send } from 'lucide-react';
+import { Bot, Send, Calendar, MapPin, Clock, Phone } from 'lucide-react';
 import { usePhoneValidation } from '@/hooks/usePhoneValidation';
 import { useChatLogic } from '@/hooks/useChatLogic';
 import ChatMessage from './ChatMessage';
@@ -40,11 +39,33 @@ const ChatBot = () => {
     scrollToBottom();
   }, [messages]);
 
+  // Quick actions integradas
+  const quickActions = [
+    {
+      text: "Agendar consulta",
+      action: () => handleQuickAction("Quero agendar uma consulta"),
+      icon: Calendar
+    },
+    {
+      text: "Encontrar clínicas",
+      action: () => handleQuickAction("Onde encontro clínicas próximas?"),
+      icon: MapPin
+    },
+    {
+      text: "Horários disponíveis",
+      action: () => handleQuickAction("Quais horários estão disponíveis?"),
+      icon: Clock
+    },
+    {
+      text: "Contato emergência",
+      action: () => handleQuickAction("Preciso de atendimento de emergência"),
+      icon: Phone
+    }
+  ];
+
   const handleFormSubmit = async (messageText?: string) => {
     const text = messageText || inputValue.trim();
     if (!text || chatLoading) return;
-
-    // Handle regular chat messages via webhook
     await handleSendMessage(text);
     setInputValue('');
   };
