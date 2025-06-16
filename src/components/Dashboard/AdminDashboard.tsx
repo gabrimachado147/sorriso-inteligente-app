@@ -47,9 +47,26 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ appointments, st
   
   const { updateAppointmentStatus, updateAppointmentService } = useAppointments();
 
-  // Filtros aplicados
-  const filteredAppointments = useMemo(() => {
+  // Obter clínica do usuário logado
+  const loggedInClinic = sessionStorage.getItem('staffClinic');
+
+  // Filtrar agendamentos pela clínica do usuário logado PRIMEIRO
+  const clinicFilteredAppointments = useMemo(() => {
+    if (!loggedInClinic) return appointments;
+    
     return appointments.filter(apt => {
+      const appointmentClinic = apt.clinic.toLowerCase();
+      const userClinic = loggedInClinic.toLowerCase();
+      
+      // Verificar se a clínica do agendamento corresponde à clínica do usuário
+      return appointmentClinic.includes(userClinic) || 
+             apt.clinic === loggedInClinic;
+    });
+  }, [appointments, loggedInClinic]);
+
+  // Aplicar filtros adicionais aos agendamentos já filtrados por clínica
+  const filteredAppointments = useMemo(() => {
+    return clinicFilteredAppointments.filter(apt => {
       const matchesClinic = selectedClinic === 'all' || apt.clinic.includes(selectedClinic);
       const matchesStatus = statusFilter === 'all' || apt.status === statusFilter;
       const matchesSearch = !searchTerm || 
@@ -82,9 +99,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ appointments, st
       
       return matchesClinic && matchesStatus && matchesSearch && matchesDate;
     });
-  }, [appointments, selectedClinic, statusFilter, searchTerm, dateFilter]);
+  }, [clinicFilteredAppointments, selectedClinic, statusFilter, searchTerm, dateFilter]);
 
-  // Processamento inteligente dos dados filtrados com novas métricas
+  // Processamento inteligente dos dados filtrados com novas métricas (usando apenas agendamentos da clínica)
   const dashboardData = useMemo(() => {
     if (!filteredAppointments || filteredAppointments.length === 0) {
       return {
@@ -194,7 +211,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ appointments, st
       }))
       .sort((a, b) => b.value - a.value);
 
-    // Performance por clínica
+    // Performance por clínica (agora só mostra a clínica do usuário)
     const clinicStats = filteredAppointments.reduce((acc, apt) => {
       if (!acc[apt.clinic]) {
         acc[apt.clinic] = { total: 0, confirmed: 0, revenue: 0 };
@@ -285,14 +302,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ appointments, st
     };
   }, [filteredAppointments]);
 
-  // Extrair clínicas únicas para o filtro
+  // Extrair clínicas únicas para o filtro (apenas da clínica do usuário)
   const uniqueClinics = useMemo(() => {
-    const clinics = [...new Set(appointments.map(apt => apt.clinic))];
+    const clinics = [...new Set(clinicFilteredAppointments.map(apt => apt.clinic))];
     return clinics.map(clinic => ({
       value: clinic,
       label: clinic
     }));
-  }, [appointments]);
+  }, [clinicFilteredAppointments]);
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -355,7 +372,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ appointments, st
           <div>
             <h1 className="text-3xl font-bold flex items-center gap-3 mb-2">
               <BarChart3 className="h-8 w-8 text-primary" />
-              Dashboard Administrativo 👩‍⚕️
+              Dashboard Administrativo - {loggedInClinic || 'Todas as Clínicas'} 👩‍⚕️
             </h1>
             <p className="text-gray-600">Análise completa e insights inteligentes em tempo real</p>
           </div>
@@ -884,7 +901,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ appointments, st
                             <p className="text-lg font-bold text-green-600">{clinic.taxa}%</p>
                           </div>
                           <div className="text-center">
-                            <p className="text-sm text-gray-600">Receita Estimada</p>
+                            <p className="text-sm text-gray-600">Receita Total</p>
                             <p className="text-lg font-bold text-blue-600">R$ {clinic.receita.toLocaleString()}</p>
                           </div>
                         </div>
