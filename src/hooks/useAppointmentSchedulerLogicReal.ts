@@ -60,7 +60,7 @@ export const useAppointmentSchedulerLogicReal = (rescheduleId: string | null) =>
 
     // Se usuário está logado, usar dados do perfil automaticamente
     if (isAuthenticated && profile) {
-      handleConfirmAppointment(profile.nome_completo, profile.telefone || '');
+      handleConfirmAppointment(profile.full_name, profile.phone || '');
     } else {
       // Se não está logado, mostrar modal para capturar dados
       setShowPhoneModal(true);
@@ -75,8 +75,8 @@ export const useAppointmentSchedulerLogicReal = (rescheduleId: string | null) =>
       
       // Preparar dados do agendamento para o Supabase
       const appointmentData = {
-        name: name || profile?.nome_completo || '',
-        phone: phone || profile?.telefone || '',
+        name: name || profile?.full_name || '',
+        phone: phone || profile?.phone || '',
         date: selectedDate!.toISOString().split('T')[0],
         time: selectedTime,
         clinic: selectedClinicData ? `${selectedClinicData.name} - ${selectedClinicData.city}` : '',

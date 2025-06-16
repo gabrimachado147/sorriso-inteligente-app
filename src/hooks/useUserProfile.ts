@@ -36,7 +36,7 @@ export const useUserProfile = () => {
   }, [user]);
 
   // Update profile function
-  const updateProfile = async (updates: Partial<Pick<UserProfile, 'nome_completo' | 'telefone' | 'data_nascimento'>>) => {
+  const updateProfile = async (updates: Partial<Pick<UserProfile, 'full_name' | 'phone' | 'date_of_birth'>>) => {
     try {
       setError(null);
       
@@ -59,7 +59,7 @@ export const useUserProfile = () => {
   };
 
   // Create profile function
-  const createProfile = async (profileData: { nome_completo: string; telefone?: string; data_nascimento?: string }) => {
+  const createProfile = async (profileData: { full_name: string; phone?: string; date_of_birth?: string }) => {
     try {
       setError(null);
       

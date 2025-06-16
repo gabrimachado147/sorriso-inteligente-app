@@ -3,10 +3,10 @@ import { supabase } from '@/integrations/supabase/client';
 
 export interface UserProfile {
   id: string;
-  nome_completo: string;
-  telefone?: string;
+  full_name: string;
+  phone?: string;
   email?: string;
-  data_nascimento?: string;
+  date_of_birth?: string;
   created_at: string;
   updated_at: string;
 }
@@ -37,10 +37,10 @@ export class UserProfileService {
       // Map the database fields to our interface
       return {
         id: data.id,
-        nome_completo: data.nome_completo,
-        telefone: data.telefone || undefined,
-        email: data.email || undefined,
-        data_nascimento: data.data_nascimento || undefined,
+        full_name: data.full_name || '',
+        phone: data.phone || undefined,
+        email: user.email || undefined,
+        date_of_birth: data.date_of_birth || undefined,
         created_at: data.created_at,
         updated_at: data.updated_at
       };
@@ -65,10 +65,9 @@ export class UserProfileService {
         .from('user_profiles')
         .upsert({
           id: user.id,
-          nome_completo: profileData.nome_completo || '',
-          telefone: profileData.telefone,
-          email: profileData.email,
-          data_nascimento: profileData.data_nascimento
+          full_name: profileData.full_name || '',
+          phone: profileData.phone,
+          date_of_birth: profileData.date_of_birth
         }, {
           onConflict: 'id'
         });
@@ -89,7 +88,7 @@ export class UserProfileService {
   /**
    * Update user profile
    */
-  static async updateProfile(updates: Partial<Pick<UserProfile, 'nome_completo' | 'telefone' | 'data_nascimento'>>) {
+  static async updateProfile(updates: Partial<Pick<UserProfile, 'full_name' | 'phone' | 'date_of_birth'>>) {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       
@@ -98,9 +97,9 @@ export class UserProfileService {
       }
 
       const updateData: Record<string, any> = {};
-      if (updates.nome_completo !== undefined) updateData.nome_completo = updates.nome_completo;
-      if (updates.telefone !== undefined) updateData.telefone = updates.telefone;
-      if (updates.data_nascimento !== undefined) updateData.data_nascimento = updates.data_nascimento;
+      if (updates.full_name !== undefined) updateData.full_name = updates.full_name;
+      if (updates.phone !== undefined) updateData.phone = updates.phone;
+      if (updates.date_of_birth !== undefined) updateData.date_of_birth = updates.date_of_birth;
 
       const { error } = await supabase
         .from('user_profiles')

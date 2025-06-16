@@ -6,7 +6,13 @@ import { MapPin, Clock } from 'lucide-react';
 export interface ClinicSelectorProps {
   selectedClinic: string;
   onClinicSelect: (clinicId: string) => void;
-  clinics: {
+  clinics?: {
+    id: string;
+    name: string;
+    city: string;
+    state: string;
+  }[];
+  filteredClinics?: {
     id: string;
     name: string;
     city: string;
@@ -17,11 +23,15 @@ export interface ClinicSelectorProps {
 export const ClinicSelector: React.FC<ClinicSelectorProps> = ({
   selectedClinic,
   onClinicSelect,
-  clinics
+  clinics,
+  filteredClinics
 }) => {
+  // Use filteredClinics if provided, otherwise use clinics
+  const clinicsToShow = filteredClinics || clinics || [];
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      {clinics.map((clinic) => (
+      {clinicsToShow.map((clinic) => (
         <Card
           key={clinic.id}
           className={`cursor-pointer transition-all hover:shadow-md ${
