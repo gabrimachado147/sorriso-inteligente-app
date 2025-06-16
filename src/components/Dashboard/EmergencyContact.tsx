@@ -23,7 +23,7 @@ export const EmergencyContact: React.FC<EmergencyContactProps> = ({
             <h3 className={`font-semibold text-red-800 ${animations.emergencyPulse}`}>
               Urgência Dental
             </h3>
-            <p className="text-sm text-red-600">Atendimento imediato para emergências</p>
+            <p className="text-sm text-red-600">Atendimento para emergências odontológicas</p>
           </div>
           <Button 
             className={`bg-red-600 hover:bg-red-700 ${animations.buttonHover}`}

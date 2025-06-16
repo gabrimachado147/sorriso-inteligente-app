@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -48,7 +49,7 @@ export const QuickActionsSection: React.FC<QuickActionsSectionProps> = ({
     {
       icon: Phone,
       title: "Emergência",
-      description: "",
+      description: "Contato para urgências",
       buttonText: "Contatar Agora",
       buttonVariant: "destructive" as const,
       path: "",

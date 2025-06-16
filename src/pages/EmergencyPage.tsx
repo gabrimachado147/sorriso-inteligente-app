@@ -100,10 +100,9 @@ const EmergencyPage = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              <p className="text-sm mobile-text-sm"><strong>24 horas:</strong> Plantão de emergência</p>
               <p className="text-sm mobile-text-sm"><strong>Seg-Sex:</strong> 8h às 18h (atendimento regular)</p>
               <p className="text-sm mobile-text-sm"><strong>Sábado:</strong> 8h às 13h</p>
-              <p className="text-sm mobile-text-sm text-red-600"><strong>Domingo:</strong> Apenas emergências</p>
+              <p className="text-sm mobile-text-sm text-red-600"><strong>Emergências:</strong> Entre em contato conosco</p>
             </div>
           </CardContent>
         </Card>

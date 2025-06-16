@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,32 +7,35 @@ import { useAppointmentScheduler } from '@/hooks/useAppointmentScheduler';
 import { useChatHandler } from '@/hooks/useChatHandler';
 import { animations } from '@/lib/animations';
 import { Calendar, MessageCircle, Clock, Star, Phone, MapPin } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const HomePage = () => {
+  const navigate = useNavigate();
+
   const handleScheduleClick = () => {
-    window.location.href = '/schedule';
+    navigate('/schedule');
     setTimeout(() => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }, 100);
   };
 
   const handleReschedule = () => {
-    window.location.href = '/schedule';
+    navigate('/schedule');
     setTimeout(() => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }, 100);
   };
 
   const handleViewAllAppointments = () => {
-    window.location.href = '/appointments';
+    navigate('/appointments');
   };
 
   const handleViewUnits = () => {
-    window.location.href = '/clinics';
+    navigate('/clinics');
   };
 
   const handleScheduleClinic = (clinic: string, phone: string) => {
-    window.location.href = '/schedule';
+    navigate('/schedule');
     setTimeout(() => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }, 100);
@@ -42,7 +46,22 @@ const HomePage = () => {
   };
 
   const handleQuickAction = (action: string) => {
-    toastInfo('Ação rápida', `Ação: ${action}`);
+    switch(action) {
+      case 'chat':
+        navigate('/chat');
+        break;
+      case 'locations':
+        navigate('/clinics');
+        break;
+      case 'appointments':
+        navigate('/schedule');
+        break;
+      case 'emergency':
+        navigate('/emergency');
+        break;
+      default:
+        toastInfo('Ação rápida', `Ação: ${action}`);
+    }
   };
 
   const handleScheduleEvaluation = () => {
@@ -50,7 +69,7 @@ const HomePage = () => {
   };
 
   const handleEmergencyCall = () => {
-    toastCall('Ligando para emergência', 'Conectando com a central de urgência...');
+    navigate('/emergency');
   };
 
   const schedulingLoading = false;
@@ -126,7 +145,7 @@ const HomePage = () => {
           <CardContent className="p-4 text-center">
             <Phone className="h-8 w-8 mx-auto mb-2 text-primary" />
             <p className="font-medium">Urgência</p>
-            <p className="text-xs text-gray-500">Atendimento 24h</p>
+            <p className="text-xs text-gray-500">Contato emergência</p>
           </CardContent>
         </Card>
       </div>
@@ -242,7 +261,7 @@ const HomePage = () => {
               { name: 'Ortodontia', icon: '😬', popular: true },
               { name: 'Implantodontia', icon: '🔧', popular: false },
               { name: 'Clareamento', icon: '✨', popular: true },
-              { name: 'Urgência 24h', icon: '🚨', popular: false },
+              { name: 'Atendimento Urgência', icon: '🚨', popular: false },
             ].map((service, index) => (
               <Card 
                 key={service.name} 
@@ -307,8 +326,8 @@ const HomePage = () => {
         <CardContent className="p-4">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-semibold text-red-800">Urgência Dental 24h</h3>
-              <p className="text-sm text-red-600">Atendimento imediato para emergências</p>
+              <h3 className="font-semibold text-red-800">Urgência Dental</h3>
+              <p className="text-sm text-red-600">Atendimento para emergências odontológicas</p>
             </div>
             <Button 
               className={`bg-red-600 hover:bg-red-700 ${animations.buttonHover}`}
@@ -316,7 +335,7 @@ const HomePage = () => {
               disabled={chatLoading}
             >
               <Phone className="h-4 w-4 mr-2" />
-              {chatLoading ? 'Conectando...' : 'Ligar Agora'}
+              {chatLoading ? 'Conectando...' : 'Contatar'}
             </Button>
           </div>
         </CardContent>
