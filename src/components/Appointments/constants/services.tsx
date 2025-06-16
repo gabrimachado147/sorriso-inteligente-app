@@ -9,7 +9,9 @@ import {
   Stethoscope, 
   Baby, 
   Heart, 
-  AlertTriangle 
+  AlertTriangle,
+  Crown,
+  Shield
 } from 'lucide-react';
 
 export const availableServices = [
@@ -23,8 +25,8 @@ export const availableServices = [
     icon: <Search className="h-6 w-6" />
   },
   {
-    id: 'limpeza-dental',
-    name: 'Limpeza Dental',
+    id: 'limpeza',
+    name: 'Limpeza',
     description: 'Profilaxia e remoção de tártaro',
     duration: 45,
     price: 'A partir de R$ 80',
@@ -41,7 +43,7 @@ export const availableServices = [
     icon: <Wrench className="h-6 w-6" />
   },
   {
-    id: 'ortodontia-consulta',
+    id: 'ortodontia',
     name: 'Ortodontia',
     description: 'Avaliação para aparelho ortodôntico',
     duration: 45,
@@ -50,7 +52,7 @@ export const availableServices = [
     icon: <Smile className="h-6 w-6" />
   },
   {
-    id: 'implantodontia-consulta',
+    id: 'implantodontia',
     name: 'Implantodontia',
     description: 'Avaliação para implantes dentários',
     duration: 60,
@@ -59,13 +61,22 @@ export const availableServices = [
     icon: <Settings className="h-6 w-6" />
   },
   {
-    id: 'clareamento-dental',
-    name: 'Clareamento Dental',
-    description: 'Clareamento dental profissional',
+    id: 'estetica-dental',
+    name: 'Estética Dental',
+    description: 'Clareamento e procedimentos estéticos',
     duration: 90,
     price: 'A partir de R$ 300',
     category: 'estético',
     icon: <Sparkles className="h-6 w-6" />
+  },
+  {
+    id: 'proteses-fixas',
+    name: 'Próteses Fixas',
+    description: 'Coroas, pontes e próteses fixas',
+    duration: 90,
+    price: 'A partir de R$ 400',
+    category: 'restaurativo',
+    icon: <Crown className="h-6 w-6" />
   },
   {
     id: 'endodontia',
@@ -75,6 +86,24 @@ export const availableServices = [
     price: 'A partir de R$ 200',
     category: 'restaurativo',
     icon: <Stethoscope className="h-6 w-6" />
+  },
+  {
+    id: 'odontopediatria',
+    name: 'Odontopediatria',
+    description: 'Atendimento especializado para crianças',
+    duration: 45,
+    price: 'A partir de R$ 90',
+    category: 'preventivo',
+    icon: <Baby className="h-6 w-6" />
+  },
+  {
+    id: 'periodontia',
+    name: 'Periodontia',
+    description: 'Tratamento de gengivas e periodonto',
+    duration: 60,
+    price: 'A partir de R$ 150',
+    category: 'preventivo',
+    icon: <Shield className="h-6 w-6" />
   },
   {
     id: 'atendimento-urgencia',

@@ -12,10 +12,12 @@ import { SecurityTab } from '@/components/Profile/SecurityTab';
 import { AccessibilityTab } from '@/components/Profile/AccessibilityTab';
 import { AuthForm } from '@/components/Auth/AuthForm';
 import { useAuthPage } from '@/hooks/useAuthPage';
+import { useNavigate } from 'react-router-dom';
 
 const ProfilePage = () => {
   const { user, isAuthenticated, logout } = useAuth();
   const [activeTab, setActiveTab] = useState('profile');
+  const navigate = useNavigate();
   
   const {
     isLogin,
@@ -28,6 +30,10 @@ const ProfilePage = () => {
     handleToggleMode,
     handleEnterWithoutAccount
   } = useAuthPage();
+
+  const handleStaffAccess = () => {
+    navigate('/staff-login');
+  };
 
   if (!isAuthenticated) {
     return (
@@ -70,6 +76,19 @@ const ProfilePage = () => {
   return (
     <div className="min-h-screen bg-background w-full">
       <div className="w-full px-4 py-6">
+        {/* Botão de acesso para funcionários */}
+        <div className="flex justify-end mb-4">
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={handleStaffAccess}
+            className="bg-white/90 backdrop-blur-sm border-primary/20 hover:bg-primary/10"
+          >
+            <Shield className="h-4 w-4 mr-2" />
+            Acesso Funcionários
+          </Button>
+        </div>
+
         {/* Header do Perfil */}
         <div className="text-center mb-6">
           <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">

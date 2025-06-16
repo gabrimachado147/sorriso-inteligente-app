@@ -15,6 +15,8 @@ export const ServiceSelector: React.FC<ServiceSelectorProps> = ({
   selectedService,
   onServiceSelect
 }) => {
+  const popularServices = ['avaliacao-gratuita', 'limpeza', 'ortodontia', 'estetica-dental'];
+
   return (
     <Card className={`${animations.fadeIn} ${animations.cardHover} w-full`}>
       <CardHeader className="pb-3">
@@ -47,7 +49,7 @@ export const ServiceSelector: React.FC<ServiceSelectorProps> = ({
                 </div>
               </Button>
               
-              {['avaliacao-gratuita', 'limpeza-dental', 'ortodontia-consulta', 'clareamento-dental'].includes(service.id) && (
+              {popularServices.includes(service.id) && (
                 <Badge 
                   variant="secondary" 
                   className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs px-2 py-1"
