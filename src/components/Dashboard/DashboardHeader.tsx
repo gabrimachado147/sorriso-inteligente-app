@@ -3,6 +3,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { RefreshCw } from 'lucide-react';
 import { RealtimeIndicator } from './RealtimeIndicator';
+import { NotificationStatus } from './NotificationStatus';
 import { animations } from '@/lib/animations';
 
 interface DashboardHeaderProps {
@@ -17,23 +18,30 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   onManualRefresh
 }) => {
   return (
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-4">
-        <h2 className="text-2xl font-bold">Dashboard</h2>
-        <RealtimeIndicator connected={realtimeConnected} />
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <h2 className="text-2xl font-bold">Dashboard</h2>
+          <RealtimeIndicator connected={realtimeConnected} />
+        </div>
+        
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onManualRefresh}
+            disabled={isLoading}
+            className={animations.buttonHover}
+          >
+            <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
+            Atualizar
+          </Button>
+        </div>
       </div>
       
-      <div className="flex items-center gap-2">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={onManualRefresh}
-          disabled={isLoading}
-          className={animations.buttonHover}
-        >
-          <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
-          Atualizar
-        </Button>
+      {/* Status de notificações */}
+      <div className="max-w-md">
+        <NotificationStatus />
       </div>
     </div>
   );

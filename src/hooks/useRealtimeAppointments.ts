@@ -3,11 +3,13 @@ import { useState, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toastSuccess, toastInfo } from '@/components/ui/custom-toast';
+import { usePushNotifications } from './usePushNotifications';
 import type { AppointmentRecord } from '@/services/supabase/appointments';
 
 export const useRealtimeAppointments = () => {
   const [realtimeConnected, setRealtimeConnected] = useState(false);
   const queryClient = useQueryClient();
+  const { notifyNewAppointment } = usePushNotifications();
 
   useEffect(() => {
     console.log('[Realtime] Setting up appointments real-time listener...');
@@ -33,9 +35,17 @@ export const useRealtimeAppointments = () => {
           // Show notification for chat-originated appointments
           if (newAppointment.source === 'webhook' || (newAppointment as any).webhook_session_id) {
             toastSuccess(
-              'Novo Agendamento via Chat!',
+              'Novo Agendamento via Chat! 🎉',
               `${newAppointment.name} agendou para ${newAppointment.date} às ${newAppointment.time}`
             );
+            
+            // Notificação push
+            notifyNewAppointment({
+              name: newAppointment.name,
+              date: newAppointment.date,
+              time: newAppointment.time,
+              clinic: newAppointment.clinic
+            });
           } else {
             toastInfo(
               'Novo Agendamento',
@@ -93,7 +103,7 @@ export const useRealtimeAppointments = () => {
       supabase.removeChannel(channel);
       setRealtimeConnected(false);
     };
-  }, [queryClient]);
+  }, [queryClient, notifyNewAppointment]);
 
   return {
     realtimeConnected

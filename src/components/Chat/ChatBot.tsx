@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,13 +8,18 @@ import { animations } from '@/lib/animations';
 import { Bot, Send, Calendar, MapPin, Clock, Phone } from 'lucide-react';
 import { usePhoneValidation } from '@/hooks/usePhoneValidation';
 import { useChatLogic } from '@/hooks/useChatLogic';
+import { usePushNotifications } from '@/hooks/usePushNotifications';
 import ChatMessage from './ChatMessage';
 import QuickActionsGrid from './QuickActionsGrid';
 import TypingIndicator from './TypingIndicator';
+import { ProcessingIndicator } from './ProcessingIndicator';
+import { AppointmentConfirmation } from './AppointmentConfirmation';
 import { Message } from './types';
 
 const ChatBot = () => {
   const [inputValue, setInputValue] = useState('');
+  const [processingStage, setProcessingStage] = useState<'analyzing' | 'scheduling' | 'confirming' | null>(null);
+  const [showAppointmentConfirmation, setShowAppointmentConfirmation] = useState<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
   const { 
@@ -31,13 +37,28 @@ const ChatBot = () => {
     handleQuickAction 
   } = useChatLogic(userPhone, isPhoneCollected);
 
+  const { 
+    permission, 
+    requestPermission, 
+    notifyAppointmentConfirmed 
+  } = usePushNotifications();
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, processingStage, showAppointmentConfirmation]);
+
+  // Solicitar permissão para notificações ao carregar
+  useEffect(() => {
+    if (permission === 'default') {
+      setTimeout(() => {
+        requestPermission();
+      }, 3000); // Aguardar 3 segundos antes de solicitar
+    }
+  }, [permission, requestPermission]);
 
   // Quick actions integradas
   const quickActions = [
@@ -66,8 +87,44 @@ const ChatBot = () => {
   const handleFormSubmit = async (messageText?: string) => {
     const text = messageText || inputValue.trim();
     if (!text || chatLoading) return;
-    await handleSendMessage(text);
+
     setInputValue('');
+    
+    // Simular estágios de processamento para agendamentos
+    if (text.toLowerCase().includes('agendar') || text.toLowerCase().includes('consulta')) {
+      setProcessingStage('analyzing');
+      
+      setTimeout(() => {
+        setProcessingStage('scheduling');
+        
+        setTimeout(() => {
+          setProcessingStage('confirming');
+          
+          setTimeout(() => {
+            setProcessingStage(null);
+            
+            // Simular confirmação de agendamento
+            const appointmentData = {
+              name: userPhone || 'Cliente',
+              service: 'Consulta Odontológica',
+              clinic: 'Senhor Sorriso Centro',
+              date: new Date(Date.now() + 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR'),
+              time: '14:00'
+            };
+            
+            setShowAppointmentConfirmation(appointmentData);
+            notifyAppointmentConfirmed(appointmentData);
+            
+            // Remover confirmação após 10 segundos
+            setTimeout(() => {
+              setShowAppointmentConfirmation(null);
+            }, 10000);
+          }, 2000);
+        }, 1500);
+      }, 1000);
+    }
+    
+    await handleSendMessage(text);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -88,8 +145,16 @@ const ChatBot = () => {
           </Badge>
         </CardTitle>
         <p className="text-sm text-gray-600">
-          Estou aqui para ajudar com seus agendamentos na Senhor Sorriso!
+          Estou aqui para ajudar com seus agendamentos na Senhor Sorriso! 🦷
         </p>
+        
+        {permission === 'default' && (
+          <div className="mt-2 p-2 bg-blue-50 rounded-lg border border-blue-200">
+            <p className="text-xs text-blue-700">
+              💡 Ative as notificações para receber confirmações de agendamento!
+            </p>
+          </div>
+        )}
       </CardHeader>
 
       <CardContent className="flex-1 flex flex-col p-0">
@@ -105,7 +170,11 @@ const ChatBot = () => {
             />
           ))}
 
-          {chatLoading && <TypingIndicator />}
+          {processingStage && <ProcessingIndicator stage={processingStage} />}
+          {chatLoading && !processingStage && <TypingIndicator />}
+          {showAppointmentConfirmation && (
+            <AppointmentConfirmation appointmentData={showAppointmentConfirmation} />
+          )}
           
           <div ref={messagesEndRef} />
         </div>
@@ -123,7 +192,7 @@ const ChatBot = () => {
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="Digite aqui para conversar"
+              placeholder="Digite aqui para conversar..."
               className="flex-1"
               disabled={chatLoading}
             />
@@ -134,6 +203,10 @@ const ChatBot = () => {
             >
               <Send className="h-4 w-4" />
             </Button>
+          </div>
+          
+          <div className="mt-2 text-xs text-gray-500 text-center">
+            {permission === 'granted' ? '🔔 Notificações ativadas' : '🔕 Notificações desativadas'}
           </div>
         </div>
       </CardContent>
