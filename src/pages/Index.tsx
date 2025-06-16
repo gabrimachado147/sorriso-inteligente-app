@@ -1,12 +1,12 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Calendar, MessageCircle, MapPin, Phone, Star, Clock, Users, Search, Sparkles, Wrench, Smile, Settings, Crown, Stethoscope, Baby, Shield, AlertTriangle } from 'lucide-react';
-import { animations } from '@/lib/animations';
 import { useAuth } from '@/hooks/useAuth';
+import { HeroSection } from '@/components/Home/HeroSection';
+import { QuickActionsSection } from '@/components/Home/QuickActionsSection';
+import { ServicesOverviewSection } from '@/components/Home/ServicesOverviewSection';
+import { CTASection } from '@/components/Home/CTASection';
+import { animations } from '@/lib/animations';
 
 const Index = () => {
   const navigate = useNavigate();
@@ -28,298 +28,139 @@ const Index = () => {
     window.open(`https://wa.me/5515997123456?text=${message}`, '_blank');
   };
 
-  const quickActions = [
-    {
-      icon: MessageCircle,
-      title: "Chat IA",
-      description: "Tire suas dúvidas",
-      path: "/chat"
-    },
-    {
-      icon: MapPin,
-      title: "Unidades",
-      description: "5 cidades",
-      path: "/clinics"
-    },
-    {
-      icon: Calendar,
-      title: "Agendar",
-      description: "Nova consulta",
-      path: "/schedule"
-    },
-    {
-      icon: Phone,
-      title: "Urgência",
-      description: "Contato emergência",
-      path: "",
-      isEmergency: true
-    }
-  ];
-
-  const featuredClinics = [
-    {
-      name: 'Campo Belo - MG',
-      address: 'Av. Afonso Pena, 151, Centro'
-    },
-    {
-      name: 'Formiga - MG', 
-      address: 'R. Barão de Piumhy, 198, Centro'
-    }
-  ];
-
-  const services = [
-    { icon: Search, name: 'Avaliação Gratuita', popular: true },
-    { icon: Sparkles, name: 'Limpeza', popular: true },
-    { icon: Wrench, name: 'Restauração', popular: false },
-    { icon: Smile, name: 'Ortodontia', popular: true },
-    { icon: Settings, name: 'Implantodontia', popular: false },
-    { icon: Sparkles, name: 'Estética Dental', popular: true },
-    { icon: Crown, name: 'Próteses Fixas', popular: false },
-    { icon: Stethoscope, name: 'Endodontia', popular: false },
-    { icon: Baby, name: 'Odontopediatria', popular: false },
-    { icon: Shield, name: 'Periodontia', popular: false },
-    { icon: AlertTriangle, name: 'Atendimento de Urgência', popular: false }
-  ];
-
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background mobile-scroll">
       {/* Hero Section */}
-      <section className="py-12 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="relative bg-gradient-to-br from-blue-500 via-blue-600 to-purple-700 text-white p-8 md:p-12 rounded-3xl overflow-hidden">
-            <div className="absolute inset-0 bg-black/10 rounded-3xl"></div>
-            
-            <div className="relative text-center">
-              <h1 className="text-3xl md:text-5xl font-bold mb-6">
-                Bem-vindo à Senhor Sorriso!
-              </h1>
-              
-              <p className="text-lg md:text-xl mb-8 text-blue-100 max-w-2xl mx-auto">
-                Seu sorriso perfeito está a um clique de distância
-              </p>
-
-              {user && (
-                <div className="bg-white/10 backdrop-blur-lg rounded-lg p-4 mb-8 inline-block">
-                  <p className="text-lg font-medium">
-                    Bem-vindo de volta, {user.user_metadata?.nome_completo || user.email}! 😊
-                  </p>
-                </div>
-              )}
-
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center max-w-lg mx-auto">
-                <Button 
-                  size="lg" 
-                  className="bg-white text-blue-600 hover:bg-gray-100 text-lg px-8 py-4 rounded-2xl font-semibold w-full sm:w-auto"
-                  onClick={() => handleNavigate('/schedule')}
-                >
-                  <Calendar className="h-5 w-5 mr-2" />
-                  Agendar Avaliação Gratuita
-                </Button>
-                <Button 
-                  size="lg" 
-                  variant="outline"
-                  className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-blue-600 text-lg px-8 py-4 rounded-2xl font-semibold w-full sm:w-auto"
-                  onClick={() => handleNavigate('/clinics')}
-                >
-                  <MapPin className="h-5 w-5 mr-2" />
-                  Ver Nossas Unidades
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
+      <section className={`py-8 md:py-16 mobile-container ${animations.fadeIn}`}>
+        <HeroSection />
       </section>
 
       {/* Quick Actions Section */}
-      <section className="py-8 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            {quickActions.map((action, index) => {
-              const Icon = action.icon;
-              const isEmergency = action.isEmergency;
-              
-              return (
-                <Card 
-                  key={action.title}
-                  className={`cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-105 text-center ${
-                    isEmergency ? 'border-red-200 bg-red-50' : ''
-                  }`}
-                  onClick={() => isEmergency ? handleEmergencyCall() : handleNavigate(action.path)}
-                >
-                  <CardContent className="p-6">
-                    <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${
-                      isEmergency ? 'bg-red-500' : 'bg-blue-600'
-                    }`}>
-                      <Icon className="h-8 w-8 text-white" />
-                    </div>
-                    <h3 className="text-lg font-semibold mb-2">{action.title}</h3>
-                    <p className="text-gray-600 text-sm">{action.description}</p>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
+      <section className={`py-6 md:py-12 mobile-container ${animations.slideInUp}`}>
+        <div className="mb-6 text-center">
+          <h2 className="text-2xl md:text-3xl font-bold text-primary mb-3 mobile-text-xl">
+            Ações Rápidas
+          </h2>
+          <p className="text-muted-foreground mobile-text-base">
+            Acesse rapidamente nossos principais serviços
+          </p>
         </div>
+        <QuickActionsSection 
+          onNavigate={handleNavigate}
+          onEmergencyCall={handleEmergencyCall}
+        />
       </section>
 
       {/* Clinics Section */}
-      <section className="py-16 px-4 bg-white">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <div className="flex items-center justify-center mb-4">
-              <MapPin className="h-8 w-8 mr-3 text-blue-600" />
-            </div>
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+      <section className={`py-8 md:py-16 bg-muted/30 ${animations.fadeIn}`}>
+        <div className="mobile-container">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4 mobile-text-xl">
               Nossas Unidades
             </h2>
+            <p className="text-lg text-muted-foreground mobile-text-base max-w-2xl mx-auto">
+              Encontre a unidade mais próxima de você
+            </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-8">
-            {featuredClinics.map((clinic) => (
-              <Card key={clinic.name} className="hover:shadow-lg transition-shadow border-gray-200 rounded-2xl overflow-hidden">
-                <CardContent className="p-8 text-center">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-4">{clinic.name}</h3>
-                  <p className="text-gray-600 mb-6 text-lg">{clinic.address}</p>
-                  <Button 
-                    size="lg" 
-                    onClick={() => handleNavigate('/schedule')}
-                    className="w-full rounded-2xl text-lg py-4 px-8 bg-blue-600 hover:bg-blue-700"
-                  >
-                    Agendar
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto mb-8">
+            <div className="bg-white p-6 rounded-2xl shadow-sm border border-border mobile-card-spacing mobile-touch-target hover:shadow-md transition-shadow">
+              <h3 className="text-xl font-bold text-primary mb-3 mobile-text-lg">Campo Belo - MG</h3>
+              <p className="text-muted-foreground mb-4 mobile-text-base">Av. Afonso Pena, 151, Centro</p>
+              <button 
+                onClick={() => handleNavigate('/schedule')}
+                className="w-full bg-primary text-primary-foreground py-3 px-6 rounded-xl font-semibold mobile-touch-target hover:bg-primary/90 transition-colors mobile-text-base"
+              >
+                Agendar Consulta
+              </button>
+            </div>
+            
+            <div className="bg-white p-6 rounded-2xl shadow-sm border border-border mobile-card-spacing mobile-touch-target hover:shadow-md transition-shadow">
+              <h3 className="text-xl font-bold text-primary mb-3 mobile-text-lg">Formiga - MG</h3>
+              <p className="text-muted-foreground mb-4 mobile-text-base">R. Barão de Piumhy, 198, Centro</p>
+              <button 
+                onClick={() => handleNavigate('/schedule')}
+                className="w-full bg-primary text-primary-foreground py-3 px-6 rounded-xl font-semibold mobile-touch-target hover:bg-primary/90 transition-colors mobile-text-base"
+              >
+                Agendar Consulta
+              </button>
+            </div>
           </div>
           
           <div className="text-center">
-            <Button 
-              variant="outline" 
+            <button 
               onClick={() => handleNavigate('/clinics')}
-              className="px-8 py-3 text-lg rounded-xl border-blue-600 text-blue-600 hover:bg-blue-50"
+              className="px-8 py-3 border-2 border-primary text-primary rounded-xl font-semibold mobile-touch-target hover:bg-primary hover:text-primary-foreground transition-colors mobile-text-base"
             >
               Ver todas as unidades
-            </Button>
+            </button>
           </div>
         </div>
       </section>
 
-      {/* Login Section */}
+      {/* Services Overview Section */}
+      <section className={`py-8 md:py-16 mobile-container ${animations.slideInRight}`}>
+        <ServicesOverviewSection onNavigate={handleNavigate} />
+      </section>
+
+      {/* Login Section for Non-authenticated Users */}
       {!user && (
-        <section className="py-12 px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl font-bold mb-4 flex items-center justify-center">
-              <Clock className="h-8 w-8 mr-3 text-blue-600" />
-              Próximas Consultas
-            </h2>
-            
-            <Card className="mb-8">
-              <CardContent className="p-8">
-                <Calendar className="h-16 w-16 mx-auto mb-4 text-gray-400" />
-                <p className="text-gray-600 mb-4">Faça login para ver suas consultas</p>
-                <Button 
-                  onClick={() => handleNavigate('/auth')}
-                  className="bg-blue-600 hover:bg-blue-700"
-                >
-                  Fazer Login
-                </Button>
-              </CardContent>
-            </Card>
+        <section className={`py-8 md:py-12 bg-muted/30 ${animations.fadeIn}`}>
+          <div className="mobile-container text-center">
+            <div className="bg-white p-8 rounded-2xl shadow-sm border border-border max-w-md mx-auto mobile-card-spacing">
+              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3a4 4 0 118 0v4m-4 6v6m-4-2h8" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold text-primary mb-3 mobile-text-lg">Área do Paciente</h3>
+              <p className="text-muted-foreground mb-6 mobile-text-base">
+                Acesse sua conta para ver consultas e histórico
+              </p>
+              <button 
+                onClick={() => handleNavigate('/auth')}
+                className="w-full bg-primary text-primary-foreground py-3 px-6 rounded-xl font-semibold mobile-touch-target hover:bg-primary/90 transition-colors mobile-text-base"
+              >
+                Fazer Login
+              </button>
+            </div>
           </div>
         </section>
       )}
 
-      {/* Services Section */}
-      <section className="py-12 px-4 bg-white">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-8">Nossos Serviços</h2>
-          
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {services.map((service, index) => {
-              const Icon = service.icon;
-              return (
-                <Card 
-                  key={service.name}
-                  className="cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-105 text-center relative"
-                  onClick={() => handleNavigate('/schedule')}
-                >
-                  <CardContent className="p-4">
-                    <div className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 bg-blue-600">
-                      <Icon className="h-6 w-6 text-white" />
-                    </div>
-                    <h3 className="text-sm font-semibold">{service.name}</h3>
-                    
-                    {service.popular && (
-                      <Badge 
-                        variant="secondary" 
-                        className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs px-2 py-1"
-                      >
-                        Popular
-                      </Badge>
-                    )}
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        </div>
+      {/* CTA Section */}
+      <section className={`py-8 md:py-16 mobile-container ${animations.scaleIn}`}>
+        <CTASection 
+          onNavigate={handleNavigate}
+          onWhatsAppContact={handleWhatsAppContact}
+        />
       </section>
 
-      {/* Reviews Section */}
-      <section className="py-12 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-4 flex items-center justify-center">
-            <Star className="h-8 w-8 mr-3 text-blue-600" />
-            Avaliações
-          </h2>
-          
-          {!user ? (
-            <Card>
-              <CardContent className="p-8">
-                <MessageCircle className="h-16 w-16 mx-auto mb-4 text-gray-400" />
-                <p className="text-gray-600 mb-4">Faça login para compartilhar sua experiência</p>
-                <Button 
-                  onClick={() => handleNavigate('/auth')}
-                  className="bg-blue-600 hover:bg-blue-700"
-                >
-                  Fazer Login para Avaliar
-                </Button>
-              </CardContent>
-            </Card>
-          ) : (
-            <Card>
-              <CardContent className="p-8">
-                <Star className="h-16 w-16 mx-auto mb-4 text-yellow-500" />
-                <p className="text-gray-600 mb-4">Compartilhe sua experiência conosco</p>
-                <Button className="bg-blue-600 hover:bg-blue-700">Avaliar Atendimento</Button>
-              </CardContent>
-            </Card>
-          )}
-        </div>
-      </section>
-
-      {/* Emergency Section */}
-      <section className="py-8 px-4 bg-red-50">
-        <div className="max-w-4xl mx-auto">
-          <Card className="border-red-200 bg-red-50">
-            <CardContent className="p-8">
-              <div className="flex flex-col sm:flex-row items-center justify-between">
-                <div className="text-center sm:text-left mb-4 sm:mb-0">
-                  <h3 className="text-xl font-bold text-red-600 mb-2">Urgência Dental</h3>
-                  <p className="text-red-700">Atendimento para emergências odontológicas</p>
-                </div>
-                <Button 
-                  variant="destructive"
-                  size="lg"
-                  onClick={handleEmergencyCall}
-                  className="w-full sm:w-auto"
-                >
-                  <Phone className="h-5 w-5 mr-2" />
-                  Contatar Agora
-                </Button>
+      {/* Emergency Contact Section */}
+      <section className={`py-6 bg-red-50 border-t-4 border-red-500 ${animations.slideInUp}`}>
+        <div className="mobile-container">
+          <div className="bg-white p-6 rounded-2xl shadow-sm border border-red-200 max-w-2xl mx-auto mobile-card-spacing">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="text-center sm:text-left">
+                <h3 className="text-xl font-bold text-red-600 mb-2 mobile-text-lg flex items-center justify-center sm:justify-start gap-2">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 15.5c-.77.833.192 2.5 1.732 2.5z" />
+                  </svg>
+                  Urgência Dental
+                </h3>
+                <p className="text-red-700 mobile-text-base">Atendimento 24h para emergências</p>
               </div>
-            </CardContent>
-          </Card>
+              <button 
+                onClick={handleEmergencyCall}
+                className="w-full sm:w-auto bg-red-600 text-white py-3 px-8 rounded-xl font-semibold mobile-touch-target hover:bg-red-700 transition-colors mobile-text-base flex items-center justify-center gap-2"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                </svg>
+                Contatar Agora
+              </button>
+            </div>
+          </div>
         </div>
       </section>
     </div>
