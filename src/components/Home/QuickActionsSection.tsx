@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -99,7 +98,11 @@ export const QuickActionsSection: React.FC<QuickActionsSectionProps> = ({
                 className={`w-full mobile-touch-target text-base ${animations.buttonHover}`}
                 onClick={(e) => {
                   e.stopPropagation();
-                  isEmergency ? onEmergencyCall() : onNavigate(action.path);
+                  if (isEmergency) {
+                    onEmergencyCall();
+                  } else {
+                    onNavigate(action.path);
+                  }
                 }}
               >
                 {action.buttonText}

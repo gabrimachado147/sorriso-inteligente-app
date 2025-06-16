@@ -1,4 +1,3 @@
-
 // React hooks for Supabase operations - simplified for current schema
 import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -14,6 +13,16 @@ interface ChatMessage {
   message_type: string | null
   active: boolean | null
   nomewpp: string | null
+}
+
+// Defina o tipo para Contact
+interface Contact {
+  id?: number;
+  nome: string;
+  email: string;
+  telefone: string;
+  empresa?: string;
+  objetivo?: string;
 }
 
 // Hook for managing chat messages
@@ -86,199 +95,35 @@ export const useChatMessages = (phone?: string) => {
 
 // Hook for managing contacts
 export const useContacts = () => {
-  const queryClient = useQueryClient()
-
-<<<<<<< HEAD
+  const queryClient = useQueryClient();
   // Get all contacts
   const {
     data: contacts = [],
-=======
-  // Use getClinics hook function - takes filters as parameters
-  const useGetClinics = (filters?: {
-    specialty?: string
-    city?: string
-    emergencyOnly?: boolean
-    featured?: boolean
-    search?: string
-  }) => {
-    return useQuery({
-      queryKey: ['clinics', filters],
-      queryFn: () => ClinicService.getAll(filters),
-      staleTime: 5 * 60 * 1000 // 5 minutes
-    })
-  }
-
-  // Get featured clinics
-  const {
-    data: featuredClinics = [],
-    isLoading: isLoadingFeatured
-  } = useQuery({
-    queryKey: ['clinics', 'featured'],
-    queryFn: () => ClinicService.getFeatured(6),
-    staleTime: 10 * 60 * 1000 // 10 minutes
-  })
-
-  // Get emergency clinics
-  const {
-    data: emergencyClinics = [],
-    isLoading: isLoadingEmergency
-  } = useQuery({
-    queryKey: ['clinics', 'emergency'],
-    queryFn: () => ClinicService.getEmergencyAvailable(),
-    staleTime: 5 * 60 * 1000
-  })
-
-  // Get specialties
-  const {
-    data: specialties = [],
-    isLoading: isLoadingSpecialties
-  } = useQuery({
-    queryKey: ['specialties'],
-    queryFn: () => ClinicService.getSpecialties(),
-    staleTime: 30 * 60 * 1000 // 30 minutes
-  })
-
-  // Get cities
-  const {
-    data: cities = [],
-    isLoading: isLoadingCities
-  } = useQuery({
-    queryKey: ['cities'],
-    queryFn: () => ClinicService.getCities(),
-    staleTime: 30 * 60 * 1000
-  })
-
-  // Get clinic by ID hook function
-  const useGetClinicById = (clinicId: string) => {
-    return useQuery({
-      queryKey: ['clinic', clinicId],
-      queryFn: () => ClinicService.getById(clinicId),
-      enabled: !!clinicId,
-      staleTime: 10 * 60 * 1000
-    })
-  }
-
-  // Search clinics
-  const searchClinics = async (
-    searchTerm: string,
-    filters?: {
-      specialty?: string
-      city?: string
-      emergency?: boolean
-    }
-  ): Promise<Clinic[]> => {
-    return ClinicService.search(searchTerm, filters)
-  }
-
-  return {
-    useGetClinics,
-    featuredClinics,
-    emergencyClinics,
-    specialties,
-    cities,
-    isLoadingFeatured,
-    isLoadingEmergency,
-    isLoadingSpecialties,
-    isLoadingCities,
-    useGetClinicById,
-    searchClinics
-  }
-}
-
-// Hook for appointment statistics
-export const useAppointmentStats = (userId?: string) => {
-  const {
-    data: stats = {
-      total: 0,
-      pending: 0,
-      confirmed: 0,
-      completed: 0,
-      cancelled: 0
-    },
->>>>>>> main
     isLoading,
-    error
+    error,
+    refetch
   } = useQuery({
     queryKey: ['contacts'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('contacts')
-        .select('*')
-        .order('created_at', { ascending: false })
-
-      if (error) throw error
-      return data
+      const { data, error } = await supabase.from('contacts').select('*');
+      if (error) throw error;
+      return data;
     }
-  })
+  });
 
   // Create contact mutation
   const createContact = useMutation({
-    mutationFn: async (contact: {
-      nome: string
-      email?: string
-      telefone: string
-      empresa?: string
-      objetivo?: string
-      click_id?: string
-    }) => {
-      const { data, error } = await supabase
-        .from('contacts')
-        .insert({
-          nome: contact.nome,
-          email: contact.email,
-          telefone: contact.telefone,
-          empresa: contact.empresa,
-          objetivo: contact.objetivo,
-          click_id: contact.click_id,
-          stage: 'incomplete',
-          created_at: new Date().toISOString()
-        })
-        .select()
-        .single()
-
-      if (error) throw error
-      return data
+    mutationFn: async (contact: Contact) => {
+      const { data, error } = await supabase.from('contacts').insert(contact);
+      if (error) throw error;
+      return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['contacts'] })
+      queryClient.invalidateQueries({ queryKey: ['contacts'] });
     }
-  })
+  });
 
-  // Update contact mutation
-  const updateContact = useMutation({
-    mutationFn: async ({ id, updates }: { 
-      id: string
-      updates: Partial<{
-        nome: string
-        email: string
-        telefone: string
-        empresa: string
-        objetivo: string
-        stage: string
-      }>
-    }) => {
-      const { data, error } = await supabase
-        .from('contacts')
-        .update(updates)
-        .eq('id', id)
-        .select()
-        .single()
-
-      if (error) throw error
-      return data
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['contacts'] })
-    }
-  })
-
-  return {
-    contacts,
-    isLoading,
-    error,
-    createContact,
-    updateContact
-  }
+  return { contacts, isLoading, error, refetch, createContact };
 }
 
 // Hook for managing WhatsApp leads
@@ -396,10 +241,7 @@ export const useRealtimeChat = (phone?: string) => {
     }
   }, [phone, queryClient])
 
-<<<<<<< HEAD
   return { realtimeMessages }
-=======
-  return { realtimeAppointments }
 }
 
 // Hook for clinic working hours
@@ -529,5 +371,4 @@ export const useUserProfile = (userId?: string) => {
     updateProfile,
     trackPWAInstallation
   }
->>>>>>> main
 }

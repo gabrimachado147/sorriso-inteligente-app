@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -102,7 +101,7 @@ export const ReminderManager: React.FC = () => {
                     <Label htmlFor="type">Tipo</Label>
                     <Select
                       value={newReminder.type}
-                      onValueChange={(value: any) => setNewReminder(prev => ({ ...prev, type: value }))}
+                      onValueChange={(value: string) => setNewReminder(prev => ({ ...prev, type: value }))}
                     >
                       <SelectTrigger>
                         <SelectValue />

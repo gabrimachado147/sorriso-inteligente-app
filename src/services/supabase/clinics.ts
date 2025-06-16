@@ -1,4 +1,3 @@
-
 // Supabase service for managing clinics using existing tables
 import { supabase } from '../../integrations/supabase/client'
 import type { Tables, TablesInsert, TablesUpdate } from '../../integrations/supabase/types'
@@ -208,26 +207,24 @@ export class ClinicService {
     clinicId: string, 
     dayOfWeek: string
   ): Promise<{ open: string; close: string } | null> {
-<<<<<<< HEAD
     console.log('Mock working hours for clinic:', clinicId, 'day:', dayOfWeek)
     
-    // Return mock working hours
-    return { open: '08:00', close: '18:00' }
-=======
-    const { data, error } = await supabase
-      .from('clinics')
-      .select('opening_hours')
-      .eq('id', clinicId)
-      .single()
-
-    if (error) {
-      console.error('Error fetching clinic working hours:', error)
-      throw new Error(error.message)
+    // Retorna horário mock se não houver integração real
+    // ou busca horário real se disponível
+    // Aqui, priorizando busca real se possível
+    try {
+      const { data, error } = await supabase
+        .from('clinics')
+        .select('opening_hours')
+        .eq('id', clinicId)
+        .single();
+      if (error) throw error;
+      const workingHours = data.opening_hours as Record<string, { open: string; close: string }> | null;
+      return workingHours?.[dayOfWeek] || { open: '08:00', close: '18:00' };
+    } catch (e) {
+      // fallback mock
+      return { open: '08:00', close: '18:00' };
     }
-
-    const workingHours = data.opening_hours as Record<string, { open: string; close: string }> | null
-    return workingHours?.[dayOfWeek] || null
->>>>>>> main
   }
 
   /**
@@ -256,21 +253,6 @@ export class ClinicService {
       limit?: number
       rating?: number
     }
-<<<<<<< HEAD
-  ): Promise<any[]> {
-    console.log('Mock reviews for clinic:', clinicId, 'options:', options)
-    
-    return [
-      {
-        id: '1',
-        clinic_id: clinicId,
-        rating: 5,
-        comment: 'Excelente atendimento!',
-        created_at: new Date().toISOString(),
-        patient: { full_name: 'Maria Silva' }
-      }
-    ]
-=======
   ): Promise<Record<string, unknown>[]> {
     let query = supabase
       .from('reviews')
@@ -298,7 +280,6 @@ export class ClinicService {
     }
 
     return data || []
->>>>>>> main
   }
 
   /**

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNotifications } from '@/services/notifications';
 
@@ -40,9 +39,9 @@ export const useReminders = () => {
     // Carregar lembretes do localStorage
     const stored = localStorage.getItem('user-reminders');
     if (stored) {
-      const parsed = JSON.parse(stored).map((reminder: any) => ({
+      const parsed = JSON.parse(stored).map((reminder: Record<string, unknown>) => ({
         ...reminder,
-        scheduledFor: new Date(reminder.scheduledFor)
+        scheduledFor: new Date((reminder as { scheduledFor: string }).scheduledFor)
       }));
       setReminders(parsed);
     }

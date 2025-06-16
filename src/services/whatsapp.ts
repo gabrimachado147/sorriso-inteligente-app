@@ -167,7 +167,7 @@ export class WhatsAppService {
   /**
    * Send WhatsApp message via API
    */
-  static async sendMessage(data: { to: string; message: string }): Promise<any> {
+  static async sendMessage(data: { to: string; message: string }): Promise<{ success: boolean; response: unknown }> {
     try {
       console.log(`Sending WhatsApp message to ${data.to}: ${data.message}`)
       
@@ -180,11 +180,7 @@ export class WhatsAppService {
 
       const response = await this.sendToWebhook(webhookData)
 
-      return { 
-        success: true, 
-        messageId: `msg_${Date.now()}`,
-        output: response.output
-      }
+      return { success: true, response: webhookData }
     } catch (error) {
       console.error('Error sending WhatsApp message:', error)
       throw error

@@ -58,10 +58,10 @@ export class WebhookAppointmentParser {
         /cliente[:\s]+([^,\n]+)/i
       ],
       phone: [
-        /telefone[:\s]+([+\d\s\(\)-]+)/i,
-        /contato[:\s]+([+\d\s\(\)-]+)/i,
-        /fone[:\s]+([+\d\s\(\)-]+)/i,
-        /cliente[:\s]+([+\d\s\(\)-]+)/i
+        /telefone[:\s]+([+\d\s()-]+)/i,
+        /contato[:\s]+([+\d\s()-]+)/i,
+        /fone[:\s]+([+\d\s()-]+)/i,
+        /cliente[:\s]+([+\d\s()-]+)/i
       ],
       service: [
         /serviço[:\s]+([^,\n]+)/i,

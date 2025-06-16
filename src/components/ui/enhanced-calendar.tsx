@@ -1,4 +1,3 @@
-
 import * as React from "react";
 import { ChevronLeft, ChevronRight, Clock } from "lucide-react";
 import { DayPicker, type DayPickerSingleProps } from "react-day-picker";
@@ -25,7 +24,7 @@ function EnhancedCalendar({
   onSelect,
   ...props
 }: EnhancedCalendarProps) {
-  const handleDateSelect = React.useCallback((date: Date | undefined, selectedDay: any, activeModifiers: any, e: React.MouseEvent) => {
+  const handleDateSelect = React.useCallback((date: Date | undefined, selectedDay: Date, activeModifiers: Record<string, boolean>, e: React.MouseEvent) => {
     console.log('handleDateSelect called with:', { date, selectedDay, activeModifiers });
     
     if (onSelect) {

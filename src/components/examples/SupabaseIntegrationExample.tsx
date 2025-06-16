@@ -1,4 +1,3 @@
-
 /**
  * Supabase Integration Example Component
  * Demonstrates how to use authentication and database services
@@ -25,13 +24,9 @@ export const SupabaseIntegrationExample: React.FC = () => {
     isAuthenticated
   } = useAuth();
 
-<<<<<<< HEAD
+  // Unindo funcionalidades das duas versões
   const { contacts, createContact } = useContacts();
   const { leads, createLead } = useWhatsAppLeads();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-=======
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [clinics, setClinics] = useState<Clinic[]>([]);
   const [loading, setLoading] = useState(false);
@@ -41,17 +36,15 @@ export const SupabaseIntegrationExample: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
-
-      // Load user appointments
-      if (user?.id) {
+      // Exemplo: carregar appointments e clinics se serviços existirem
+      if (user?.id && typeof appointmentService !== 'undefined') {
         const userAppointments = await appointmentService.getUserAppointments(user.id);
         setAppointments(userAppointments);
       }
-
-      // Load available clinics
-      const availableClinics = await clinicService.getAll();
-      setClinics(availableClinics);
-
+      if (typeof clinicService !== 'undefined') {
+        const availableClinics = await clinicService.getAll();
+        setClinics(availableClinics);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load data');
     } finally {
@@ -59,14 +52,12 @@ export const SupabaseIntegrationExample: React.FC = () => {
     }
   }, [user?.id]);
 
-  // Load data when user is authenticated
   useEffect(() => {
     if (isAuthenticated && user) {
       loadUserData();
     }
   }, [isAuthenticated, user, loadUserData]);
 
->>>>>>> main
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     const formData = new FormData(e.target as HTMLFormElement);
@@ -290,19 +281,12 @@ export const SupabaseIntegrationExample: React.FC = () => {
                 <div key={contact.id} className="p-4 border rounded-lg">
                   <div className="flex justify-between items-start">
                     <div>
-<<<<<<< HEAD
                       <h3 className="font-semibold">{contact.nome}</h3>
                       <p className="text-sm text-gray-600">{contact.email}</p>
                       <p className="text-sm text-gray-600">{contact.telefone}</p>
                       {contact.empresa && (
                         <p className="text-sm text-gray-500">Company: {contact.empresa}</p>
-=======
-                      <h3 className="font-semibold">{clinic.name}</h3>
-                      <p className="text-sm text-gray-600">{clinic.address}</p>
-                      <p className="text-sm text-gray-600">{clinic.city}, {clinic.state}</p>
-                      <p className="text-sm">
-                        📍 {clinic.phone}
-                      </p>
+                      )}
                     </div>
                     <Button 
                       onClick={() => bookAppointment(clinic.id)}
@@ -344,7 +328,6 @@ export const SupabaseIntegrationExample: React.FC = () => {
                         <p className="text-sm text-gray-600">
                           Notes: {appointment.notes}
                         </p>
->>>>>>> main
                       )}
                     </div>
                     <span className={`px-2 py-1 rounded text-xs ${

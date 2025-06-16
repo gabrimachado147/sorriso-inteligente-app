@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,12 +11,12 @@ export const AccessibilityPanel: React.FC = () => {
   const { settings, updateSetting, announceToScreenReader } = useAccessibility();
 
   const handleFontSizeChange = (size: string) => {
-    updateSetting('fontSize', size as any);
+    updateSetting('fontSize', size);
     announceToScreenReader(`Tamanho da fonte alterado para ${size}`);
   };
 
   const handleColorBlindModeChange = (mode: string) => {
-    updateSetting('colorBlindMode', mode as any);
+    updateSetting('colorBlindMode', mode);
     announceToScreenReader(`Modo para daltonismo alterado para ${mode}`);
   };
 

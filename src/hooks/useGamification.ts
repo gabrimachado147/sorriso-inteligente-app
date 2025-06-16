@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useAuth } from './useAuth';
 
@@ -53,7 +52,7 @@ export const useGamification = () => {
       const parsed = JSON.parse(stored);
       setData({
         ...parsed,
-        recentAchievements: parsed.recentAchievements.map((a: any) => ({
+        recentAchievements: parsed.recentAchievements.map((a: { [key: string]: unknown; date: string }) => ({
           ...a,
           date: new Date(a.date)
         }))

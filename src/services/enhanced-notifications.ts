@@ -1,4 +1,3 @@
-
 import * as React from 'react';
 
 interface NotificationOptions {
@@ -7,7 +6,7 @@ interface NotificationOptions {
   icon?: string;
   badge?: string;
   tag?: string;
-  data?: any;
+  data?: Record<string, unknown>;
   requireInteraction?: boolean;
 }
 
