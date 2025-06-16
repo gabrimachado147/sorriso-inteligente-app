@@ -9,11 +9,6 @@
   "installCommand": "npm ci --include=optional",
   "devCommand": "npm run dev",
   "public": true,
-  "functions": {
-    "app/**": {
-      "runtime": "nodejs18.x"
-    }
-  },
   "build": {
     "env": {
       "NODE_VERSION": "18",
