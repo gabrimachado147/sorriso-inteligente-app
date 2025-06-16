@@ -50,13 +50,7 @@ export const usePushNotifications = () => {
         icon: '/icons/icon-192x192.png',
         badge: '/icons/icon-72x72.png',
         tag: 'new-appointment',
-        requireInteraction: true,
-        actions: [
-          {
-            action: 'view',
-            title: 'Ver Agendamento'
-          }
-        ]
+        requireInteraction: true
       });
 
       notification.onclick = () => {
