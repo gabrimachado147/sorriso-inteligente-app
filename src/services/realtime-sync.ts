@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { useOfflineManager } from './offline-manager';
 import { toastSuccess, toastError } from '@/components/ui/custom-toast';
@@ -11,7 +10,7 @@ export interface RealtimeSyncConfig {
 
 class RealtimeSyncService {
   private static instance: RealtimeSyncService;
-  private channels: Map<string, any> = new Map();
+  private channels: Map<string, unknown> = new Map();
   private offlineManager = useOfflineManager;
 
   static getInstance(): RealtimeSyncService {
@@ -97,8 +96,9 @@ class RealtimeSyncService {
     this.channels.set('notifications', notificationsChannel);
   }
 
-  private handleAppointmentChange(payload: any) {
-    switch (payload.eventType) {
+  private handleAppointmentChange(payload: unknown) {
+    const eventPayload = payload as { eventType: string };
+    switch (eventPayload.eventType) {
       case 'INSERT':
         toastSuccess('Novo Agendamento', 'Um novo agendamento foi criado');
         break;
@@ -116,7 +116,7 @@ class RealtimeSyncService {
     }));
   }
 
-  private handleProfileChange(payload: any) {
+  private handleProfileChange(payload: unknown) {
     console.log('[Realtime] Profile updated:', payload);
     
     // Trigger UI updates
@@ -125,8 +125,9 @@ class RealtimeSyncService {
     }));
   }
 
-  private handleNotificationChange(payload: any) {
-    const notification = payload.new;
+  private handleNotificationChange(payload: unknown) {
+    const notificationPayload = payload as { new: unknown };
+    const notification = notificationPayload.new;
     
     // Show browser notification if permission granted
     if (Notification.permission === 'granted') {

@@ -1,6 +1,8 @@
 interface AnalyticsEvent {
   event: string;
-  properties?: Record<string, any>;
+  event_type?: string;
+  user_id?: string;
+  properties?: Record<string, unknown>;
   userId?: string;
   timestamp?: number;
 }
@@ -135,7 +137,7 @@ class AnalyticsService {
     });
   }
 
-  track(event: string, properties?: Record<string, any>) {
+  track(event: string, properties?: Record<string, unknown>) {
     const eventData: AnalyticsEvent = {
       event,
       properties: {
@@ -181,7 +183,7 @@ class AnalyticsService {
   }
 
   // Track specific app events
-  trackAppointmentCreated(appointmentData: any) {
+  trackAppointmentCreated(appointmentData: { clinic: string; service: string; source?: string }) {
     this.track('appointment_created', {
       clinic: appointmentData.clinic,
       service: appointmentData.service,
@@ -209,7 +211,7 @@ class AnalyticsService {
     });
   }
 
-  trackFeatureUsed(feature: string, details?: Record<string, any>) {
+  trackFeatureUsed(feature: string, details?: Record<string, unknown>) {
     this.track('feature_used', {
       feature,
       ...details
@@ -317,7 +319,7 @@ class AnalyticsService {
     }
   }
 
-  private processAnalyticsData(events: any[]) {
+  private processAnalyticsData(events: AnalyticsEvent[]) {
     const pageViews = events.filter(e => e.event_type === 'page_view').length;
     const appointments = events.filter(e => e.event_type === 'appointment_created').length;
     const uniqueUsers = new Set(events.map(e => e.user_id).filter(Boolean)).size;

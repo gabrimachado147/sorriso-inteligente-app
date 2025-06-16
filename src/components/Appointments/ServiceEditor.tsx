@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -73,7 +72,9 @@ export const ServiceEditor: React.FC<ServiceEditorProps> = ({
   // Service tab state
   const [selectedService, setSelectedService] = useState(appointment.service);
   const [priceValue, setPriceValue] = useState<string>(
-    (appointment as any).price ? (appointment as any).price.toString() : ''
+    typeof (appointment as AppointmentRecord & { price?: number }).price === 'number'
+      ? ((appointment as AppointmentRecord & { price?: number }).price as number).toString()
+      : ''
   );
   
   // Patient tab state
@@ -154,7 +155,11 @@ export const ServiceEditor: React.FC<ServiceEditorProps> = ({
   const handleCancel = () => {
     // Reset all states
     setSelectedService(appointment.service);
-    setPriceValue((appointment as any).price ? (appointment as any).price.toString() : '');
+    setPriceValue(
+      typeof (appointment as AppointmentRecord & { price?: number }).price === 'number'
+        ? ((appointment as AppointmentRecord & { price?: number }).price as number).toString()
+        : ''
+    );
     setPatientName(appointment.name);
     setPatientPhone(appointment.phone);
     setPatientEmail(appointment.email || '');

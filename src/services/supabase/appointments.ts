@@ -211,7 +211,7 @@ export class AppointmentService {
     price?: number
   ): Promise<AppointmentRecord> {
     try {
-      const updateData: any = { service };
+      const updateData: { service: string; price?: number } = { service };
       if (price !== undefined) {
         updateData.price = price;
       }

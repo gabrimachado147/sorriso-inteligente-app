@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -158,10 +157,10 @@ export const AppointmentsTable: React.FC<AppointmentsTableProps> = ({
                     <div className="flex items-center gap-2">
                       <div className="flex-1">
                         <p className="text-sm font-medium">{appointment.service}</p>
-                        {(appointment as any).price && (
+                        {typeof (appointment as AppointmentRecord & { price?: number }).price === 'number' && (
                           <div className="flex items-center gap-1 text-xs text-green-600 mt-1">
                             <DollarSign className="h-3 w-3" />
-                            R$ {(appointment as any).price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                            R$ {((appointment as AppointmentRecord & { price?: number }).price as number).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                           </div>
                         )}
                       </div>

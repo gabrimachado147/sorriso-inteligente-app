@@ -149,7 +149,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ appointments, st
     
     // Receita real baseada nos valores inseridos pelos funcionários
     const totalRevenue = filteredAppointments.reduce((total, apt) => {
-      const price = (apt as any).price;
+      const price = (apt as AppointmentRecord & { price?: number }).price;
       return total + (price || 0);
     }, 0);
 
@@ -180,7 +180,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ appointments, st
         apt.status === 'confirmed' || apt.status === 'completed'
       );
       const monthRevenue = monthAppointments.reduce((total, apt) => {
-        const price = (apt as any).price;
+        const price = (apt as AppointmentRecord & { price?: number }).price;
         return total + (price || 0);
       }, 0);
 
@@ -220,7 +220,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ appointments, st
       if (apt.status === 'confirmed' || apt.status === 'completed') {
         acc[apt.clinic].confirmed++;
       }
-      const price = (apt as any).price;
+      const price = (apt as AppointmentRecord & { price?: number }).price;
       if (price) {
         acc[apt.clinic].revenue += price;
       }

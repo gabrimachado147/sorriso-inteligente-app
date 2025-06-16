@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 
 export interface UserProfile {
@@ -96,7 +95,7 @@ export class UserProfileService {
         return { success: false, error: 'User not authenticated' };
       }
 
-      const updateData: Record<string, any> = {};
+      const updateData: Partial<UserProfile> = {};
       if (updates.full_name !== undefined) updateData.full_name = updates.full_name;
       if (updates.phone !== undefined) updateData.phone = updates.phone;
       if (updates.date_of_birth !== undefined) updateData.date_of_birth = updates.date_of_birth;
