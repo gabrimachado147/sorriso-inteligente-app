@@ -19,6 +19,8 @@ import RemindersPage from "./pages/RemindersPage";
 import AccessibilityPage from "./pages/AccessibilityPage";
 import { PWASettingsPage } from "./pages/PWASettingsPage";
 import AppointmentsPageReal from "./pages/AppointmentsPageReal";
+import StaffLoginPage from "./pages/StaffLoginPage";
+import AdminDashboardPage from "./pages/AdminDashboardPage";
 import NotFound from "./pages/NotFound";
 import { useAnalytics } from "./hooks/useAnalytics";
 import { useRealtimeSync } from "./hooks/useRealtimeSync";
@@ -86,6 +88,10 @@ function App() {
                 <Route path="404" element={<NotFound />} />
                 <Route path="*" element={<Navigate to="/404" replace />} />
               </Route>
+              
+              {/* Rotas sem layout principal para staff */}
+              <Route path="/staff-login" element={<StaffLoginPage />} />
+              <Route path="/admin-dashboard" element={<AdminDashboardPage />} />
             </Routes>
           </div>
         </BrowserRouter>

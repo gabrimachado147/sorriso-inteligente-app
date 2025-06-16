@@ -1,47 +1,34 @@
 
 import React from 'react';
+import { HomePage } from '@/components/Dashboard/HomePage';
+import { Button } from '@/components/ui/button';
+import { Shield } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { HeroSection } from '@/components/Home/HeroSection';
-import { QuickActionsSection } from '@/components/Home/QuickActionsSection';
-import { ServicesOverviewSection } from '@/components/Home/ServicesOverviewSection';
-import { CTASection } from '@/components/Home/CTASection';
 
 const Index = () => {
   const navigate = useNavigate();
 
-  const handleWhatsAppContact = () => {
-    const message = encodeURIComponent("Olá! Gostaria de agendar uma consulta no Senhor Sorriso.");
-    window.open(`https://wa.me/5535999999999?text=${message}`, '_blank');
-  };
-
-  const handleEmergencyCall = () => {
-    window.open('tel:+5535999999999', '_self');
+  const handleStaffAccess = () => {
+    navigate('/staff-login');
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-secondary/20">
-      <div className="w-full mobile-scroll">
-        <div className="space-y-8 py-4">
-          {/* Hero Section */}
-          <section className="mobile-fade-in">
-            <HeroSection />
-          </section>
-
-          {/* Quick Actions */}
-          <section className="mobile-slide-up" style={{ animationDelay: '200ms' }}>
-            <QuickActionsSection onNavigate={navigate} onEmergencyCall={handleEmergencyCall} />
-          </section>
-
-          {/* Services Overview */}
-          <section className="mobile-slide-up" style={{ animationDelay: '400ms' }}>
-            <ServicesOverviewSection onNavigate={navigate} />
-          </section>
-
-          {/* Call to Action */}
-          <section className="mobile-scale-in" style={{ animationDelay: '600ms' }}>
-            <CTASection onNavigate={navigate} onWhatsAppContact={handleWhatsAppContact} />
-          </section>
-        </div>
+    <div className="min-h-screen bg-background w-full">
+      {/* Botão de acesso para funcionários */}
+      <div className="fixed top-4 right-4 z-50">
+        <Button 
+          variant="outline" 
+          size="sm"
+          onClick={handleStaffAccess}
+          className="bg-white/90 backdrop-blur-sm border-primary/20 hover:bg-primary/10"
+        >
+          <Shield className="h-4 w-4 mr-2" />
+          Acesso Funcionários
+        </Button>
+      </div>
+      
+      <div className="w-full">
+        <HomePage />
       </div>
     </div>
   );
