@@ -27,6 +27,7 @@ interface AppointmentsTableProps {
   appointments: AppointmentRecord[];
   onStatusChange: (appointmentId: string, newStatus: 'confirmed' | 'cancelled' | 'completed' | 'no_show') => void;
   onServiceUpdate: (appointmentId: string, service: string, price?: number) => void;
+  onAppointmentUpdate?: (appointmentId: string, updates: { name?: string; phone?: string; email?: string; date?: string; time?: string; clinic?: string; notes?: string }) => void;
   isUpdating: boolean;
 }
 
@@ -69,6 +70,7 @@ export const AppointmentsTable: React.FC<AppointmentsTableProps> = ({
   appointments,
   onStatusChange,
   onServiceUpdate,
+  onAppointmentUpdate,
   isUpdating
 }) => {
   if (appointments.length === 0) {
@@ -166,6 +168,8 @@ export const AppointmentsTable: React.FC<AppointmentsTableProps> = ({
                       <ServiceEditor
                         appointment={appointment}
                         onUpdate={onServiceUpdate}
+                        onStatusChange={onStatusChange}
+                        onPatientUpdate={onAppointmentUpdate}
                         isUpdating={isUpdating}
                       />
                     </div>

@@ -32,6 +32,19 @@ export interface CreateAppointmentData {
   webhook_session_id?: string;
 }
 
+export interface UpdateAppointmentData {
+  name?: string;
+  phone?: string;
+  email?: string;
+  date?: string;
+  time?: string;
+  clinic?: string;
+  service?: string;
+  status?: string;
+  notes?: string;
+  price?: number;
+}
+
 type AppointmentRow = Tables<'appointments'>;
 
 const normalizeAppointment = (data: AppointmentRow): AppointmentRecord => ({
@@ -214,6 +227,36 @@ export class AppointmentService {
       return normalizeAppointment(data);
     } catch (error) {
       console.error('Error updating appointment service:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Update appointment data (comprehensive update)
+   */
+  static async updateAppointment(
+    appointmentId: string,
+    updates: UpdateAppointmentData
+  ): Promise<AppointmentRecord> {
+    try {
+      console.log('Updating appointment:', appointmentId, updates);
+      
+      const { data, error } = await supabase
+        .from('appointments')
+        .update(updates)
+        .eq('id', appointmentId)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
+      
+      console.log('Updated appointment data:', data);
+      return normalizeAppointment(data);
+    } catch (error) {
+      console.error('Error updating appointment:', error);
       throw error;
     }
   }
