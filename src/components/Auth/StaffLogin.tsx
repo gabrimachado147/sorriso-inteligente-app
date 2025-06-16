@@ -17,7 +17,8 @@ const STAFF_CREDENTIALS = {
   'campo-belo': 'sscampobelo',
   'itapeva': 'ssitapeva',
   'itarare': 'ssitarare',
-  'formiga': 'ssformiga'
+  'formiga': 'ssformiga',
+  'gerencia-ss': 'ssgerencia' // Login master
 };
 
 const CLINIC_OPTIONS = [
@@ -25,7 +26,8 @@ const CLINIC_OPTIONS = [
   { value: 'campo-belo', label: 'Senhor Sorriso Campo Belo' },
   { value: 'itapeva', label: 'Senhor Sorriso Itapeva' },
   { value: 'itarare', label: 'Senhor Sorriso Itararé' },
-  { value: 'formiga', label: 'Senhor Sorriso Formiga' }
+  { value: 'formiga', label: 'Senhor Sorriso Formiga' },
+  { value: 'gerencia-ss', label: 'Gerência SS - Acesso Total' }
 ];
 
 export const StaffLogin: React.FC<StaffLoginProps> = ({ onLogin }) => {
@@ -41,7 +43,7 @@ export const StaffLogin: React.FC<StaffLoginProps> = ({ onLogin }) => {
 
     try {
       if (!selectedClinic) {
-        setError('Por favor, selecione uma clínica');
+        setError('Por favor, selecione uma opção de acesso');
         setIsLoading(false);
         return;
       }
@@ -49,9 +51,10 @@ export const StaffLogin: React.FC<StaffLoginProps> = ({ onLogin }) => {
       const credentials = STAFF_CREDENTIALS as Record<string, string>;
       
       if (credentials[selectedClinic] === password) {
+        console.log('[StaffLogin] Login successful for:', selectedClinic);
         onLogin(selectedClinic);
       } else {
-        setError('Senha incorreta para a clínica selecionada');
+        setError('Senha incorreta para a opção selecionada');
       }
     } catch (err) {
       setError('Erro ao fazer login');
@@ -69,20 +72,20 @@ export const StaffLogin: React.FC<StaffLoginProps> = ({ onLogin }) => {
               <Lock className="h-6 w-6 text-white" />
             </div>
           </div>
-          <CardTitle className="text-2xl text-center">Acesso Funcionários</CardTitle>
+          <CardTitle className="text-2xl text-center">Acesso Administrativo</CardTitle>
           <p className="text-sm text-gray-600 text-center">
-            Selecione sua clínica e digite a senha para acessar os agendamentos
+            Selecione sua unidade ou área de acesso
           </p>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="clinic">Clínica</Label>
+              <Label htmlFor="clinic">Unidade / Área</Label>
               <div className="relative">
                 <Building2 className="absolute left-3 top-3 h-4 w-4 text-gray-400 z-10" />
                 <Select value={selectedClinic} onValueChange={setSelectedClinic}>
                   <SelectTrigger className="pl-10">
-                    <SelectValue placeholder="Selecione sua clínica" />
+                    <SelectValue placeholder="Selecione sua unidade ou área" />
                   </SelectTrigger>
                   <SelectContent>
                     {CLINIC_OPTIONS.map((clinic) => (
@@ -102,7 +105,7 @@ export const StaffLogin: React.FC<StaffLoginProps> = ({ onLogin }) => {
                 <Input
                   id="password"
                   type="password"
-                  placeholder="Digite a senha da clínica"
+                  placeholder="Digite a senha"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="pl-10"

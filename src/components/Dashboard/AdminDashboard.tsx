@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AppointmentsSection } from './AppointmentsSection';
@@ -7,9 +8,18 @@ import { AnalyticsTab } from './AnalyticsTab';
 import { DashboardHeader } from './DashboardHeader';
 import { useAppointments } from '@/hooks/useAppointments';
 import { useRealtimeAppointments } from '@/hooks/useRealtimeAppointments';
+import { useAppointmentsFilters } from '@/hooks/useAppointmentsFilters';
 
 export const AdminDashboard = () => {
   const [selectedClinic, setSelectedClinic] = useState<string>('all');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState('all');
+  const [selectedDate, setSelectedDate] = useState('');
+
+  // Obter informações do usuário logado
+  const loggedInUser = sessionStorage.getItem('staffClinic');
+  const isMasterUser = loggedInUser === 'gerencia-ss';
+
   const { 
     appointments, 
     isLoading, 
@@ -18,34 +28,42 @@ export const AdminDashboard = () => {
     refetch 
   } = useAppointments();
   
-  // Only use one realtime hook to prevent conflicts
+  // Usar apenas um hook realtime para prevenir conflitos
   const { realtimeConnected } = useRealtimeAppointments();
 
-  // Filter appointments by selected clinic
-  const filteredAppointments = selectedClinic === 'all' 
-    ? appointments 
-    : appointments.filter(apt => 
-        apt.clinic_filter === selectedClinic || apt.clinic.includes(selectedClinic)
-      );
-
-  const availableClinics = [
-    'all',
-    'Senhor Sorriso Capão Bonito',
-    'Senhor Sorriso Campo Belo', 
-    'Senhor Sorriso Itapeva',
-    'Senhor Sorriso Itararé',
-    'Senhor Sorriso Formiga'
-  ];
+  // Usar o hook de filtros com as informações do usuário
+  const {
+    filteredAppointments,
+    availableClinics,
+    userClinicName
+  } = useAppointmentsFilters({
+    appointments,
+    loggedInUser,
+    searchTerm,
+    selectedClinic,
+    selectedStatus,
+    selectedDate
+  });
 
   const handleManualRefresh = () => {
     console.log('[Admin Dashboard] Manual refresh triggered');
     refetch();
   };
 
-  // Log realtime status changes
+  // Log status da conexão realtime
   useEffect(() => {
     console.log('[Admin Dashboard] Realtime connection status:', realtimeConnected);
   }, [realtimeConnected]);
+
+  // Log informações do usuário
+  useEffect(() => {
+    console.log('[Admin Dashboard] User access level:', {
+      loggedInUser,
+      isMasterUser,
+      userClinicName,
+      availableClinicsCount: availableClinics.length
+    });
+  }, [loggedInUser, isMasterUser, userClinicName, availableClinics]);
 
   return (
     <div className="space-y-6">
@@ -53,6 +71,10 @@ export const AdminDashboard = () => {
         realtimeConnected={realtimeConnected}
         isLoading={isLoading}
         onManualRefresh={handleManualRefresh}
+        userInfo={{
+          isMasterUser,
+          clinicName: userClinicName
+        }}
       />
 
       <StatsCards
@@ -61,15 +83,20 @@ export const AdminDashboard = () => {
         filteredAppointmentsCount={filteredAppointments.length}
       />
 
-      <ClinicFilter
-        selectedClinic={selectedClinic}
-        onClinicChange={setSelectedClinic}
-        availableClinics={availableClinics}
-      />
+      {/* Mostrar filtro de clínica apenas se houver múltiplas clínicas disponíveis */}
+      {availableClinics.length > 1 && (
+        <ClinicFilter
+          selectedClinic={selectedClinic}
+          onClinicChange={setSelectedClinic}
+          availableClinics={['all', ...availableClinics]}
+        />
+      )}
 
       <Tabs defaultValue="appointments" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="appointments">Agendamentos</TabsTrigger>
+          <TabsTrigger value="appointments">
+            Agendamentos {isMasterUser ? '(Todas as Unidades)' : `(${userClinicName || 'Sua Unidade'})`}
+          </TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
         </TabsList>
 

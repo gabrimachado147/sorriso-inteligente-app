@@ -28,27 +28,49 @@ export const useAppointmentsFilters = ({
     }, {} as Record<string, string>);
   }, []);
 
-  const userClinicName = loggedInUser ? CLINIC_NAMES[loggedInUser as keyof typeof CLINIC_NAMES] : '';
+  // Verificar se é o login master (gerência)
+  const isMasterUser = loggedInUser === 'gerencia-ss';
+  const userClinicName = loggedInUser && !isMasterUser ? CLINIC_NAMES[loggedInUser as keyof typeof CLINIC_NAMES] : '';
+
+  console.log('[useAppointmentsFilters] User info:', { 
+    loggedInUser, 
+    isMasterUser, 
+    userClinicName 
+  });
 
   const filteredAppointments = useMemo(() => {
     let filtered = appointments;
 
-    // Filter by user's clinic first (only show appointments for their clinic)
-    if (loggedInUser && userClinicName) {
+    // Aplicar filtro de clínica baseado no nível de acesso
+    if (!isMasterUser && loggedInUser && userClinicName) {
+      // Usuário de unidade específica - mostrar apenas agendamentos da sua clínica
+      console.log('[useAppointmentsFilters] Filtering for clinic user:', userClinicName);
       filtered = filtered.filter(apt => {
-        // Check if appointment clinic matches the user's clinic
         const appointmentClinic = apt.clinic.toLowerCase();
         const userClinicKey = loggedInUser.toLowerCase();
         const userClinicFullName = userClinicName.toLowerCase();
         
-        // Match by clinic key (e.g., "campobelo") or full clinic name
-        return appointmentClinic.includes(userClinicKey) || 
-               appointmentClinic.includes(userClinicFullName) ||
-               apt.clinic === userClinicName;
+        // Match por chave da clínica (ex: "campobelo") ou nome completo da clínica
+        const matches = appointmentClinic.includes(userClinicKey) || 
+                       appointmentClinic.includes(userClinicFullName) ||
+                       apt.clinic === userClinicName;
+        
+        console.log('[useAppointmentsFilters] Appointment clinic check:', {
+          appointmentClinic,
+          userClinicKey,
+          userClinicFullName,
+          matches
+        });
+        
+        return matches;
       });
+    } else if (isMasterUser) {
+      // Usuário master (gerência) - ver todos os agendamentos
+      console.log('[useAppointmentsFilters] Master user - showing all appointments');
+      // Não aplicar filtro de clínica, mostrar todos
     }
 
-    // Apply additional filters
+    // Aplicar outros filtros
     if (searchTerm) {
       const search = searchTerm.toLowerCase();
       filtered = filtered.filter(apt => 
@@ -71,13 +93,18 @@ export const useAppointmentsFilters = ({
       filtered = filtered.filter(apt => apt.date === selectedDate);
     }
 
+    console.log('[useAppointmentsFilters] Final filtered count:', filtered.length);
     return filtered;
-  }, [appointments, loggedInUser, userClinicName, searchTerm, selectedClinic, selectedStatus, selectedDate]);
+  }, [appointments, loggedInUser, isMasterUser, userClinicName, searchTerm, selectedClinic, selectedStatus, selectedDate]);
 
-  // Get unique clinics from filtered appointments for filter (only show user's clinic)
+  // Obter clínicas disponíveis baseado no nível de acesso
   const availableClinics = useMemo(() => {
-    if (loggedInUser && userClinicName) {
-      // Only show the user's clinic in the filter
+    if (isMasterUser) {
+      // Usuário master - mostrar todas as clínicas disponíveis
+      const clinics = new Set(appointments.map(apt => apt.clinic));
+      return Array.from(clinics).sort();
+    } else if (loggedInUser && userClinicName) {
+      // Usuário de unidade específica - mostrar apenas sua clínica
       const userAppointments = appointments.filter(apt => {
         const appointmentClinic = apt.clinic.toLowerCase();
         const userClinicKey = loggedInUser.toLowerCase();
@@ -92,13 +119,15 @@ export const useAppointmentsFilters = ({
       return Array.from(clinics).sort();
     }
     
+    // Fallback
     const clinics = new Set(appointments.map(apt => apt.clinic));
     return Array.from(clinics).sort();
-  }, [appointments, loggedInUser, userClinicName]);
+  }, [appointments, loggedInUser, isMasterUser, userClinicName]);
 
   return {
     filteredAppointments,
     availableClinics,
-    userClinicName
+    userClinicName,
+    isMasterUser
   };
 };

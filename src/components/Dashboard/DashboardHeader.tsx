@@ -1,47 +1,66 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { RefreshCw } from 'lucide-react';
-import { RealtimeIndicator } from './RealtimeIndicator';
-import { NotificationStatus } from './NotificationStatus';
+import { Badge } from '@/components/ui/badge';
+import { RefreshCw, Activity, Shield, Building2 } from 'lucide-react';
 import { animations } from '@/lib/animations';
 
 interface DashboardHeaderProps {
   realtimeConnected: boolean;
   isLoading: boolean;
   onManualRefresh: () => void;
+  userInfo?: {
+    isMasterUser: boolean;
+    clinicName?: string;
+  };
 }
 
 export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   realtimeConnected,
   isLoading,
-  onManualRefresh
+  onManualRefresh,
+  userInfo
 }) => {
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <h2 className="text-2xl font-bold">Dashboard</h2>
-          <RealtimeIndicator connected={realtimeConnected} />
-        </div>
-        
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={onManualRefresh}
-            disabled={isLoading}
-            className={animations.buttonHover}
+    <div className={`flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 ${animations.fadeIn}`}>
+      <div className="space-y-2">
+        <h1 className="text-2xl font-bold text-gray-900">Dashboard Administrativo</h1>
+        <div className="flex items-center gap-2 flex-wrap">
+          {/* Badge de nível de acesso */}
+          {userInfo?.isMasterUser ? (
+            <Badge variant="default" className="bg-purple-100 text-purple-800 border-purple-200">
+              <Shield className="h-3 w-3 mr-1" />
+              Gerência - Acesso Total
+            </Badge>
+          ) : (
+            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+              <Building2 className="h-3 w-3 mr-1" />
+              {userInfo?.clinicName || 'Unidade Específica'}
+            </Badge>
+          )}
+          
+          {/* Badge de conexão realtime */}
+          <Badge 
+            variant={realtimeConnected ? "default" : "secondary"}
+            className={realtimeConnected ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-600"}
           >
-            <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
-            Atualizar
-          </Button>
+            <Activity className="h-3 w-3 mr-1" />
+            {realtimeConnected ? 'Tempo Real Ativo' : 'Tempo Real Inativo'}
+          </Badge>
         </div>
       </div>
-      
-      {/* Status de notificações */}
-      <div className="max-w-md">
-        <NotificationStatus />
+
+      <div className="flex items-center gap-3">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={onManualRefresh}
+          disabled={isLoading}
+          className="flex items-center gap-2"
+        >
+          <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+          {isLoading ? 'Atualizando...' : 'Atualizar'}
+        </Button>
       </div>
     </div>
   );
