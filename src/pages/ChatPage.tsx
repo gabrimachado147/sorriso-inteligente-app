@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ChatBot } from '@/components/Chat/ChatBot';
+import ChatBot from '@/components/Chat/ChatBot';
 
 const ChatPage = () => {
   return (

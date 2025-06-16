@@ -11,10 +11,23 @@ import { NotificationsTab } from '@/components/Profile/NotificationsTab';
 import { SecurityTab } from '@/components/Profile/SecurityTab';
 import { AccessibilityTab } from '@/components/Profile/AccessibilityTab';
 import { AuthForm } from '@/components/Auth/AuthForm';
+import { useAuthPage } from '@/hooks/useAuthPage';
 
 const ProfilePage = () => {
-  const { user, isAuthenticated, signOut } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
   const [activeTab, setActiveTab] = useState('profile');
+  
+  const {
+    isLogin,
+    loading,
+    formData,
+    handleInputChange,
+    handlePhoneChange,
+    handleSubmit,
+    handlePasswordReset,
+    handleToggleMode,
+    handleEnterWithoutAccount
+  } = useAuthPage();
 
   if (!isAuthenticated) {
     return (
@@ -28,7 +41,17 @@ const ProfilePage = () => {
               </p>
             </CardHeader>
             <CardContent>
-              <AuthForm />
+              <AuthForm 
+                isLogin={isLogin}
+                formData={formData}
+                loading={loading}
+                onInputChange={handleInputChange}
+                onPhoneChange={handlePhoneChange}
+                onSubmit={handleSubmit}
+                onToggleMode={handleToggleMode}
+                onPasswordReset={handlePasswordReset}
+                onEnterWithoutAccount={handleEnterWithoutAccount}
+              />
             </CardContent>
           </Card>
         </div>
@@ -38,7 +61,7 @@ const ProfilePage = () => {
 
   const handleSignOut = async () => {
     try {
-      await signOut();
+      await logout();
     } catch (error) {
       console.error('Erro ao fazer logout:', error);
     }
@@ -86,7 +109,7 @@ const ProfilePage = () => {
           </TabsList>
 
           <TabsContent value="profile">
-            <ProfileTabReal />
+            <ProfileTabReal onTabChange={setActiveTab} />
           </TabsContent>
 
           <TabsContent value="history">

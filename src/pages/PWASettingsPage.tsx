@@ -25,10 +25,26 @@ export const PWASettingsPage: React.FC<PWASettingsPageProps> = ({ onNavigate }) 
     isInstallable, 
     isInstalled, 
     isOnline, 
-    installApp,
-    notificationPermission,
-    requestNotificationPermission 
+    installApp
   } = usePWA();
+
+  const handleNotificationRequest = () => {
+    if ('Notification' in window) {
+      Notification.requestPermission();
+    }
+  };
+
+  const getNotificationStatus = () => {
+    if (!('Notification' in window)) return 'Não suportado';
+    return Notification.permission === 'granted' ? 'Ativado' : 
+           Notification.permission === 'denied' ? 'Negado' : 'Pendente';
+  };
+
+  const getNotificationVariant = () => {
+    if (!('Notification' in window)) return 'secondary';
+    return Notification.permission === 'granted' ? 'default' :
+           Notification.permission === 'denied' ? 'destructive' : 'secondary';
+  };
 
   return (
     <div className="min-h-screen bg-background w-full">
@@ -96,18 +112,14 @@ export const PWASettingsPage: React.FC<PWASettingsPageProps> = ({ onNavigate }) 
                   Receba lembretes de consultas
                 </p>
               </div>
-              <Badge variant={
-                notificationPermission === 'granted' ? 'default' :
-                notificationPermission === 'denied' ? 'destructive' : 'secondary'
-              }>
-                {notificationPermission === 'granted' ? 'Ativado' :
-                 notificationPermission === 'denied' ? 'Negado' : 'Pendente'}
+              <Badge variant={getNotificationVariant()}>
+                {getNotificationStatus()}
               </Badge>
             </div>
 
-            {notificationPermission !== 'granted' && (
+            {Notification.permission !== 'granted' && 'Notification' in window && (
               <Button
-                onClick={requestNotificationPermission}
+                onClick={handleNotificationRequest}
                 variant="outline"
                 className="w-full mobile-button"
               >

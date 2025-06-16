@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { LocationsPage } from '@/components/Locations/LocationsPage';
+import LocationsPage from '@/components/Locations/LocationsPage';
 
 const ClinicsPage = () => {
   return (

@@ -2,8 +2,21 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AuthForm } from '@/components/Auth/AuthForm';
+import { useAuthPage } from '@/hooks/useAuthPage';
 
 const AuthPage = () => {
+  const {
+    isLogin,
+    loading,
+    formData,
+    handleInputChange,
+    handlePhoneChange,
+    handleSubmit,
+    handlePasswordReset,
+    handleToggleMode,
+    handleEnterWithoutAccount
+  } = useAuthPage();
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 to-background flex items-center justify-center w-full">
       <div className="w-full px-4 py-6">
@@ -22,7 +35,17 @@ const AuthPage = () => {
             </p>
           </CardHeader>
           <CardContent>
-            <AuthForm />
+            <AuthForm 
+              isLogin={isLogin}
+              formData={formData}
+              loading={loading}
+              onInputChange={handleInputChange}
+              onPhoneChange={handlePhoneChange}
+              onSubmit={handleSubmit}
+              onToggleMode={handleToggleMode}
+              onPasswordReset={handlePasswordReset}
+              onEnterWithoutAccount={handleEnterWithoutAccount}
+            />
           </CardContent>
         </Card>
       </div>
