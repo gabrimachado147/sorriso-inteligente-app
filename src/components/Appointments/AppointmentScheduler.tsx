@@ -106,7 +106,6 @@ const AppointmentScheduler = () => {
       <ServiceSelector
         selectedService={selectedService}
         onServiceSelect={setSelectedService}
-        filteredServices={availableServices}
       />
 
       <AppointmentSummary
