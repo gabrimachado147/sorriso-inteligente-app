@@ -20,7 +20,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-secondary/20">
-      <div className="container mx-auto px-4 py-8 space-y-16">
+      <div className="container mx-auto px-4 py-6 space-y-12">
         {/* Hero Section */}
         <HeroSection />
 
