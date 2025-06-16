@@ -29,7 +29,7 @@ export const availableServices = [
     name: 'Limpeza',
     description: 'Profilaxia e remoção de tártaro',
     duration: 45,
-    price: 'A partir de R$ 80',
+    price: '',
     category: 'preventivo',
     icon: <Sparkles className="h-6 w-6" />
   },
@@ -38,7 +38,7 @@ export const availableServices = [
     name: 'Restauração',
     description: 'Tratamento de cáries e restaurações',
     duration: 60,
-    price: 'A partir de R$ 120',
+    price: '',
     category: 'restaurativo',
     icon: <Wrench className="h-6 w-6" />
   },
@@ -47,7 +47,7 @@ export const availableServices = [
     name: 'Ortodontia',
     description: 'Avaliação para aparelho ortodôntico',
     duration: 45,
-    price: 'A partir de R$ 100',
+    price: '',
     category: 'ortodontia',
     icon: <Smile className="h-6 w-6" />
   },
@@ -56,7 +56,7 @@ export const availableServices = [
     name: 'Implantodontia',
     description: 'Avaliação para implantes dentários',
     duration: 60,
-    price: 'A partir de R$ 150',
+    price: '',
     category: 'implantodontia',
     icon: <Settings className="h-6 w-6" />
   },
@@ -65,7 +65,7 @@ export const availableServices = [
     name: 'Estética Dental',
     description: 'Clareamento e procedimentos estéticos',
     duration: 90,
-    price: 'A partir de R$ 300',
+    price: '',
     category: 'estético',
     icon: <Sparkles className="h-6 w-6" />
   },
@@ -74,7 +74,7 @@ export const availableServices = [
     name: 'Próteses Fixas',
     description: 'Coroas, pontes e próteses fixas',
     duration: 90,
-    price: 'A partir de R$ 400',
+    price: '',
     category: 'restaurativo',
     icon: <Crown className="h-6 w-6" />
   },
@@ -83,7 +83,7 @@ export const availableServices = [
     name: 'Endodontia',
     description: 'Tratamento de canal',
     duration: 90,
-    price: 'A partir de R$ 200',
+    price: '',
     category: 'restaurativo',
     icon: <Stethoscope className="h-6 w-6" />
   },
@@ -92,7 +92,7 @@ export const availableServices = [
     name: 'Odontopediatria',
     description: 'Atendimento especializado para crianças',
     duration: 45,
-    price: 'A partir de R$ 90',
+    price: '',
     category: 'preventivo',
     icon: <Baby className="h-6 w-6" />
   },
@@ -101,7 +101,7 @@ export const availableServices = [
     name: 'Periodontia',
     description: 'Tratamento de gengivas e periodonto',
     duration: 60,
-    price: 'A partir de R$ 150',
+    price: '',
     category: 'preventivo',
     icon: <Shield className="h-6 w-6" />
   },
@@ -110,7 +110,7 @@ export const availableServices = [
     name: 'Atendimento de Urgência',
     description: 'Para casos de dor e emergências',
     duration: 30,
-    price: 'A partir de R$ 100',
+    price: '',
     category: 'urgencia',
     icon: <AlertTriangle className="h-6 w-6" />
   }

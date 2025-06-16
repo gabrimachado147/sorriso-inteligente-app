@@ -44,7 +44,9 @@ export const ServiceSelector: React.FC<ServiceSelectorProps> = ({
                   </div>
                   <div>
                     <p className="font-medium mobile-text-sm leading-tight">{service.name}</p>
-                    <p className="text-xs text-muted-foreground mt-1">{service.price}</p>
+                    {service.price === 'Gratuito' && (
+                      <p className="text-xs text-muted-foreground mt-1">Gratuito</p>
+                    )}
                   </div>
                 </div>
               </Button>
