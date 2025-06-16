@@ -13,19 +13,19 @@ interface StaffLoginProps {
 }
 
 const STAFF_CREDENTIALS = {
-  'capao-bonito-capao': 'sscapaocapao',
-  'capao-bonito-centro': 'sscapaocentro',
-  'campobelo': 'sscampobelo',
+  'capao-bonito': 'sscapaobonito',
+  'campo-belo': 'sscampobelo',
   'itapeva': 'ssitapeva',
-  'taquarivai': 'sstaquarivai'
+  'itarare': 'ssitarare',
+  'formiga': 'ssformiga'
 };
 
 const CLINIC_OPTIONS = [
-  { value: 'capao-bonito-capao', label: 'Senhor Sorriso Capão Bonito - Capão' },
-  { value: 'capao-bonito-centro', label: 'Senhor Sorriso Capão Bonito - Centro' },
-  { value: 'campobelo', label: 'Senhor Sorriso Campobelo' },
+  { value: 'capao-bonito', label: 'Senhor Sorriso Capão Bonito' },
+  { value: 'campo-belo', label: 'Senhor Sorriso Campo Belo' },
   { value: 'itapeva', label: 'Senhor Sorriso Itapeva' },
-  { value: 'taquarivai', label: 'Senhor Sorriso Taquarivaí' }
+  { value: 'itarare', label: 'Senhor Sorriso Itararé' },
+  { value: 'formiga', label: 'Senhor Sorriso Formiga' }
 ];
 
 export const StaffLogin: React.FC<StaffLoginProps> = ({ onLogin }) => {

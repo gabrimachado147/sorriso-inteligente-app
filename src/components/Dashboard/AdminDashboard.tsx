@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AppointmentsSection } from './AppointmentsSection';
@@ -31,11 +30,11 @@ export const AdminDashboard = () => {
 
   const availableClinics = [
     'all',
-    'Senhor Sorriso Capão Bonito - Capão',
-    'Senhor Sorriso Capão Bonito - Centro', 
-    'Senhor Sorriso Campobelo',
+    'Senhor Sorriso Capão Bonito',
+    'Senhor Sorriso Campo Belo', 
     'Senhor Sorriso Itapeva',
-    'Senhor Sorriso Taquarivaí'
+    'Senhor Sorriso Itararé',
+    'Senhor Sorriso Formiga'
   ];
 
   const handleManualRefresh = () => {
