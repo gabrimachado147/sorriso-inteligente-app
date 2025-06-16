@@ -1,7 +1,8 @@
+
 {
-  "name": "Sorriso Inteligente",
-  "short_name": "Sorriso",
-  "description": "Aplicativo inteligente para agendamento de consultas odontológicas nas clínicas Senhor Sorriso",
+  "name": "Senhor Sorriso - App Oficial",
+  "short_name": "Senhor Sorriso",
+  "description": "Aplicativo oficial da rede Senhor Sorriso - Agendamento online, chat IA e avaliação gratuita",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
