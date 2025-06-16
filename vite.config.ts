@@ -50,9 +50,9 @@ export default defineConfig(({ mode }) => {
         },
         includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
         manifest: {
-          name: 'Sorriso Inteligente',
-          short_name: 'Sorriso',
-          description: 'Aplicativo inteligente para agendamento de consultas odontológicas',
+          name: 'Senhor Sorriso - App Oficial',
+          short_name: 'Senhor Sorriso',
+          description: 'Aplicativo oficial da rede Senhor Sorriso - Agendamento online, chat IA e avaliação gratuita',
           theme_color: '#0ea5e9',
           background_color: '#ffffff',
           display: 'standalone',
@@ -61,12 +61,12 @@ export default defineConfig(({ mode }) => {
           start_url: '/',
           icons: [
             {
-              src: 'icons/icon-192x192.png',
+              src: '/lovable-uploads/a077d15e-e6ba-4de3-833a-6913d8203ffd.png',
               sizes: '192x192',
               type: 'image/png'
             },
             {
-              src: 'icons/icon-512x512.png',
+              src: '/lovable-uploads/a077d15e-e6ba-4de3-833a-6913d8203ffd.png',
               sizes: '512x512',
               type: 'image/png'
             }
