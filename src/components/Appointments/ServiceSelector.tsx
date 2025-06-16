@@ -36,66 +36,66 @@ const defaultServices: Service[] = [
   { 
     id: 'avaliacao-gratuita', 
     name: 'Avaliação Gratuita', 
-    icon: <Search className="h-6 w-6" />, 
+    icon: <Search className="h-5 w-5" />, 
     popular: true 
   },
   { 
     id: 'limpeza', 
     name: 'Limpeza Dental', 
-    icon: <Sparkles className="h-6 w-6" />, 
+    icon: <Sparkles className="h-5 w-5" />, 
     popular: true 
   },
   { 
     id: 'restauracao', 
     name: 'Restauração', 
-    icon: <Wrench className="h-6 w-6" /> 
+    icon: <Wrench className="h-5 w-5" /> 
   },
   { 
     id: 'ortodontia', 
     name: 'Ortodontia', 
-    icon: <Smile className="h-6 w-6" />, 
+    icon: <Smile className="h-5 w-5" />, 
     popular: true 
   },
   { 
     id: 'implantodontia', 
     name: 'Implantodontia', 
-    icon: <Settings className="h-6 w-6" /> 
+    icon: <Settings className="h-5 w-5" /> 
   },
   { 
     id: 'estetica-dental', 
     name: 'Estética Dental', 
-    icon: <Sparkles className="h-6 w-6" />, 
+    icon: <Sparkles className="h-5 w-5" />, 
     popular: true 
   },
   { 
     id: 'proteses-fixas', 
     name: 'Próteses Fixas', 
-    icon: <Shield className="h-6 w-6" /> 
+    icon: <Shield className="h-5 w-5" /> 
   },
   { 
     id: 'endodontia', 
     name: 'Endodontia', 
-    icon: <Stethoscope className="h-6 w-6" /> 
+    icon: <Stethoscope className="h-5 w-5" /> 
   },
   { 
     id: 'odontopediatria', 
     name: 'Odontopediatria', 
-    icon: <Baby className="h-6 w-6" /> 
+    icon: <Baby className="h-5 w-5" /> 
   },
   { 
     id: 'periodontia', 
     name: 'Periodontia', 
-    icon: <Heart className="h-6 w-6" /> 
+    icon: <Heart className="h-5 w-5" /> 
   },
   { 
     id: 'clareamento-dental', 
     name: 'Clareamento Dental', 
-    icon: <Sparkles className="h-6 w-6" /> 
+    icon: <Sparkles className="h-5 w-5" /> 
   },
   { 
     id: 'urgencia', 
     name: 'Atendimento de Urgência', 
-    icon: <AlertTriangle className="h-6 w-6" />, 
+    icon: <AlertTriangle className="h-5 w-5" />, 
     emergency: true,
     popular: true 
   }
@@ -109,20 +109,20 @@ export const ServiceSelector: React.FC<ServiceSelectorProps> = ({
   const services = filteredServices || defaultServices;
 
   return (
-    <Card className={`${animations.fadeIn} ${animations.cardHover}`}>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+    <Card className={`${animations.fadeIn} ${animations.cardHover} w-full`}>
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center gap-2 mobile-text-lg">
           <Stethoscope className="h-5 w-5" />
           Serviços Disponíveis
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {services.map((service) => (
             <div key={service.id} className="relative">
               <Button
                 variant={selectedService === service.id ? "default" : "outline"}
-                className={`h-auto p-4 w-full ${animations.buttonHover} ${
+                className={`h-auto p-4 w-full mobile-touch-target ${animations.buttonHover} ${
                   selectedService === service.id ? animations.scaleIn : ''
                 } ${service.emergency ? 'border-red-200 hover:border-red-300' : ''}`}
                 onClick={() => onServiceSelect(service.id)}
@@ -134,7 +134,7 @@ export const ServiceSelector: React.FC<ServiceSelectorProps> = ({
                   }`}>
                     {service.icon}
                   </div>
-                  <p className="font-medium text-sm leading-tight">{service.name}</p>
+                  <p className="font-medium mobile-text-sm leading-tight">{service.name}</p>
                 </div>
               </Button>
               

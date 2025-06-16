@@ -47,30 +47,30 @@ export const TimeSelector: React.FC<TimeSelectorProps> = ({
   const timeSlots = getAvailableTimeSlots(selectedDate);
 
   return (
-    <Card className={`${animations.slideInRight} ${animations.cardHover}`}>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+    <Card className={`${animations.slideInRight} ${animations.cardHover} w-full`}>
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center gap-2 mobile-text-lg">
           <Clock className="h-5 w-5" />
           Horários Disponíveis
           {selectedDate && selectedDate.getDay() === 6 && (
-            <Badge variant="secondary" className="ml-2">Sábado - Até 13:00</Badge>
+            <Badge variant="secondary" className="ml-2 text-xs">Sábado - Até 13:00</Badge>
           )}
         </CardTitle>
       </CardHeader>
       <CardContent>
         {timeSlots.length === 0 ? (
-          <p className="text-center text-gray-500 py-8">
+          <p className="text-center text-gray-500 py-8 mobile-text-base">
             {selectedDate?.getDay() === 0 ? 'Não funcionamos aos domingos' : 'Selecione uma data para ver os horários'}
           </p>
         ) : (
-          <div className="grid grid-cols-4 gap-2">
+          <div className="grid grid-cols-3 md:grid-cols-4 gap-3">
             {timeSlots.map((time) => (
               <Button
                 key={time}
                 variant={selectedTime === time ? "default" : "outline"}
                 className={`${animations.buttonHover} ${
                   selectedTime === time ? animations.scaleIn : ''
-                } text-sm h-10 px-3`}
+                } mobile-text-sm mobile-touch-target py-3 px-2 text-center`}
                 onClick={() => onTimeSelect(time)}
               >
                 {time}

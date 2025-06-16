@@ -1,121 +1,64 @@
 
-import React, { useState } from 'react';
-import { useRealAppointments } from '@/hooks/useRealAppointments';
-import { useAppointmentsFilters } from '@/hooks/useAppointmentsFilters';
-import { EnhancedSkeleton } from '@/components/ui/enhanced-skeleton';
-import { animations } from '@/lib/animations';
-import { StaffLogin } from '@/components/Auth/StaffLogin';
-import { AppointmentsTable } from '@/components/Appointments/AppointmentsTable';
-import { AppointmentsFilters } from '@/components/Appointments/AppointmentsFilters';
-import { AppointmentsStats } from '@/components/Appointments/AppointmentsStats';
-import { AppointmentsHeader } from '@/components/Appointments/AppointmentsHeader';
-import { AdminDashboard } from '@/components/Dashboard/AdminDashboard';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import React from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Calendar, Plus, History } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { HistoryTabReal } from '@/components/Profile/HistoryTabReal';
 
 const AppointmentsPageReal = () => {
-  const [loggedInUser, setLoggedInUser] = useState<string | null>(
-    localStorage.getItem('staff_logged_in')
-  );
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedClinic, setSelectedClinic] = useState('all');
-  const [selectedStatus, setSelectedStatus] = useState('all');
-  const [selectedDate, setSelectedDate] = useState('');
+  const navigate = useNavigate();
 
-  // Usar dados reais do Supabase
-  const { appointments, isLoading, stats, statsLoading, updateAppointmentStatus } = useRealAppointments();
-
-  const { filteredAppointments, availableClinics, userClinicName } = useAppointmentsFilters({
-    appointments,
-    loggedInUser,
-    searchTerm,
-    selectedClinic,
-    selectedStatus,
-    selectedDate
-  });
-
-  const handleLogin = (username: string) => {
-    setLoggedInUser(username);
-    localStorage.setItem('staff_logged_in', username);
+  const handleNewAppointment = () => {
+    navigate('/schedule');
   };
-
-  const handleLogout = () => {
-    setLoggedInUser(null);
-    localStorage.removeItem('staff_logged_in');
-  };
-
-  const handleStatusChange = (appointmentId: string, newStatus: 'confirmed' | 'cancelled' | 'completed' | 'no_show') => {
-    updateAppointmentStatus.mutate({ appointmentId, status: newStatus });
-  };
-
-  if (!loggedInUser) {
-    return <StaffLogin onLogin={handleLogin} />;
-  }
-
-  if (isLoading) {
-    return (
-      <div className="p-6 space-y-6">
-        <EnhancedSkeleton variant="card" count={3} />
-      </div>
-    );
-  }
-
-  // Convert complex stats to simple Record<string, number> for AdminDashboard
-  const simplifiedStats: Record<string, number> = stats ? {
-    total: stats.total,
-    today: stats.today,
-    thisMonth: stats.thisMonth,
-    confirmed: stats.confirmed,
-    completed: stats.completed,
-    cancelled: stats.cancelled
-  } : {};
 
   return (
-    <div className={`p-6 space-y-6 ${animations.pageEnter}`}>
-      <AppointmentsHeader
-        userClinicName={userClinicName}
-        loggedInUser={loggedInUser}
-        onLogout={handleLogout}
-      />
+    <div className="min-h-screen bg-background w-full">
+      <div className="w-full px-4 py-6 space-y-6">
+        {/* Header */}
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mobile-text-xl flex items-center justify-center gap-2">
+            <Calendar className="h-6 w-6 text-primary" />
+            Minhas Consultas
+          </h1>
+          <p className="text-muted-foreground mobile-text-base mt-2">
+            Gerencie seus agendamentos e histórico
+          </p>
+        </div>
 
-      <Tabs defaultValue="dashboard" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
-          <TabsTrigger value="appointments">Gerenciar Agendamentos</TabsTrigger>
-        </TabsList>
+        {/* Quick Actions */}
+        <Card className="mobile-card-spacing">
+          <CardHeader>
+            <CardTitle className="mobile-text-lg">Ações Rápidas</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <Button
+                onClick={handleNewAppointment}
+                className="w-full mobile-button"
+                size="lg"
+              >
+                <Plus className="h-5 w-5 mr-2" />
+                Agendar Nova Consulta
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
 
-        <TabsContent value="dashboard">
-          <AdminDashboard appointments={appointments} stats={simplifiedStats} />
-        </TabsContent>
-
-        <TabsContent value="appointments" className="space-y-6">
-          {!statsLoading && stats && (
-            <AppointmentsStats
-              appointments={filteredAppointments}
-              isLoading={statsLoading}
-            />
-          )}
-
-          <AppointmentsFilters
-            searchTerm={searchTerm}
-            onSearchChange={setSearchTerm}
-            selectedClinic={selectedClinic}
-            onClinicChange={setSelectedClinic}
-            selectedStatus={selectedStatus}
-            onStatusChange={setSelectedStatus}
-            selectedDate={selectedDate}
-            onDateChange={setSelectedDate}
-            clinics={availableClinics}
-            totalCount={appointments.length}
-            filteredCount={filteredAppointments.length}
-          />
-
-          <AppointmentsTable
-            appointments={filteredAppointments}
-            onStatusChange={handleStatusChange}
-            isUpdating={updateAppointmentStatus.isPending}
-          />
-        </TabsContent>
-      </Tabs>
+        {/* Histórico de Consultas */}
+        <Card className="mobile-card-spacing">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 mobile-text-lg">
+              <History className="h-5 w-5" />
+              Histórico de Consultas
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <HistoryTabReal />
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };

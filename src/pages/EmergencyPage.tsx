@@ -2,159 +2,138 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Phone, MessageCircle, MapPin } from 'lucide-react';
-import { toastCall } from '@/components/ui/custom-toast';
-import { useChatHandler } from '@/hooks/useChatHandler';
-import { animations } from '@/lib/animations';
+import { AlertTriangle, Phone, MessageCircle, MapPin, Clock } from 'lucide-react';
 
 const EmergencyPage = () => {
-  const { sendWhatsAppMessage, loading } = useChatHandler();
-
-  const handleEmergencyCall = async () => {
-    try {
-      const emergencyNumber = import.meta.env.VITE_WA_BUSINESS_JID || '553171147487@s.whatsapp.net';
-      await sendWhatsAppMessage(
-        emergencyNumber, 
-        'URGÊNCIA DENTAL: Preciso de atendimento de emergência imediato!'
-      );
-      toastCall("Emergência", "Conectando com atendimento de urgência...");
-    } catch (error) {
-      // Fallback para chamada telefônica
-      window.open('tel:+5535998695479', '_self');
-      toastCall("Emergência", "Discando para emergência...");
-    }
+  const handleEmergencyCall = () => {
+    window.open('tel:+5535999999999', '_self');
   };
 
-  const handleWhatsAppContact = async () => {
-    try {
-      const emergencyNumber = import.meta.env.VITE_WA_BUSINESS_JID || '553171147487@s.whatsapp.net';
-      await sendWhatsAppMessage(
-        emergencyNumber, 
-        'Preciso de orientações para uma situação de urgência dental.'
-      );
-      toastCall("WhatsApp", "Conectando via WhatsApp...");
-    } catch (error) {
-      toastCall("Erro", "Não foi possível conectar via WhatsApp");
-    }
+  const handleWhatsAppEmergency = () => {
+    const message = encodeURIComponent("🚨 EMERGÊNCIA ODONTOLÓGICA - Preciso de atendimento urgente!");
+    window.open(`https://wa.me/5535999999999?text=${message}`, '_blank');
   };
 
   return (
-    <div className={`p-6 space-y-6 ${animations.pageEnter}`}>
-      <div className={`${animations.fadeIn}`}>
-        <h1 className="text-3xl font-bold text-red-600 mb-2">🚨 Atendimento de Emergência</h1>
-        <p className="text-gray-600">Estamos aqui para ajudar em situações urgentes</p>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-red-50 to-background w-full">
+      <div className="w-full px-4 py-6 space-y-6">
+        {/* Header de Emergência */}
+        <div className="text-center space-y-4">
+          <div className="flex justify-center">
+            <div className="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center animate-pulse">
+              <AlertTriangle className="h-8 w-8 text-white" />
+            </div>
+          </div>
+          <h1 className="text-2xl font-bold text-red-600 mobile-text-xl">
+            Emergência Odontológica
+          </h1>
+          <p className="text-gray-600 mobile-text-base">
+            Estamos aqui para ajudar em situações de urgência
+          </p>
+        </div>
 
-      {/* Contatos de Emergência */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className={`border-red-200 bg-red-50 ${animations.slideInLeft}`}>
+        {/* Botões de Contato de Emergência */}
+        <div className="space-y-4">
+          <Card className="border-red-200 bg-red-50/50">
+            <CardContent className="p-6">
+              <div className="space-y-4">
+                <Button
+                  onClick={handleEmergencyCall}
+                  className="w-full bg-red-600 hover:bg-red-700 text-white mobile-button"
+                  size="lg"
+                >
+                  <Phone className="h-5 w-5 mr-2" />
+                  Ligar Agora - Emergência
+                </Button>
+                
+                <Button
+                  onClick={handleWhatsAppEmergency}
+                  variant="outline"
+                  className="w-full border-red-300 text-red-600 hover:bg-red-50 mobile-button"
+                  size="lg"
+                >
+                  <MessageCircle className="h-5 w-5 mr-2" />
+                  WhatsApp Emergência
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Informações sobre Emergências */}
+        <Card className="mobile-card-spacing">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-red-800">
-              <Phone className="h-6 w-6" />
-              Ligação Direta
+            <CardTitle className="flex items-center gap-2 text-red-600 mobile-text-lg">
+              <AlertTriangle className="h-5 w-5" />
+              Quando é Emergência?
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-red-700 mb-4">
-              Para emergências imediatas, ligue diretamente para nossa central
-            </p>
-            <Button 
-              className={`w-full bg-red-600 hover:bg-red-700 ${animations.buttonHover}`}
-              onClick={handleEmergencyCall}
-              disabled={loading}
-            >
-              <Phone className="h-4 w-4 mr-2" />
-              {loading ? 'Conectando...' : 'Ligar para Emergência'}
-            </Button>
-            <p className="text-sm text-red-600 mt-2 text-center">
-              (35) 99869-5479
-            </p>
+          <CardContent className="space-y-4">
+            <div className="space-y-3">
+              <div className="flex items-start gap-3">
+                <div className="w-2 h-2 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
+                <p className="text-sm mobile-text-sm">Dor de dente intensa e contínua</p>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="w-2 h-2 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
+                <p className="text-sm mobile-text-sm">Inchaço facial ou gengival</p>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="w-2 h-2 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
+                <p className="text-sm mobile-text-sm">Trauma dental ou facial</p>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="w-2 h-2 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
+                <p className="text-sm mobile-text-sm">Sangramento que não para</p>
+              </div>
+            </div>
           </CardContent>
         </Card>
 
-        <Card className={`border-green-200 bg-green-50 ${animations.slideInRight}`}>
+        {/* Horários de Atendimento */}
+        <Card className="mobile-card-spacing">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-green-800">
-              <MessageCircle className="h-6 w-6" />
-              WhatsApp
+            <CardTitle className="flex items-center gap-2 mobile-text-lg">
+              <Clock className="h-5 w-5 text-primary" />
+              Atendimento de Emergência
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-green-700 mb-4">
-              Envie uma mensagem via WhatsApp para orientação rápida
-            </p>
-            <Button 
-              className={`w-full bg-green-600 hover:bg-green-700 ${animations.buttonHover}`}
-              onClick={handleWhatsAppContact}
-              disabled={loading}
-            >
-              <MessageCircle className="h-4 w-4 mr-2" />
-              {loading ? 'Conectando...' : 'Contatar via WhatsApp'}
-            </Button>
-            <p className="text-sm text-green-600 mt-2 text-center">
-              Resposta rápida
-            </p>
+            <div className="space-y-2">
+              <p className="text-sm mobile-text-sm"><strong>24 horas:</strong> Plantão de emergência</p>
+              <p className="text-sm mobile-text-sm"><strong>Seg-Sex:</strong> 8h às 18h (atendimento regular)</p>
+              <p className="text-sm mobile-text-sm"><strong>Sábado:</strong> 8h às 13h</p>
+              <p className="text-sm mobile-text-sm text-red-600"><strong>Domingo:</strong> Apenas emergências</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Localização */}
+        <Card className="mobile-card-spacing">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 mobile-text-lg">
+              <MapPin className="h-5 w-5 text-primary" />
+              Nossas Clínicas
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3 text-sm mobile-text-sm">
+              <div>
+                <p className="font-medium">Campo Belo - MG</p>
+                <p className="text-gray-600">Rua Principal, 123 - Centro</p>
+              </div>
+              <div>
+                <p className="font-medium">Formiga - MG</p>
+                <p className="text-gray-600">Av. Central, 456 - Centro</p>
+              </div>
+              <div>
+                <p className="font-medium">Itararé - SP</p>
+                <p className="text-gray-600">Rua da Saúde, 789 - Centro</p>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
-
-      {/* Unidades Disponíveis */}
-      <Card className={animations.fadeIn}>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <MapPin className="h-5 w-5" />
-            Nossas Unidades
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="p-4 border rounded-lg">
-              <h3 className="font-semibold">Campo Belo - MG</h3>
-              <p className="text-sm text-gray-600">Av. Afonso Pena, 151, Centro - Campo Belo/MG</p>
-              <p className="text-sm text-gray-600">CEP: 37270-000 | Tel: (35) 99869-5479</p>
-            </div>
-
-            <div className="p-4 border rounded-lg">
-              <h3 className="font-semibold">Formiga - MG</h3>
-              <p className="text-sm text-gray-600">R. Barão de Piumhy, 198, Centro - Formiga/MG</p>
-              <p className="text-sm text-gray-600">CEP: 35570-128 | Tel: (35) 9969-5479</p>
-            </div>
-
-            <div className="p-4 border rounded-lg">
-              <h3 className="font-semibold">Itararé - SP</h3>
-              <p className="text-sm text-gray-600">R. São Pedro, 1348 (Loja), Centro - Itararé/SP</p>
-              <p className="text-sm text-gray-600">CEP: 18460-009 | Tel: (35) 99969-5479</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Orientações */}
-      <Card className={`border-yellow-200 bg-yellow-50 ${animations.fadeIn}`}>
-        <CardHeader>
-          <CardTitle className="text-yellow-800">Orientações para Emergências</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3 text-yellow-700">
-            <div>
-              <h4 className="font-medium">🦷 Dor de dente intensa</h4>
-              <p className="text-sm">Enxágue com água morna e aplique compressa fria do lado externo</p>
-            </div>
-            <div>
-              <h4 className="font-medium">🩸 Sangramento</h4>
-              <p className="text-sm">Aplique pressão com gaze limpa e procure atendimento imediato</p>
-            </div>
-            <div>
-              <h4 className="font-medium">🦷 Dente quebrado/perdido</h4>
-              <p className="text-sm">Guarde o fragmento em leite e procure atendimento em até 1 hora</p>
-            </div>
-            <div>
-              <h4 className="font-medium">😷 Inchaço facial</h4>
-              <p className="text-sm">Aplique gelo e procure atendimento urgente - pode ser infecção</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 };
