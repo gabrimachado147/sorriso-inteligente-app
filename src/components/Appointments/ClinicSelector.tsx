@@ -55,7 +55,7 @@ export const ClinicSelector: React.FC<ClinicSelectorProps> = ({
                 </p>
                 <div className="flex items-center gap-1 mobile-text-xs text-gray-500">
                   <Clock className="h-3 w-3 flex-shrink-0" />
-                  <span>Seg-Sex: 8h-18h</span>
+                  <span>Seg-Sex: 8h-19h</span>
                 </div>
               </div>
             </div>
