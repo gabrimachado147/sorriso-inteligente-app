@@ -21,7 +21,7 @@ const AppointmentsPage = () => {
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [selectedDate, setSelectedDate] = useState('');
 
-  const { appointments, isLoading, stats, statsLoading, updateAppointmentStatus } = useAppointments();
+  const { appointments, isLoading, stats, statsLoading, updateAppointmentStatus, updateAppointmentService } = useAppointments();
 
   const { filteredAppointments, availableClinics, userClinicName } = useAppointmentsFilters({
     appointments,
@@ -44,6 +44,10 @@ const AppointmentsPage = () => {
 
   const handleStatusChange = (appointmentId: string, newStatus: 'confirmed' | 'cancelled' | 'completed' | 'no_show') => {
     updateAppointmentStatus.mutate({ appointmentId, status: newStatus });
+  };
+
+  const handleServiceUpdate = (appointmentId: string, service: string, price?: number) => {
+    updateAppointmentService.mutate({ appointmentId, service, price });
   };
 
   if (!loggedInUser) {
@@ -111,7 +115,8 @@ const AppointmentsPage = () => {
           <AppointmentsTable
             appointments={filteredAppointments}
             onStatusChange={handleStatusChange}
-            isUpdating={updateAppointmentStatus.isPending}
+            onServiceUpdate={handleServiceUpdate}
+            isUpdating={updateAppointmentStatus.isPending || updateAppointmentService.isPending}
           />
         </TabsContent>
       </Tabs>

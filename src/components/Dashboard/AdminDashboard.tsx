@@ -32,6 +32,7 @@ import { animations } from '@/lib/animations';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell, AreaChart, Area } from 'recharts';
 import { AppointmentRecord } from '@/services/supabase/appointments';
 import { useAppointments } from '@/hooks/useAppointments';
+import { AppointmentsTable } from '@/components/Appointments/AppointmentsTable';
 
 interface AdminDashboardProps {
   appointments: AppointmentRecord[];
