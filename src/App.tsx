@@ -33,7 +33,7 @@ const queryClient = new QueryClient({
 
 const MainLayout = () => {
   return (
-    <div className="min-h-screen bg-background flex flex-col w-full overflow-x-hidden">
+    <div className="min-h-screen bg-background flex flex-col w-full">
       <Header />
       <main className="flex-1 pb-32 md:pb-8 w-full">
         <Outlet />
@@ -50,7 +50,7 @@ function App() {
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <div className="w-full overflow-x-hidden">
+          <div className="w-full min-h-screen">
             <Routes>
               <Route path="/" element={<MainLayout />}>
                 <Route index element={<Index />} />

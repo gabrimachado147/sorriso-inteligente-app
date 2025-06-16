@@ -26,15 +26,15 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 to-background w-full">
-      <div className="w-full px-0 py-8 space-y-12">
+    <div className="w-full bg-gradient-to-br from-primary/5 to-background">
+      <div className="w-full space-y-12 py-8">
         {/* Hero Section */}
-        <div className="px-4">
+        <div className="px-4 sm:px-6">
           <HeroSection />
         </div>
 
         {/* Quick Actions */}
-        <div className="px-4">
+        <div className="px-4 sm:px-6">
           <QuickActionsSection 
             onNavigate={handleNavigation}
             onEmergencyCall={handleEmergencyCall}
@@ -42,12 +42,12 @@ const Index = () => {
         </div>
 
         {/* Services Overview */}
-        <div className="px-4">
+        <div className="px-4 sm:px-6">
           <ServicesOverviewSection onNavigate={handleNavigation} />
         </div>
 
         {/* CTA Section */}
-        <div className="px-4">
+        <div className="px-4 sm:px-6">
           <CTASection 
             onNavigate={handleNavigation}
             onWhatsAppContact={handleWhatsAppContact}
