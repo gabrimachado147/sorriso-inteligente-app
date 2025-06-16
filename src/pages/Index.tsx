@@ -164,25 +164,27 @@ const Index = () => {
         </section>
 
         {/* Clinics Section */}
-        <section className="py-8 px-6 bg-white">
+        <section className="py-16 px-6 bg-white">
           <div className="max-w-6xl mx-auto">
-            <h2 className="text-3xl font-bold text-center mb-8 flex items-center justify-center">
-              <MapPin className="h-8 w-8 mr-3" />
-              Nossas Unidades
-            </h2>
+            <div className="text-center mb-12">
+              <div className="flex items-center justify-center mb-4">
+                <MapPin className="h-8 w-8 mr-3" />
+              </div>
+              <h2 className="text-4xl font-bold text-gray-900 mb-4">
+                Nossas Unidades
+              </h2>
+            </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-8">
               {featuredClinics.map((clinic) => (
-                <Card key={clinic.name} className="hover:shadow-md transition-shadow">
-                  <CardHeader>
-                    <CardTitle className="text-lg">{clinic.name}</CardTitle>
-                    <p className="text-gray-600">{clinic.address}</p>
-                  </CardHeader>
-                  <CardContent>
+                <Card key={clinic.name} className="hover:shadow-lg transition-shadow border-gray-200 rounded-2xl overflow-hidden">
+                  <CardContent className="p-8 text-center">
+                    <h3 className="text-2xl font-bold text-gray-900 mb-4">{clinic.name}</h3>
+                    <p className="text-gray-600 mb-6 text-lg">{clinic.address}</p>
                     <Button 
-                      size="sm" 
+                      size="lg" 
                       onClick={() => handleNavigate('/schedule')}
-                      className="w-full"
+                      className="w-full rounded-2xl text-lg py-4 px-8"
                     >
                       Agendar
                     </Button>
@@ -195,7 +197,7 @@ const Index = () => {
               <Button 
                 variant="outline" 
                 onClick={() => handleNavigate('/clinics')}
-                className="px-8"
+                className="px-8 py-3 text-lg rounded-xl"
               >
                 Ver todas as unidades
               </Button>
