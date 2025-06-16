@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { HomePage } from '@/components/Dashboard/HomePage';
+import HomePage from '@/components/Dashboard/HomePage';
 import { Button } from '@/components/ui/button';
 import { Shield } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
