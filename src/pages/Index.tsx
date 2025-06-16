@@ -18,6 +18,10 @@ const Index = () => {
     window.open(`https://wa.me/5535999999999?text=${message}`, '_blank');
   };
 
+  const handleEmergencyCall = () => {
+    window.open('tel:+5535999999999', '_self');
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-secondary/20">
       <div className="container mx-auto px-4 py-8 space-y-16">
@@ -25,7 +29,7 @@ const Index = () => {
         <HeroSection />
 
         {/* Staff Access Card - Positioned higher up */}
-        <div className={`flex justify-center ${animations.slideInUp}`}>
+        <div className={`flex justify-center ${animations.slideInTop}`}>
           <Card className="w-full max-w-md bg-white/90 backdrop-blur-sm border-primary/20 shadow-lg mobile-card-spacing">
             <CardHeader className="text-center pb-4">
               <div className="flex justify-center mb-4">
@@ -51,7 +55,7 @@ const Index = () => {
         </div>
 
         {/* Quick Actions */}
-        <QuickActionsSection onNavigate={navigate} />
+        <QuickActionsSection onNavigate={navigate} onEmergencyCall={handleEmergencyCall} />
 
         {/* Services Overview */}
         <ServicesOverviewSection onNavigate={navigate} />
