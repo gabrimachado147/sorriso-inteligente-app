@@ -44,8 +44,8 @@
     --dental-gray: 210 20% 90%;
     --urgent-red: 0 84.2% 60.2%;
 
-    /* Variável para tamanho de fonte base */
-    --base-font-size: 16px;
+    /* Variável para tamanho de fonte base otimizada para mobile */
+    --base-font-size: 18px;
   }
 
   .dark {
@@ -133,6 +133,7 @@
     @apply bg-background text-foreground font-sans;
     transition: background-color 0.3s ease, color 0.3s ease;
     font-size: var(--base-font-size);
+    line-height: 1.6;
   }
 
   /* Classe para anúncios de leitor de tela */
@@ -188,6 +189,41 @@
     50% {
       box-shadow: 0 0 0 8px hsl(var(--primary) / 0.5);
     }
+  }
+
+  /* Otimizações para mobile */
+  .mobile-touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .mobile-text-sm {
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  .mobile-text-base {
+    font-size: 18px;
+    line-height: 1.6;
+  }
+
+  .mobile-text-lg {
+    font-size: 20px;
+    line-height: 1.7;
+  }
+
+  .mobile-text-xl {
+    font-size: 24px;
+    line-height: 1.8;
+  }
+
+  .mobile-spacing {
+    padding: 16px;
+  }
+
+  .mobile-card-spacing {
+    padding: 20px;
+    margin-bottom: 16px;
   }
 }
 
