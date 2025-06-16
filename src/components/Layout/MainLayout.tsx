@@ -2,7 +2,6 @@
 import React from 'react';
 import { Header } from './Header';
 import BottomNavigation from './BottomNavigation';
-import { FloatingChatBubble } from '../Chat/FloatingChatBubble';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -18,7 +17,6 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children, currentPage, o
         {children}
       </main>
       <BottomNavigation />
-      <FloatingChatBubble />
     </div>
   );
 };

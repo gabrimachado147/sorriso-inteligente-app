@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -6,7 +5,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom";
 import { Header } from "@/components/Layout/Header";
 import BottomNavigation from "@/components/Layout/BottomNavigation";
-import { FloatingChatBubble } from "@/components/Chat/FloatingChatBubble";
 import Index from "./pages/Index";
 import ChatPage from "./pages/ChatPage";
 import SchedulePage from "./pages/SchedulePage";
@@ -40,7 +38,6 @@ const MainLayout = () => {
         <Outlet />
       </main>
       <BottomNavigation />
-      <FloatingChatBubble />
     </div>
   );
 };
@@ -67,11 +64,10 @@ function App() {
                 <Route path="reminders" element={<RemindersPage />} />
                 <Route path="accessibility" element={<AccessibilityPage />} />
                 <Route path="pwa-settings" element={<PWASettingsPage onNavigate={() => {}} />} />
+                <Route path="appointments" element={<AppointmentsPage />} />
                 <Route path="404" element={<NotFound />} />
                 <Route path="*" element={<Navigate to="/404" replace />} />
               </Route>
-              {/* Dashboard admin sem o balão de chat */}
-              <Route path="/appointments" element={<AppointmentsPage />} />
             </Routes>
           </div>
         </BrowserRouter>
