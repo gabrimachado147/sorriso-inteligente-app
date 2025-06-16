@@ -13,7 +13,6 @@ interface StaffLoginProps {
 }
 
 const STAFF_CREDENTIALS = {
-  'gerencia-ss': 'ssgerencia', // Conta master
   'capao-bonito': 'sscapaobonito',
   'campo-belo': 'sscampobelo',
   'itapeva': 'ssitapeva',
@@ -22,7 +21,6 @@ const STAFF_CREDENTIALS = {
 };
 
 const CLINIC_OPTIONS = [
-  { value: 'gerencia-ss', label: 'Gerencia SS (Master)' },
   { value: 'capao-bonito', label: 'Senhor Sorriso Capão Bonito' },
   { value: 'campo-belo', label: 'Senhor Sorriso Campo Belo' },
   { value: 'itapeva', label: 'Senhor Sorriso Itapeva' },

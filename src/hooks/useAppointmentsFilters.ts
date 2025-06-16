@@ -29,13 +29,12 @@ export const useAppointmentsFilters = ({
   }, []);
 
   const userClinicName = loggedInUser ? CLINIC_NAMES[loggedInUser as keyof typeof CLINIC_NAMES] : '';
-  const isMasterUser = loggedInUser === 'gerencia-ss';
 
   const filteredAppointments = useMemo(() => {
     let filtered = appointments;
 
-    // Filter by user's clinic first (only show appointments for their clinic if not master)
-    if (!isMasterUser && loggedInUser && userClinicName) {
+    // Filter by user's clinic first (only show appointments for their clinic)
+    if (loggedInUser && userClinicName) {
       filtered = filtered.filter(apt => {
         // Check if appointment clinic matches the user's clinic
         const appointmentClinic = apt.clinic.toLowerCase();
@@ -73,15 +72,11 @@ export const useAppointmentsFilters = ({
     }
 
     return filtered;
-  }, [appointments, loggedInUser, userClinicName, isMasterUser, searchTerm, selectedClinic, selectedStatus, selectedDate]);
+  }, [appointments, loggedInUser, userClinicName, searchTerm, selectedClinic, selectedStatus, selectedDate]);
 
-  // Get unique clinics from filtered appointments for filter
+  // Get unique clinics from filtered appointments for filter (only show user's clinic)
   const availableClinics = useMemo(() => {
-    if (isMasterUser) {
-      // Master user can see all clinics
-      const clinics = new Set(appointments.map(apt => apt.clinic));
-      return Array.from(clinics).sort();
-    } else if (loggedInUser && userClinicName) {
+    if (loggedInUser && userClinicName) {
       // Only show the user's clinic in the filter
       const userAppointments = appointments.filter(apt => {
         const appointmentClinic = apt.clinic.toLowerCase();
@@ -99,12 +94,11 @@ export const useAppointmentsFilters = ({
     
     const clinics = new Set(appointments.map(apt => apt.clinic));
     return Array.from(clinics).sort();
-  }, [appointments, loggedInUser, userClinicName, isMasterUser]);
+  }, [appointments, loggedInUser, userClinicName]);
 
   return {
     filteredAppointments,
     availableClinics,
-    userClinicName,
-    isMasterUser
+    userClinicName
   };
 };
