@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -5,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/useAuth';
 import { useAuthForm } from '@/hooks/useAuthForm';
-import { ArrowLeft, Phone, User, Lock, AlertCircle, Mail } from 'lucide-react';
+import { Phone, User, Lock, AlertCircle, Mail } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toastError, toastSuccess, toastWarning } from '@/components/ui/custom-toast';
 import { EmailConfirmationStatus } from '@/components/Auth/EmailConfirmationStatus';
@@ -245,9 +246,6 @@ const AuthPage = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-primary/10 to-background flex items-center justify-center p-4">
         <div className="w-full max-w-md">
-          <Button variant="ghost" size="icon" onClick={() => navigate('/')} className="mb-4">
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
           <Card className="w-full">
             <CardHeader className="text-center">
               <div className="flex justify-center mb-4">
@@ -322,9 +320,6 @@ const AuthPage = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-primary/10 to-background flex items-center justify-center p-4">
         <div className="w-full max-w-md">
-          <Button variant="ghost" size="icon" onClick={() => navigate('/')} className="mb-4">
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
           <EmailConfirmationStatus email={pendingEmail} onBackToLogin={handleBackToLogin} />
         </div>
       </div>
@@ -335,9 +330,6 @@ const AuthPage = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-primary/10 to-background flex items-center justify-center p-4">
         <div className="w-full max-w-md">
-          <Button variant="ghost" size="icon" onClick={() => navigate('/')} className="mb-4">
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
           <Card className="w-full">
             <CardHeader className="text-center">
               <div className="flex justify-center mb-4">
@@ -377,10 +369,6 @@ const AuthPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/10 to-background flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <Button variant="ghost" size="icon" onClick={() => navigate('/')} className="mb-4">
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
-
         <Card className="w-full">
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
