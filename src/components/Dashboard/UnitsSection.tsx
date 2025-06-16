@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { MapPin, Phone } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 import { animations } from '@/lib/animations';
 
 interface UnitsSectionProps {
@@ -43,10 +43,6 @@ export const UnitsSection: React.FC<UnitsSectionProps> = ({
                 <div className="flex-1">
                   <h4 className="font-medium">{clinic.name}</h4>
                   <p className="text-sm text-gray-600">{clinic.address}</p>
-                  <div className="flex items-center gap-1 text-sm text-gray-500 mt-1">
-                    <Phone className="h-3 w-3" />
-                    {clinic.phone}
-                  </div>
                 </div>
                 <Button 
                   size="sm" 
