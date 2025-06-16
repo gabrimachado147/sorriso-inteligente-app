@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,13 +12,23 @@ import { toastSuccess } from '@/components/ui/custom-toast';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
+type ReminderType = 'custom' | 'appointment' | 'medication' | 'checkup';
+
 export const ReminderManager: React.FC = () => {
   const { reminders, createReminder, updateReminder, deleteReminder, getUpcomingReminders } = useReminders();
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [editingReminder, setEditingReminder] = useState<string | null>(null);
 
-  const [newReminder, setNewReminder] = useState({
-    type: 'custom' as const,
+  const [newReminder, setNewReminder] = useState<{
+    type: ReminderType;
+    title: string;
+    message: string;
+    scheduledFor: string;
+    advanceTime: number;
+    push: boolean;
+    email: boolean;
+  }>({
+    type: 'custom',
     title: '',
     message: '',
     scheduledFor: '',
@@ -101,7 +112,7 @@ export const ReminderManager: React.FC = () => {
                     <Label htmlFor="type">Tipo</Label>
                     <Select
                       value={newReminder.type}
-                      onValueChange={(value: string) => setNewReminder(prev => ({ ...prev, type: value }))}
+                      onValueChange={(value: ReminderType) => setNewReminder(prev => ({ ...prev, type: value }))}
                     >
                       <SelectTrigger>
                         <SelectValue />
