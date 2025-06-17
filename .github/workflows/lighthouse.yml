@@ -21,11 +21,3 @@ jobs:
       - name: Output Lighthouse report link
         run: |
           echo "Veja o relatório Lighthouse no link gerado acima."
-          
-          {
-  // ...existing config...
-  "compilerOptions": {
-    // ...existing options...
-    "types": ["jest"]
-  }
-}
