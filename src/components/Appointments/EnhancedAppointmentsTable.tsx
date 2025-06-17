@@ -9,7 +9,7 @@ import { AppointmentRecord } from '@/services/supabase/appointments';
 import { AppointmentStatusBadge } from './AppointmentStatusBadge';
 import { ServiceEditor } from './ServiceEditor';
 import { BulkActions } from './BulkActions';
-import { MoreHorizontal, Phone, Mail, Calendar, Clock, User } from 'lucide-react';
+import { Phone, Mail, Calendar, Clock, User } from 'lucide-react';
 import { animations } from '@/lib/animations';
 
 interface EnhancedAppointmentsTableProps {
@@ -102,7 +102,6 @@ export const EnhancedAppointmentsTable: React.FC<EnhancedAppointmentsTableProps>
                   <TableHead>Serviço</TableHead>
                   <TableHead>Clínica</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead className="w-12">Ações</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -212,19 +211,6 @@ export const EnhancedAppointmentsTable: React.FC<EnhancedAppointmentsTableProps>
                         onStatusChange={onStatusChange}
                         isUpdating={isUpdating}
                       />
-                    </TableCell>
-                    
-                    <TableCell>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-6 w-6 p-0"
-                        onClick={() => {
-                          // Implementar menu de ações adicionais se necessário
-                        }}
-                      >
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
                     </TableCell>
                   </TableRow>
                 ))}
