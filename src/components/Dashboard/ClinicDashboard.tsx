@@ -21,6 +21,7 @@ interface ClinicDashboardProps {
 export const ClinicDashboard: React.FC<ClinicDashboardProps> = ({ appointments, stats, clinicName }) => {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [dateFilter, setDateFilter] = useState<string>('all');
+  const [periodFilter, setPeriodFilter] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
   
   const { updateAppointmentStatus, updateAppointmentService } = useAppointments();
@@ -31,6 +32,7 @@ export const ClinicDashboard: React.FC<ClinicDashboardProps> = ({ appointments, 
     clinicName,
     statusFilter,
     dateFilter,
+    periodFilter,
     searchTerm
   );
 
@@ -99,6 +101,8 @@ export const ClinicDashboard: React.FC<ClinicDashboardProps> = ({ appointments, 
           setStatusFilter={setStatusFilter}
           dateFilter={dateFilter}
           setDateFilter={setDateFilter}
+          periodFilter={periodFilter}
+          setPeriodFilter={setPeriodFilter}
           onExportData={exportData}
           onRefresh={handleRefresh}
         />
