@@ -1,94 +1,85 @@
 
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom";
-import { MainLayout } from "@/components/Layout/MainLayout";
-import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { LoadingScreen } from "@/components/LoadingScreen";
-import Index from "./pages/Index";
-import ChatPage from "./pages/ChatPage";
-import SchedulePage from "./pages/SchedulePage";
-import ClinicsPage from "./pages/ClinicsPage";
-import EmergencyPage from "./pages/EmergencyPage";
-import ProfilePage from "./pages/ProfilePage";
-import AuthPage from "./pages/AuthPage";
-import AnalyticsPage from "./pages/AnalyticsPage";
-import GamificationPage from "./pages/GamificationPage";
-import RemindersPage from "./pages/RemindersPage";
-import AccessibilityPage from "./pages/AccessibilityPage";
-import { PWASettingsPage } from "./pages/PWASettingsPage";
-import AppointmentsPageReal from "./pages/AppointmentsPageReal";
-import StaffLoginPage from "./pages/StaffLoginPage";
-import AdminDashboardPage from "./pages/AdminDashboardPage";
-import NotFound from "./pages/NotFound";
-import { useAnalytics } from "./hooks/useAnalytics";
-import { useRealtimeSync } from "./hooks/useRealtimeSync";
-import { useNotificationIntegration } from "./hooks/useNotificationIntegration";
-import "./App.css";
+import React, { Suspense } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Toaster } from '@/components/ui/toaster';
+import { AccessibilityProvider } from '@/components/Accessibility/AccessibilityProvider';
+import { InstallPrompt } from '@/components/PWA/InstallPrompt';
+import { PerformanceMonitor as PerfMonitor } from '@/components/Performance/PerformanceMonitor';
+import { DevelopmentPanel } from '@/components/Layout/DevelopmentPanel';
+import { errorTracker } from '@/services/errorTracking';
+import { PRODUCTION_CONFIG } from '@/config/production';
 
+// Lazy load pages for better performance
+const IndexPage = React.lazy(() => import('@/pages/IndexPage'));
+const AuthPage = React.lazy(() => import('@/pages/AuthPage'));
+const ChatPage = React.lazy(() => import('@/pages/ChatPage'));
+const SchedulePage = React.lazy(() => import('@/pages/SchedulePage'));
+const ClinicsPage = React.lazy(() => import('@/pages/ClinicsPage'));
+const EmergencyPage = React.lazy(() => import('@/pages/EmergencyPage'));
+const ProfilePage = React.lazy(() => import('@/pages/ProfilePage'));
+const NotFoundPage = React.lazy(() => import('@/pages/NotFoundPage'));
+
+// Create QueryClient with production-ready defaults
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 60 * 1000,
-      retry: 1,
+      staleTime: PRODUCTION_CONFIG.CACHE_TTL,
+      retry: PRODUCTION_CONFIG.RETRY_ATTEMPTS,
       refetchOnWindowFocus: false,
+    },
+    mutations: {
+      retry: 1,
     },
   },
 });
 
-const AppContent = () => {
-  // Initialize analytics
-  useAnalytics();
-  
-  // Initialize realtime sync
-  useRealtimeSync();
-  
-  // Initialize notifications
-  useNotificationIntegration();
-
-  return (
-    <ErrorBoundary>
-      <div className="w-full min-h-screen mobile-scroll">
-        <Routes>
-          <Route path="/" element={<MainLayout><Outlet /></MainLayout>}>
-            <Route index element={<Index />} />
-            <Route path="chat" element={<ChatPage />} />
-            <Route path="schedule" element={<SchedulePage />} />
-            <Route path="clinics" element={<ClinicsPage />} />
-            <Route path="emergency" element={<EmergencyPage />} />
-            <Route path="profile" element={<ProfilePage />} />
-            <Route path="auth" element={<AuthPage />} />
-            <Route path="analytics" element={<AnalyticsPage />} />
-            <Route path="gamification" element={<GamificationPage />} />
-            <Route path="reminders" element={<RemindersPage />} />
-            <Route path="accessibility" element={<AccessibilityPage />} />
-            <Route path="pwa-settings" element={<PWASettingsPage onNavigate={() => {}} />} />
-            <Route path="appointments" element={<AppointmentsPageReal />} />
-            <Route path="404" element={<NotFound />} />
-            <Route path="*" element={<Navigate to="/404" replace />} />
-          </Route>
-          
-          {/* Rotas sem layout principal para staff */}
-          <Route path="/staff-login" element={<StaffLoginPage />} />
-          <Route path="/admin-dashboard" element={<AdminDashboardPage />} />
-        </Routes>
-      </div>
-    </ErrorBoundary>
-  );
-};
+// Loading component
+const LoadingFallback = () => (
+  <div className="flex items-center justify-center min-h-screen">
+    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+  </div>
+);
 
 function App() {
+  React.useEffect(() => {
+    // Setup error tracking
+    if (PRODUCTION_CONFIG.ENABLE_ERROR_TRACKING) {
+      errorTracker.setupGlobalErrorHandlers();
+    }
+
+    // Log app initialization
+    console.log('🚀 Senhor Sorriso App initialized');
+    console.log('Environment:', import.meta.env.MODE);
+    console.log('PWA Enabled:', PRODUCTION_CONFIG.PWA_ENABLED);
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <AppContent />
-        </BrowserRouter>
-      </TooltipProvider>
+      <AccessibilityProvider>
+        <Router>
+          <div className="App">
+            <Suspense fallback={<LoadingFallback />}>
+              <Routes>
+                <Route path="/" element={<IndexPage />} />
+                <Route path="/auth" element={<AuthPage />} />
+                <Route path="/chat" element={<ChatPage />} />
+                <Route path="/schedule" element={<SchedulePage />} />
+                <Route path="/clinics" element={<ClinicsPage />} />
+                <Route path="/emergency" element={<EmergencyPage />} />
+                <Route path="/profile" element={<ProfilePage />} />
+                <Route path="*" element={<NotFoundPage />} />
+              </Routes>
+            </Suspense>
+            
+            {/* Global Components */}
+            <Toaster />
+            {PRODUCTION_CONFIG.PWA_ENABLED && <InstallPrompt />}
+            {PRODUCTION_CONFIG.PERFORMANCE_MONITORING && <PerfMonitor />}
+            <DevelopmentPanel />
+          </div>
+        </Router>
+      </AccessibilityProvider>
     </QueryClientProvider>
   );
 }

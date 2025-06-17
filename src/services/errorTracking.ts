@@ -1,149 +1,114 @@
-
-// Sistema de monitoramento de erros para produção
-import { PRODUCTION_CONFIG } from '@/config/production';
-
-interface ErrorData {
-  message: string;
-  stack?: string;
-  url: string;
+interface ErrorContext {
   userId?: string;
-  timestamp: Date;
+  url: string;
   userAgent: string;
-  additionalData?: Record<string, any>;
+  timestamp: string;
+  component?: string;
+  action?: string;
+  [key: string]: any;
 }
 
 class ErrorTracker {
-  private errors: ErrorData[] = [];
+  private errors: Array<{ error: Error; context: ErrorContext }> = [];
   private maxErrors = 100;
-  
-  constructor() {
-    this.setupGlobalErrorHandlers();
-  }
 
-  private setupGlobalErrorHandlers() {
-    // Capturar erros JavaScript não tratados
-    window.addEventListener('error', (event) => {
-      this.logError({
-        message: event.message,
-        stack: event.error?.stack,
-        url: event.filename || window.location.href,
-        timestamp: new Date(),
-        userAgent: navigator.userAgent,
-        additionalData: {
-          lineno: event.lineno,
-          colno: event.colno,
-          type: 'javascript_error'
-        }
-      });
-    });
-
-    // Capturar promises rejeitadas não tratadas
-    window.addEventListener('unhandledrejection', (event) => {
-      this.logError({
-        message: `Unhandled Promise Rejection: ${event.reason}`,
-        stack: event.reason?.stack,
-        url: window.location.href,
-        timestamp: new Date(),
-        userAgent: navigator.userAgent,
-        additionalData: {
-          type: 'promise_rejection',
-          reason: event.reason
-        }
-      });
-    });
-  }
-
-  logError(error: Partial<ErrorData> & { message: string }) {
-    const errorData: ErrorData = {
+  reportError(error: Error, context: Partial<ErrorContext> = {}): void {
+    const fullContext: ErrorContext = {
       url: window.location.href,
-      timestamp: new Date(),
       userAgent: navigator.userAgent,
-      ...error
+      timestamp: new Date().toISOString(),
+      ...context
     };
 
-    // Adicionar à lista local
-    this.errors.unshift(errorData);
-    
-    // Manter apenas os últimos erros
+    this.errors.push({ error, context: fullContext });
+
+    // Keep only recent errors
     if (this.errors.length > this.maxErrors) {
-      this.errors = this.errors.slice(0, this.maxErrors);
+      this.errors = this.errors.slice(-this.maxErrors);
     }
 
-    // Log no console em desenvolvimento
+    // Log to console in development
     if (import.meta.env.DEV) {
-      console.error('Error tracked:', errorData);
+      console.group('🐛 Error Tracked');
+      console.error('Error:', error);
+      console.log('Context:', fullContext);
+      console.groupEnd();
     }
 
-    // Enviar para monitoramento em produção
-    if (PRODUCTION_CONFIG.ENABLE_ERROR_TRACKING) {
-      this.sendToMonitoring(errorData);
-    }
+    // In production, you might want to send to external service
+    // this.sendToErrorService(error, fullContext);
   }
 
-  private async sendToMonitoring(error: ErrorData) {
-    try {
-      // Aqui você pode integrar com serviços como Sentry, LogRocket, etc.
-      // Por enquanto, vamos armazenar no localStorage para análise
-      const storedErrors = JSON.parse(localStorage.getItem('app_errors') || '[]');
-      storedErrors.unshift(error);
-      
-      // Manter apenas os últimos 50 erros no localStorage
-      if (storedErrors.length > 50) {
-        storedErrors.splice(50);
-      }
-      
-      localStorage.setItem('app_errors', JSON.stringify(storedErrors));
-      
-      // Em produção real, envie para seu serviço de monitoramento
-      // fetch('/api/errors', { method: 'POST', body: JSON.stringify(error) });
-      
-    } catch (e) {
-      console.warn('Failed to send error to monitoring:', e);
-    }
+  reportCustomError(message: string, context: Partial<ErrorContext> = {}): void {
+    this.reportError(new Error(message), context);
   }
 
-  getRecentErrors(limit = 10): ErrorData[] {
-    return this.errors.slice(0, limit);
+  getErrors(): Array<{ error: Error; context: ErrorContext }> {
+    return this.errors;
   }
 
-  clearErrors() {
+  clearErrors(): void {
     this.errors = [];
-    localStorage.removeItem('app_errors');
   }
 
-  // Método para reportar erros customizados
-  reportCustomError(message: string, additionalData?: Record<string, any>) {
-    this.logError({
-      message,
-      url: window.location.href,
-      timestamp: new Date(),
-      userAgent: navigator.userAgent,
-      additionalData: {
-        ...additionalData,
-        type: 'custom_error'
-      }
+  setupGlobalErrorHandlers(): void {
+    // Catch unhandled JavaScript errors
+    window.addEventListener('error', (event) => {
+      this.reportError(event.error || new Error(event.message), {
+        component: 'Global Error Handler',
+        action: 'Unhandled Error'
+      });
+    });
+
+    // Catch unhandled promise rejections
+    window.addEventListener('unhandledrejection', (event) => {
+      this.reportError(
+        event.reason instanceof Error ? event.reason : new Error(String(event.reason)),
+        {
+          component: 'Global Error Handler',
+          action: 'Unhandled Promise Rejection'
+        }
+      );
     });
   }
 }
 
-// Instância singleton
 export const errorTracker = new ErrorTracker();
 
-// Hook para componentes React
-export const useErrorTracking = () => {
-  const reportError = (error: Error, errorInfo?: any) => {
-    errorTracker.logError({
-      message: error.message,
-      stack: error.stack,
-      url: window.location.href,
-      timestamp: new Date(),
-      userAgent: navigator.userAgent,
-      additionalData: {
-        componentStack: errorInfo?.componentStack,
-        type: 'react_error'
-      }
-    });
-  };
+// React Error Boundary utility
+export const createErrorBoundary = (component: string) => {
+  return class extends React.Component<
+    { children: React.ReactNode },
+    { hasError: boolean }
+  > {
+    constructor(props: { children: React.ReactNode }) {
+      super(props);
+      this.state = { hasError: false };
+    }
 
-  return { reportError, getRecentErrors: errorTracker.getRecentErrors.bind(errorTracker) };
+    static getDerivedStateFromError(): { hasError: boolean } {
+      return { hasError: true };
+    }
+
+    componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+      errorTracker.reportError(error, {
+        component,
+        action: 'Component Error',
+        errorInfo: JSON.stringify(errorInfo)
+      });
+    }
+
+    render() {
+      if (this.state.hasError) {
+        return (
+          <div className="p-4 text-center text-red-600">
+            <h3>Ops! Algo deu errado</h3>
+            <p className="text-sm">Recarregue a página ou tente novamente mais tarde.</p>
+          </div>
+        );
+      }
+
+      return this.props.children;
+    }
+  };
 };
