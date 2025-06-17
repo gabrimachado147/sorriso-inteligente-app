@@ -69,7 +69,7 @@ const AdminDashboardPage = () => {
                 <ArrowLeft className="h-4 w-4 mr-1" />
                 <span className="hidden sm:inline">Voltar</span>
               </Button>
-              <div className="min-w-0 flex-1">
+              <div className="min-w-0 flex-1 text-center">
                 <h1 className="text-lg font-semibold mobile-text-lg truncate">
                   Dashboard Admin
                 </h1>
