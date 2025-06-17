@@ -3,6 +3,8 @@
 
 # Sorriso Inteligente App
 
+[![Lighthouse CI](https://github.com/gabrimachado147/sorriso-inteligente-app/actions/workflows/lighthouse.yml/badge.svg)](https://github.com/gabrimachado147/sorriso-inteligente-app/actions/workflows/lighthouse.yml)
+
 Um aplicativo híbrido (desktop e mobile) para agendamento e gestão de consultas odontológicas, desenvolvido com React, TypeScript e Tailwind CSS.
 
 ## 🚀 Funcionalidades
@@ -201,3 +203,20 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 Para dúvidas ou suporte, entre em contato:
 - **Email**: suporte@sorrisointeligente.com
 - **GitHub Issues**: [Criar issue](https://github.com/gabrimachado147/sorriso-inteligente-app/issues)
+
+## Integração com Supabase
+
+O projeto utiliza Supabase para autenticação, banco de dados e realtime. A configuração está em `src/integrations/supabase/client.ts` e usa variáveis de ambiente (`VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY`).
+
+- Para acessar dados, use o client importando:
+  ```ts
+  import { supabase } from '@/integrations/supabase/client';
+  ```
+- Os serviços e hooks já usam o Supabase para CRUD de agendamentos, perfis, etc.
+- Testes automatizados de integração estão em `tests/supabase.integration.test.ts` e rodam no CI.
+- Falhas nos testes de integração disparam alerta no Slack (ver secrets do repositório).
+
+Para onboarding:
+- Peça acesso ao painel do Supabase.
+- Configure as variáveis de ambiente no `.env` local.
+- Rode `npm test` para validar integração localmente.
