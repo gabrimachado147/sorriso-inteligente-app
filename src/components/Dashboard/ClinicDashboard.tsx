@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -120,189 +119,197 @@ export const ClinicDashboard: React.FC<ClinicDashboardProps> = ({ appointments, 
   };
 
   return (
-    <div className={`space-y-6 ${animations.pageEnter} overflow-x-hidden`}>
-      {/* Header com notificações */}
-      <div className={`${animations.fadeIn} overflow-x-hidden`}>
-        <div className="flex items-center justify-between mb-2 min-w-0">
-          <div className="flex items-center gap-3 min-w-0 flex-1">
-            <BarChart3 className="h-6 w-6 md:h-8 md:w-8 text-blue-600 flex-shrink-0" />
-            <h1 className="text-2xl md:text-3xl font-bold text-blue-600 mobile-text-xl truncate">
-              Dashboard - {clinicName.charAt(0).toUpperCase() + clinicName.slice(1)}
-            </h1>
+    <div className="w-full max-w-7xl mx-auto px-4 lg:px-6">
+      <div className={`space-y-6 ${animations.pageEnter}`}>
+        {/* Header com notificações - Centralizado */}
+        <div className={`${animations.fadeIn} w-full`}>
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 mb-6">
+            <div className="flex items-center gap-3 min-w-0 flex-1">
+              <BarChart3 className="h-6 w-6 md:h-8 md:w-8 text-blue-600 flex-shrink-0" />
+              <div className="min-w-0">
+                <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-blue-600 truncate">
+                  Dashboard - {clinicName.charAt(0).toUpperCase() + clinicName.slice(1)}
+                </h1>
+                <p className="text-sm md:text-base text-gray-600 truncate">
+                  Gestão avançada de agendamentos da sua unidade
+                </p>
+              </div>
+            </div>
+            <div className="flex-shrink-0">
+              <RealtimeNotifications clinicName={clinicName} />
+            </div>
           </div>
-          <RealtimeNotifications clinicName={clinicName} />
+
+          {/* Filtros */}
+          <DashboardFilters
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            statusFilter={statusFilter}
+            setStatusFilter={setStatusFilter}
+            dateFilter={dateFilter}
+            setDateFilter={setDateFilter}
+            periodFilter={periodFilter}
+            setPeriodFilter={setPeriodFilter}
+            onExportData={exportData}
+            onRefresh={handleRefresh}
+          />
         </div>
-        <p className="text-gray-600 mb-6 mobile-text-base truncate">
-          Gestão avançada de agendamentos da sua unidade
-        </p>
 
-        {/* Filtros */}
-        <DashboardFilters
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          statusFilter={statusFilter}
-          setStatusFilter={setStatusFilter}
-          dateFilter={dateFilter}
-          setDateFilter={setDateFilter}
-          periodFilter={periodFilter}
-          setPeriodFilter={setPeriodFilter}
-          onExportData={exportData}
-          onRefresh={handleRefresh}
-        />
-      </div>
+        {/* Cards de Estatísticas - Centralizados */}
+        <div className="w-full">
+          <DashboardStats
+            totalAppointments={dashboardData.totalAppointments}
+            conversionRate={dashboardData.conversionRate}
+            totalRevenue={dashboardData.totalRevenue}
+            todayAppointments={dashboardData.todayAppointments}
+          />
+        </div>
 
-      {/* Cards de Estatísticas */}
-      <DashboardStats
-        totalAppointments={dashboardData.totalAppointments}
-        conversionRate={dashboardData.conversionRate}
-        totalRevenue={dashboardData.totalRevenue}
-        todayAppointments={dashboardData.todayAppointments}
-      />
+        {/* Navigation - Centralizada */}
+        <div className={`${animations.fadeIn} w-full`}>
+          {/* Mobile Dropdown */}
+          <div className="block md:hidden mb-4">
+            <Select value={activeTab} onValueChange={setActiveTab}>
+              <SelectTrigger className="w-full max-w-sm mx-auto">
+                <SelectValue placeholder="Selecione uma seção" />
+              </SelectTrigger>
+              <SelectContent className="z-50 bg-white border shadow-lg">
+                {tabOptions.map((option) => {
+                  const Icon = option.icon;
+                  return (
+                    <SelectItem key={option.value} value={option.value}>
+                      <div className="flex items-center gap-2">
+                        <Icon className="h-4 w-4" />
+                        {option.label}
+                      </div>
+                    </SelectItem>
+                  );
+                })}
+              </SelectContent>
+            </Select>
+          </div>
 
-      {/* Navigation - Dropdown for mobile, Tabs for desktop */}
-      <div className={`${animations.fadeIn} overflow-x-hidden`}>
-        {/* Mobile Dropdown */}
-        <div className="block md:hidden mb-4">
-          <Select value={activeTab} onValueChange={setActiveTab}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Selecione uma seção" />
-            </SelectTrigger>
-            <SelectContent className="z-50 bg-white border shadow-lg">
-              {tabOptions.map((option) => {
-                const Icon = option.icon;
-                return (
-                  <SelectItem key={option.value} value={option.value}>
-                    <div className="flex items-center gap-2">
+          {/* Desktop Tabs - Melhor Design e Responsivo */}
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="hidden md:block w-full">
+            <div className="w-full flex justify-center mb-6">
+              <TabsList className="inline-flex h-12 items-center justify-center rounded-lg bg-gray-100 p-1 text-muted-foreground">
+                {tabOptions.map((option) => {
+                  const Icon = option.icon;
+                  return (
+                    <TabsTrigger 
+                      key={option.value}
+                      value={option.value} 
+                      className="inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-2 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm gap-2"
+                    >
                       <Icon className="h-4 w-4" />
-                      {option.label}
-                    </div>
-                  </SelectItem>
-                );
-              })}
-            </SelectContent>
-          </Select>
-        </div>
+                      <span className="hidden lg:inline">{option.label}</span>
+                    </TabsTrigger>
+                  );
+                })}
+              </TabsList>
+            </div>
 
-        {/* Desktop Tabs - Improved Design */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="hidden md:block overflow-x-hidden">
-          <div className="overflow-x-auto mobile-scroll">
-            <TabsList className="grid grid-cols-5 w-full bg-gray-100 p-1 rounded-lg h-12">
-              {tabOptions.map((option) => {
-                const Icon = option.icon;
-                return (
-                  <TabsTrigger 
-                    key={option.value}
-                    value={option.value} 
-                    className="flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-blue-600 text-gray-600 hover:text-gray-900"
-                  >
-                    <Icon className="h-4 w-4" />
-                    <span className="hidden lg:inline">{option.label}</span>
-                  </TabsTrigger>
-                );
-              })}
-            </TabsList>
-          </div>
+            <div className="w-full">
+              <TabsContent value="overview" className="space-y-6 mt-0">
+                <DashboardCharts
+                  monthlyData={dashboardData.monthlyData}
+                  servicesData={dashboardData.servicesData}
+                  statusData={dashboardData.statusData}
+                  confirmedAppointments={dashboardData.confirmedAppointments}
+                  completedAppointments={dashboardData.completedAppointments}
+                  pendingAppointments={dashboardData.pendingAppointments}
+                  cancelledAppointments={dashboardData.cancelledAppointments}
+                />
+              </TabsContent>
 
-          <div className="overflow-x-hidden mt-6">
-            <TabsContent value="overview" className="space-y-6">
-              <DashboardCharts
-                monthlyData={dashboardData.monthlyData}
-                servicesData={dashboardData.servicesData}
-                statusData={dashboardData.statusData}
-                confirmedAppointments={dashboardData.confirmedAppointments}
-                completedAppointments={dashboardData.completedAppointments}
-                pendingAppointments={dashboardData.pendingAppointments}
-                cancelledAppointments={dashboardData.cancelledAppointments}
-              />
-            </TabsContent>
+              <TabsContent value="analytics" className="space-y-6 mt-0">
+                <AdvancedAnalytics 
+                  appointments={filteredAppointments} 
+                  clinicName={clinicName}
+                />
+              </TabsContent>
 
-            <TabsContent value="analytics" className="space-y-6">
-              <AdvancedAnalytics 
-                appointments={filteredAppointments} 
-                clinicName={clinicName}
-              />
-            </TabsContent>
+              <TabsContent value="appointments" className="space-y-6 mt-0">
+                <div className="w-full">
+                  <EnhancedAppointmentsTable
+                    appointments={filteredAppointments}
+                    onStatusChange={handleUpdateStatus}
+                    onServiceUpdate={handleUpdateService}
+                    onBulkStatusUpdate={handleBulkStatusUpdate}
+                    onSendBulkMessage={handleSendBulkMessage}
+                    isUpdating={updateAppointmentStatus.isPending || updateAppointmentService.isPending}
+                  />
+                </div>
+              </TabsContent>
 
-            <TabsContent value="appointments" className="space-y-6 overflow-x-hidden">
-              <div className="overflow-x-auto">
-                <EnhancedAppointmentsTable
-                  appointments={filteredAppointments}
-                  onStatusChange={handleUpdateStatus}
-                  onServiceUpdate={handleUpdateService}
-                  onBulkStatusUpdate={handleBulkStatusUpdate}
-                  onSendBulkMessage={handleSendBulkMessage}
-                  isUpdating={updateAppointmentStatus.isPending || updateAppointmentService.isPending}
+              <TabsContent value="messages" className="space-y-6 mt-0">
+                <MessageTemplates onSendMessage={handleSendBulkMessage} />
+              </TabsContent>
+
+              <TabsContent value="advanced" className="space-y-6 mt-0">
+                <AdvancedAnalytics 
+                  appointments={filteredAppointments} 
+                  clinicName={clinicName}
+                />
+              </TabsContent>
+            </div>
+          </Tabs>
+
+          {/* Mobile Content - Centralizado */}
+          <div className="block md:hidden w-full">
+            {activeTab === 'overview' && (
+              <div className="space-y-6 mt-4">
+                <DashboardCharts
+                  monthlyData={dashboardData.monthlyData}
+                  servicesData={dashboardData.servicesData}
+                  statusData={dashboardData.statusData}
+                  confirmedAppointments={dashboardData.confirmedAppointments}
+                  completedAppointments={dashboardData.completedAppointments}
+                  pendingAppointments={dashboardData.pendingAppointments}
+                  cancelledAppointments={dashboardData.cancelledAppointments}
                 />
               </div>
-            </TabsContent>
+            )}
 
-            <TabsContent value="messages" className="space-y-6">
-              <MessageTemplates onSendMessage={handleSendBulkMessage} />
-            </TabsContent>
-
-            <TabsContent value="advanced" className="space-y-6">
-              <AdvancedAnalytics 
-                appointments={filteredAppointments} 
-                clinicName={clinicName}
-              />
-            </TabsContent>
-          </div>
-        </Tabs>
-
-        {/* Mobile Content */}
-        <div className="block md:hidden overflow-x-hidden">
-          {activeTab === 'overview' && (
-            <div className="space-y-6 mt-4">
-              <DashboardCharts
-                monthlyData={dashboardData.monthlyData}
-                servicesData={dashboardData.servicesData}
-                statusData={dashboardData.statusData}
-                confirmedAppointments={dashboardData.confirmedAppointments}
-                completedAppointments={dashboardData.completedAppointments}
-                pendingAppointments={dashboardData.pendingAppointments}
-                cancelledAppointments={dashboardData.cancelledAppointments}
-              />
-            </div>
-          )}
-
-          {activeTab === 'analytics' && (
-            <div className="space-y-6 mt-4">
-              <AdvancedAnalytics 
-                appointments={filteredAppointments} 
-                clinicName={clinicName}
-              />
-            </div>
-          )}
-
-          {activeTab === 'appointments' && (
-            <div className="space-y-6 mt-4 overflow-x-hidden">
-              <div className="overflow-x-auto">
-                <EnhancedAppointmentsTable
-                  appointments={filteredAppointments}
-                  onStatusChange={handleUpdateStatus}
-                  onServiceUpdate={handleUpdateService}
-                  onBulkStatusUpdate={handleBulkStatusUpdate}
-                  onSendBulkMessage={handleSendBulkMessage}
-                  isUpdating={updateAppointmentStatus.isPending || updateAppointmentService.isPending}
+            {activeTab === 'analytics' && (
+              <div className="space-y-6 mt-4">
+                <AdvancedAnalytics 
+                  appointments={filteredAppointments} 
+                  clinicName={clinicName}
                 />
               </div>
-            </div>
-          )}
+            )}
 
-          {activeTab === 'messages' && (
-            <div className="space-y-6 mt-4">
-              <MessageTemplates onSendMessage={handleSendBulkMessage} />
-            </div>
-          )}
+            {activeTab === 'appointments' && (
+              <div className="space-y-6 mt-4 w-full">
+                <div className="w-full overflow-x-auto">
+                  <EnhancedAppointmentsTable
+                    appointments={filteredAppointments}
+                    onStatusChange={handleUpdateStatus}
+                    onServiceUpdate={handleUpdateService}
+                    onBulkStatusUpdate={handleBulkStatusUpdate}
+                    onSendBulkMessage={handleSendBulkMessage}
+                    isUpdating={updateAppointmentStatus.isPending || updateAppointmentService.isPending}
+                  />
+                </div>
+              </div>
+            )}
 
-          {activeTab === 'advanced' && (
-            <div className="space-y-6 mt-4">
-              <AdvancedAnalytics 
-                appointments={filteredAppointments} 
-                clinicName={clinicName}
-              />
-            </div>
-          )}
+            {activeTab === 'messages' && (
+              <div className="space-y-6 mt-4">
+                <MessageTemplates onSendMessage={handleSendBulkMessage} />
+              </div>
+            )}
+
+            {activeTab === 'advanced' && (
+              <div className="space-y-6 mt-4">
+                <AdvancedAnalytics 
+                  appointments={filteredAppointments} 
+                  clinicName={clinicName}
+                />
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

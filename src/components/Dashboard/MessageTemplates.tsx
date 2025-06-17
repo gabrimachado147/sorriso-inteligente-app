@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,26 +5,23 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { MessageSquare, Edit, Trash2, Plus, Send, Copy } from 'lucide-react';
+import { MessageSquare, Edit, Trash2, Plus, Send, Copy, Eye, Users } from 'lucide-react';
 import { animations } from '@/lib/animations';
 import { toastSuccess, toastError } from '@/components/ui/custom-toast';
-
-interface MessageTemplate {
-  id: string;
-  name: string;
-  category: 'reminder' | 'confirmation' | 'rescheduling' | 'follow_up' | 'marketing';
-  subject: string;
-  content: string;
-  variables: string[];
-  isActive: boolean;
-  createdAt: Date;
-}
+import { useMessageTemplates, type MessageTemplate } from '@/hooks/useMessageTemplates';
+import { AppointmentRecord } from '@/services/supabase/appointments';
 
 interface MessageTemplatesProps {
   onSendMessage?: (appointmentIds: string[], template: string) => void;
+  appointments?: AppointmentRecord[];
 }
 
-export const MessageTemplates: React.FC<MessageTemplatesProps> = ({ onSendMessage }) => {
+export const MessageTemplates: React.FC<MessageTemplatesProps> = ({ 
+  onSendMessage, 
+  appointments = [] 
+}) => {
+  const { sendTemplateMessage, sendBulkReminders, previewMessage, isSending } = useMessageTemplates();
+  
   const [templates, setTemplates] = useState<MessageTemplate[]>([
     {
       id: '1',
@@ -62,6 +58,7 @@ export const MessageTemplates: React.FC<MessageTemplatesProps> = ({ onSendMessag
   const [editingTemplate, setEditingTemplate] = useState<MessageTemplate | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [previewAppointment, setPreviewAppointment] = useState<AppointmentRecord | null>(null);
 
   const filteredTemplates = templates.filter(template => 
     selectedCategory === 'all' || template.category === selectedCategory
@@ -115,20 +112,68 @@ export const MessageTemplates: React.FC<MessageTemplatesProps> = ({ onSendMessag
     toastSuccess('Copiado!', 'Conteúdo copiado para a área de transferência');
   };
 
+  const handleSendTemplate = async (template: MessageTemplate) => {
+    if (appointments.length === 0) {
+      toastError('Erro', 'Nenhum agendamento disponível para envio');
+      return;
+    }
+
+    // Para demonstração, vamos usar agendamentos confirmados
+    const confirmedAppointments = appointments.filter(apt => 
+      apt.status === 'confirmed' || apt.status === 'pending'
+    );
+
+    if (confirmedAppointments.length === 0) {
+      toastError('Erro', 'Nenhum agendamento confirmado/pendente encontrado');
+      return;
+    }
+
+    const success = await sendTemplateMessage(template, confirmedAppointments);
+    if (success && onSendMessage) {
+      onSendMessage(confirmedAppointments.map(apt => apt.id), template.name);
+    }
+  };
+
+  const handleQuickSendReminders = async () => {
+    if (appointments.length === 0) {
+      toastError('Erro', 'Nenhum agendamento disponível');
+      return;
+    }
+
+    // Enviar lembretes para agendamentos confirmados dos próximos 2 dias
+    const today = new Date();
+    const twoDaysFromNow = new Date(today.getTime() + 2 * 24 * 60 * 60 * 1000);
+    
+    const upcomingAppointments = appointments.filter(apt => {
+      const appointmentDate = new Date(apt.date);
+      return apt.status === 'confirmed' && 
+             appointmentDate >= today && 
+             appointmentDate <= twoDaysFromNow;
+    });
+
+    if (upcomingAppointments.length === 0) {
+      toastError('Info', 'Nenhum agendamento confirmado nos próximos 2 dias');
+      return;
+    }
+
+    await sendBulkReminders(upcomingAppointments, 'reminder');
+  };
+
   const extractVariables = (content: string): string[] => {
     const matches = content.match(/\{([^}]+)\}/g);
     return matches ? matches.map(match => match.slice(1, -1)) : [];
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+    <div className="max-w-6xl mx-auto space-y-6">
+      {/* Header centralizado */}
+      <div className="text-center space-y-4">
         <div>
-          <h3 className="text-lg font-semibold">Templates de Mensagens</h3>
+          <h3 className="text-xl font-semibold">Templates de Mensagens</h3>
           <p className="text-sm text-gray-600">Gerencie templates para comunicação com pacientes</p>
         </div>
         
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
           <Select value={selectedCategory} onValueChange={setSelectedCategory}>
             <SelectTrigger className="w-40">
               <SelectValue placeholder="Categoria" />
@@ -147,13 +192,23 @@ export const MessageTemplates: React.FC<MessageTemplatesProps> = ({ onSendMessag
             <Plus className="h-4 w-4 mr-1" />
             Novo Template
           </Button>
+
+          <Button 
+            onClick={handleQuickSendReminders} 
+            variant="outline" 
+            size="sm"
+            disabled={isSending}
+          >
+            <Users className="h-4 w-4 mr-1" />
+            {isSending ? 'Enviando...' : 'Enviar Lembretes'}
+          </Button>
         </div>
       </div>
 
-      {/* Lista de Templates */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+      {/* Templates Grid Centralizado */}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 justify-items-center">
         {filteredTemplates.map(template => (
-          <Card key={template.id} className={`${animations.fadeIn} hover:shadow-md transition-shadow`}>
+          <Card key={template.id} className={`${animations.fadeIn} hover:shadow-md transition-shadow w-full max-w-sm`}>
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
@@ -219,21 +274,54 @@ export const MessageTemplates: React.FC<MessageTemplatesProps> = ({ onSendMessag
                   </div>
                 )}
                 
-                {onSendMessage && (
+                <div className="flex gap-2">
                   <Button 
                     size="sm" 
-                    className="w-full mt-3"
-                    onClick={() => onSendMessage([], template.name)}
+                    className="flex-1"
+                    onClick={() => handleSendTemplate(template)}
+                    disabled={isSending}
                   >
                     <Send className="h-3 w-3 mr-1" />
-                    Usar Template
+                    {isSending ? 'Enviando...' : 'Enviar'}
                   </Button>
-                )}
+                  
+                  {appointments.length > 0 && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setPreviewAppointment(appointments[0])}
+                    >
+                      <Eye className="h-3 w-3" />
+                    </Button>
+                  )}
+                </div>
               </div>
             </CardContent>
           </Card>
         ))}
       </div>
+
+      {/* Preview Modal */}
+      {previewAppointment && (
+        <Card className="max-w-2xl mx-auto">
+          <CardHeader>
+            <CardTitle>Preview da Mensagem</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {filteredTemplates.map(template => (
+              <div key={template.id} className="mb-4 p-3 border rounded">
+                <h4 className="font-medium">{template.name}</h4>
+                <p className="text-sm text-gray-600 mt-1">
+                  {previewMessage(template, previewAppointment)}
+                </p>
+              </div>
+            ))}
+            <Button onClick={() => setPreviewAppointment(null)} className="mt-4">
+              Fechar
+            </Button>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Editor de Template */}
       {(isCreating || editingTemplate) && (
@@ -279,9 +367,9 @@ const TemplateEditor: React.FC<TemplateEditorProps> = ({ template, onSave, onCan
   const detectedVariables = extractVariables(formData.content);
 
   return (
-    <Card className={`${animations.slideInTop}`}>
+    <Card className={`${animations.slideInTop} max-w-4xl mx-auto`}>
       <CardHeader>
-        <CardTitle className="text-lg">
+        <CardTitle className="text-lg text-center">
           {template ? 'Editar Template' : 'Novo Template'}
         </CardTitle>
       </CardHeader>
@@ -353,7 +441,7 @@ const TemplateEditor: React.FC<TemplateEditorProps> = ({ template, onSave, onCan
             </div>
           )}
           
-          <div className="flex items-center justify-end gap-2 pt-4">
+          <div className="flex items-center justify-center gap-4 pt-4">
             <Button type="button" variant="outline" onClick={onCancel}>
               Cancelar
             </Button>
