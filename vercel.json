@@ -1,4 +1,3 @@
-
 {
   "$schema": "https://json.schemastore.org/vercel",
   "name": "sorriso-inteligente-app",
@@ -16,6 +15,10 @@
     }
   },
   "rewrites": [
+    {
+      "source": "/lovable-uploads/:match*",
+      "destination": "/lovable-uploads/:match*"
+    },
     {
       "source": "/(.*)",
       "destination": "/index.html"
