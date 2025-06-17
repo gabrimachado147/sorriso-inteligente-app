@@ -47,33 +47,33 @@ export const MasterDashboardContent: React.FC<MasterDashboardContentProps> = ({
         conversionRate={dashboardData.conversionRate}
       />
 
-      {/* Tabs com espaçamento ajustado */}
+      {/* Tabs com layout responsivo e espaçamento melhorado */}
       <div className={`${animations.fadeIn} w-full`}>
         <Tabs defaultValue="overview" className="w-full">
-          <div className="flex justify-center w-full mb-6">
-            <TabsList className="grid grid-cols-3 w-full max-w-md h-11 bg-gray-100 rounded-lg p-1">
+          <div className="flex flex-col items-center w-full mb-8">
+            <TabsList className="inline-flex h-12 items-center justify-center rounded-xl bg-gray-100 p-1 text-muted-foreground shadow-sm border w-auto min-w-[320px] sm:min-w-[400px]">
               <TabsTrigger 
                 value="overview" 
-                className="data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm transition-all duration-200 text-sm font-medium px-4 py-2 rounded-md"
+                className="inline-flex items-center justify-center whitespace-nowrap rounded-lg px-4 py-2.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-white data-[state=active]:text-foreground data-[state=active]:shadow-sm min-w-[100px] flex-1"
               >
                 Visão Geral
               </TabsTrigger>
               <TabsTrigger 
                 value="analytics" 
-                className="data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm transition-all duration-200 text-sm font-medium px-4 py-2 rounded-md"
+                className="inline-flex items-center justify-center whitespace-nowrap rounded-lg px-4 py-2.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-white data-[state=active]:text-foreground data-[state=active]:shadow-sm min-w-[100px] flex-1"
               >
                 Analytics
               </TabsTrigger>
               <TabsTrigger 
                 value="appointments" 
-                className="data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm transition-all duration-200 text-sm font-medium px-4 py-2 rounded-md"
+                className="inline-flex items-center justify-center whitespace-nowrap rounded-lg px-4 py-2.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-white data-[state=active]:text-foreground data-[state=active]:shadow-sm min-w-[100px] flex-1"
               >
                 Agendamentos
               </TabsTrigger>
             </TabsList>
           </div>
 
-          <TabsContent value="overview" className="space-y-6 mt-6">
+          <TabsContent value="overview" className="space-y-6 mt-0">
             <MasterDashboardCharts
               clinicStats={dashboardData.clinicStats}
               monthlyTrend={dashboardData.monthlyTrend}
@@ -82,7 +82,7 @@ export const MasterDashboardContent: React.FC<MasterDashboardContentProps> = ({
             />
           </TabsContent>
 
-          <TabsContent value="analytics" className="space-y-6 mt-6">
+          <TabsContent value="analytics" className="space-y-6 mt-0">
             <MasterDashboardCharts
               clinicStats={dashboardData.clinicStats}
               monthlyTrend={dashboardData.monthlyTrend}
@@ -91,7 +91,7 @@ export const MasterDashboardContent: React.FC<MasterDashboardContentProps> = ({
             />
           </TabsContent>
 
-          <TabsContent value="appointments" className="space-y-6 mt-6">
+          <TabsContent value="appointments" className="space-y-6 mt-0">
             <EnhancedAppointmentsTable
               appointments={finalFilteredAppointments}
               onStatusChange={onStatusChange}
