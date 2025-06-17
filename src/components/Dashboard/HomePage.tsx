@@ -11,7 +11,7 @@ import { ServicesSection } from './ServicesSection';
 import { ReviewsSection } from './ReviewsSection';
 import { EmergencyContact } from './EmergencyContact';
 
-const HomePage = () => {
+const HomePage: React.FC = () => {
   const {
     handleViewUnits,
     handleReschedule,

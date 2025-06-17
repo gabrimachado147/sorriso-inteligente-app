@@ -28,13 +28,13 @@ interface Service {
   name: string;
 }
 
-const LocationsPage = () => {
+const LocationsPage: React.FC = () => {
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [clinics, setClinics] = useState<Clinic[]>([]);
 
   // Serviços atualizados com todos os tratamentos odontológicos
-  const availableServices = [
+  const availableServices: Service[] = [
     { id: 'avaliacao-gratuita', name: 'Avaliação Gratuita' },
     { id: 'limpeza', name: 'Limpeza Dental' },
     { id: 'restauracao', name: 'Restauração' },
@@ -50,7 +50,7 @@ const LocationsPage = () => {
 
   // Carregar clínicas reais
   useEffect(() => {
-    const loadClinics = async () => {
+    const loadClinics = async (): Promise<void> => {
       try {
         setIsLoading(true);
         const clinicsData = await apiService.clinics.getAll();
@@ -65,26 +65,26 @@ const LocationsPage = () => {
     loadClinics();
   }, []);
 
-  const handleCall = (phone: string, clinicName: string) => {
+  const handleCall = (phone: string, clinicName: string): void => {
     const phoneNumber = phone.replace(/\D/g, '');
     window.open(`tel:${phoneNumber}`, '_self');
     toastCall("Ligação iniciada", `Discando para ${clinicName}: ${phone}`);
   };
 
-  const handleWhatsApp = (clinicName: string) => {
+  const handleWhatsApp = (clinicName: string): void => {
     const message = encodeURIComponent("Olá, gostaria de saber mais sobre os serviços.");
     window.open(`https://wa.me/5531971147487?text=${message}`, '_blank');
     toastSuccess("WhatsApp aberto", `Iniciando conversa com ${clinicName}`);
   };
 
-  const handleRoute = (address: string, city: string, state: string, clinicName: string) => {
+  const handleRoute = (address: string, city: string, state: string, clinicName: string): void => {
     const fullAddress = `${address}, ${city}, ${state}`;
     const encodedAddress = encodeURIComponent(fullAddress);
     window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodedAddress}`, '_blank');
     toastLocation("Rota calculada", `Abrindo GPS para ${clinicName}`);
   };
 
-  const handleSchedule = (clinicName: string) => {
+  const handleSchedule = (clinicName: string): void => {
     navigate('/schedule');
     toastAppointment("Agendamento", `Redirecionando para agendamento na ${clinicName}`);
   };
