@@ -9,12 +9,12 @@ export const HeroSection: React.FC = () => {
   return (
     <div className={`text-center space-y-6 mobile-card-spacing ${microAnimations.heroSection}`}>
       <div className="flex justify-center mb-6">
-        <div className={`w-16 h-16 md:w-20 md:h-20 rounded-2xl flex items-center justify-center overflow-hidden bg-white shadow-lg mobile-scale-in ${animations.scaleInBounce}`}
+        <div className={`w-20 h-20 md:w-24 md:h-24 rounded-2xl flex items-center justify-center overflow-hidden bg-white shadow-lg mobile-scale-in ${animations.scaleInBounce}`}
              style={{ animationDelay: '200ms', animationFillMode: 'both' }}>
           <img 
-            src="/lovable-uploads/a077d15e-e6ba-4de3-833a-6913d8203ffd.png" 
-            alt="Senhor Sorriso Logo" 
-            className="w-full h-full object-contain"
+            src="/lovable-uploads/239d166e-ad2a-4b8e-9fef-073da7ed8b39.png" 
+            alt="Senhor Sorriso Odontologia - Logo Oficial" 
+            className="w-full h-full object-contain p-1"
           />
         </div>
       </div>
