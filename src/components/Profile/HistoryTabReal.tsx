@@ -43,7 +43,7 @@ export const HistoryTabReal: React.FC = () => {
   return (
     <div className="space-y-6 overflow-x-hidden pb-6">
       <div className="flex items-center justify-between gap-2">
-        <h2 className="text-2xl font-bold mobile-text-xl truncate flex-1">Histórico de Consultas</h2>
+        <h2 className="text-lg font-bold truncate flex-1">Histórico de Consultas</h2>
         <Badge variant="secondary" className="px-3 py-1 mobile-text-sm flex-shrink-0">
           {appointments.length} consulta{appointments.length !== 1 ? 's' : ''}
         </Badge>

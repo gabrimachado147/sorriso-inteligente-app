@@ -37,7 +37,7 @@ const ProfilePage = () => {
           <div className="flex items-center justify-center min-h-[70vh]">
             <Card className="w-full max-w-md mx-auto mobile-card-spacing">
               <CardHeader className="text-center pb-4">
-                <CardTitle className="mobile-text-xl">Acesse sua Conta</CardTitle>
+                <CardTitle className="text-lg">Acesse sua Conta</CardTitle>
                 <p className="text-muted-foreground mobile-text-base">
                   Faça login para acessar seu perfil e histórico
                 </p>
@@ -78,7 +78,7 @@ const ProfilePage = () => {
           <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
             <User className="h-8 w-8 text-primary" />
           </div>
-          <h1 className="text-xl font-bold mobile-text-lg mb-1 truncate">
+          <h1 className="text-lg font-bold mb-1 truncate">
             {user?.user_metadata?.nome_completo || user?.email}
           </h1>
           <p className="text-muted-foreground mobile-text-sm truncate px-4">
