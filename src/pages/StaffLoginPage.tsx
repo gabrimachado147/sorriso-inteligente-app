@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { StaffLogin } from '@/components/Auth/StaffLogin';
+import { PageHead } from '@/components/SEO/PageHead';
 import { useNavigate } from 'react-router-dom';
 import { animations } from '@/lib/animations';
 
@@ -17,19 +18,27 @@ const StaffLoginPage = () => {
   };
 
   return (
-    <div className={`min-h-screen bg-background overflow-x-hidden ${animations.pageEnter}`}>
-      <div className="mobile-container px-4 py-6 flex items-center justify-center min-h-screen">
-        <div className="w-full max-w-md mx-auto">
-          <div className="text-center mb-6">
-            <h1 className="text-lg font-bold">Login da Equipe</h1>
-            <p className="text-muted-foreground mt-2">
-              Acesse o painel administrativo
-            </p>
+    <>
+      <PageHead
+        title="Login da Equipe - Senhor Sorriso"
+        description="Acesso restrito para funcionários da rede Senhor Sorriso. Faça login para acessar o painel administrativo."
+        keywords="login equipe, painel administrativo, funcionários, acesso restrito, Senhor Sorriso"
+        url="https://senhorsorrisso.com.br/staff-login"
+      />
+      <div className={`min-h-screen bg-background overflow-x-hidden ${animations.pageEnter}`}>
+        <div className="mobile-container px-4 py-6 flex items-center justify-center min-h-screen">
+          <div className="w-full max-w-md mx-auto">
+            <div className="text-center mb-6">
+              <h1 className="text-lg font-bold">Login da Equipe</h1>
+              <p className="text-muted-foreground mt-2">
+                Acesse o painel administrativo
+              </p>
+            </div>
+            <StaffLogin onLogin={handleLogin} />
           </div>
-          <StaffLogin onLogin={handleLogin} />
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

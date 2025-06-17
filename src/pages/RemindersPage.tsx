@@ -1,19 +1,28 @@
 
 import React from 'react';
 import { ReminderManager } from '@/components/Reminders/ReminderManager';
+import { PageHead } from '@/components/SEO/PageHead';
 import { animations } from '@/lib/animations';
 
 const RemindersPage = () => {
   return (
-    <div className={`space-y-6 ${animations.pageEnter}`}>
-      <div className="text-center mb-6">
-        <h1 className="text-lg font-bold mobile-text-xl">Lembretes</h1>
-        <p className="text-muted-foreground mobile-text-base mt-2">
-          Gerencie seus lembretes e notificações
-        </p>
+    <>
+      <PageHead
+        title="Lembretes - Senhor Sorriso"
+        description="Gerencie seus lembretes e notificações de consultas odontológicas na rede Senhor Sorriso."
+        keywords="lembretes, notificações, consulta odontológica, agendamento, Senhor Sorriso"
+        url="https://senhorsorrisso.com.br/reminders"
+      />
+      <div className={`space-y-6 ${animations.pageEnter}`}>
+        <div className="text-center mb-6">
+          <h1 className="text-lg font-bold mobile-text-xl">Lembretes</h1>
+          <p className="text-muted-foreground mobile-text-base mt-2">
+            Gerencie seus lembretes e notificações
+          </p>
+        </div>
+        <ReminderManager />
       </div>
-      <ReminderManager />
-    </div>
+    </>
   );
 };
 
