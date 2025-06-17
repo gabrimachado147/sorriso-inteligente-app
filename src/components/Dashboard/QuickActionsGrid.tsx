@@ -11,8 +11,8 @@ interface QuickActionsGridProps {
 export const QuickActionsGrid: React.FC<QuickActionsGridProps> = ({ onQuickAction }) => {
   const actions = [
     { icon: MessageCircle, key: 'chat', title: 'Chat IA', subtitle: 'Tire suas dúvidas' },
-    { icon: MapPin, key: 'locations', title: 'Unidades', subtitle: '5 cidades' },
-    { icon: Calendar, key: 'appointments', title: 'Agendar', subtitle: 'Nova consulta' },
+    { icon: MapPin, key: 'clinics', title: 'Unidades', subtitle: '5 cidades' },
+    { icon: Calendar, key: 'schedule', title: 'Agendar', subtitle: 'Nova consulta' },
     { icon: Phone, key: 'emergency', title: 'Urgência', subtitle: 'Contato emergência' }
   ];
 

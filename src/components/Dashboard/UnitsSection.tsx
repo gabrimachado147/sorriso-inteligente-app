@@ -7,7 +7,7 @@ import { animations } from '@/lib/animations';
 
 interface UnitsSectionProps {
   onViewUnits: () => void;
-  onScheduleClinic: (clinic: string, phone: string) => void;
+  onScheduleClinic: (clinicId?: string) => void;
 }
 
 export const UnitsSection: React.FC<UnitsSectionProps> = ({
@@ -16,11 +16,13 @@ export const UnitsSection: React.FC<UnitsSectionProps> = ({
 }) => {
   const featuredClinics = [
     {
+      id: 'campo-belo',
       name: 'Campo Belo - MG',
       address: 'Av. Afonso Pena, 151, Centro',
       phone: '(35) 99891-3803'
     },
     {
+      id: 'formiga',
       name: 'Formiga - MG', 
       address: 'R. Barão de Piumhy, 198, Centro',
       phone: '(37) 3443-0520'
@@ -47,7 +49,7 @@ export const UnitsSection: React.FC<UnitsSectionProps> = ({
                 <Button 
                   size="sm" 
                   variant="outline"
-                  onClick={() => onScheduleClinic(clinic.name, clinic.phone)}
+                  onClick={() => onScheduleClinic(clinic.id)}
                   className={`${animations.buttonHover} px-3 py-1 text-xs shrink-0`}
                 >
                   Agendar
