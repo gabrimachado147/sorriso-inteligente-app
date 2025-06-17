@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -39,25 +40,25 @@ const ChatBot = () => {
     scrollToBottom();
   }, [messages]);
 
-  // Quick actions integradas
+  // Quick actions atualizadas para focar no processo de agendamento
   const quickActions = [
     {
-      text: "Agendar consulta",
-      action: () => handleQuickAction("Quero agendar uma consulta"),
+      text: "Quero agendar uma consulta",
+      action: () => handleQuickAction("Quero agendar uma consulta. Quais serviços vocês oferecem?"),
       icon: Calendar
     },
     {
-      text: "Encontrar clínicas",
-      action: () => handleQuickAction("Onde encontro clínicas próximas?"),
+      text: "Ver clínicas disponíveis",
+      action: () => handleQuickAction("Onde ficam localizadas as clínicas da Senhor Sorriso?"),
       icon: MapPin
     },
     {
-      text: "Horários disponíveis",
-      action: () => handleQuickAction("Quais horários estão disponíveis?"),
+      text: "Consultar horários",
+      action: () => handleQuickAction("Quais são os horários de funcionamento?"),
       icon: Clock
     },
     {
-      text: "Contato emergência",
+      text: "Atendimento de emergência",
       action: () => handleQuickAction("Preciso de atendimento de emergência"),
       icon: Phone
     }
@@ -80,14 +81,14 @@ const ChatBot = () => {
   return (
     <Card className={`h-full flex flex-col ${animations.fadeIn}`}>
       <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2">
+        <CardTitle className="flex items-center gap-2 text-lg text-center justify-center">
           <Bot className="h-6 w-6 text-primary" />
           Assistente Virtual
           <Badge variant="secondary" className="ml-auto">
             {chatLoading ? 'Processando...' : 'Online'}
           </Badge>
         </CardTitle>
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-gray-600 text-center">
           Estou aqui para ajudar com seus agendamentos na Senhor Sorriso!
         </p>
       </CardHeader>

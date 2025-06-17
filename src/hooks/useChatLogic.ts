@@ -8,7 +8,7 @@ export const useChatLogic = (userPhone: string, isPhoneCollected: boolean) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
-      text: "Olá! Bem-vindo à Senhor Sorriso! 😊 Para começar, preciso do seu número de telefone para enviar as informações do agendamento.",
+      text: "Olá! Bem-vindo à Senhor Sorriso! 😊 Como posso ajudá-lo hoje? Posso te ajudar com agendamentos, informações sobre nossas clínicas ou esclarecer dúvidas sobre nossos serviços.",
       sender: 'bot',
       timestamp: new Date(),
       type: 'welcome'
@@ -44,9 +44,12 @@ export const useChatLogic = (userPhone: string, isPhoneCollected: boolean) => {
     try {
       console.log('Enviando mensagem para webhook N8N:', messageText);
       
+      // Send message with context that phone collection should be at the end
+      const contextualMessage = `CONTEXTO: Colete nome e telefone apenas no FINAL do processo de agendamento, após definir todos os detalhes (data, hora, serviço, clínica). MENSAGEM: ${messageText}`;
+      
       // Send directly to N8N webhook - no local processing
       const response = await sendMessage(
-        messageText, 
+        contextualMessage, 
         'general', 
         userPhone
       );
@@ -85,10 +88,7 @@ export const useChatLogic = (userPhone: string, isPhoneCollected: boolean) => {
   };
 
   const handleQuickAction = async (message: string) => {
-    if (!isPhoneCollected) {
-      toastError('Telefone necessário', 'Por favor, forneça seu número de telefone primeiro.');
-      return;
-    }
+    // Remove a validação de telefone para quick actions
     await handleSendMessage(message);
   };
 
