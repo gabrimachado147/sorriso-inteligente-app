@@ -1,0 +1,192 @@
+
+/* Mobile-First Utilities */
+@layer utilities {
+  /* Touch targets - mínimo 44px para acessibilidade */
+  .mobile-touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Padding responsivo para cards em mobile */
+  .mobile-card-spacing {
+    @apply p-4 overflow-hidden;
+  }
+
+  @screen md {
+    .mobile-card-spacing {
+      @apply p-6;
+    }
+  }
+
+  /* Typography responsiva */
+  .mobile-text-xs {
+    @apply text-xs truncate;
+  }
+
+  .mobile-text-sm {
+    @apply text-sm truncate;
+  }
+
+  .mobile-text-base {
+    @apply text-sm truncate;
+  }
+
+  .mobile-text-lg {
+    @apply text-base truncate;
+  }
+
+  .mobile-text-xl {
+    @apply text-lg truncate;
+  }
+
+  .mobile-text-2xl {
+    @apply text-xl truncate;
+  }
+
+  @screen md {
+    .mobile-text-base {
+      @apply text-base;
+    }
+
+    .mobile-text-lg {
+      @apply text-lg;
+    }
+
+    .mobile-text-xl {
+      @apply text-xl;
+    }
+
+    .mobile-text-2xl {
+      @apply text-2xl;
+    }
+  }
+
+  /* Safe areas para dispositivos com notch */
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-left {
+    padding-left: env(safe-area-inset-left);
+  }
+
+  .safe-right {
+    padding-right: env(safe-area-inset-right);
+  }
+
+  /* Scrolling suave para mobile */
+  .mobile-scroll {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+  }
+
+  /* Container responsivo */
+  .mobile-container {
+    @apply px-4 mx-auto max-w-md overflow-x-hidden;
+  }
+
+  @screen md {
+    .mobile-container {
+      @apply px-6 max-w-4xl;
+    }
+  }
+
+  @screen lg {
+    .mobile-container {
+      @apply px-8 max-w-6xl;
+    }
+  }
+
+  /* Grid responsivo */
+  .mobile-grid {
+    @apply grid grid-cols-1 gap-4 overflow-hidden;
+  }
+
+  @screen md {
+    .mobile-grid {
+      @apply grid-cols-2 gap-6;
+    }
+  }
+
+  @screen lg {
+    .mobile-grid {
+      @apply grid-cols-3 gap-8;
+    }
+  }
+
+  /* Botões mobile-friendly */
+  .mobile-button {
+    @apply px-6 py-3 text-base font-medium rounded-lg mobile-touch-target truncate overflow-hidden;
+  }
+
+  .mobile-button-sm {
+    @apply px-4 py-2 text-sm font-medium rounded-md mobile-touch-target truncate overflow-hidden;
+  }
+
+  .mobile-button-lg {
+    @apply px-8 py-4 text-lg font-semibold rounded-xl mobile-touch-target truncate overflow-hidden;
+  }
+
+  /* Input fields mobile-friendly */
+  .mobile-input {
+    @apply mobile-touch-target px-4 py-3 text-base rounded-lg border border-input bg-background overflow-hidden;
+  }
+
+  /* Navigation mobile */
+  .mobile-nav-item {
+    @apply mobile-touch-target flex flex-col items-center justify-center px-2 py-3 text-xs font-medium overflow-hidden;
+  }
+
+  /* Loading states */
+  .mobile-skeleton {
+    @apply animate-pulse bg-gray-200 rounded;
+  }
+
+  .mobile-skeleton-text {
+    @apply mobile-skeleton h-4 w-full mb-2;
+  }
+
+  .mobile-skeleton-button {
+    @apply mobile-skeleton h-12 w-full rounded-lg;
+  }
+
+  /* Focus states para acessibilidade */
+  .mobile-focus {
+    @apply focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:outline-none;
+  }
+
+  /* Animações otimizadas para mobile */
+  .mobile-transition {
+    @apply transition-all duration-200 ease-out;
+  }
+
+  .mobile-transform {
+    @apply transform-gpu;
+  }
+
+  /* Containers com scroll horizontal em mobile */
+  .mobile-scroll-x {
+    @apply flex overflow-x-auto mobile-scroll snap-x snap-mandatory;
+  }
+
+  .mobile-scroll-item {
+    @apply flex-shrink-0 snap-start;
+  }
+
+  /* Estados de hover apenas em desktop */
+  @media (hover: hover) {
+    .desktop-hover:hover {
+      @apply scale-105;
+    }
+  }
+
+  /* Feedback tátil para mobile */
+  .mobile-press {
+    @apply active:scale-95 mobile-transition;
+  }
+}

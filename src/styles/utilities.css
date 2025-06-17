@@ -1,0 +1,35 @@
+
+@layer utilities {
+  /* Prevent overflow utilities */
+  .no-overflow {
+    @apply overflow-hidden;
+  }
+  
+  .no-overflow-x {
+    @apply overflow-x-hidden;
+  }
+  
+  .safe-container {
+    @apply w-full max-w-full overflow-x-hidden;
+  }
+}
+
+/* Estados de loading otimizados */
+.mobile-loading {
+  @apply animate-pulse;
+}
+
+.mobile-loading::after {
+  content: '';
+  @apply absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent;
+  animation: mobile-shimmer 1.5s infinite;
+}
+
+@keyframes mobile-shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
