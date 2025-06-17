@@ -1,14 +1,23 @@
 
 import React from 'react';
-import { LazyHomePage } from '@/components/Dashboard/LazyHomePage';
+import { MainLayout } from '@/components/Layout/MainLayout';
+import { HomePage } from '@/components/Dashboard/HomePage';
+import { PageHead } from '@/components/SEO/PageHead';
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-background w-full">
-      <div className="w-full">
-        <LazyHomePage />
-      </div>
-    </div>
+    <>
+      <PageHead
+        title="Senhor Sorriso - Clínica Odontológica Oficial"
+        description="Aplicativo oficial da rede Senhor Sorriso. Agende consultas, chat com IA odontológica, avaliação gratuita e muito mais."
+        keywords="Senhor Sorriso, clínica odontológica, dentista, agendamento online, chat IA, avaliação gratuita, saúde bucal"
+        url="https://senhorsorrisso.com.br"
+        type="website"
+      />
+      <MainLayout>
+        <HomePage />
+      </MainLayout>
+    </>
   );
 };
 

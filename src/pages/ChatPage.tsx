@@ -1,19 +1,22 @@
 
 import React from 'react';
-import ChatBot from '@/components/Chat/ChatBot';
-import { animations } from '@/lib/animations';
+import { MainLayout } from '@/components/Layout/MainLayout';
+import { ChatBot } from '@/components/Chat/ChatBot';
+import { PageHead } from '@/components/SEO/PageHead';
 
 const ChatPage = () => {
   return (
-    <div className={`min-h-full w-full ${animations.pageEnter}`}>
-      <div className="text-center mb-6">
-        <h1 className="text-lg font-bold">Chat Suporte</h1>
-        <p className="text-muted-foreground mt-2">
-          Converse com nosso assistente virtual
-        </p>
-      </div>
-      <ChatBot />
-    </div>
+    <>
+      <PageHead
+        title="Chat Odontológico - Assistente IA"
+        description="Converse com nosso assistente de IA especializado em odontologia. Tire suas dúvidas sobre saúde bucal 24 horas por dia."
+        keywords="chat odontológico, IA dentista, assistente virtual, dúvidas odontologia, saúde bucal, atendimento 24h"
+        url="https://senhorsorrisso.com.br/chat"
+      />
+      <MainLayout>
+        <ChatBot />
+      </MainLayout>
+    </>
   );
 };
 

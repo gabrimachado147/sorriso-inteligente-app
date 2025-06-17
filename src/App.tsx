@@ -1,4 +1,3 @@
-
 import React, { Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -6,6 +5,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { AuthProvider } from '@/components/Auth/AuthProvider';
 import { AppProvider } from '@/store/AppContext';
 import { AccessibilityManager } from '@/components/Accessibility/AccessibilityManager';
+import { HelmetProvider } from '@/components/SEO/HelmetProvider';
 import { InstallPrompt } from '@/components/PWA/InstallPrompt';
 import { PerformanceMonitor as PerfMonitor } from '@/components/Performance/PerformanceMonitor';
 import { DevelopmentPanel } from '@/components/Layout/DevelopmentPanel';
@@ -110,36 +110,38 @@ function App() {
   }, []);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <AccessibilityManager>
-        <AppProvider>
-          <AuthProvider>
-            <Router>
-              <div className="App min-h-screen bg-background">
-                <Suspense fallback={<LoadingFallback />}>
-                  <Routes>
-                    <Route path="/" element={<IndexPage />} />
-                    <Route path="/auth" element={<AuthPage />} />
-                    <Route path="/chat" element={<ChatPage />} />
-                    <Route path="/schedule" element={<SchedulePage />} />
-                    <Route path="/clinics" element={<ClinicsPage />} />
-                    <Route path="/emergency" element={<EmergencyPage />} />
-                    <Route path="/profile" element={<ProfilePage />} />
-                    <Route path="*" element={<NotFoundPage />} />
-                  </Routes>
-                </Suspense>
-                
-                {/* Global Components */}
-                <Toaster />
-                {PRODUCTION_CONFIG.PWA_ENABLED && <InstallPrompt />}
-                {PRODUCTION_CONFIG.PERFORMANCE_MONITORING && <PerfMonitor />}
-                {import.meta.env.DEV && <DevelopmentPanel />}
-              </div>
-            </Router>
-          </AuthProvider>
-        </AppProvider>
-      </AccessibilityManager>
-    </QueryClientProvider>
+    <HelmetProvider>
+      <QueryClientProvider client={queryClient}>
+        <AccessibilityManager>
+          <AppProvider>
+            <AuthProvider>
+              <Router>
+                <div className="App min-h-screen bg-background">
+                  <Suspense fallback={<LoadingFallback />}>
+                    <Routes>
+                      <Route path="/" element={<IndexPage />} />
+                      <Route path="/auth" element={<AuthPage />} />
+                      <Route path="/chat" element={<ChatPage />} />
+                      <Route path="/schedule" element={<SchedulePage />} />
+                      <Route path="/clinics" element={<ClinicsPage />} />
+                      <Route path="/emergency" element={<EmergencyPage />} />
+                      <Route path="/profile" element={<ProfilePage />} />
+                      <Route path="*" element={<NotFoundPage />} />
+                    </Routes>
+                  </Suspense>
+                  
+                  {/* Global Components */}
+                  <Toaster />
+                  {PRODUCTION_CONFIG.PWA_ENABLED && <InstallPrompt />}
+                  {PRODUCTION_CONFIG.PERFORMANCE_MONITORING && <PerfMonitor />}
+                  {import.meta.env.DEV && <DevelopmentPanel />}
+                </div>
+              </Router>
+            </AuthProvider>
+          </AppProvider>
+        </AccessibilityManager>
+      </QueryClientProvider>
+    </HelmetProvider>
   );
 }
 
