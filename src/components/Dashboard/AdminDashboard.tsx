@@ -1,6 +1,8 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { AppointmentRecord } from '@/services/supabase/appointments';
 import { LazyDashboard } from './LazyDashboard';
+import { Badge } from '@/components/ui/badge';
+import { useAppointments } from '@/hooks/useAppointments';
 
 interface AdminDashboardProps {
   appointments: AppointmentRecord[];
@@ -10,6 +12,15 @@ interface AdminDashboardProps {
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({ appointments, stats }) => {
   // Obter clínica do usuário logado
   const loggedInClinic = sessionStorage.getItem('staffClinic');
+
+  // Filtros de dashboard
+  const [selectedClinic, setSelectedClinic] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [dateFilter, setDateFilter] = useState<string>('all');
+
+  // Mutations para atualização
+  const { updateAppointmentStatus, updateAppointmentService, /* updateAppointment */ } = useAppointments();
 
   // Filtrar agendamentos pela clínica do usuário logado PRIMEIRO
   const clinicFilteredAppointments = useMemo(() => {
