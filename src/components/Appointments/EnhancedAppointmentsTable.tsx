@@ -208,7 +208,8 @@ export const EnhancedAppointmentsTable: React.FC<EnhancedAppointmentsTableProps>
                     <TableCell>
                       <AppointmentStatusBadge
                         status={appointment.status}
-                        onStatusChange={(newStatus) => onStatusChange(appointment.id, newStatus)}
+                        appointmentId={appointment.id}
+                        onStatusChange={onStatusChange}
                         isUpdating={isUpdating}
                       />
                     </TableCell>
