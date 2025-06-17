@@ -1,12 +1,12 @@
 
 import React from 'react';
-import HomePage from '@/components/Dashboard/HomePage';
+import { LazyHomePage } from '@/components/Dashboard/LazyHomePage';
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-background w-full">
       <div className="w-full">
-        <HomePage />
+        <LazyHomePage />
       </div>
     </div>
   );

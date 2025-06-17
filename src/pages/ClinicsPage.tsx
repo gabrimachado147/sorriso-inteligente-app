@@ -1,12 +1,12 @@
 
 import React from 'react';
-import LocationsPage from '@/components/Locations/LocationsPage';
+import { LazyLocationsPage } from '@/components/Locations/LazyLocationsPage';
 
 const ClinicsPage = () => {
   return (
     <div className="min-h-screen bg-background w-full">
       <div className="w-full">
-        <LocationsPage />
+        <LazyLocationsPage />
       </div>
     </div>
   );
