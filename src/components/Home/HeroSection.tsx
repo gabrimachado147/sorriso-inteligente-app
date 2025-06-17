@@ -49,7 +49,7 @@ export const HeroSection: React.FC = () => {
         <div className={`bg-primary/10 mobile-card-spacing rounded-lg inline-block mobile-scale-in ${animations.fadeInUp} text-center`}
              style={{ animationDelay: '600ms', animationFillMode: 'both' }}>
           <p className="text-lg text-primary font-medium mobile-text-base">
-            Bem-vindo de volta, {user.user_metadata?.nome_completo || user.email?.split('@')[0] || 'usuário'}! 😊
+            Bem-vindo de volta, {user.user_metadata?.full_name || user.email?.split('@')[0] || 'usuário'}! 😊
           </p>
         </div>
       )}
