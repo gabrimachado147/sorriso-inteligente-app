@@ -38,7 +38,7 @@ export interface CreateAppointmentData {
 
 type AppointmentRow = Tables<'appointments'>;
 
-const normalizeAppointment = (data: AppointmentRow): AppointmentRecord => ({
+const normalizeAppointment = (data: any): AppointmentRecord => ({
   id: data.id,
   name: data.name,
   phone: data.phone,
