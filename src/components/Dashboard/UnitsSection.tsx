@@ -55,7 +55,6 @@ export const UnitsSection: React.FC<UnitsSectionProps> = memo(({
                 <div className="flex-1 min-w-0">
                   <h4 className="font-medium text-sm">{clinic.name}</h4>
                   <p className="text-xs text-gray-600 mt-1">{clinic.address}</p>
-                  <p className="text-xs text-gray-500 mt-1">{clinic.phone}</p>
                 </div>
                 <Button 
                   size="sm" 
