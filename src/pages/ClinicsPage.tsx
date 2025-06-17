@@ -12,6 +12,10 @@ const ClinicsPage = () => {
         description="Encontre a clínica Senhor Sorriso mais próxima de você. Endereços, telefones e horários de funcionamento de todas as unidades."
         keywords="clínicas Senhor Sorriso, localização, endereço, telefone, horário funcionamento, unidades"
         url="https://senhorsorrisso.com.br/clinics"
+        breadcrumbs={[
+          { name: "Início", url: "https://senhorsorrisso.com.br/" },
+          { name: "Nossas Clínicas", url: "https://senhorsorrisso.com.br/clinics" }
+        ]}
       />
       <MainLayout>
         <LocationsPage />

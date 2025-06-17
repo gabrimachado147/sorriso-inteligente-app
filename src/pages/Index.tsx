@@ -13,6 +13,9 @@ const Index = () => {
         keywords="Senhor Sorriso, clínica odontológica, dentista, agendamento online, chat IA, avaliação gratuita, saúde bucal"
         url="https://senhorsorrisso.com.br"
         type="website"
+        breadcrumbs={[
+          { name: "Início", url: "https://senhorsorrisso.com.br/" }
+        ]}
       />
       <MainLayout>
         <HomePage />
