@@ -64,28 +64,28 @@ export const StaffLogin: React.FC<StaffLoginProps> = ({ onLogin }) => {
 
   return (
     <Card className={`w-full mobile-card-spacing ${animations.fadeIn}`}>
-      <CardHeader className="space-y-1 text-center">
-        <div className="flex items-center justify-center mb-4">
+      <CardHeader className="space-y-1 text-center pb-6">
+        <div className="flex items-center justify-center mb-6">
           <div className="bg-primary rounded-full p-3">
             <Lock className="h-6 w-6 text-white" />
           </div>
         </div>
         <CardTitle className="text-lg text-center">Acesso Funcionários</CardTitle>
-        <p className="text-sm text-muted-foreground text-center">
+        <p className="text-sm text-muted-foreground text-center mt-2">
           Selecione sua clínica e digite a senha para acessar os agendamentos
         </p>
       </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="clinic">Clínica</Label>
+      <CardContent className="pt-0">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-3">
+            <Label htmlFor="clinic" className="text-sm font-medium">Clínica</Label>
             <div className="relative">
-              <Building2 className="absolute left-3 top-3 h-4 w-4 text-gray-400 z-10" />
               <Select value={selectedClinic} onValueChange={setSelectedClinic}>
-                <SelectTrigger className="pl-10 mobile-input">
+                <SelectTrigger className="h-12 pl-12 mobile-input text-left">
+                  <Building2 className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 z-10 pointer-events-none" />
                   <SelectValue placeholder="Selecione sua clínica" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="z-50 bg-white border shadow-lg">
                   {CLINIC_OPTIONS.map((clinic) => (
                     <SelectItem key={clinic.value} value={clinic.value}>
                       {clinic.label}
@@ -96,32 +96,32 @@ export const StaffLogin: React.FC<StaffLoginProps> = ({ onLogin }) => {
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="password">Senha</Label>
+          <div className="space-y-3">
+            <Label htmlFor="password" className="text-sm font-medium">Senha</Label>
             <div className="relative">
-              <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
               <Input
                 id="password"
                 type="password"
                 placeholder="Digite a senha da clínica"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="pl-10 mobile-input"
+                className="h-12 pl-12 mobile-input"
                 required
               />
+              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
             </div>
           </div>
 
           {error && (
-            <div className="flex items-center gap-2 text-red-600 text-sm">
-              <AlertCircle className="h-4 w-4" />
-              {error}
+            <div className="flex items-center gap-2 text-red-600 text-sm bg-red-50 p-3 rounded-md">
+              <AlertCircle className="h-4 w-4 flex-shrink-0" />
+              <span>{error}</span>
             </div>
           )}
 
           <Button 
             type="submit" 
-            className="w-full mobile-button" 
+            className="w-full h-12 mobile-button text-base font-medium" 
             disabled={isLoading || !selectedClinic}
           >
             {isLoading ? 'Entrando...' : 'Entrar'}
