@@ -34,7 +34,7 @@ export const useOptimizedQuery = <T = any>(
 ): PaginatedResult<T> => {
   const {
     table,
-    select = '*',
+    select = 'id, created_at', // More specific default selection
     filters = {},
     orderBy,
     pageSize = 20,
@@ -79,13 +79,14 @@ export const useOptimizedQuery = <T = any>(
       const start = (page - 1) * pageSize;
       const end = start + pageSize - 1;
 
-      // Build query - use any type to avoid strict table typing issues
+      // Build query with optimized selection
       let query = (supabase as any).from(table).select(select, { count: 'exact' });
 
-      // Apply filters
+      // Apply filters with optimized operators
       Object.entries(debouncedFilters).forEach(([key, value]) => {
         if (value !== undefined && value !== null && value !== '') {
-          if (typeof value === 'string') {
+          if (typeof value === 'string' && value.length > 2) {
+            // Use ilike for text search only if string is long enough
             query = query.ilike(key, `%${value}%`);
           } else {
             query = query.eq(key, value);
@@ -93,9 +94,12 @@ export const useOptimizedQuery = <T = any>(
         }
       });
 
-      // Apply ordering
+      // Apply ordering with index-friendly columns
       if (orderBy) {
         query = query.order(orderBy.column, { ascending: orderBy.ascending ?? true });
+      } else {
+        // Default to created_at for better performance with indexes
+        query = query.order('created_at', { ascending: false });
       }
 
       // Apply pagination
@@ -113,7 +117,7 @@ export const useOptimizedQuery = <T = any>(
       setData(fetchedData);
       setTotalCount(total);
 
-      // Cache the result
+      // Cache the result with timestamp
       if (cacheKey) {
         setCache({
           data: fetchedData,
@@ -122,7 +126,7 @@ export const useOptimizedQuery = <T = any>(
         });
       }
 
-      console.log(`Fetched ${fetchedData.length} items from ${table}`);
+      console.log(`Fetched ${fetchedData.length} items from ${table} (page ${page})`);
     } catch (err) {
       console.error('Query error:', err);
       setError(err instanceof Error ? err.message : 'Erro desconhecido');
@@ -170,18 +174,22 @@ export const useOptimizedQuery = <T = any>(
     setCurrentPage(1);
   }, [table, select, debouncedFilters, orderBy, pageSize]);
 
-  // Setup realtime subscription
+  // Setup realtime subscription with proper cleanup
   useEffect(() => {
     if (!realtime) return;
 
     console.log('Setting up realtime subscription for:', table);
     
     const subscription = supabase
-      .channel(`realtime-${table}`)
+      .channel(`realtime-${table}-${Date.now()}`)
       .on('postgres_changes', 
         { event: '*', schema: 'public', table },
         (payload) => {
           console.log('Realtime update:', payload);
+          // Invalidate cache and refetch
+          if (cacheKey) {
+            setCache(null as any);
+          }
           refetch();
         }
       )
@@ -191,7 +199,7 @@ export const useOptimizedQuery = <T = any>(
       console.log('Cleaning up realtime subscription');
       subscription.unsubscribe();
     };
-  }, [table, realtime, refetch]);
+  }, [table, realtime, refetch, cacheKey, setCache]);
 
   return {
     data,
