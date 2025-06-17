@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -53,67 +52,141 @@ export const MasterDashboardCharts: React.FC<MasterDashboardChartsProps> = ({
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <Card className="border-blue-200">
-        <CardHeader>
-          <CardTitle className="text-blue-700">Performance por Clínica</CardTitle>
+      <Card className="border-blue-200 shadow-md">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-blue-700 text-lg font-semibold">Performance por Clínica</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-0">
           {clinicStats.length > 0 ? (
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={clinicStats.slice(0, 6)} margin={{ bottom: 80, left: 20, right: 20 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis 
-                  dataKey="name" 
-                  angle={-45} 
-                  textAnchor="end" 
-                  height={100}
-                  fontSize={11}
-                  interval={0}
-                />
-                <YAxis />
-                <Tooltip 
-                  formatter={(value, name) => [
-                    value, 
-                    name === 'appointments' ? 'Agendamentos' : 'Confirmados'
-                  ]}
-                  labelFormatter={(label) => `Clínica: ${label}`}
-                />
-                <Bar dataKey="appointments" fill="#3b82f6" name="Agendamentos" />
-                <Bar dataKey="confirmed" fill="#10b981" name="Confirmados" />
-              </BarChart>
-            </ResponsiveContainer>
+            <div className="w-full h-[320px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart 
+                  data={clinicStats.slice(0, 6)} 
+                  margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
+                  barCategoryGap="20%"
+                >
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                  <XAxis 
+                    dataKey="name" 
+                    tick={false}
+                    axisLine={false}
+                    height={20}
+                  />
+                  <YAxis 
+                    fontSize={12}
+                    stroke="#666"
+                  />
+                  <Tooltip 
+                    formatter={(value, name) => [
+                      value, 
+                      name === 'appointments' ? 'Agendamentos' : 'Confirmados'
+                    ]}
+                    labelFormatter={(label) => `Clínica: ${label}`}
+                    contentStyle={{
+                      backgroundColor: '#fff',
+                      border: '1px solid #e2e8f0',
+                      borderRadius: '8px',
+                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                    }}
+                  />
+                  <Bar 
+                    dataKey="appointments" 
+                    fill="#3b82f6" 
+                    name="Agendamentos" 
+                    radius={[4, 4, 0, 0]}
+                  />
+                  <Bar 
+                    dataKey="confirmed" 
+                    fill="#10b981" 
+                    name="Confirmados" 
+                    radius={[4, 4, 0, 0]}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
           ) : (
-            <div className="flex items-center justify-center h-[300px] text-gray-500">
-              Sem dados de clínicas
+            <div className="flex items-center justify-center h-[320px] text-gray-500">
+              <div className="text-center">
+                <div className="w-12 h-12 mx-auto mb-3 bg-gray-100 rounded-full flex items-center justify-center">
+                  <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                </div>
+                <p className="text-sm">Sem dados de clínicas</p>
+              </div>
             </div>
           )}
         </CardContent>
       </Card>
 
-      <Card className="border-green-200">
-        <CardHeader>
-          <CardTitle className="text-green-700">Tendência Mensal</CardTitle>
+      <Card className="border-green-200 shadow-md">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-green-700 text-lg font-semibold">Tendência Mensal</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-0">
           {monthlyTrend.length > 0 ? (
-            <ResponsiveContainer width="100%" height={300}>
-              <AreaChart data={monthlyTrend}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip 
-                  formatter={(value, name) => [
-                    value,
-                    name === 'agendamentos' ? 'Agendamentos' : 'Conversões'
-                  ]}
-                />
-                <Area type="monotone" dataKey="agendamentos" stackId="1" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.6} />
-                <Area type="monotone" dataKey="conversoes" stackId="1" stroke="#10b981" fill="#10b981" fillOpacity={0.6} />
-              </AreaChart>
-            </ResponsiveContainer>
+            <div className="w-full h-[320px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart 
+                  data={monthlyTrend}
+                  margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                  <XAxis 
+                    dataKey="month" 
+                    fontSize={12}
+                    stroke="#666"
+                    tickMargin={8}
+                  />
+                  <YAxis 
+                    fontSize={12}
+                    stroke="#666"
+                    tickMargin={8}
+                  />
+                  <Tooltip 
+                    formatter={(value, name) => [
+                      value,
+                      name === 'agendamentos' ? 'Agendamentos' : 'Conversões'
+                    ]}
+                    labelFormatter={(label) => `Mês: ${label}`}
+                    contentStyle={{
+                      backgroundColor: '#fff',
+                      border: '1px solid #e2e8f0',
+                      borderRadius: '8px',
+                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                    }}
+                  />
+                  <Area 
+                    type="monotone" 
+                    dataKey="agendamentos" 
+                    stackId="1" 
+                    stroke="#3b82f6" 
+                    fill="#3b82f6" 
+                    fillOpacity={0.6}
+                    strokeWidth={2}
+                  />
+                  <Area 
+                    type="monotone" 
+                    dataKey="conversoes" 
+                    stackId="1" 
+                    stroke="#10b981" 
+                    fill="#10b981" 
+                    fillOpacity={0.6}
+                    strokeWidth={2}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
           ) : (
-            <div className="flex items-center justify-center h-[300px] text-gray-500">
-              Sem dados mensais
+            <div className="flex items-center justify-center h-[320px] text-gray-500">
+              <div className="text-center">
+                <div className="w-12 h-12 mx-auto mb-3 bg-gray-100 rounded-full flex items-center justify-center">
+                  <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+                  </svg>
+                </div>
+                <p className="text-sm">Sem dados mensais</p>
+              </div>
             </div>
           )}
         </CardContent>
