@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Lock, Building2, AlertCircle } from 'lucide-react';
+import { Lock, AlertCircle } from 'lucide-react';
 import { animations } from '@/lib/animations';
 
 interface StaffLoginProps {
@@ -79,37 +79,31 @@ export const StaffLogin: React.FC<StaffLoginProps> = ({ onLogin }) => {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-3">
             <Label htmlFor="clinic" className="text-sm font-medium">Clínica</Label>
-            <div className="relative">
-              <Select value={selectedClinic} onValueChange={setSelectedClinic}>
-                <SelectTrigger className="h-12 pl-12 mobile-input text-left">
-                  <Building2 className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 z-10 pointer-events-none" />
-                  <SelectValue placeholder="Selecione sua clínica" />
-                </SelectTrigger>
-                <SelectContent className="z-50 bg-white border shadow-lg">
-                  {CLINIC_OPTIONS.map((clinic) => (
-                    <SelectItem key={clinic.value} value={clinic.value}>
-                      {clinic.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <Select value={selectedClinic} onValueChange={setSelectedClinic}>
+              <SelectTrigger className="h-12 mobile-input text-left">
+                <SelectValue placeholder="Selecione sua clínica" />
+              </SelectTrigger>
+              <SelectContent className="z-50 bg-white border shadow-lg">
+                {CLINIC_OPTIONS.map((clinic) => (
+                  <SelectItem key={clinic.value} value={clinic.value}>
+                    {clinic.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-3">
             <Label htmlFor="password" className="text-sm font-medium">Senha</Label>
-            <div className="relative">
-              <Input
-                id="password"
-                type="password"
-                placeholder="Digite a senha da clínica"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="h-12 pl-12 mobile-input"
-                required
-              />
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-            </div>
+            <Input
+              id="password"
+              type="password"
+              placeholder="Digite a senha da clínica"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="h-12 mobile-input"
+              required
+            />
           </div>
 
           {error && (
