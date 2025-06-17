@@ -21,6 +21,8 @@ const ChatPage = React.lazy(() => import('@/pages/ChatPage'));
 const SchedulePage = React.lazy(() => import('@/pages/SchedulePage'));
 const ClinicsPage = React.lazy(() => import('@/pages/ClinicsPage'));
 const ProfilePage = React.lazy(() => import('@/pages/ProfilePage'));
+const StaffLoginPage = React.lazy(() => import('@/pages/StaffLoginPage'));
+const AdminDashboardPage = React.lazy(() => import('@/pages/AdminDashboardPage'));
 const NotFoundPage = React.lazy(() => import('@/pages/NotFound'));
 
 // Create QueryClient with production-ready defaults
@@ -124,6 +126,8 @@ function App() {
                       <Route path="/schedule" element={<SchedulePage />} />
                       <Route path="/clinics" element={<ClinicsPage />} />
                       <Route path="/profile" element={<ProfilePage />} />
+                      <Route path="/staff-login" element={<StaffLoginPage />} />
+                      <Route path="/admin-dashboard" element={<AdminDashboardPage />} />
                       <Route path="*" element={<NotFoundPage />} />
                     </Routes>
                   </Suspense>
