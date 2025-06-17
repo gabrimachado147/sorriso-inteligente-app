@@ -12,10 +12,6 @@ const SchedulePage = () => {
         description="Agende sua consulta odontológica online na rede Senhor Sorriso. Horários disponíveis, avaliação gratuita e atendimento de qualidade."
         keywords="agendar consulta, dentista, agendamento online, horário disponível, consulta odontológica, Senhor Sorriso"
         url="https://senhorsorrisso.com.br/schedule"
-        breadcrumbs={[
-          { name: "Início", url: "https://senhorsorrisso.com.br/" },
-          { name: "Agendar Consulta", url: "https://senhorsorrisso.com.br/schedule" }
-        ]}
       />
       <div className={`space-y-6 ${animations.pageEnter}`}>
         <AppointmentSchedulerReal />
