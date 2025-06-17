@@ -2,44 +2,15 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, Clock, MapPin, Stethoscope, Phone } from 'lucide-react';
+import { Calendar, Clock, MapPin, Stethoscope } from 'lucide-react';
 import { animations } from '@/lib/animations';
 import { useRealUserAppointments } from '@/hooks/useRealUserAppointments';
+import { AppointmentActions } from '@/components/Appointments/AppointmentActions';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case 'confirmed':
-      return 'bg-green-100 text-green-800';
-    case 'completed':
-      return 'bg-blue-100 text-blue-800';
-    case 'cancelled':
-      return 'bg-red-100 text-red-800';
-    case 'no_show':
-      return 'bg-orange-100 text-orange-800';
-    default:
-      return 'bg-gray-100 text-gray-800';
-  }
-};
-
-const getStatusText = (status: string) => {
-  switch (status) {
-    case 'confirmed':
-      return 'Confirmado';
-    case 'completed':
-      return 'Concluído';
-    case 'cancelled':
-      return 'Cancelado';
-    case 'no_show':
-      return 'Não Compareceu';
-    default:
-      return status;
-  }
-};
-
 export const HistoryTabReal: React.FC = () => {
-  const { appointments, loading } = useRealUserAppointments();
+  const { appointments, loading, refetch } = useRealUserAppointments();
 
   if (loading) {
     return (
@@ -86,9 +57,10 @@ export const HistoryTabReal: React.FC = () => {
                 <CardTitle className="text-lg">
                   {appointment.service}
                 </CardTitle>
-                <Badge className={getStatusColor(appointment.status)}>
-                  {getStatusText(appointment.status)}
-                </Badge>
+                <AppointmentActions
+                  appointment={appointment}
+                  onUpdate={refetch}
+                />
               </div>
             </CardHeader>
             <CardContent className="space-y-3">
