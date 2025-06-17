@@ -35,10 +35,9 @@ const LocationsPage: React.FC = () => {
   
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const { clinics: realClinics, loading: clinicsLoading } = useClinics();
+  const { clinics: realClinics } = useClinics();
   
   console.log('LocationsPage: realClinics:', realClinics);
-  console.log('LocationsPage: clinicsLoading:', clinicsLoading);
   
   const [filters, setFilters] = useState<FilterState>({
     search: '',
@@ -183,7 +182,7 @@ const LocationsPage: React.FC = () => {
   console.log('LocationsPage: Renderizando, isLoading:', isLoading);
   console.log('LocationsPage: filteredClinics:', filteredClinics);
 
-  if (isLoading || clinicsLoading) {
+  if (isLoading) {
     return (
       <div className="p-6 space-y-6">
         <EnhancedSkeleton variant="clinic-card" count={3} />
