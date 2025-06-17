@@ -20,6 +20,7 @@ export const useDashboardState = () => {
       const timer = setTimeout(() => setSchedulingLoading(false), 5000);
       return () => clearTimeout(timer);
     }
+    return () => {}; // Always return a cleanup function
   }, [schedulingLoading]);
 
   useEffect(() => {
@@ -27,6 +28,7 @@ export const useDashboardState = () => {
       const timer = setTimeout(() => setChatLoading(false), 5000);
       return () => clearTimeout(timer);
     }
+    return () => {}; // Always return a cleanup function
   }, [chatLoading]);
 
   return {
