@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import { MainLayout } from '@/components/Layout/MainLayout';
@@ -138,7 +139,7 @@ const App = () => {
   return (
     <Router>
       <div className="App">
-        <MainLayout currentPage={currentPage} onPageChange={handlePageChange}>
+        <MainLayout>
           <Routes>
             <Route path="/" element={<SimpleHomePage onNavigate={handleNavigate} />} />
             <Route path="/home" element={<SimpleHomePage onNavigate={handleNavigate} />} />

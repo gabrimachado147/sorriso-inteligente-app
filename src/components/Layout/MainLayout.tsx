@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Header } from './Header';
-import { BottomNavigation } from './BottomNavigation';
+import BottomNavigation from './BottomNavigation';
 import { DevelopmentPanel } from './DevelopmentPanel';
 import { isDevelopment } from '@/config/development';
 
