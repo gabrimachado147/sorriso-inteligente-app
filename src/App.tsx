@@ -11,14 +11,14 @@ import { errorTracker } from '@/services/errorTracking';
 import { PRODUCTION_CONFIG } from '@/config/production';
 
 // Lazy load pages for better performance
-const IndexPage = React.lazy(() => import('@/pages/IndexPage'));
+const IndexPage = React.lazy(() => import('@/pages/Index'));
 const AuthPage = React.lazy(() => import('@/pages/AuthPage'));
 const ChatPage = React.lazy(() => import('@/pages/ChatPage'));
 const SchedulePage = React.lazy(() => import('@/pages/SchedulePage'));
 const ClinicsPage = React.lazy(() => import('@/pages/ClinicsPage'));
 const EmergencyPage = React.lazy(() => import('@/pages/EmergencyPage'));
 const ProfilePage = React.lazy(() => import('@/pages/ProfilePage'));
-const NotFoundPage = React.lazy(() => import('@/pages/NotFoundPage'));
+const NotFoundPage = React.lazy(() => import('@/pages/NotFound'));
 
 // Create QueryClient with production-ready defaults
 const queryClient = new QueryClient({

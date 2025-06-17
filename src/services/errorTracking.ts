@@ -1,3 +1,5 @@
+import React from 'react';
+
 interface ErrorContext {
   userId?: string;
   url: string;
@@ -100,12 +102,15 @@ export const createErrorBoundary = (component: string) => {
 
     render() {
       if (this.state.hasError) {
-        return (
-          <div className="p-4 text-center text-red-600">
-            <h3>Ops! Algo deu errado</h3>
-            <p className="text-sm">Recarregue a página ou tente novamente mais tarde.</p>
-          </div>
-        );
+        return React.createElement('div', {
+          className: 'p-4 text-center text-red-600'
+        }, [
+          React.createElement('h3', { key: 'title' }, 'Ops! Algo deu errado'),
+          React.createElement('p', { 
+            key: 'message',
+            className: 'text-sm' 
+          }, 'Recarregue a página ou tente novamente mais tarde.')
+        ]);
       }
 
       return this.props.children;
