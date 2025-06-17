@@ -170,7 +170,7 @@ export class SecurityService {
    * Log security events (without sensitive data)
    */
   static logSecurityEvent(event: string, details?: Record<string, any>): void {
-    const logData = {
+    const logData: Record<string, any> = {
       timestamp: new Date().toISOString(),
       event,
       userAgent: navigator.userAgent,
@@ -179,9 +179,9 @@ export class SecurityService {
     };
     
     // Remove any potentially sensitive data
-    delete logData.password;
-    delete logData.token;
-    delete logData.email;
+    if ('password' in logData) delete logData.password;
+    if ('token' in logData) delete logData.token;
+    if ('email' in logData) delete logData.email;
     
     console.log('Security Event:', logData);
     
