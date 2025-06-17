@@ -1,22 +1,17 @@
 
 import React from 'react';
-import InstitutionalHeader from '@/components/Institutional/InstitutionalHeader';
-import InstitutionalFooter from '@/components/Institutional/InstitutionalFooter';
+import InstitutionalLayout from '@/components/Institutional/InstitutionalLayout';
 
-interface InstitutionalLayoutProps {
+interface InstitutionalLayoutPageProps {
   children: React.ReactNode;
 }
 
-const InstitutionalLayout: React.FC<InstitutionalLayoutProps> = ({ children }) => {
+const InstitutionalLayoutPage: React.FC<InstitutionalLayoutPageProps> = ({ children }) => {
   return (
-    <div className="min-h-screen flex flex-col">
-      <InstitutionalHeader />
-      <main className="flex-1">
-        {children}
-      </main>
-      <InstitutionalFooter />
-    </div>
+    <InstitutionalLayout>
+      {children}
+    </InstitutionalLayout>
   );
 };
 
-export default InstitutionalLayout;
+export default InstitutionalLayoutPage;
