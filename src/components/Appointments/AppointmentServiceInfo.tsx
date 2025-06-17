@@ -27,6 +27,14 @@ export const AppointmentServiceInfo: React.FC<AppointmentServiceInfoProps> = ({
     setIsEditing(false);
   };
 
+  const formatPrice = (price?: number) => {
+    if (!price || price === 0) return null;
+    return `R$ ${price.toLocaleString('pt-BR', { 
+      minimumFractionDigits: 2, 
+      maximumFractionDigits: 2 
+    })}`;
+  };
+
   if (isEditing) {
     return (
       <ServiceEditor
@@ -42,11 +50,11 @@ export const AppointmentServiceInfo: React.FC<AppointmentServiceInfoProps> = ({
     <div className="flex items-center gap-2">
       <div className="flex-1">
         <p className="text-sm font-medium truncate">{appointment.service}</p>
-        {(appointment as any).price && (
+        {(appointment as any).price && (appointment as any).price > 0 && (
           <div className="flex items-center gap-1 text-xs text-green-600 mt-1">
             <DollarSign className="h-3 w-3" />
             <span className="truncate">
-              R$ {(appointment as any).price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+              {formatPrice((appointment as any).price)}
             </span>
           </div>
         )}

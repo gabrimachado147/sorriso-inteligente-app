@@ -19,7 +19,9 @@ export const ServiceEditor: React.FC<ServiceEditorProps> = ({
   onCancel
 }) => {
   const [selectedService, setSelectedService] = useState(service);
-  const [servicePrice, setServicePrice] = useState(price || 0);
+  const [priceValue, setPriceValue] = useState(
+    price ? `R$ ${price.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : 'R$ 0,00'
+  );
 
   const services = [
     'Limpeza',
@@ -32,8 +34,43 @@ export const ServiceEditor: React.FC<ServiceEditorProps> = ({
     'Prótese'
   ];
 
+  const formatCurrency = (value: string) => {
+    // Remove tudo que não é dígito
+    const numericValue = value.replace(/\D/g, '');
+    
+    // Se não há valor, retorna R$ 0,00
+    if (!numericValue) return 'R$ 0,00';
+    
+    // Converte para centavos
+    const cents = parseInt(numericValue);
+    const reais = cents / 100;
+    
+    // Formata como moeda brasileira
+    return `R$ ${reais.toLocaleString('pt-BR', { 
+      minimumFractionDigits: 2, 
+      maximumFractionDigits: 2 
+    })}`;
+  };
+
+  const parseCurrencyToNumber = (currencyString: string): number => {
+    // Remove "R$" e espaços, substitui vírgula por ponto
+    const numericString = currencyString
+      .replace('R$', '')
+      .trim()
+      .replace(/\./g, '') // Remove pontos de milhares
+      .replace(',', '.'); // Substitui vírgula decimal por ponto
+    
+    return parseFloat(numericString) || 0;
+  };
+
+  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formattedValue = formatCurrency(e.target.value);
+    setPriceValue(formattedValue);
+  };
+
   const handleSave = () => {
-    onSave(selectedService, servicePrice || undefined);
+    const numericPrice = parseCurrencyToNumber(priceValue);
+    onSave(selectedService, numericPrice > 0 ? numericPrice : undefined);
   };
 
   return (
@@ -52,13 +89,11 @@ export const ServiceEditor: React.FC<ServiceEditorProps> = ({
       </Select>
       
       <Input
-        type="number"
-        value={servicePrice}
-        onChange={(e) => setServicePrice(Number(e.target.value))}
-        placeholder="Preço"
-        className="w-20"
-        min="0"
-        step="0.01"
+        type="text"
+        value={priceValue}
+        onChange={handlePriceChange}
+        placeholder="R$ 0,00"
+        className="w-24 text-sm"
       />
       
       <Button size="sm" onClick={handleSave} className="h-8 w-8 p-0">
