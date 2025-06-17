@@ -63,8 +63,9 @@ class PerformanceMonitor {
       setTimeout(() => {
         const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
         
-        this.recordMetric('DOM_CONTENT_LOADED', navigation.domContentLoadedEventEnd - navigation.navigationStart);
-        this.recordMetric('LOAD_COMPLETE', navigation.loadEventEnd - navigation.navigationStart);
+        // Usar propriedades corretas da PerformanceNavigationTiming
+        this.recordMetric('DOM_CONTENT_LOADED', navigation.domContentLoadedEventEnd - navigation.fetchStart);
+        this.recordMetric('LOAD_COMPLETE', navigation.loadEventEnd - navigation.fetchStart);
         this.recordMetric('DNS_LOOKUP', navigation.domainLookupEnd - navigation.domainLookupStart);
         this.recordMetric('TCP_CONNECTION', navigation.connectEnd - navigation.connectStart);
         this.recordMetric('SERVER_RESPONSE', navigation.responseEnd - navigation.requestStart);
