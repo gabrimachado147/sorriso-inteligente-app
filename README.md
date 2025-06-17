@@ -221,3 +221,9 @@ O projeto utiliza Supabase para autenticação, banco de dados e realtime. A con
 ---
 
 🦷 **Senhor Sorriso** - Cuidando do seu sorriso com tecnologia e carinho.
+
+## 🔎 Relatório Lighthouse CI
+
+A cada deploy, um relatório automático de qualidade é gerado pelo Lighthouse CI:
+
+- [Relatório mais recente (Lighthouse CI)](https://storage.googleapis.com/lighthouse-infrastructure.appspot.com/reports/1750125994743-64127.report.html)
