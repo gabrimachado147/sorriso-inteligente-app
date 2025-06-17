@@ -128,27 +128,42 @@ export const AdminAppointmentActions: React.FC<AdminAppointmentActionsProps> = (
   };
 
   return (
-    <>
+    <div className="flex items-center justify-center">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="h-8 w-8 p-0 data-[state=open]:bg-muted">
+          <Button 
+            variant="ghost" 
+            className="h-8 w-8 p-0 hover:bg-gray-100 focus:bg-gray-100 data-[state=open]:bg-gray-100"
+          >
             <span className="sr-only">Abrir menu</span>
             <MoreHorizontal className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-48 z-50 bg-white border shadow-lg">
-          <DropdownMenuLabel>Ações</DropdownMenuLabel>
-          <DropdownMenuSeparator />
+        <DropdownMenuContent 
+          align="end" 
+          className="w-48 z-[60] bg-white border shadow-lg rounded-md p-1"
+          sideOffset={5}
+        >
+          <DropdownMenuLabel className="px-2 py-1.5 text-sm font-semibold text-gray-700">
+            Ações
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator className="my-1 bg-gray-200" />
           
           {appointment.phone && (
-            <DropdownMenuItem onClick={() => handleContact('phone')} className="cursor-pointer">
+            <DropdownMenuItem 
+              onClick={() => handleContact('phone')} 
+              className="cursor-pointer flex items-center px-2 py-1.5 text-sm hover:bg-gray-100 rounded-sm"
+            >
               <Phone className="mr-2 h-4 w-4" />
               Ligar para paciente
             </DropdownMenuItem>
           )}
           
           {appointment.email && (
-            <DropdownMenuItem onClick={() => handleContact('email')} className="cursor-pointer">
+            <DropdownMenuItem 
+              onClick={() => handleContact('email')} 
+              className="cursor-pointer flex items-center px-2 py-1.5 text-sm hover:bg-gray-100 rounded-sm"
+            >
               <Mail className="mr-2 h-4 w-4" />
               Enviar email
             </DropdownMenuItem>
@@ -156,14 +171,17 @@ export const AdminAppointmentActions: React.FC<AdminAppointmentActionsProps> = (
           
           {canModify && (
             <>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => setIsRescheduleOpen(true)} className="cursor-pointer">
+              <DropdownMenuSeparator className="my-1 bg-gray-200" />
+              <DropdownMenuItem 
+                onClick={() => setIsRescheduleOpen(true)} 
+                className="cursor-pointer flex items-center px-2 py-1.5 text-sm hover:bg-gray-100 rounded-sm"
+              >
                 <Calendar className="mr-2 h-4 w-4" />
                 Reagendar
               </DropdownMenuItem>
               <DropdownMenuItem 
                 onClick={() => setIsCancelOpen(true)}
-                className="text-red-600 cursor-pointer focus:text-red-600"
+                className="text-red-600 cursor-pointer flex items-center px-2 py-1.5 text-sm hover:bg-red-50 rounded-sm focus:text-red-600"
               >
                 <X className="mr-2 h-4 w-4" />
                 Cancelar consulta
@@ -171,10 +189,10 @@ export const AdminAppointmentActions: React.FC<AdminAppointmentActionsProps> = (
             </>
           )}
           
-          <DropdownMenuSeparator />
+          <DropdownMenuSeparator className="my-1 bg-gray-200" />
           <DropdownMenuItem 
             onClick={() => setIsDeleteOpen(true)}
-            className="text-red-600 focus:text-red-600 cursor-pointer"
+            className="text-red-600 focus:text-red-600 cursor-pointer flex items-center px-2 py-1.5 text-sm hover:bg-red-50 rounded-sm"
           >
             <Trash2 className="mr-2 h-4 w-4" />
             Excluir permanentemente
@@ -280,6 +298,6 @@ export const AdminAppointmentActions: React.FC<AdminAppointmentActionsProps> = (
         appointment={appointment}
         isDeleting={loading}
       />
-    </>
+    </div>
   );
 };
