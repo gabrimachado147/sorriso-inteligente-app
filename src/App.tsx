@@ -5,6 +5,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom";
 import { MainLayout } from "@/components/Layout/MainLayout";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { LoadingScreen } from "@/components/LoadingScreen";
 import Index from "./pages/Index";
 import ChatPage from "./pages/ChatPage";
 import SchedulePage from "./pages/SchedulePage";
@@ -29,8 +31,9 @@ import "./App.css";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 60 * 1000, // 1 minute
+      staleTime: 60 * 1000,
       retry: 1,
+      refetchOnWindowFocus: false,
     },
   },
 });
@@ -46,31 +49,33 @@ const AppContent = () => {
   useNotificationIntegration();
 
   return (
-    <div className="w-full min-h-screen mobile-scroll">
-      <Routes>
-        <Route path="/" element={<MainLayout><Outlet /></MainLayout>}>
-          <Route index element={<Index />} />
-          <Route path="chat" element={<ChatPage />} />
-          <Route path="schedule" element={<SchedulePage />} />
-          <Route path="clinics" element={<ClinicsPage />} />
-          <Route path="emergency" element={<EmergencyPage />} />
-          <Route path="profile" element={<ProfilePage />} />
-          <Route path="auth" element={<AuthPage />} />
-          <Route path="analytics" element={<AnalyticsPage />} />
-          <Route path="gamification" element={<GamificationPage />} />
-          <Route path="reminders" element={<RemindersPage />} />
-          <Route path="accessibility" element={<AccessibilityPage />} />
-          <Route path="pwa-settings" element={<PWASettingsPage onNavigate={() => {}} />} />
-          <Route path="appointments" element={<AppointmentsPageReal />} />
-          <Route path="404" element={<NotFound />} />
-          <Route path="*" element={<Navigate to="/404" replace />} />
-        </Route>
-        
-        {/* Rotas sem layout principal para staff */}
-        <Route path="/staff-login" element={<StaffLoginPage />} />
-        <Route path="/admin-dashboard" element={<AdminDashboardPage />} />
-      </Routes>
-    </div>
+    <ErrorBoundary>
+      <div className="w-full min-h-screen mobile-scroll">
+        <Routes>
+          <Route path="/" element={<MainLayout><Outlet /></MainLayout>}>
+            <Route index element={<Index />} />
+            <Route path="chat" element={<ChatPage />} />
+            <Route path="schedule" element={<SchedulePage />} />
+            <Route path="clinics" element={<ClinicsPage />} />
+            <Route path="emergency" element={<EmergencyPage />} />
+            <Route path="profile" element={<ProfilePage />} />
+            <Route path="auth" element={<AuthPage />} />
+            <Route path="analytics" element={<AnalyticsPage />} />
+            <Route path="gamification" element={<GamificationPage />} />
+            <Route path="reminders" element={<RemindersPage />} />
+            <Route path="accessibility" element={<AccessibilityPage />} />
+            <Route path="pwa-settings" element={<PWASettingsPage onNavigate={() => {}} />} />
+            <Route path="appointments" element={<AppointmentsPageReal />} />
+            <Route path="404" element={<NotFound />} />
+            <Route path="*" element={<Navigate to="/404" replace />} />
+          </Route>
+          
+          {/* Rotas sem layout principal para staff */}
+          <Route path="/staff-login" element={<StaffLoginPage />} />
+          <Route path="/admin-dashboard" element={<AdminDashboardPage />} />
+        </Routes>
+      </div>
+    </ErrorBoundary>
   );
 };
 

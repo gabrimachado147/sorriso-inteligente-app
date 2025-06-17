@@ -1,285 +1,180 @@
 
-/**
- * Authentication Hook for Sorriso Inteligente PWA
- * Provides authentication state management and user operations
- */
+import { useState, useEffect, createContext, useContext } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import type { User, Session } from '@supabase/supabase-js';
 
-import { useState, useEffect, useCallback } from 'react';
-import { User, Session } from '@supabase/supabase-js';
-import { 
-  AuthService, 
-  type AuthResponse, 
-  type LoginCredentials
-} from '../services/auth';
-
-// Simplified register credentials for our system
-export interface SimpleRegisterCredentials {
-  email: string;
-  password: string;
-  nome_completo: string;
-  telefone: string;
-}
-
-interface UseAuthReturn {
-  // State
+interface AuthState {
   user: User | null;
-  session: Session | null;
+  hasSession: boolean;
   loading: boolean;
   error: string | null;
-  
-  // Actions
-  login: (credentials: LoginCredentials) => Promise<AuthResponse>;
-  register: (credentials: SimpleRegisterCredentials) => Promise<AuthResponse>;
-  logout: () => Promise<AuthResponse>;
-  resetPassword: (email: string) => Promise<AuthResponse>;
-  updatePassword: (newPassword: string) => Promise<AuthResponse>;
-  clearError: () => void;
-  
-  // Utilities
   isAuthenticated: boolean;
 }
 
-export const useAuth = (): UseAuthReturn => {
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+interface AuthContextType extends AuthState {
+  signIn: (email: string, password: string) => Promise<{ error: any }>;
+  signUp: (email: string, password: string, fullName: string, phone: string) => Promise<{ error: any }>;
+  signOut: () => Promise<void>;
+  resetPassword: (email: string) => Promise<{ error: any }>;
+}
 
-  // Initialize authentication state
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+// Singleton pattern to prevent multiple initializations
+let authInitialized = false;
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context) {
+    return context;
+  }
+
+  // Fallback hook implementation
+  const [authState, setAuthState] = useState<AuthState>({
+    user: null,
+    hasSession: false,
+    loading: true,
+    error: null,
+    isAuthenticated: false
+  });
+
   useEffect(() => {
+    if (authInitialized) return;
+    authInitialized = true;
+
+    console.info('useAuth: Initializing auth...');
+
     const initAuth = async () => {
       try {
-        console.log('useAuth: Initializing auth...');
-        setLoading(true);
+        const { data: { session }, error } = await supabase.auth.getSession();
         
-        // Get current session
-        const currentSession = await AuthService.getCurrentSession();
-        console.log('useAuth: Current session:', currentSession);
-        
-        setSession(currentSession);
-        
-        if (currentSession?.user) {
-          setUser(currentSession.user);
-          console.log('useAuth: User found in session:', currentSession.user.email);
-        } else {
-          console.log('useAuth: No user found in session');
+        if (error) {
+          console.error('useAuth: Session error:', error);
+          setAuthState(prev => ({ 
+            ...prev, 
+            error: error.message, 
+            loading: false 
+          }));
+          return;
         }
-      } catch (err) {
-        console.error('useAuth: Auth initialization error:', err);
-        setError('Erro ao inicializar autenticação');
-      } finally {
-        console.log('useAuth: Auth initialization complete');
-        setLoading(false);
+
+        console.info('useAuth: Current session:', session ? 'Found' : 'None');
+        
+        setAuthState(prev => ({
+          ...prev,
+          user: session?.user || null,
+          hasSession: !!session,
+          isAuthenticated: !!session?.user,
+          loading: false,
+          error: null
+        }));
+
+        console.info('useAuth: Auth initialization complete');
+      } catch (error) {
+        console.error('useAuth: Initialization error:', error);
+        setAuthState(prev => ({ 
+          ...prev, 
+          error: 'Failed to initialize auth', 
+          loading: false 
+        }));
       }
     };
 
-    initAuth();
-
-    // Listen for auth state changes
-    console.log('useAuth: Setting up auth state listener...');
-    const { data: { subscription } } = AuthService.onAuthStateChange(
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('useAuth: Auth state changed:', event, session);
+        console.info('useAuth: Auth state changed:', event, session ? 'Session exists' : 'No session');
         
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        if (event === 'SIGNED_IN') {
-          console.log('useAuth: User signed in successfully');
-          setError(null);
-        } else if (event === 'SIGNED_OUT') {
-          console.log('useAuth: User signed out');
-          setError(null);
-        }
-        
-        setLoading(false);
+        setAuthState(prev => ({
+          ...prev,
+          user: session?.user || null,
+          hasSession: !!session,
+          isAuthenticated: !!session?.user,
+          loading: false,
+          error: null
+        }));
       }
     );
 
+    initAuth();
+
     return () => {
-      console.log('useAuth: Cleaning up auth state listener');
       subscription.unsubscribe();
+      authInitialized = false;
     };
   }, []);
 
-  // Login function
-  const login = useCallback(async (credentials: LoginCredentials): Promise<AuthResponse> => {
+  const signIn = async (email: string, password: string) => {
     try {
-      console.log('useAuth: Starting login process...');
-      console.log('useAuth: Login credentials email:', credentials.email);
-      setLoading(true);
-      setError(null);
+      setAuthState(prev => ({ ...prev, loading: true, error: null }));
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
       
-      const response = await AuthService.login(credentials);
-      console.log('useAuth: Login response:', response);
-      
-      if (!response.success) {
-        console.error('useAuth: Login failed with error:', response.error);
-        let errorMessage = 'Erro ao fazer login';
-        
-        if (response.error?.includes('Invalid login credentials')) {
-          errorMessage = 'Email ou senha inválidos';
-        } else if (response.error?.includes('Load failed')) {
-          errorMessage = 'Erro de conexão. Verifique sua internet e tente novamente.';
-        }
-        
-        setError(errorMessage);
-      } else {
-        console.log('useAuth: Login successful in hook');
-        setError(null);
+      if (error) {
+        setAuthState(prev => ({ ...prev, error: error.message, loading: false }));
       }
       
-      return response;
-    } catch (err) {
-      console.error('useAuth: Login error:', err);
-      const errorMessage = 'Erro de conexão. Verifique sua internet e tente novamente.';
-      setError(errorMessage);
-      return { success: false, error: errorMessage };
-    } finally {
-      console.log('useAuth: Login process complete, setting loading to false');
-      setLoading(false);
+      return { error };
+    } catch (error: any) {
+      const errorMessage = 'Erro ao fazer login';
+      setAuthState(prev => ({ ...prev, error: errorMessage, loading: false }));
+      return { error: { message: errorMessage } };
     }
-  }, []);
+  };
 
-  // Register function - updated for email-based system
-  const register = useCallback(async (credentials: SimpleRegisterCredentials): Promise<AuthResponse> => {
+  const signUp = async (email: string, password: string, fullName: string, phone: string) => {
     try {
-      console.log('useAuth: Starting registration process...');
-      setLoading(true);
-      setError(null);
+      setAuthState(prev => ({ ...prev, loading: true, error: null }));
       
-      const response = await AuthService.register({
-        email: credentials.email,
-        password: credentials.password,
-        name: credentials.nome_completo,
-        phone: credentials.telefone
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: fullName,
+            phone: phone
+          }
+        }
       });
       
-      console.log('useAuth: Registration response:', response);
-      
-      if (!response.success) {
-        let errorMessage = 'Erro ao criar conta';
-        
-        if (response.error?.includes('User already registered')) {
-          errorMessage = 'Este email já está cadastrado';
-        } else if (response.error?.includes('Load failed')) {
-          errorMessage = 'Erro de conexão. Verifique sua internet e tente novamente.';
-        }
-        
-        setError(errorMessage);
-      } else {
-        setError(null);
+      if (error) {
+        setAuthState(prev => ({ ...prev, error: error.message, loading: false }));
       }
       
-      return response;
-    } catch (err) {
-      console.error('useAuth: Registration error:', err);
-      const errorMessage = 'Erro de conexão. Verifique sua internet e tente novamente.';
-      setError(errorMessage);
-      return { success: false, error: errorMessage };
-    } finally {
-      setLoading(false);
+      return { error };
+    } catch (error: any) {
+      const errorMessage = 'Erro ao criar conta';
+      setAuthState(prev => ({ ...prev, error: errorMessage, loading: false }));
+      return { error: { message: errorMessage } };
     }
-  }, []);
+  };
 
-  // Logout function
-  const logout = useCallback(async (): Promise<AuthResponse> => {
+  const signOut = async () => {
     try {
-      setLoading(true);
-      setError(null);
-      
-      const response = await AuthService.logout();
-      
-      if (!response.success) {
-        setError(response.error || 'Erro ao sair');
-      } else {
-        setUser(null);
-        setSession(null);
-      }
-      
-      return response;
-    } catch (err) {
-      const error = err instanceof Error ? err.message : 'Erro ao sair';
-      setError(error);
-      return { success: false, error };
-    } finally {
-      setLoading(false);
+      setAuthState(prev => ({ ...prev, loading: true }));
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.error('useAuth: Sign out error:', error);
     }
-  }, []);
+  };
 
-  // Reset password function
-  const resetPassword = useCallback(async (email: string): Promise<AuthResponse> => {
+  const resetPassword = async (email: string) => {
     try {
-      setError(null);
-      
-      const response = await AuthService.resetPassword(email);
-      
-      if (!response.success) {
-        setError(response.error || 'Erro ao redefinir senha');
-      }
-      
-      return response;
-    } catch (err) {
-      const error = err instanceof Error ? err.message : 'Erro ao redefinir senha';
-      setError(error);
-      return { success: false, error };
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`
+      });
+      return { error };
+    } catch (error: any) {
+      return { error: { message: 'Erro ao enviar email de recuperação' } };
     }
-  }, []);
-
-  // Update password function
-  const updatePassword = useCallback(async (newPassword: string): Promise<AuthResponse> => {
-    try {
-      setError(null);
-      
-      const response = await AuthService.updatePassword(newPassword);
-      
-      if (!response.success) {
-        setError(response.error || 'Erro ao atualizar senha');
-      }
-      
-      return response;
-    } catch (err) {
-      const error = err instanceof Error ? err.message : 'Erro ao atualizar senha';
-      setError(error);
-      return { success: false, error };
-    }
-  }, []);
-
-  // Clear error function
-  const clearError = useCallback(() => {
-    setError(null);
-  }, []);
-
-  // Computed values
-  const isAuthenticated = !!session && !!user;
-
-  // Debug logs
-  console.log('useAuth: Current state:', { 
-    user: user?.email, 
-    hasSession: !!session, 
-    loading, 
-    error, 
-    isAuthenticated 
-  });
+  };
 
   return {
-    // State
-    user,
-    session,
-    loading,
-    error,
-    
-    // Actions
-    login,
-    register,
-    logout,
-    resetPassword,
-    updatePassword,
-    clearError,
-    
-    // Utilities
-    isAuthenticated
+    ...authState,
+    signIn,
+    signUp,
+    signOut,
+    resetPassword
   };
 };
 
-export default useAuth;
+export { AuthContext };
