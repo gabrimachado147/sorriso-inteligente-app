@@ -52,7 +52,6 @@ export const AppointmentsTable: React.FC<AppointmentsTableProps> = ({
                 <TableHead className="min-w-[120px]">Serviço</TableHead>
                 <TableHead className="min-w-[100px]">Clínica</TableHead>
                 <TableHead className="min-w-[100px]">Status</TableHead>
-                <TableHead className="min-w-[80px] text-center">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

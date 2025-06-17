@@ -8,7 +8,6 @@ import { AppointmentContactInfo } from './AppointmentContactInfo';
 import { AppointmentDateTime } from './AppointmentDateTime';
 import { AppointmentServiceInfo } from './AppointmentServiceInfo';
 import { AppointmentStatusBadge } from './AppointmentStatusBadge';
-import { AdminAppointmentActions } from './AdminAppointmentActions';
 
 interface AppointmentRowProps {
   appointment: AppointmentRecord;
@@ -74,14 +73,6 @@ export const AppointmentRow: React.FC<AppointmentRowProps> = ({
           appointmentId={appointment.id}
           onStatusChange={onStatusChange}
           isUpdating={isUpdating}
-        />
-      </TableCell>
-
-      <TableCell>
-        <AdminAppointmentActions
-          appointment={appointment}
-          onUpdate={() => window.location.reload()}
-          onDelete={onDelete}
         />
       </TableCell>
     </TableRow>
