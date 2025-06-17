@@ -14,6 +14,9 @@ export interface AppointmentRecord {
   notes?: string;
   source?: string;
   price?: number;
+  original_price?: number;
+  discount_percent?: number;
+  payment_method?: string;
   created_at: string;
   updated_at: string;
   clinic_filter?: string;
@@ -48,6 +51,9 @@ const normalizeAppointment = (data: AppointmentRow): AppointmentRecord => ({
   notes: data.notes || undefined,
   source: data.source || undefined,
   price: data.price || undefined,
+  original_price: data.original_price || undefined,
+  discount_percent: data.discount_percent || undefined,
+  payment_method: data.payment_method || undefined,
   created_at: data.created_at,
   updated_at: data.updated_at,
   clinic_filter: data.clinic_filter || undefined
@@ -192,17 +198,30 @@ export class AppointmentService {
   }
 
   /**
-   * Update appointment service and price
+   * Update appointment service, price, discount and payment method
    */
   static async updateAppointmentService(
     appointmentId: string,
     service: string,
-    price?: number
+    price?: number,
+    originalPrice?: number,
+    discountPercent?: number,
+    paymentMethod?: string
   ): Promise<AppointmentRecord> {
     try {
       const updateData: any = { service };
+      
       if (price !== undefined) {
         updateData.price = price;
+      }
+      if (originalPrice !== undefined) {
+        updateData.original_price = originalPrice;
+      }
+      if (discountPercent !== undefined) {
+        updateData.discount_percent = discountPercent;
+      }
+      if (paymentMethod !== undefined) {
+        updateData.payment_method = paymentMethod;
       }
 
       const { data, error } = await supabase

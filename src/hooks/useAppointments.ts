@@ -61,22 +61,28 @@ export const useAppointments = (phone?: string) => {
     }
   })
 
-  // Update appointment service and price
+  // Update appointment service, price, discount and payment method
   const updateAppointmentService = useMutation({
     mutationFn: async ({ 
       appointmentId, 
       service,
-      price 
+      price,
+      originalPrice,
+      discountPercent,
+      paymentMethod
     }: { 
       appointmentId: string
       service: string
       price?: number
+      originalPrice?: number
+      discountPercent?: number
+      paymentMethod?: string
     }) => {
-      return AppointmentService.updateAppointmentService(appointmentId, service, price)
+      return AppointmentService.updateAppointmentService(appointmentId, service, price, originalPrice, discountPercent, paymentMethod)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['appointments'] })
-      toastSuccess('Serviço Atualizado', 'Serviço e valor atualizados com sucesso')
+      toastSuccess('Serviço Atualizado', 'Serviço, valor e forma de pagamento atualizados com sucesso')
     },
     onError: (error) => {
       toastError('Erro', 'Não foi possível atualizar o serviço')
