@@ -3,111 +3,54 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { MainLayout } from "@/components/Layout/MainLayout";
-import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { LoadingScreen } from "@/components/LoadingScreen";
+import InstitutionalLayout from "@/components/Institutional/InstitutionalLayout";
+
+// Main PWA App Pages
 import Index from "./pages/Index";
-import ChatPage from "./pages/ChatPage";
 import SchedulePage from "./pages/SchedulePage";
 import ClinicsPage from "./pages/ClinicsPage";
-import EmergencyPage from "./pages/EmergencyPage";
+import ChatPage from "./pages/ChatPage";
 import ProfilePage from "./pages/ProfilePage";
-import AuthPage from "./pages/AuthPage";
-import AnalyticsPage from "./pages/AnalyticsPage";
-import GamificationPage from "./pages/GamificationPage";
-import RemindersPage from "./pages/RemindersPage";
-import AccessibilityPage from "./pages/AccessibilityPage";
-import { PWASettingsPage } from "./pages/PWASettingsPage";
-import AppointmentsPageReal from "./pages/AppointmentsPageReal";
 import StaffLoginPage from "./pages/StaffLoginPage";
-import AdminDashboardPage from "./pages/AdminDashboardPage";
-import NotFound from "./pages/NotFound";
+import AppointmentDetailsPage from "./pages/AppointmentDetailsPage";
 
-// Institutional Site Components
-import InstitutionalLayout from "./pages/InstitutionalLayout";
+// Institutional Website Pages
 import InstitutionalHome from "./pages/InstitutionalHome";
 import AboutPage from "./pages/AboutPage";
+import ServicesPage from "./components/Institutional/ServicesPage";
+import LocationsPage from "./components/Institutional/LocationsPage";
+import ContactPage from "./components/Institutional/ContactPage";
 
-import { useAnalytics } from "./hooks/useAnalytics";
-import { useRealtimeSync } from "./hooks/useRealtimeSync";
-import { useNotificationIntegration } from "./hooks/useNotificationIntegration";
-import "./App.css";
+const queryClient = new QueryClient();
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 60 * 1000,
-      retry: 1,
-      refetchOnWindowFocus: false,
-    },
-  },
-});
-
-const AppContent = () => {
-  // Initialize analytics
-  useAnalytics();
-  
-  // Initialize realtime sync
-  useRealtimeSync();
-  
-  // Initialize notifications
-  useNotificationIntegration();
-
-  return (
-    <ErrorBoundary>
-      <div className="w-full min-h-screen mobile-scroll">
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <TooltipProvider>
+      <Toaster />
+      <Sonner />
+      <BrowserRouter>
         <Routes>
-          {/* Site Institucional Routes */}
-          <Route path="/site" element={<InstitutionalLayout><Outlet /></InstitutionalLayout>}>
-            <Route index element={<InstitutionalHome />} />
-            <Route path="about" element={<AboutPage />} />
-            <Route path="services" element={<div>Services Page - Em desenvolvimento</div>} />
-            <Route path="locations" element={<div>Locations Page - Em desenvolvimento</div>} />
-            <Route path="blog" element={<div>Blog Page - Em desenvolvimento</div>} />
-            <Route path="contact" element={<div>Contact Page - Em desenvolvimento</div>} />
-          </Route>
-
-          {/* PWA App Routes */}
-          <Route path="/" element={<MainLayout><Outlet /></MainLayout>}>
-            <Route index element={<Index />} />
-            <Route path="chat" element={<ChatPage />} />
-            <Route path="schedule" element={<SchedulePage />} />
-            <Route path="clinics" element={<ClinicsPage />} />
-            <Route path="emergency" element={<EmergencyPage />} />
-            <Route path="profile" element={<ProfilePage />} />
-            <Route path="auth" element={<AuthPage />} />
-            <Route path="analytics" element={<AnalyticsPage />} />
-            <Route path="gamification" element={<GamificationPage />} />
-            <Route path="reminders" element={<RemindersPage />} />
-            <Route path="accessibility" element={<AccessibilityPage />} />
-            <Route path="pwa-settings" element={<PWASettingsPage onNavigate={() => {}} />} />
-            <Route path="appointments" element={<AppointmentsPageReal />} />
-            <Route path="404" element={<NotFound />} />
-            <Route path="*" element={<Navigate to="/404" replace />} />
-          </Route>
+          {/* Main PWA App Routes */}
+          <Route path="/" element={<MainLayout><Index /></MainLayout>} />
+          <Route path="/schedule" element={<MainLayout><SchedulePage /></MainLayout>} />
+          <Route path="/clinics" element={<MainLayout><ClinicsPage /></MainLayout>} />
+          <Route path="/chat" element={<MainLayout><ChatPage /></MainLayout>} />
+          <Route path="/profile" element={<MainLayout><ProfilePage /></MainLayout>} />
+          <Route path="/staff-login" element={<MainLayout><StaffLoginPage /></MainLayout>} />
+          <Route path="/appointment/:id" element={<MainLayout><AppointmentDetailsPage /></MainLayout>} />
           
-          {/* Rotas sem layout principal para staff */}
-          <Route path="/staff-login" element={<StaffLoginPage />} />
-          <Route path="/admin-dashboard" element={<AdminDashboardPage />} />
+          {/* Institutional Website Routes */}
+          <Route path="/site" element={<InstitutionalLayout><InstitutionalHome /></InstitutionalLayout>} />
+          <Route path="/site/about" element={<InstitutionalLayout><AboutPage /></InstitutionalLayout>} />
+          <Route path="/site/services" element={<InstitutionalLayout><ServicesPage /></InstitutionalLayout>} />
+          <Route path="/site/locations" element={<InstitutionalLayout><LocationsPage /></InstitutionalLayout>} />
+          <Route path="/site/contact" element={<InstitutionalLayout><ContactPage /></InstitutionalLayout>} />
         </Routes>
-      </div>
-    </ErrorBoundary>
-  );
-};
-
-function App() {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <AppContent />
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
-  );
-}
+      </BrowserRouter>
+    </TooltipProvider>
+  </QueryClientProvider>
+);
 
 export default App;

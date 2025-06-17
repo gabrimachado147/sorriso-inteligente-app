@@ -1,22 +1,13 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Phone, Clock, CheckCircle, ArrowRight } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from '@/components/ui/use-toast';
-import { 
-  Calendar, 
-  MapPin, 
-  Phone, 
-  Clock,
-  CheckCircle,
-  Gift
-} from 'lucide-react';
+import { animations } from '@/lib/animations';
+import { cn } from '@/lib/utils';
 
 interface LeadCaptureFormProps {
   source?: string;
@@ -25,20 +16,19 @@ interface LeadCaptureFormProps {
 }
 
 const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({ 
-  source = 'website',
-  campaign = 'avaliacao-gratuita',
-  className = ''
+  source = 'institutional_website',
+  campaign = 'lead_capture',
+  className 
 }) => {
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
     email: '',
     clinic: '',
-    service: '',
-    message: '',
-    preferredTime: ''
+    service: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const clinics = [
     'Campo Belo - MG',
@@ -52,18 +42,10 @@ const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
     'Avaliação Gratuita',
     'Implantodontia',
     'Ortodontia',
-    'Limpeza Dental', 
+    'Limpeza Dental',
     'Clareamento',
     'Prótese Dentária',
-    'Endodontia',
-    'Urgência Odontológica'
-  ];
-
-  const timePreferences = [
-    'Manhã (8h às 12h)',
-    'Tarde (13h às 17h)',
-    'Final da tarde (17h às 19h)',
-    'Sábado pela manhã'
+    'Endodontia'
   ];
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -71,219 +53,185 @@ const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
     setIsSubmitting(true);
 
     try {
-      // Save lead to Supabase
-      const { error } = await supabase
-        .from('contacts')
+      // Create appointment
+      const { error: appointmentError } = await supabase
+        .from('appointments')
         .insert({
-          nome: formData.name,
-          telefone: formData.phone,
+          name: formData.name,
+          phone: formData.phone,
           email: formData.email,
-          empresa: formData.clinic,
-          objetivo: `${formData.service} - ${formData.message}`,
-          stage: 'new_lead',
-          click_id: `${source}_${campaign}_${Date.now()}`
+          clinic: formData.clinic,
+          service: formData.service,
+          date: new Date().toISOString().split('T')[0], // Today's date
+          time: 'A definir',
+          status: 'pending',
+          source: source,
+          notes: `Lead capturado via ${campaign}`
         });
 
-      if (error) throw error;
+      if (appointmentError) throw appointmentError;
 
-      // Save to appointments if it's for scheduling
-      if (formData.service !== 'Avaliação Gratuita') {
-        await supabase
-          .from('appointments')
-          .insert({
-            name: formData.name,
-            phone: formData.phone,
-            email: formData.email,
+      // Track analytics event
+      await supabase
+        .from('analytics_events')
+        .insert({
+          event_type: 'lead_captured',
+          data: {
+            source,
+            campaign,
             clinic: formData.clinic,
-            service: formData.service,
-            date: new Date().toISOString().split('T')[0],
-            time: '09:00',
-            status: 'pending',
-            notes: `Horário preferido: ${formData.preferredTime}. Mensagem: ${formData.message}`,
-            source: source
-          });
-      }
+            service: formData.service
+          }
+        });
 
-      toast({
-        title: "Solicitação Enviada!",
-        description: "Em breve entraremos em contato para confirmar seu agendamento.",
-      });
-
-      // Reset form
-      setFormData({
-        name: '',
-        phone: '',
-        email: '',
-        clinic: '',
-        service: '',
-        message: '',
-        preferredTime: ''
-      });
-
-      // Track conversion event
-      console.log('Lead converted:', {
-        source,
-        campaign,
-        service: formData.service,
-        clinic: formData.clinic
-      });
+      setIsSuccess(true);
+      
+      // Reset form after success
+      setTimeout(() => {
+        setIsSuccess(false);
+        setFormData({ name: '', phone: '', email: '', clinic: '', service: '' });
+      }, 3000);
 
     } catch (error) {
-      console.error('Error submitting form:', error);
-      toast({
-        title: "Erro ao enviar",
-        description: "Tente novamente ou entre em contato via WhatsApp.",
-        variant: "destructive"
-      });
+      console.error('Erro ao capturar lead:', error);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleInputChange = (field: string, value: string) => {
+  const handleChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  if (isSuccess) {
+    return (
+      <Card className={cn('mobile-card-spacing', animations.scaleIn, className)}>
+        <CardContent className="text-center py-8">
+          <CheckCircle className="h-16 w-16 text-green-600 mx-auto mb-4" />
+          <h3 className="mobile-text-xl font-bold text-green-600 mb-2">
+            Agendamento Recebido!
+          </h3>
+          <p className="text-gray-600 mobile-text-base mb-6">
+            Entraremos em contato em até 2 horas para confirmar sua avaliação gratuita.
+          </p>
+          <Button 
+            onClick={() => window.open('https://wa.me/5535998695479', '_blank')}
+            className="bg-green-600 hover:bg-green-700 mobile-button"
+          >
+            <Phone className="mr-2 h-4 w-4" />
+            Falar no WhatsApp Agora
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
-    <Card className={`w-full max-w-md ${className}`}>
+    <Card className={cn('mobile-card-spacing', animations.fadeInUp, className)}>
       <CardHeader className="text-center">
-        <div className="flex items-center justify-center gap-2 mb-2">
-          <Gift className="h-6 w-6 text-yellow-500" />
-          <Badge className="bg-yellow-500 text-black">OFERTA ESPECIAL</Badge>
-        </div>
-        <CardTitle className="text-2xl">Avaliação 100% Gratuita</CardTitle>
-        <p className="text-gray-600">Preencha o formulário e agende agora mesmo</p>
+        <CardTitle className="mobile-text-xl md:text-2xl">
+          🎯 Agende sua Avaliação Gratuita
+        </CardTitle>
+        <p className="text-gray-600 mobile-text-base">
+          Preencha os dados abaixo e receba seu plano de tratamento personalizado
+        </p>
       </CardHeader>
+      
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="name">Nome Completo *</Label>
+            <Label htmlFor="name" className="mobile-text-base">Nome Completo *</Label>
             <Input
               id="name"
               value={formData.name}
-              onChange={(e) => handleInputChange('name', e.target.value)}
+              onChange={(e) => handleChange('name', e.target.value)}
               placeholder="Seu nome completo"
               required
+              className="mobile-input mobile-focus"
             />
           </div>
 
           <div>
-            <Label htmlFor="phone">WhatsApp *</Label>
+            <Label htmlFor="phone" className="mobile-text-base">WhatsApp *</Label>
             <Input
               id="phone"
               type="tel"
               value={formData.phone}
-              onChange={(e) => handleInputChange('phone', e.target.value)}
+              onChange={(e) => handleChange('phone', e.target.value)}
               placeholder="(00) 00000-0000"
               required
+              className="mobile-input mobile-focus"
             />
           </div>
 
           <div>
-            <Label htmlFor="email">E-mail</Label>
+            <Label htmlFor="email" className="mobile-text-base">E-mail</Label>
             <Input
               id="email"
               type="email"
               value={formData.email}
-              onChange={(e) => handleInputChange('email', e.target.value)}
+              onChange={(e) => handleChange('email', e.target.value)}
               placeholder="seu@email.com"
+              className="mobile-input mobile-focus"
             />
           </div>
 
           <div>
-            <Label htmlFor="clinic">Unidade de Preferência *</Label>
-            <Select value={formData.clinic} onValueChange={(value) => handleInputChange('clinic', value)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Escolha a unidade" />
-              </SelectTrigger>
-              <SelectContent>
-                {clinics.map((clinic) => (
-                  <SelectItem key={clinic} value={clinic}>
-                    <div className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4" />
-                      {clinic}
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Label htmlFor="clinic" className="mobile-text-base">Unidade Preferida *</Label>
+            <select
+              id="clinic"
+              value={formData.clinic}
+              onChange={(e) => handleChange('clinic', e.target.value)}
+              required
+              className="mobile-input mobile-focus w-full"
+            >
+              <option value="">Selecione uma unidade</option>
+              {clinics.map(clinic => (
+                <option key={clinic} value={clinic}>{clinic}</option>
+              ))}
+            </select>
           </div>
 
           <div>
-            <Label htmlFor="service">Tratamento de Interesse *</Label>
-            <Select value={formData.service} onValueChange={(value) => handleInputChange('service', value)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Escolha o tratamento" />
-              </SelectTrigger>
-              <SelectContent>
-                {services.map((service) => (
-                  <SelectItem key={service} value={service}>
-                    {service}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Label htmlFor="service" className="mobile-text-base">Tratamento de Interesse</Label>
+            <select
+              id="service"
+              value={formData.service}
+              onChange={(e) => handleChange('service', e.target.value)}
+              className="mobile-input mobile-focus w-full"
+            >
+              <option value="">Selecione um tratamento</option>
+              {services.map(service => (
+                <option key={service} value={service}>{service}</option>
+              ))}
+            </select>
           </div>
 
-          <div>
-            <Label htmlFor="preferredTime">Horário de Preferência</Label>
-            <Select value={formData.preferredTime} onValueChange={(value) => handleInputChange('preferredTime', value)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Escolha o horário" />
-              </SelectTrigger>
-              <SelectContent>
-                {timePreferences.map((time) => (
-                  <SelectItem key={time} value={time}>
-                    <div className="flex items-center gap-2">
-                      <Clock className="h-4 w-4" />
-                      {time}
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div>
-            <Label htmlFor="message">Observações</Label>
-            <Textarea
-              id="message"
-              value={formData.message}
-              onChange={(e) => handleInputChange('message', e.target.value)}
-              placeholder="Conte-nos sobre sua necessidade..."
-              rows={3}
-            />
+          <div className="flex items-center gap-2 p-3 bg-blue-50 rounded-lg">
+            <Clock className="h-5 w-5 text-blue-600 flex-shrink-0" />
+            <p className="mobile-text-sm text-blue-700">
+              Resposta em até 2 horas • Avaliação 100% gratuita
+            </p>
           </div>
 
           <Button 
             type="submit" 
-            className="w-full bg-blue-600 hover:bg-blue-700" 
-            disabled={isSubmitting || !formData.name || !formData.phone || !formData.clinic || !formData.service}
+            disabled={isSubmitting || !formData.name || !formData.phone || !formData.clinic}
+            className="w-full bg-blue-600 hover:bg-blue-700 mobile-button mobile-press"
           >
             {isSubmitting ? (
-              'Enviando...'
+              <>Enviando...</>
             ) : (
               <>
-                <Calendar className="mr-2 h-4 w-4" />
                 Agendar Avaliação Gratuita
+                <ArrowRight className="ml-2 h-4 w-4" />
               </>
             )}
           </Button>
 
-          <div className="space-y-2 text-xs text-gray-500">
-            <div className="flex items-center gap-2">
-              <CheckCircle className="h-4 w-4 text-green-500" />
-              <span>Sem taxa de adesão</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle className="h-4 w-4 text-green-500" />
-              <span>Atendimento no mesmo dia</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle className="h-4 w-4 text-green-500" />
-              <span>Financiamento em até 24x</span>
-            </div>
-          </div>
+          <p className="text-xs text-gray-500 text-center mobile-text-xs">
+            Ao enviar, você concorda com nossos termos de uso e política de privacidade.
+          </p>
         </form>
       </CardContent>
     </Card>
