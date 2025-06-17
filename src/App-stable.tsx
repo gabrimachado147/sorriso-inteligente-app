@@ -1,11 +1,9 @@
-
 import React, { useState } from 'react';
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import { MainLayout } from '@/components/Layout/MainLayout';
 import LocationsPage from '@/components/Locations/LocationsPage';
 import AppointmentScheduler from '@/components/Appointments/AppointmentScheduler';
 import ChatPage from '@/pages/ChatPage';
-import EmergencyPage from '@/pages/EmergencyPage';
 import ProfilePage from '@/pages/ProfilePage';
 import NotFound from '@/pages/NotFound';
 import { Toaster } from '@/components/ui/toaster';
@@ -148,7 +146,6 @@ const App = () => {
             <Route path="/appointments" element={<AppointmentScheduler />} />
             <Route path="/schedule" element={<AppointmentScheduler />} />
             <Route path="/chat" element={<ChatPage />} />
-            <Route path="/emergency" element={<EmergencyPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
