@@ -4,7 +4,7 @@ import { EnhancedSkeleton } from '@/components/ui/enhanced-skeleton';
 
 const LocationsPage = React.lazy(() => import('./LocationsPage'));
 
-const LocationsPageSkeleton = () => (
+const LocationsPageSkeleton: React.FC = () => (
   <div className="p-6 space-y-6">
     <div className="space-y-2">
       <EnhancedSkeleton className="h-8 w-64" />

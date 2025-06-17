@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from './useAuth';
 import { useUserProfile } from './useUserProfile';
+import { useClinics } from './useClinics';
+import { useAppointmentValidation } from './useAppointmentValidation';
 import { RealAppointmentService } from '@/services/supabase/realAppointments';
 import { toastSuccess, toastError } from '@/components/ui/custom-toast';
 
@@ -10,6 +12,7 @@ export const useAppointmentSchedulerLogicReal = (rescheduleId: string | null) =>
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
   const { profile } = useUserProfile();
+  const { clinics } = useClinics();
   const [searchParams] = useSearchParams();
   
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
@@ -19,39 +22,8 @@ export const useAppointmentSchedulerLogicReal = (rescheduleId: string | null) =>
   const [isLoading, setIsLoading] = useState(false);
   const [showPhoneModal, setShowPhoneModal] = useState(false);
 
-  // Clínicas reais do Senhor Sorriso
-  const availableClinics = [
-    { 
-      id: 'campo-belo', 
-      name: 'Senhor Sorriso Campo Belo', 
-      city: 'Campo Belo', 
-      state: 'MG' 
-    },
-    { 
-      id: 'formiga', 
-      name: 'Senhor Sorriso Formiga', 
-      city: 'Formiga', 
-      state: 'MG' 
-    },
-    { 
-      id: 'itarare', 
-      name: 'Senhor Sorriso Itararé', 
-      city: 'Itararé', 
-      state: 'SP' 
-    },
-    { 
-      id: 'capao-bonito', 
-      name: 'Senhor Sorriso Capão Bonito', 
-      city: 'Capão Bonito', 
-      state: 'SP' 
-    },
-    { 
-      id: 'itapeva', 
-      name: 'Senhor Sorriso Itapeva', 
-      city: 'Itapeva', 
-      state: 'SP' 
-    }
-  ];
+  const formData = { selectedDate, selectedTime, selectedClinic, selectedService };
+  const { isFormValid, validateForm } = useAppointmentValidation(formData);
 
   // Detectar serviço pré-selecionado via URL
   useEffect(() => {
@@ -62,7 +34,7 @@ export const useAppointmentSchedulerLogicReal = (rescheduleId: string | null) =>
   }, [searchParams, selectedService]);
 
   const handleScheduleAppointment = () => {
-    if (!selectedDate || !selectedTime || !selectedClinic || !selectedService) {
+    if (!validateForm()) {
       toastError('Erro', 'Por favor, preencha todos os campos');
       return;
     }
@@ -80,7 +52,7 @@ export const useAppointmentSchedulerLogicReal = (rescheduleId: string | null) =>
     try {
       setIsLoading(true);
 
-      const selectedClinicData = availableClinics.find(c => c.id === selectedClinic);
+      const selectedClinicData = clinics.find(c => c.id === selectedClinic);
       
       // Preparar dados do agendamento para o Supabase
       const appointmentData = {
@@ -121,9 +93,9 @@ export const useAppointmentSchedulerLogicReal = (rescheduleId: string | null) =>
       // Redirecionar após sucesso
       setTimeout(() => {
         if (isAuthenticated) {
-          navigate('/profile'); // Usuário logado vai para o perfil onde pode ver histórico
+          navigate('/profile');
         } else {
-          navigate('/'); // Usuário não logado volta para home
+          navigate('/');
         }
       }, 2000);
 
@@ -151,7 +123,8 @@ export const useAppointmentSchedulerLogicReal = (rescheduleId: string | null) =>
     isLoading,
     showPhoneModal,
     setShowPhoneModal,
-    availableClinics,
+    availableClinics: clinics,
+    isFormValid,
     handleConfirmAppointment,
     handleScheduleAppointment,
     handleGoBack

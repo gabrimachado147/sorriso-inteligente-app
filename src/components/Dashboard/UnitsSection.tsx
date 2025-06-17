@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { memo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { MapPin } from 'lucide-react';
@@ -7,20 +7,22 @@ import { animations } from '@/lib/animations';
 
 interface UnitsSectionProps {
   onViewUnits: () => void;
-  onScheduleClinic: (clinic: string, phone: string) => void;
+  onScheduleClinic: (clinicId?: string) => void;
 }
 
-export const UnitsSection: React.FC<UnitsSectionProps> = ({
+export const UnitsSection: React.FC<UnitsSectionProps> = memo(({
   onViewUnits,
   onScheduleClinic
 }) => {
   const featuredClinics = [
     {
+      id: 'campo-belo',
       name: 'Campo Belo - MG',
       address: 'Av. Afonso Pena, 151, Centro',
       phone: '(35) 99891-3803'
     },
     {
+      id: 'formiga',
       name: 'Formiga - MG', 
       address: 'R. Barão de Piumhy, 198, Centro',
       phone: '(37) 3443-0520'
@@ -38,7 +40,7 @@ export const UnitsSection: React.FC<UnitsSectionProps> = ({
       <CardContent>
         <div className="space-y-3">
           {featuredClinics.map((clinic) => (
-            <div key={clinic.name} className={`p-3 border rounded-lg ${animations.cardHover}`}>
+            <div key={clinic.id} className={`p-3 border rounded-lg ${animations.cardHover}`}>
               <div className="flex justify-between items-start gap-3">
                 <div className="flex-1 min-w-0">
                   <h4 className="font-medium text-sm">{clinic.name}</h4>
@@ -47,8 +49,9 @@ export const UnitsSection: React.FC<UnitsSectionProps> = ({
                 <Button 
                   size="sm" 
                   variant="outline"
-                  onClick={() => onScheduleClinic(clinic.name, clinic.phone)}
+                  onClick={() => onScheduleClinic(clinic.id)}
                   className={`${animations.buttonHover} px-3 py-1 text-xs shrink-0`}
+                  aria-label={`Agendar consulta na ${clinic.name}`}
                 >
                   Agendar
                 </Button>
@@ -61,6 +64,7 @@ export const UnitsSection: React.FC<UnitsSectionProps> = ({
               variant="ghost" 
               className={`text-primary text-sm ${animations.buttonHover}`}
               onClick={onViewUnits}
+              aria-label="Ver todas as unidades"
             >
               Ver todas as unidades
             </Button>
@@ -69,4 +73,6 @@ export const UnitsSection: React.FC<UnitsSectionProps> = ({
       </CardContent>
     </Card>
   );
-};
+});
+
+UnitsSection.displayName = 'UnitsSection';

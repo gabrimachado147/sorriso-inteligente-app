@@ -4,13 +4,13 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Heart, Clock, Star } from 'lucide-react';
 import { animations } from '@/lib/animations';
+import { useHomeNavigation } from '@/hooks/useHomeNavigation';
+import { useContactActions } from '@/hooks/useContactActions';
 
-interface CTASectionProps {
-  onNavigate: (path: string) => void;
-  onWhatsAppContact: () => void;
-}
+export const CTASection: React.FC = () => {
+  const { handleScheduleNavigation } = useHomeNavigation();
+  const { handleWhatsAppContact } = useContactActions();
 
-export const CTASection: React.FC<CTASectionProps> = ({ onNavigate, onWhatsAppContact }) => {
   return (
     <div className={`text-center space-y-6 px-4 ${animations.scaleIn}`}>
       <Card className="bg-primary/5 border-primary/20 mobile-card-spacing">
@@ -30,7 +30,7 @@ export const CTASection: React.FC<CTASectionProps> = ({ onNavigate, onWhatsAppCo
             <Button 
               size="lg" 
               className="text-lg px-10 py-4 w-full sm:w-auto mobile-touch-target" 
-              onClick={() => onNavigate('/schedule')}
+              onClick={handleScheduleNavigation}
             >
               Agendar Consulta
             </Button>
@@ -38,7 +38,7 @@ export const CTASection: React.FC<CTASectionProps> = ({ onNavigate, onWhatsAppCo
               size="lg" 
               variant="outline" 
               className="text-lg px-10 py-4 w-full sm:w-auto mobile-touch-target" 
-              onClick={onWhatsAppContact}
+              onClick={() => handleWhatsAppContact()}
             >
               Falar no WhatsApp
             </Button>

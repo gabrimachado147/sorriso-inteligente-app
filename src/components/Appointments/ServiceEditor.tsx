@@ -26,7 +26,11 @@ interface ServiceEditorProps {
   isUpdating: boolean;
 }
 
-const availableServices = [
+interface AppointmentWithPrice extends AppointmentRecord {
+  price?: number;
+}
+
+const availableServices: string[] = [
   'Avaliação Gratuita',
   'Limpeza Dental',
   'Clareamento Dental',
@@ -48,32 +52,25 @@ export const ServiceEditor: React.FC<ServiceEditorProps> = ({
   onUpdate,
   isUpdating
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [selectedService, setSelectedService] = useState(appointment.service);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [selectedService, setSelectedService] = useState<string>(appointment.service);
   const [priceValue, setPriceValue] = useState<string>(
-    typeof (appointment as AppointmentRecord & { price?: number }).price === 'number'
-      ? ((appointment as AppointmentRecord & { price?: number }).price as number).toString()
-      : ''
+    (appointment as AppointmentWithPrice).price ? (appointment as AppointmentWithPrice).price!.toString() : ''
   );
 
-  const handleSave = async () => {
+  const handleSave = async (): Promise<void> => {
     const price = priceValue ? parseFloat(priceValue.replace(',', '.')) : undefined;
     await onUpdate(appointment.id, selectedService, price);
     setIsOpen(false);
   };
 
-  const handleCancel = () => {
+  const handleCancel = (): void => {
     setSelectedService(appointment.service);
-    setPriceValue(
-      typeof (appointment as AppointmentRecord & { price?: number }).price === 'number'
-        ? ((appointment as AppointmentRecord & { price?: number }).price as number).toString()
-        : ''
-    );
-    // Se existirem outros campos editáveis, restaurar aqui (exemplo: nome, telefone, etc)
+    setPriceValue((appointment as AppointmentWithPrice).price ? (appointment as AppointmentWithPrice).price!.toString() : '');
     setIsOpen(false);
   };
 
-  const formatCurrency = (value: string) => {
+  const formatCurrency = (value: string): string => {
     // Remove caracteres não numéricos exceto vírgula e ponto
     const numbers = value.replace(/[^\d.,]/g, '');
     return numbers;

@@ -1,14 +1,29 @@
-User-agent: Googlebot
-Allow: /
 
-User-agent: Bingbot
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
+# Robots.txt para Senhor Sorriso App
+# https://app.senhorsorriso.com.br
 
 User-agent: *
 Allow: /
+
+# Permitir indexação de páginas principais
+Allow: /
+Allow: /locations
+Allow: /services
+Allow: /about
+
+# Restringir páginas privadas
+Disallow: /profile
+Disallow: /admin
+Disallow: /auth
+Disallow: /dashboard
+
+# Permitir recursos estáticos
+Allow: /icons/
+Allow: /images/
+Allow: /lovable-uploads/
+
+# Sitemap
+Sitemap: https://app.senhorsorriso.com.br/sitemap.xml
+
+# Crawl-delay para não sobrecarregar o servidor
+Crawl-delay: 1

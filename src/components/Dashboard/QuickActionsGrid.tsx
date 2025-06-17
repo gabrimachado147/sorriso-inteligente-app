@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { memo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Calendar, MessageCircle, MapPin, Phone } from 'lucide-react';
 import { animations } from '@/lib/animations';
@@ -8,11 +8,11 @@ interface QuickActionsGridProps {
   onQuickAction: (action: string) => void;
 }
 
-export const QuickActionsGrid: React.FC<QuickActionsGridProps> = ({ onQuickAction }) => {
+export const QuickActionsGrid: React.FC<QuickActionsGridProps> = memo(({ onQuickAction }) => {
   const actions = [
     { icon: MessageCircle, key: 'chat', title: 'Chat IA', subtitle: 'Tire suas dúvidas' },
-    { icon: MapPin, key: 'locations', title: 'Unidades', subtitle: '5 cidades' },
-    { icon: Calendar, key: 'appointments', title: 'Agendar', subtitle: 'Nova consulta' },
+    { icon: MapPin, key: 'clinics', title: 'Unidades', subtitle: '5 cidades' },
+    { icon: Calendar, key: 'schedule', title: 'Agendar', subtitle: 'Nova consulta' },
     { icon: Phone, key: 'emergency', title: 'Urgência', subtitle: 'Contato emergência' }
   ];
 
@@ -36,4 +36,6 @@ export const QuickActionsGrid: React.FC<QuickActionsGridProps> = ({ onQuickActio
       })}
     </div>
   );
-};
+});
+
+QuickActionsGrid.displayName = 'QuickActionsGrid';
