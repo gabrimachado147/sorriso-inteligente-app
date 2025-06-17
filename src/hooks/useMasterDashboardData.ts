@@ -22,7 +22,7 @@ export const useMasterDashboardData = (filteredAppointments: AppointmentRecord[]
     const uniqueClinics = new Set(filteredAppointments.map(apt => apt.clinic));
     const totalClinics = uniqueClinics.size;
     
-    // Receita total corrigida - usando apenas agendamentos com preço válido
+    // Receita total - usando apenas agendamentos com preço válido
     const totalRevenue = filteredAppointments.reduce((total, apt) => {
       const price = apt.price && apt.price > 0 ? apt.price : 0;
       return total + price;
@@ -35,7 +35,7 @@ export const useMasterDashboardData = (filteredAppointments: AppointmentRecord[]
     const conversionRate = totalAppointments > 0 ? 
       Math.round((confirmedAppointments.length / totalAppointments) * 100) : 0;
 
-    // Estatísticas por clínica - dados corrigidos
+    // Estatísticas por clínica
     const clinicStats = Array.from(uniqueClinics).map(clinic => {
       const clinicAppointments = filteredAppointments.filter(apt => apt.clinic === clinic);
       const confirmed = clinicAppointments.filter(apt => apt.status === 'confirmed' || apt.status === 'completed');
@@ -79,9 +79,8 @@ export const useMasterDashboardData = (filteredAppointments: AppointmentRecord[]
       });
     }
 
-    // Distribuição de serviços - nomes completos e melhor organização
+    // Distribuição de serviços
     const serviceStats = filteredAppointments.reduce((acc, apt) => {
-      // Normalizar nomes de serviços para evitar duplicatas
       const serviceName = apt.service.trim();
       acc[serviceName] = (acc[serviceName] || 0) + 1;
       return acc;
@@ -94,9 +93,9 @@ export const useMasterDashboardData = (filteredAppointments: AppointmentRecord[]
         color: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#84cc16', '#f97316'][index % 8]
       }))
       .sort((a, b) => b.value - a.value)
-      .slice(0, 8); // Limitar a 8 serviços principais
+      .slice(0, 8);
 
-    // Quebra por status - dados mais organizados
+    // Quebra por status
     const statusStats = filteredAppointments.reduce((acc, apt) => {
       const status = apt.status || 'pending';
       acc[status] = (acc[status] || 0) + 1;

@@ -2,138 +2,117 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Check, X } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Edit3, Save, X } from 'lucide-react';
+import { availableServices } from './constants/services';
 
 interface ServiceEditorProps {
-  service: string;
-  price?: number;
-  onSave: (service: string, price?: number) => void;
-  onCancel: () => void;
+  appointmentId: string;
+  currentService: string;
+  currentPrice?: number;
+  currentNotes?: string;
+  onUpdate: (appointmentId: string, service: string, price?: number, notes?: string) => void;
+  isUpdating: boolean;
 }
 
 export const ServiceEditor: React.FC<ServiceEditorProps> = ({
-  service,
-  price,
-  onSave,
-  onCancel
+  appointmentId,
+  currentService,
+  currentPrice,
+  currentNotes,
+  onUpdate,
+  isUpdating
 }) => {
-  const [selectedService, setSelectedService] = useState(service);
-  const [priceValue, setPriceValue] = useState(
-    price ? `R$ ${price.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : 'R$ 0,00'
-  );
-
-  const services = [
-    'Limpeza',
-    'Restauração',
-    'Extração',
-    'Clareamento',
-    'Ortodontia',
-    'Implante',
-    'Canal',
-    'Prótese'
-  ];
-
-  const formatCurrency = (value: string) => {
-    // Remove tudo que não é dígito
-    const numericValue = value.replace(/\D/g, '');
-    
-    // Se não há valor, retorna R$ 0,00
-    if (!numericValue) return 'R$ 0,00';
-    
-    // Converte para centavos
-    const cents = parseInt(numericValue);
-    const reais = cents / 100;
-    
-    // Limita o valor máximo a R$ 50.000,00
-    const limitedReais = Math.min(reais, 50000);
-    
-    // Formata como moeda brasileira
-    return `R$ ${limitedReais.toLocaleString('pt-BR', { 
-      minimumFractionDigits: 2, 
-      maximumFractionDigits: 2 
-    })}`;
-  };
-
-  const parseCurrencyToNumber = (currencyString: string): number => {
-    // Remove "R$" e espaços, substitui vírgula por ponto
-    const numericString = currencyString
-      .replace('R$', '')
-      .trim()
-      .replace(/\./g, '') // Remove pontos de milhares
-      .replace(',', '.'); // Substitui vírgula decimal por ponto
-    
-    const parsed = parseFloat(numericString) || 0;
-    
-    // Retorna apenas se estiver na faixa permitida (R$ 1,00 a R$ 50.000,00)
-    if (parsed >= 1 && parsed <= 50000) {
-      return parsed;
-    }
-    
-    return 0;
-  };
-
-  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formattedValue = formatCurrency(e.target.value);
-    setPriceValue(formattedValue);
-  };
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState(currentService);
+  const [price, setPrice] = useState(currentPrice?.toString() || '');
+  const [notes, setNotes] = useState(currentNotes || '');
 
   const handleSave = () => {
-    const numericPrice = parseCurrencyToNumber(priceValue);
-    onSave(selectedService, numericPrice > 0 ? numericPrice : undefined);
+    const numericPrice = price ? parseFloat(price) : undefined;
+    onUpdate(appointmentId, selectedService, numericPrice, notes);
+    setIsOpen(false);
   };
 
-  const isValidPrice = () => {
-    const numericPrice = parseCurrencyToNumber(priceValue);
-    return numericPrice >= 1 && numericPrice <= 50000;
+  const handleCancel = () => {
+    setSelectedService(currentService);
+    setPrice(currentPrice?.toString() || '');
+    setNotes(currentNotes || '');
+    setIsOpen(false);
   };
 
   return (
-    <div className="flex items-center gap-2 min-w-0">
-      <Select value={selectedService} onValueChange={setSelectedService}>
-        <SelectTrigger className="w-32">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          {services.map(service => (
-            <SelectItem key={service} value={service}>
-              {service}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-      
-      <div className="relative">
-        <Input
-          type="text"
-          value={priceValue}
-          onChange={handlePriceChange}
-          placeholder="R$ 0,00"
-          className={`w-28 text-sm ${
-            priceValue !== 'R$ 0,00' && !isValidPrice() 
-              ? 'border-red-300 focus:border-red-500' 
-              : ''
-          }`}
-        />
-        {priceValue !== 'R$ 0,00' && !isValidPrice() && (
-          <div className="absolute top-full left-0 mt-1 text-xs text-red-600 whitespace-nowrap">
-            Entre R$ 1,00 e R$ 50.000,00
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+          <Edit3 className="h-4 w-4" />
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Editar Serviço</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div>
+            <label className="text-sm font-medium">Serviço</label>
+            <Select value={selectedService} onValueChange={setSelectedService}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {availableServices.map((service) => (
+                  <SelectItem key={service.id} value={service.name}>
+                    {service.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
-        )}
-      </div>
-      
-      <Button 
-        size="sm" 
-        onClick={handleSave} 
-        className="h-8 w-8 p-0"
-        disabled={priceValue !== 'R$ 0,00' && !isValidPrice()}
-      >
-        <Check className="h-4 w-4" />
-      </Button>
-      
-      <Button size="sm" variant="ghost" onClick={onCancel} className="h-8 w-8 p-0">
-        <X className="h-4 w-4" />
-      </Button>
-    </div>
+
+          <div>
+            <label className="text-sm font-medium">Preço (R$)</label>
+            <Input
+              type="number"
+              placeholder="0,00"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              min="0"
+              step="0.01"
+            />
+          </div>
+
+          <div>
+            <label className="text-sm font-medium">Observações</label>
+            <Textarea
+              placeholder="Adicione observações sobre o serviço..."
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              rows={3}
+              className="resize-none"
+            />
+          </div>
+
+          <div className="flex justify-end space-x-2">
+            <Button
+              variant="outline"
+              onClick={handleCancel}
+              disabled={isUpdating}
+            >
+              <X className="h-4 w-4 mr-2" />
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleSave}
+              disabled={isUpdating}
+            >
+              <Save className="h-4 w-4 mr-2" />
+              {isUpdating ? 'Salvando...' : 'Salvar'}
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 };

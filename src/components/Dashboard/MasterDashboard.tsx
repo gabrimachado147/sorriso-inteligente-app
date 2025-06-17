@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Crown } from 'lucide-react';
 import { animations } from '@/lib/animations';
@@ -8,6 +9,7 @@ import { useMasterDashboardData } from '@/hooks/useMasterDashboardData';
 import { useMasterDashboardFilters } from '@/hooks/useMasterDashboardFilters';
 import { MasterDashboardFilters } from './MasterDashboardFilters';
 import { MasterDashboardContent } from './MasterDashboardContent';
+import { MessageTemplates } from './MessageTemplates';
 
 interface MasterDashboardProps {
   appointments: AppointmentRecord[];
@@ -20,6 +22,7 @@ export const MasterDashboard: React.FC<MasterDashboardProps> = ({ appointments, 
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
   const [selectedDate, setSelectedDate] = useState('');
   const [periodFilter, setPeriodFilter] = useState<string>('all');
+  const [showMessages, setShowMessages] = useState(false);
   
   const { updateAppointmentStatus, updateAppointmentService } = useAppointments();
 
@@ -50,9 +53,9 @@ export const MasterDashboard: React.FC<MasterDashboardProps> = ({ appointments, 
     }
   };
 
-  const handleUpdateService = async (appointmentId: string, service: string, price?: number) => {
+  const handleUpdateService = async (appointmentId: string, service: string, price?: number, notes?: string) => {
     try {
-      await updateAppointmentService.mutateAsync({ appointmentId, service, price });
+      await updateAppointmentService.mutateAsync({ appointmentId, service, price, notes });
     } catch (error) {
       console.error('Erro ao atualizar serviço:', error);
     }
@@ -60,7 +63,7 @@ export const MasterDashboard: React.FC<MasterDashboardProps> = ({ appointments, 
 
   const exportData = () => {
     const csvContent = [
-      ['Nome', 'Telefone', 'Data', 'Horário', 'Serviço', 'Status', 'Clínica'],
+      ['Nome', 'Telefone', 'Data', 'Horário', 'Serviço', 'Status', 'Clínica', 'Observações'],
       ...finalFilteredAppointments.map(apt => [
         apt.name,
         apt.phone,
@@ -68,7 +71,8 @@ export const MasterDashboard: React.FC<MasterDashboardProps> = ({ appointments, 
         apt.time,
         apt.service,
         apt.status,
-        apt.clinic
+        apt.clinic,
+        apt.notes || ''
       ])
     ].map(row => row.join(',')).join('\n');
 
@@ -84,8 +88,35 @@ export const MasterDashboard: React.FC<MasterDashboardProps> = ({ appointments, 
     window.location.reload();
   };
 
+  if (showMessages) {
+    return (
+      <div className={`space-y-6 w-full overflow-x-hidden ${animations.pageEnter}`}>
+        <div className="flex items-center justify-between">
+          <h1 className="text-lg font-bold flex items-center gap-3 text-purple-600">
+            <Crown className="h-6 w-6" />
+            Templates de Mensagem
+          </h1>
+          <button
+            onClick={() => setShowMessages(false)}
+            className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
+          >
+            Voltar ao Dashboard
+          </button>
+        </div>
+        <div className="w-full overflow-x-hidden">
+          <MessageTemplates 
+            appointments={finalFilteredAppointments}
+            onSendMessage={(appointmentIds, template) => {
+              console.log('Enviando mensagem:', { appointmentIds, template });
+            }}
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className={`space-y-6 ${animations.pageEnter}`}>
+    <div className={`space-y-6 w-full overflow-x-hidden ${animations.pageEnter}`}>
       {/* Header */}
       <div className={`${animations.fadeIn} text-center`}>
         <h1 className="text-lg font-bold flex items-center justify-center gap-3 mb-2 text-purple-600">
@@ -95,31 +126,36 @@ export const MasterDashboard: React.FC<MasterDashboardProps> = ({ appointments, 
         <p className="text-gray-600 mb-6">Visão completa de todas as unidades e agendamentos</p>
 
         {/* Filtros */}
-        <MasterDashboardFilters
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          selectedClinic={selectedClinic}
-          setSelectedClinic={setSelectedClinic}
-          selectedStatus={selectedStatus}
-          setSelectedStatus={setSelectedStatus}
-          selectedDate={selectedDate}
-          setSelectedDate={setSelectedDate}
-          periodFilter={periodFilter}
-          setPeriodFilter={setPeriodFilter}
-          availableClinics={availableClinics}
-          onExportData={exportData}
-          onRefresh={handleRefresh}
-        />
+        <div className="w-full overflow-x-hidden">
+          <MasterDashboardFilters
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            selectedClinic={selectedClinic}
+            setSelectedClinic={setSelectedClinic}
+            selectedStatus={selectedStatus}
+            setSelectedStatus={setSelectedStatus}
+            selectedDate={selectedDate}
+            setSelectedDate={setSelectedDate}
+            periodFilter={periodFilter}
+            setPeriodFilter={setPeriodFilter}
+            availableClinics={availableClinics}
+            onExportData={exportData}
+            onRefresh={handleRefresh}
+            onShowMessages={() => setShowMessages(true)}
+          />
+        </div>
       </div>
 
       {/* Conteúdo do Dashboard */}
-      <MasterDashboardContent
-        dashboardData={dashboardData}
-        finalFilteredAppointments={finalFilteredAppointments}
-        onStatusChange={handleUpdateStatus}
-        onServiceUpdate={handleUpdateService}
-        isUpdating={updateAppointmentStatus.isPending || updateAppointmentService.isPending}
-      />
+      <div className="w-full overflow-x-hidden">
+        <MasterDashboardContent
+          dashboardData={dashboardData}
+          finalFilteredAppointments={finalFilteredAppointments}
+          onStatusChange={handleUpdateStatus}
+          onServiceUpdate={handleUpdateService}
+          isUpdating={updateAppointmentStatus.isPending || updateAppointmentService.isPending}
+        />
+      </div>
     </div>
   );
 };

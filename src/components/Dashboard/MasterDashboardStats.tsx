@@ -1,7 +1,7 @@
 
 import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Building2, Calendar, TrendingUp, DollarSign } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Calendar, Building2, DollarSign, TrendingUp } from 'lucide-react';
 import { animations } from '@/lib/animations';
 
 interface MasterDashboardStatsProps {
@@ -17,55 +17,74 @@ export const MasterDashboardStats: React.FC<MasterDashboardStatsProps> = ({
   totalRevenue,
   conversionRate
 }) => {
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    }).format(value);
+  };
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      <Card className={`border-blue-200 ${animations.slideInLeft}`}>
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between">
-            <div className="text-center flex-1">
-              <p className="text-xs font-medium text-gray-600">Total Agendamentos</p>
-              <p className="text-lg font-bold text-blue-600">{totalAppointments}</p>
-            </div>
-            <Calendar className="h-6 w-6 text-blue-500" />
-          </div>
+    <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full overflow-x-hidden ${animations.fadeIn}`}>
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium text-gray-600">
+            Total de Agendamentos
+          </CardTitle>
+          <Calendar className="h-4 w-4 text-blue-600" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold text-blue-600">{totalAppointments}</div>
+          <p className="text-xs text-gray-500">
+            Todos os agendamentos
+          </p>
         </CardContent>
       </Card>
 
-      <Card className={`border-green-200 ${animations.slideInLeft}`} style={{ animationDelay: '100ms' }}>
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between">
-            <div className="text-center flex-1">
-              <p className="text-xs font-medium text-gray-600">Clínicas Ativas</p>
-              <p className="text-lg font-bold text-green-600">{totalClinics}</p>
-            </div>
-            <Building2 className="h-6 w-6 text-green-500" />
-          </div>
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium text-gray-600">
+            Clínicas Ativas
+          </CardTitle>
+          <Building2 className="h-4 w-4 text-green-600" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold text-green-600">{totalClinics}</div>
+          <p className="text-xs text-gray-500">
+            Unidades operando
+          </p>
         </CardContent>
       </Card>
 
-      <Card className={`border-purple-200 ${animations.slideInLeft}`} style={{ animationDelay: '200ms' }}>
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between">
-            <div className="text-center flex-1">
-              <p className="text-xs font-medium text-gray-600">Receita Total</p>
-              <p className="text-lg font-bold text-purple-600">
-                R$ {totalRevenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-              </p>
-            </div>
-            <DollarSign className="h-6 w-6 text-purple-500" />
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium text-gray-600">
+            Receita Total
+          </CardTitle>
+          <DollarSign className="h-4 w-4 text-purple-600" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold text-purple-600">
+            {formatCurrency(totalRevenue)}
           </div>
+          <p className="text-xs text-gray-500">
+            Receita acumulada
+          </p>
         </CardContent>
       </Card>
 
-      <Card className={`border-orange-200 ${animations.slideInLeft}`} style={{ animationDelay: '300ms' }}>
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between">
-            <div className="text-center flex-1">
-              <p className="text-xs font-medium text-gray-600">Taxa Conversão</p>
-              <p className="text-lg font-bold text-orange-600">{conversionRate}%</p>
-            </div>
-            <TrendingUp className="h-6 w-6 text-orange-500" />
-          </div>
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium text-gray-600">
+            Taxa de Conversão
+          </CardTitle>
+          <TrendingUp className="h-4 w-4 text-orange-600" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold text-orange-600">{conversionRate}%</div>
+          <p className="text-xs text-gray-500">
+            Agendamentos confirmados
+          </p>
         </CardContent>
       </Card>
     </div>

@@ -1,26 +1,26 @@
 
 import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, Filter, Download, RefreshCw } from 'lucide-react';
+import { Search, Download, RefreshCw, MessageSquare } from 'lucide-react';
 import { PeriodFilter } from './PeriodFilter';
 
 interface MasterDashboardFiltersProps {
   searchTerm: string;
-  setSearchTerm: (value: string) => void;
+  setSearchTerm: (term: string) => void;
   selectedClinic: string;
-  setSelectedClinic: (value: string) => void;
+  setSelectedClinic: (clinic: string) => void;
   selectedStatus: string;
-  setSelectedStatus: (value: string) => void;
+  setSelectedStatus: (status: string) => void;
   selectedDate: string;
-  setSelectedDate: (value: string) => void;
+  setSelectedDate: (date: string) => void;
   periodFilter: string;
-  setPeriodFilter: (value: string) => void;
+  setPeriodFilter: (period: string) => void;
   availableClinics: string[];
   onExportData: () => void;
   onRefresh: () => void;
+  onShowMessages: () => void;
 }
 
 export const MasterDashboardFilters: React.FC<MasterDashboardFiltersProps> = ({
@@ -36,16 +36,18 @@ export const MasterDashboardFilters: React.FC<MasterDashboardFiltersProps> = ({
   setPeriodFilter,
   availableClinics,
   onExportData,
-  onRefresh
+  onRefresh,
+  onShowMessages
 }) => {
   return (
-    <Card className="mb-6 border-blue-200">
-      <CardContent className="p-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+    <div className="w-full overflow-x-hidden">
+      <div className="bg-white p-4 rounded-lg shadow-sm border space-y-4">
+        {/* Primeira linha - Busca e Filtros principais */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="relative">
-            <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <Input
-              placeholder="Buscar por nome, telefone..."
+              placeholder="Buscar por nome ou telefone..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
@@ -54,14 +56,12 @@ export const MasterDashboardFilters: React.FC<MasterDashboardFiltersProps> = ({
 
           <Select value={selectedClinic} onValueChange={setSelectedClinic}>
             <SelectTrigger>
-              <SelectValue placeholder="Todas as Clínicas" />
+              <SelectValue placeholder="Selecionar clínica" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Todas as Clínicas</SelectItem>
-              {availableClinics.map((clinic) => (
-                <SelectItem key={clinic} value={clinic}>
-                  {clinic}
-                </SelectItem>
+              <SelectItem value="all">Todas as clínicas</SelectItem>
+              {availableClinics.map(clinic => (
+                <SelectItem key={clinic} value={clinic}>{clinic}</SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -71,60 +71,62 @@ export const MasterDashboardFilters: React.FC<MasterDashboardFiltersProps> = ({
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Todos os Status</SelectItem>
-              <SelectItem value="confirmed">Confirmado</SelectItem>
-              <SelectItem value="pending">Pendente</SelectItem>
-              <SelectItem value="completed">Concluído</SelectItem>
-              <SelectItem value="cancelled">Cancelado</SelectItem>
+              <SelectItem value="all">Todos os status</SelectItem>
+              <SelectItem value="confirmed">Confirmados</SelectItem>
+              <SelectItem value="pending">Pendentes</SelectItem>
+              <SelectItem value="completed">Concluídos</SelectItem>
+              <SelectItem value="cancelled">Cancelados</SelectItem>
               <SelectItem value="no_show">No Show</SelectItem>
             </SelectContent>
           </Select>
 
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={onRefresh} size="sm">
-              <RefreshCw className="h-4 w-4 mr-1" />
-              <span className="hidden md:inline">Atualizar</span>
-            </Button>
-            <Button variant="outline" onClick={onExportData} size="sm">
-              <Download className="h-4 w-4 mr-1" />
-              <span className="hidden md:inline">Exportar</span>
-            </Button>
-          </div>
+          <Input
+            type="date"
+            value={selectedDate}
+            onChange={(e) => setSelectedDate(e.target.value)}
+            placeholder="Filtrar por data"
+          />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <Input
-              type="date"
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              placeholder="Selecionar data específica"
-            />
+        {/* Segunda linha - Período e Ações */}
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="flex-1 min-w-0">
+            <PeriodFilter value={periodFilter} onChange={setPeriodFilter} />
           </div>
-          
-          <div>
-            <PeriodFilter 
-              value={periodFilter} 
-              onChange={setPeriodFilter}
-              className="w-full"
-            />
+
+          <div className="flex flex-wrap gap-2">
+            <Button 
+              onClick={onShowMessages}
+              variant="outline" 
+              size="sm" 
+              className="flex items-center gap-2"
+            >
+              <MessageSquare className="h-4 w-4" />
+              <span className="hidden sm:inline">Mensagens</span>
+            </Button>
+            
+            <Button 
+              onClick={onExportData}
+              variant="outline" 
+              size="sm" 
+              className="flex items-center gap-2"
+            >
+              <Download className="h-4 w-4" />
+              <span className="hidden sm:inline">Exportar</span>
+            </Button>
+            
+            <Button 
+              onClick={onRefresh}
+              variant="outline" 
+              size="sm" 
+              className="flex items-center gap-2"
+            >
+              <RefreshCw className="h-4 w-4" />
+              <span className="hidden sm:inline">Atualizar</span>
+            </Button>
           </div>
-          
-          <Button 
-            variant="outline" 
-            onClick={() => {
-              setSelectedClinic('all');
-              setSelectedStatus('all');
-              setSelectedDate('');
-              setPeriodFilter('all');
-              setSearchTerm('');
-            }}
-          >
-            <Filter className="h-4 w-4 mr-2" />
-            Limpar Filtros
-          </Button>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
