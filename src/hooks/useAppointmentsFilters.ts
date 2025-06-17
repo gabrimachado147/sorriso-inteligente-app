@@ -33,8 +33,9 @@ export const useAppointmentsFilters = ({
   const filteredAppointments = useMemo(() => {
     let filtered = appointments;
 
-    // Filter by user's clinic first (only show appointments for their clinic)
-    if (loggedInUser && userClinicName) {
+    // Se for gerência (gerencia-ss), mostrar todos os agendamentos
+    // Caso contrário, filtrar apenas pela clínica do usuário
+    if (loggedInUser && loggedInUser !== 'gerencia-ss' && userClinicName) {
       filtered = filtered.filter(apt => {
         // Check if appointment clinic matches the user's clinic
         const appointmentClinic = apt.clinic.toLowerCase();
@@ -74,10 +75,16 @@ export const useAppointmentsFilters = ({
     return filtered;
   }, [appointments, loggedInUser, userClinicName, searchTerm, selectedClinic, selectedStatus, selectedDate]);
 
-  // Get unique clinics from filtered appointments for filter (only show user's clinic)
+  // Get unique clinics from filtered appointments
   const availableClinics = useMemo(() => {
+    // Se for gerência, mostrar todas as clínicas
+    if (loggedInUser === 'gerencia-ss') {
+      const clinics = new Set(appointments.map(apt => apt.clinic));
+      return Array.from(clinics).sort();
+    }
+    
+    // Se for funcionário de clínica específica, mostrar apenas sua clínica
     if (loggedInUser && userClinicName) {
-      // Only show the user's clinic in the filter
       const userAppointments = appointments.filter(apt => {
         const appointmentClinic = apt.clinic.toLowerCase();
         const userClinicKey = loggedInUser.toLowerCase();

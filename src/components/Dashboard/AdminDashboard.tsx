@@ -1,38 +1,6 @@
-import React, { useMemo, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { 
-  BarChart3, 
-  Calendar, 
-  Users, 
-  TrendingUp, 
-  Clock, 
-  CheckCircle,
-  XCircle,
-  AlertCircle,
-  Phone,
-  MapPin,
-  Activity,
-  Filter,
-  Search,
-  Download,
-  RefreshCw,
-  Target,
-  Zap,
-  Star,
-  DollarSign,
-  UserCheck,
-  AlertTriangle
-} from 'lucide-react';
-import { animations } from '@/lib/animations';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell, AreaChart, Area } from 'recharts';
+import React, { useMemo } from 'react';
 import { AppointmentRecord } from '@/services/supabase/appointments';
-import { useAppointments } from '@/hooks/useAppointments';
-import { AppointmentsTable } from '@/components/Appointments/AppointmentsTable';
+import { LazyDashboard } from './LazyDashboard';
 
 interface AdminDashboardProps {
   appointments: AppointmentRecord[];
@@ -40,13 +8,6 @@ interface AdminDashboardProps {
 }
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({ appointments, stats }) => {
-  const [selectedClinic, setSelectedClinic] = useState<string>('all');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [dateFilter, setDateFilter] = useState<string>('all');
-  const [searchTerm, setSearchTerm] = useState('');
-  
-  const { updateAppointmentStatus, updateAppointmentService, updateAppointment } = useAppointments();
-
   // Obter clínica do usuário logado
   const loggedInClinic = sessionStorage.getItem('staffClinic');
 
@@ -376,177 +337,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ appointments, st
   };
 
   return (
-    <div className={`space-y-6 ${animations.pageEnter}`}>
-      {/* Header com Filtros */}
-      <div className={`${animations.fadeIn}`}>
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
-          <div>
-            <h1 className="text-3xl font-bold flex items-center gap-3 mb-2">
-              <BarChart3 className="h-8 w-8 text-primary" />
-              Dashboard Administrativo - {loggedInClinic || 'Todas as Clínicas'} 👩‍⚕️
-            </h1>
-            <p className="text-gray-600">Análise completa e gestão avançada de agendamentos</p>
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <Button variant="outline" onClick={() => window.location.reload()}>
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Atualizar
-            </Button>
-            <Button variant="outline" onClick={exportData}>
-              <Download className="h-4 w-4 mr-2" />
-              Exportar
-            </Button>
-          </div>
-        </div>
-
-        {/* Filtros */}
-        <Card className="mb-6">
-          <CardContent className="p-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                <Input
-                  placeholder="Buscar por nome, telefone..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-              
-              <Select value={selectedClinic} onValueChange={setSelectedClinic}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Filtrar por clínica" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todas as Clínicas</SelectItem>
-                  {uniqueClinics.map(clinic => (
-                    <SelectItem key={clinic.value} value={clinic.value}>
-                      {clinic.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todos os Status</SelectItem>
-                  <SelectItem value="confirmed">Confirmado</SelectItem>
-                  <SelectItem value="pending">Pendente</SelectItem>
-                  <SelectItem value="completed">Concluído</SelectItem>
-                  <SelectItem value="cancelled">Cancelado</SelectItem>
-                  <SelectItem value="no_show">Não Compareceu</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Select value={dateFilter} onValueChange={setDateFilter}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Período" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todos os Períodos</SelectItem>
-                  <SelectItem value="today">Hoje</SelectItem>
-                  <SelectItem value="week">Última Semana</SelectItem>
-                  <SelectItem value="month">Último Mês</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Button 
-                variant="outline" 
-                onClick={() => {
-                  setSelectedClinic('all');
-                  setStatusFilter('all');
-                  setDateFilter('all');
-                  setSearchTerm('');
-                }}
-                className="w-full"
-              >
-                <Filter className="h-4 w-4 mr-2" />
-                Limpar Filtros
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Tabs Organizadas */}
-      <Tabs defaultValue="appointments" className={`${animations.fadeIn}`}>
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="appointments">Gerenciar Agendamentos</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics & Relatórios</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="appointments" className="space-y-6">
-          <AppointmentsTable
-            appointments={filteredAppointments}
-            onStatusChange={handleUpdateStatus}
-            onServiceUpdate={handleUpdateService}
-            onAppointmentUpdate={handleUpdateAppointment}
-            isUpdating={updateAppointmentStatus.isPending || updateAppointmentService.isPending || updateAppointment.isPending}
-          />
-        </TabsContent>
-
-        <TabsContent value="analytics" className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs font-medium text-gray-600">Total Agendamentos</p>
-                    <p className="text-2xl font-bold text-primary">{filteredAppointments.length}</p>
-                  </div>
-                  <Calendar className="h-6 w-6 text-blue-500" />
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs font-medium text-gray-600">Confirmados</p>
-                    <p className="text-2xl font-bold text-green-600">
-                      {filteredAppointments.filter(apt => apt.status === 'confirmed').length}
-                    </p>
-                  </div>
-                  <CheckCircle className="h-6 w-6 text-green-500" />
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs font-medium text-gray-600">Concluídos</p>
-                    <p className="text-2xl font-bold text-blue-600">
-                      {filteredAppointments.filter(apt => apt.status === 'completed').length}
-                    </p>
-                  </div>
-                  <Activity className="h-6 w-6 text-blue-500" />
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs font-medium text-gray-600">Cancelados</p>
-                    <p className="text-2xl font-bold text-red-600">
-                      {filteredAppointments.filter(apt => apt.status === 'cancelled').length}
-                    </p>
-                  </div>
-                  <XCircle className="h-6 w-6 text-red-500" />
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-      </Tabs>
-    </div>
+    <LazyDashboard 
+      appointments={appointments} 
+      stats={stats} 
+      loggedInClinic={loggedInClinic}
+    />
   );
 };

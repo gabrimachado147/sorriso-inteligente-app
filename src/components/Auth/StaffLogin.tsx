@@ -17,7 +17,8 @@ const STAFF_CREDENTIALS = {
   formiga: 'ssformiga',
   itarare: 'ssitarare',
   capaobonito: 'sscapaobonito',
-  itapeva: 'ssitapeva'
+  itapeva: 'ssitapeva',
+  'gerencia-ss': 'ssgerencia'
 };
 
 const CLINIC_OPTIONS = [
@@ -25,7 +26,8 @@ const CLINIC_OPTIONS = [
   { value: 'formiga', label: 'Senhor Sorriso Formiga' },
   { value: 'itarare', label: 'Senhor Sorriso Itararé' },
   { value: 'capaobonito', label: 'Senhor Sorriso Capão Bonito' },
-  { value: 'itapeva', label: 'Senhor Sorriso Itapeva' }
+  { value: 'itapeva', label: 'Senhor Sorriso Itapeva' },
+  { value: 'gerencia-ss', label: 'Gerência - Senhor Sorriso' }
 ];
 
 export const StaffLogin: React.FC<StaffLoginProps> = ({ onLogin }) => {
