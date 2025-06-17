@@ -131,24 +131,24 @@ export const AdminAppointmentActions: React.FC<AdminAppointmentActionsProps> = (
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="h-8 w-8 p-0">
+          <Button variant="ghost" className="h-8 w-8 p-0 data-[state=open]:bg-muted">
             <span className="sr-only">Abrir menu</span>
             <MoreHorizontal className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
+        <DropdownMenuContent align="end" className="w-48 z-50 bg-white border shadow-lg">
           <DropdownMenuLabel>Ações</DropdownMenuLabel>
           <DropdownMenuSeparator />
           
           {appointment.phone && (
-            <DropdownMenuItem onClick={() => handleContact('phone')}>
+            <DropdownMenuItem onClick={() => handleContact('phone')} className="cursor-pointer">
               <Phone className="mr-2 h-4 w-4" />
               Ligar para paciente
             </DropdownMenuItem>
           )}
           
           {appointment.email && (
-            <DropdownMenuItem onClick={() => handleContact('email')}>
+            <DropdownMenuItem onClick={() => handleContact('email')} className="cursor-pointer">
               <Mail className="mr-2 h-4 w-4" />
               Enviar email
             </DropdownMenuItem>
@@ -157,13 +157,13 @@ export const AdminAppointmentActions: React.FC<AdminAppointmentActionsProps> = (
           {canModify && (
             <>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => setIsRescheduleOpen(true)}>
+              <DropdownMenuItem onClick={() => setIsRescheduleOpen(true)} className="cursor-pointer">
                 <Calendar className="mr-2 h-4 w-4" />
                 Reagendar
               </DropdownMenuItem>
               <DropdownMenuItem 
                 onClick={() => setIsCancelOpen(true)}
-                className="text-red-600"
+                className="text-red-600 cursor-pointer focus:text-red-600"
               >
                 <X className="mr-2 h-4 w-4" />
                 Cancelar consulta
@@ -174,7 +174,7 @@ export const AdminAppointmentActions: React.FC<AdminAppointmentActionsProps> = (
           <DropdownMenuSeparator />
           <DropdownMenuItem 
             onClick={() => setIsDeleteOpen(true)}
-            className="text-red-600 focus:text-red-600"
+            className="text-red-600 focus:text-red-600 cursor-pointer"
           >
             <Trash2 className="mr-2 h-4 w-4" />
             Excluir permanentemente
@@ -184,7 +184,7 @@ export const AdminAppointmentActions: React.FC<AdminAppointmentActionsProps> = (
 
       {/* Dialog de Reagendamento */}
       <Dialog open={isRescheduleOpen} onOpenChange={setIsRescheduleOpen}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Reagendar Consulta - {appointment.name}</DialogTitle>
             <DialogDescription>

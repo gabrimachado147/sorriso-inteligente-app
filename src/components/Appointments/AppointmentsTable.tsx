@@ -34,25 +34,25 @@ export const AppointmentsTable: React.FC<AppointmentsTableProps> = ({
   }
 
   return (
-    <Card className={animations.fadeIn}>
+    <Card className={`${animations.fadeIn} w-full overflow-hidden`}>
       <CardHeader>
         <CardTitle className="flex items-center justify-center gap-2 text-lg">
           <Calendar className="h-5 w-5" />
           Agendamentos ({appointments.length})
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-0">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Paciente</TableHead>
-                <TableHead>Contato</TableHead>
-                <TableHead>Data/Hora</TableHead>
-                <TableHead>Serviço</TableHead>
-                <TableHead>Clínica</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Ações</TableHead>
+                <TableHead className="min-w-[150px]">Paciente</TableHead>
+                <TableHead className="min-w-[130px]">Contato</TableHead>
+                <TableHead className="min-w-[120px]">Data/Hora</TableHead>
+                <TableHead className="min-w-[120px]">Serviço</TableHead>
+                <TableHead className="min-w-[100px]">Clínica</TableHead>
+                <TableHead className="min-w-[100px]">Status</TableHead>
+                <TableHead className="min-w-[80px] text-center">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

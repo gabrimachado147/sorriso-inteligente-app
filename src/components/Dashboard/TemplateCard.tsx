@@ -46,11 +46,11 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({
   onPreview
 }) => {
   return (
-    <Card className={`${animations.fadeIn} hover:shadow-md transition-shadow w-full max-w-sm`}>
-      <CardHeader className="pb-3">
-        <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <CardTitle className="text-sm font-medium">{template.name}</CardTitle>
+    <Card className={`${animations.fadeIn} hover:shadow-md transition-shadow w-full h-full flex flex-col`}>
+      <CardHeader className="pb-3 flex-shrink-0">
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex-1 min-w-0">
+            <CardTitle className="text-sm font-medium truncate">{template.name}</CardTitle>
             <Badge 
               variant="secondary" 
               className={`mt-1 text-xs ${categoryColors[template.category]}`}
@@ -58,12 +58,13 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({
               {categoryLabels[template.category]}
             </Badge>
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 flex-shrink-0">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => onCopy(template)}
-              className="h-6 w-6 p-0"
+              className="h-8 w-8 p-0"
+              title="Copiar"
             >
               <Copy className="h-3 w-3" />
             </Button>
@@ -71,7 +72,8 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({
               variant="ghost"
               size="sm"
               onClick={() => onEdit(template)}
-              className="h-6 w-6 p-0"
+              className="h-8 w-8 p-0"
+              title="Editar"
             >
               <Edit className="h-3 w-3" />
             </Button>
@@ -79,7 +81,8 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({
               variant="ghost"
               size="sm"
               onClick={() => onDelete(template.id)}
-              className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
+              className="h-8 w-8 p-0 text-red-500 hover:text-red-700"
+              title="Excluir"
             >
               <Trash2 className="h-3 w-3" />
             </Button>
@@ -87,14 +90,14 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({
         </div>
       </CardHeader>
       
-      <CardContent className="pt-0">
-        <div className="space-y-3">
+      <CardContent className="pt-0 flex-1 flex flex-col">
+        <div className="space-y-3 flex-1">
           <div>
             <p className="text-xs font-medium text-gray-600 mb-1">Assunto:</p>
-            <p className="text-sm">{template.subject}</p>
+            <p className="text-sm line-clamp-2">{template.subject}</p>
           </div>
           
-          <div>
+          <div className="flex-1">
             <p className="text-xs font-medium text-gray-600 mb-1">Conteúdo:</p>
             <p className="text-sm text-gray-700 line-clamp-3">{template.content}</p>
           </div>
@@ -111,28 +114,30 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({
               </div>
             </div>
           )}
+        </div>
+        
+        <div className="flex gap-2 mt-4 pt-3 border-t">
+          <Button 
+            size="sm" 
+            className="flex-1 min-w-0"
+            onClick={() => onSend(template)}
+            disabled={isSending}
+          >
+            <Send className="h-3 w-3 mr-1 flex-shrink-0" />
+            <span className="truncate">{isSending ? 'Enviando...' : 'Enviar'}</span>
+          </Button>
           
-          <div className="flex gap-2">
-            <Button 
-              size="sm" 
-              className="flex-1"
-              onClick={() => onSend(template)}
-              disabled={isSending}
+          {appointments.length > 0 && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onPreview(appointments[0])}
+              className="flex-shrink-0"
+              title="Visualizar"
             >
-              <Send className="h-3 w-3 mr-1" />
-              {isSending ? 'Enviando...' : 'Enviar'}
+              <Eye className="h-3 w-3" />
             </Button>
-            
-            {appointments.length > 0 && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => onPreview(appointments[0])}
-              >
-                <Eye className="h-3 w-3" />
-              </Button>
-            )}
-          </div>
+          )}
         </div>
       </CardContent>
     </Card>

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { toastSuccess, toastError } from '@/components/ui/custom-toast';
 import { useMessageTemplates, type MessageTemplate } from '@/hooks/useMessageTemplates';
@@ -139,7 +138,7 @@ export const MessageTemplates: React.FC<MessageTemplatesProps> = ({
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
+    <div className="w-full max-w-7xl mx-auto px-4 space-y-6 overflow-hidden">
       {/* Header centralizado */}
       <MessageTemplatesHeader
         selectedCategory={selectedCategory}
@@ -149,21 +148,24 @@ export const MessageTemplates: React.FC<MessageTemplatesProps> = ({
         isSending={isSending}
       />
 
-      {/* Templates Grid Centralizado */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 justify-items-center">
-        {filteredTemplates.map(template => (
-          <TemplateCard
-            key={template.id}
-            template={template}
-            isSending={isSending}
-            appointments={appointments}
-            onCopy={handleCopyTemplate}
-            onEdit={setEditingTemplate}
-            onDelete={handleDeleteTemplate}
-            onSend={handleSendTemplate}
-            onPreview={setPreviewAppointment}
-          />
-        ))}
+      {/* Templates Grid Responsivo */}
+      <div className="w-full overflow-hidden">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-fr">
+          {filteredTemplates.map(template => (
+            <div key={template.id} className="w-full">
+              <TemplateCard
+                template={template}
+                isSending={isSending}
+                appointments={appointments}
+                onCopy={handleCopyTemplate}
+                onEdit={setEditingTemplate}
+                onDelete={handleDeleteTemplate}
+                onSend={handleSendTemplate}
+                onPreview={setPreviewAppointment}
+              />
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Preview Modal */}
