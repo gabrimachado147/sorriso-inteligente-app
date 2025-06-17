@@ -5,7 +5,7 @@ import { useUserProfile } from './useUserProfile';
 
 export const useDashboardState = () => {
   const { isAuthenticated, user } = useAuth();
-  const { profile, isLoading: profileLoading } = useUserProfile();
+  const { profile, loading: profileLoading } = useUserProfile();
   const [schedulingLoading, setSchedulingLoading] = useState(false);
   const [chatLoading, setChatLoading] = useState(false);
 
