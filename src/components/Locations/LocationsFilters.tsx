@@ -1,7 +1,9 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Filters, FilterState } from "@/components/ui/filters";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { FilterState } from "@/components/ui/filters";
 import { animations } from "@/lib/animations";
 
 interface Service {
@@ -21,20 +23,34 @@ export const LocationsFilters: React.FC<LocationsFiltersProps> = ({
   availableServices
 }) => {
   return (
-    <Card className={`${animations.slideInBottom} ${animations.cardHover}`}>
-      <CardHeader>
+    <Card className={`${animations.slideInBottom} ${animations.cardHover} max-w-2xl mx-auto`}>
+      <CardHeader className="text-center">
         <CardTitle className="text-lg">Filtrar Unidades</CardTitle>
       </CardHeader>
-      <CardContent>
-        <Filters
-          filters={filters}
-          onFiltersChange={onFiltersChange}
-          availableServices={availableServices}
-          placeholder="Buscar por nome, endereço, cidade ou estado..."
-          showDateFilter={false}
-          showClinicFilter={false}
-          showStatusFilter={false}
-        />
+      <CardContent className="max-w-md mx-auto">
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="service-filter" className="text-sm font-medium">
+              Filtrar por Serviço
+            </Label>
+            <Select
+              value={filters.service}
+              onValueChange={(value) => onFiltersChange({ ...filters, service: value })}
+            >
+              <SelectTrigger id="service-filter" className="w-full">
+                <SelectValue placeholder="Todos os serviços" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">Todos os serviços</SelectItem>
+                {availableServices.map((service) => (
+                  <SelectItem key={service.id} value={service.id}>
+                    {service.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
       </CardContent>
     </Card>
   );

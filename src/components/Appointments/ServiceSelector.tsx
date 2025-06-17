@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { animations } from '@/lib/animations';
@@ -19,12 +19,7 @@ export const ServiceSelector: React.FC<ServiceSelectorProps> = ({
 
   return (
     <Card className={`${animations.fadeIn} ${animations.cardHover} w-full`}>
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 mobile-text-lg">
-          Serviços Disponíveis
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
+      <CardContent className="p-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {availableServices.map((service) => (
             <div key={service.id} className="relative">
