@@ -1,18 +1,23 @@
 
 import { useNavigate } from 'react-router-dom';
+import { toastInfo } from '@/components/ui/custom-toast';
 
 export const useHomePageNavigation = () => {
   const navigate = useNavigate();
 
-  const handleScheduleClick = () => {
-    navigate('/schedule');
+  const handleViewUnits = () => {
+    navigate('/clinics');
     setTimeout(() => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }, 100);
   };
 
-  const handleReschedule = () => {
-    navigate('/schedule');
+  const handleReschedule = (appointmentId?: string) => {
+    if (appointmentId) {
+      navigate(`/schedule?reschedule=${appointmentId}`);
+    } else {
+      navigate('/schedule');
+    }
     setTimeout(() => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }, 100);
@@ -20,47 +25,55 @@ export const useHomePageNavigation = () => {
 
   const handleViewAllAppointments = () => {
     navigate('/appointments');
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
   };
 
-  const handleViewUnits = () => {
-    navigate('/clinics');
-  };
-
-  const handleScheduleClinic = (clinic: string, phone: string) => {
-    navigate('/schedule');
+  const handleScheduleClinic = (clinicId?: string) => {
+    const url = clinicId ? `/schedule?clinic=${clinicId}` : '/schedule';
+    navigate(url);
     setTimeout(() => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }, 100);
   };
 
   const handleQuickAction = (action: string) => {
-    switch(action) {
+    switch (action) {
+      case 'schedule':
+        navigate('/schedule');
+        break;
       case 'chat':
         navigate('/chat');
         break;
-      case 'locations':
+      case 'clinics':
         navigate('/clinics');
-        break;
-      case 'appointments':
-        navigate('/schedule');
         break;
       case 'emergency':
         navigate('/emergency');
         break;
       default:
-        break;
+        toastInfo('Ação', `Navegando para ${action}`);
     }
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
   };
 
   const handleEmergencyCall = () => {
-    navigate('/emergency');
+    try {
+      const emergencyPhone = 'tel:+5535998913803';
+      window.location.href = emergencyPhone;
+      toastInfo('Emergência', 'Conectando com atendimento de emergência...');
+    } catch (error) {
+      console.error('Error making emergency call:', error);
+    }
   };
 
   return {
-    handleScheduleClick,
+    handleViewUnits,
     handleReschedule,
     handleViewAllAppointments,
-    handleViewUnits,
     handleScheduleClinic,
     handleQuickAction,
     handleEmergencyCall

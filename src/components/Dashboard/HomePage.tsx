@@ -2,6 +2,7 @@
 import React from 'react';
 import { animations } from '@/lib/animations';
 import { useHomePageNavigation } from '@/hooks/useHomePageNavigation';
+import { useDashboardState } from '@/hooks/useDashboardState';
 import { HeroWelcomeSection } from './HeroWelcomeSection';
 import { QuickActionsGrid } from './QuickActionsGrid';
 import { UnitsSection } from './UnitsSection';
@@ -20,8 +21,10 @@ const HomePage = () => {
     handleEmergencyCall
   } = useHomePageNavigation();
 
-  const schedulingLoading = false;
-  const chatLoading = false;
+  const {
+    schedulingLoading,
+    chatLoading
+  } = useDashboardState();
 
   return (
     <div className={`p-4 space-y-6 ${animations.pageEnter}`}>
