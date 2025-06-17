@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { EnhancedSkeleton } from "@/components/ui/enhanced-skeleton";
@@ -32,9 +31,14 @@ interface Service {
 }
 
 const LocationsPage: React.FC = () => {
+  console.log('LocationsPage: Componente iniciado');
+  
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const { clinics: realClinics } = useClinics();
+  const { clinics: realClinics, loading: clinicsLoading } = useClinics();
+  
+  console.log('LocationsPage: realClinics:', realClinics);
+  console.log('LocationsPage: clinicsLoading:', clinicsLoading);
   
   const [filters, setFilters] = useState<FilterState>({
     search: '',
@@ -47,6 +51,42 @@ const LocationsPage: React.FC = () => {
 
   // Converter dados reais para o formato da interface
   const clinics: Clinic[] = useMemo(() => {
+    console.log('LocationsPage: Convertendo clínicas:', realClinics);
+    
+    if (!realClinics || realClinics.length === 0) {
+      console.log('LocationsPage: Usando dados padrão');
+      return [
+        {
+          id: 'campobelo',
+          name: 'Senhor Sorriso Campobelo',
+          address: 'Rua Principal, 123',
+          city: 'Campobelo',
+          state: 'MG',
+          phone: '(35) 99891-3803',
+          whatsapp: '5531971147487',
+          email: 'contato@senhorrsorriso.com.br',
+          coordinates: { lat: -21.7833, lng: -43.3500 },
+          available: true,
+          services: ['avaliacao-gratuita', 'limpeza', 'restauracao', 'ortodontia', 'implantodontia'],
+          workingHours: 'Segunda a Sexta: 8h às 19h | Sábado: 8h às 13h'
+        },
+        {
+          id: 'formiga',
+          name: 'Senhor Sorriso Formiga',
+          address: 'Rua Central, 456',
+          city: 'Formiga',
+          state: 'MG',
+          phone: '(35) 99891-3803',
+          whatsapp: '5531971147487',
+          email: 'contato@senhorrsorriso.com.br',
+          coordinates: { lat: -20.4653, lng: -45.4266 },
+          available: true,
+          services: ['avaliacao-gratuita', 'limpeza', 'restauracao', 'ortodontia', 'implantodontia'],
+          workingHours: 'Segunda a Sexta: 8h às 19h | Sábado: 8h às 13h'
+        }
+      ];
+    }
+    
     return realClinics.map(clinic => ({
       id: clinic.id,
       name: clinic.name,
@@ -95,7 +135,10 @@ const LocationsPage: React.FC = () => {
   }, [clinics, filters]);
 
   useEffect(() => {
+    console.log('LocationsPage: useEffect disparado');
+    
     const timer = setTimeout(() => {
+      console.log('LocationsPage: Loading concluído');
       setIsLoading(false);
     }, 1000);
 
@@ -137,7 +180,10 @@ const LocationsPage: React.FC = () => {
     });
   };
 
-  if (isLoading) {
+  console.log('LocationsPage: Renderizando, isLoading:', isLoading);
+  console.log('LocationsPage: filteredClinics:', filteredClinics);
+
+  if (isLoading || clinicsLoading) {
     return (
       <div className="p-6 space-y-6">
         <EnhancedSkeleton variant="clinic-card" count={3} />

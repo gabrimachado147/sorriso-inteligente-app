@@ -1,12 +1,12 @@
 
 import React from 'react';
-import { LazyLocationsPage } from '@/components/Locations/LazyLocationsPage';
+import LocationsPage from '@/components/Locations/LocationsPage';
 import { animations } from '@/lib/animations';
 
 const ClinicsPage = () => {
   return (
     <div className={`space-y-6 ${animations.pageEnter}`}>
-      <LazyLocationsPage />
+      <LocationsPage />
     </div>
   );
 };
