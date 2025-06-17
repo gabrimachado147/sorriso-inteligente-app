@@ -72,101 +72,97 @@ const ProfilePage = () => {
 
   return (
     <div className={`w-full min-h-screen bg-background overflow-x-hidden ${animations.pageEnter}`}>
-      <div className="mobile-container px-4 py-6">
+      <div className="mobile-container px-4 py-6 max-w-4xl mx-auto">
         {/* Header do Perfil */}
-        <div className="text-center mb-6">
-          <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
-            <User className="h-8 w-8 text-primary" />
+        <div className="text-center mb-8">
+          <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+            <User className="h-10 w-10 text-primary" />
           </div>
-          <h1 className="text-lg font-bold mb-1 truncate">
-            {user?.user_metadata?.nome_completo || user?.email}
+          <h1 className="text-2xl font-bold mb-2">
+            {user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Usuário'}
           </h1>
-          <p className="text-gray-700 mobile-text-sm truncate px-4">
+          <p className="text-gray-600 text-sm">
             {user?.email}
           </p>
         </div>
 
         {/* Tabs do Perfil */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-          <div className="overflow-x-auto mobile-scroll">
-            <TabsList className="grid grid-cols-5 w-full min-w-[480px] md:min-w-0 h-auto bg-white/50 backdrop-blur-sm border border-gray-200/50 rounded-lg p-1">
-              <TabsTrigger 
-                value="profile" 
-                className="mobile-text-xs p-2 flex flex-col items-center mobile-touch-target rounded-md min-w-0 text-gray-700 data-[state=active]:text-gray-900 data-[state=active]:bg-white"
-                aria-label="Aba do perfil do usuário"
-              >
-                <User className="h-3 w-3 md:h-4 md:w-4 mb-1 flex-shrink-0" />
-                <span className="truncate w-full text-center">Perfil</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="history" 
-                className="mobile-text-xs p-2 flex flex-col items-center mobile-touch-target rounded-md min-w-0 text-gray-700 data-[state=active]:text-gray-900 data-[state=active]:bg-white"
-                aria-label="Histórico de consultas"
-              >
-                <History className="h-3 w-3 md:h-4 md:w-4 mb-1 flex-shrink-0" />
-                <span className="truncate w-full text-center">Histórico</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="notifications" 
-                className="mobile-text-xs p-2 flex flex-col items-center mobile-touch-target rounded-md min-w-0 text-gray-700 data-[state=active]:text-gray-900 data-[state=active]:bg-white"
-                aria-label="Configurações de notificações"
-              >
-                <Bell className="h-3 w-3 md:h-4 md:w-4 mb-1 flex-shrink-0" />
-                <span className="truncate w-full text-center">Notific.</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="security" 
-                className="mobile-text-xs p-2 flex flex-col items-center mobile-touch-target rounded-md min-w-0 text-gray-700 data-[state=active]:text-gray-900 data-[state=active]:bg-white"
-                aria-label="Configurações de segurança"
-              >
-                <Shield className="h-3 w-3 md:h-4 md:w-4 mb-1 flex-shrink-0" />
-                <span className="truncate w-full text-center">Segur.</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="accessibility" 
-                className="mobile-text-xs p-2 flex flex-col items-center mobile-touch-target rounded-md min-w-0 text-gray-700 data-[state=active]:text-gray-900 data-[state=active]:bg-white"
-                aria-label="Configurações de acessibilidade"
-              >
-                <Settings className="h-3 w-3 md:h-4 md:w-4 mb-1 flex-shrink-0" />
-                <span className="truncate w-full text-center">Access.</span>
-              </TabsTrigger>
-            </TabsList>
-          </div>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <TabsList className="grid w-full grid-cols-5 h-auto bg-white border border-gray-200 rounded-lg p-1">
+            <TabsTrigger 
+              value="profile" 
+              className="flex flex-col items-center gap-1 py-3 px-2 text-xs data-[state=active]:bg-primary data-[state=active]:text-white rounded-md transition-all"
+            >
+              <User className="h-4 w-4" />
+              <span>Perfil</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="history" 
+              className="flex flex-col items-center gap-1 py-3 px-2 text-xs data-[state=active]:bg-primary data-[state=active]:text-white rounded-md transition-all"
+            >
+              <History className="h-4 w-4" />
+              <span>Histórico</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="notifications" 
+              className="flex flex-col items-center gap-1 py-3 px-2 text-xs data-[state=active]:bg-primary data-[state=active]:text-white rounded-md transition-all"
+            >
+              <Bell className="h-4 w-4" />
+              <span>Notific.</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="security" 
+              className="flex flex-col items-center gap-1 py-3 px-2 text-xs data-[state=active]:bg-primary data-[state=active]:text-white rounded-md transition-all"
+            >
+              <Shield className="h-4 w-4" />
+              <span>Segur.</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="accessibility" 
+              className="flex flex-col items-center gap-1 py-3 px-2 text-xs data-[state=active]:bg-primary data-[state=active]:text-white rounded-md transition-all"
+            >
+              <Settings className="h-4 w-4" />
+              <span>Access.</span>
+            </TabsTrigger>
+          </TabsList>
 
-          <div className="overflow-x-hidden">
-            <TabsContent value="profile" className="mt-4">
+          <div className="min-h-[400px]">
+            <TabsContent value="profile" className="mt-6 space-y-0">
               <ProfileTabReal onTabChange={setActiveTab} />
             </TabsContent>
 
-            <TabsContent value="history" className="mt-4">
+            <TabsContent value="history" className="mt-6 space-y-0">
               <HistoryTabReal />
             </TabsContent>
 
-            <TabsContent value="notifications" className="mt-4">
+            <TabsContent value="notifications" className="mt-6 space-y-0">
               <NotificationsTab />
             </TabsContent>
 
-            <TabsContent value="security" className="mt-4">
+            <TabsContent value="security" className="mt-6 space-y-0">
               <SecurityTab />
             </TabsContent>
 
-            <TabsContent value="accessibility" className="mt-4">
+            <TabsContent value="accessibility" className="mt-6 space-y-0">
               <AccessibilityTab />
             </TabsContent>
           </div>
         </Tabs>
 
         {/* Botão de Logout */}
-        <Button
-          onClick={handleSignOut}
-          variant="outline"
-          className="w-full mobile-button h-12 mt-6 truncate text-gray-900 border-gray-300 hover:bg-gray-50"
-          size="lg"
-          aria-label="Sair da conta do usuário"
-        >
-          <LogOut className="h-4 w-4 md:h-5 md:w-5 mr-2 flex-shrink-0" />
-          <span className="truncate">Sair da Conta</span>
-        </Button>
+        <Card className="mt-8">
+          <CardContent className="p-6">
+            <Button
+              onClick={handleSignOut}
+              variant="outline"
+              className="w-full h-12 text-gray-700 border-gray-300 hover:bg-gray-50 hover:text-gray-900"
+              size="lg"
+            >
+              <LogOut className="h-5 w-5 mr-2" />
+              Sair da Conta
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

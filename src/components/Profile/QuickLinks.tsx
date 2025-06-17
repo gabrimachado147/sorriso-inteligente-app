@@ -71,31 +71,31 @@ export const QuickLinks: React.FC<QuickLinksProps> = ({ onTabChange }) => {
   ];
 
   return (
-    <Card className={`${animations.fadeIn} mb-6 mobile-card-spacing overflow-hidden`}>
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 mobile-text-lg">
-          <Settings className="h-4 w-4 md:h-5 md:w-5 text-primary flex-shrink-0" />
-          <span className="truncate">Recursos Avançados</span>
+    <Card className={`${animations.fadeIn} mobile-card-spacing overflow-hidden`}>
+      <CardHeader className="pb-4">
+        <CardTitle className="flex items-center gap-2 text-lg">
+          <Settings className="h-5 w-5 text-primary" />
+          Recursos Avançados
         </CardTitle>
       </CardHeader>
-      <CardContent className="pb-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 overflow-hidden">
+      <CardContent className="pb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {quickLinks.map((link, index) => (
             <Button
               key={index}
               variant="outline"
-              className={`h-auto p-3 text-left justify-start hover:shadow-md transition-all duration-200 mobile-touch-target ${animations.buttonHover} overflow-hidden`}
+              className="h-auto p-4 text-left justify-start hover:shadow-md transition-all duration-200 group"
               onClick={link.action}
             >
-              <div className="flex items-start gap-3 w-full min-w-0">
-                <div className={`p-2 rounded-lg ${link.color} flex-shrink-0`}>
-                  <link.icon className="h-3 w-3 md:h-4 md:w-4 text-white" />
+              <div className="flex items-center gap-3 w-full">
+                <div className={`p-2 rounded-lg ${link.color} flex-shrink-0 group-hover:scale-105 transition-transform`}>
+                  <link.icon className="h-4 w-4 text-white" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-medium text-sm text-gray-900 truncate mobile-text-sm">
+                  <p className="font-medium text-sm text-gray-900 truncate">
                     {link.title}
                   </p>
-                  <p className="text-xs text-gray-500 mt-1 mobile-text-xs truncate">
+                  <p className="text-xs text-gray-500 mt-1 truncate">
                     {link.description}
                   </p>
                 </div>
