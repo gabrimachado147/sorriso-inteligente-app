@@ -20,7 +20,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ appointments, st
   const [dateFilter, setDateFilter] = useState<string>('all');
 
   // Mutations para atualização
-  const { updateAppointmentStatus, updateAppointmentService, updateAppointment } = useAppointments();
+  const { updateAppointmentStatus, updateAppointmentService } = useAppointments();
 
   // Filtrar agendamentos pela clínica do usuário logado PRIMEIRO
   const clinicFilteredAppointments = useMemo(() => {
@@ -313,15 +313,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ appointments, st
       await updateAppointmentService.mutateAsync({ appointmentId, service, price });
     } catch (error) {
       console.error('Erro ao atualizar serviço:', error);
-    }
-  };
-
-  const handleUpdateAppointment = async (appointmentId: string, updates: { name?: string; phone?: string; email?: string; date?: string; time?: string; clinic?: string; notes?: string }) => {
-    try {
-      console.log('AdminDashboard: Updating appointment:', appointmentId, updates);
-      await updateAppointment.mutateAsync({ appointmentId, updates });
-    } catch (error) {
-      console.error('Erro ao atualizar agendamento:', error);
     }
   };
 
