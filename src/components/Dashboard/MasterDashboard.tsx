@@ -53,9 +53,16 @@ export const MasterDashboard: React.FC<MasterDashboardProps> = ({ appointments, 
     }
   };
 
-  const handleUpdateService = async (appointmentId: string, service: string, price?: number, notes?: string) => {
+  const handleUpdateService = async (appointmentId: string, service: string, price?: number, originalPrice?: number, discountPercent?: number, paymentMethod?: string) => {
     try {
-      await updateAppointmentService.mutateAsync({ appointmentId, service, price, notes });
+      await updateAppointmentService.mutateAsync({ 
+        appointmentId, 
+        service, 
+        price, 
+        originalPrice, 
+        discountPercent, 
+        paymentMethod 
+      });
     } catch (error) {
       console.error('Erro ao atualizar serviço:', error);
     }

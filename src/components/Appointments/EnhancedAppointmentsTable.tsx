@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { AppointmentRecord } from '@/services/supabase/appointments';
 import { AppointmentStatusBadge } from './AppointmentStatusBadge';
-import { ServiceEditor } from './ServiceEditor';
+import { AppointmentServiceInfo } from './AppointmentServiceInfo';
 import { BulkActions } from './BulkActions';
 import { Phone, Mail, Calendar, Clock, User } from 'lucide-react';
 import { animations } from '@/lib/animations';
@@ -15,7 +15,7 @@ import { animations } from '@/lib/animations';
 interface EnhancedAppointmentsTableProps {
   appointments: AppointmentRecord[];
   onStatusChange: (appointmentId: string, newStatus: 'confirmed' | 'cancelled' | 'completed' | 'no_show') => void;
-  onServiceUpdate: (appointmentId: string, service: string, price?: number) => void;
+  onServiceUpdate: (appointmentId: string, service: string, price?: number, originalPrice?: number, discountPercent?: number, paymentMethod?: string) => void;
   onBulkStatusUpdate: (appointmentIds: string[], status: string) => void;
   onSendBulkMessage: (appointmentIds: string[], template: string) => void;
   isUpdating: boolean;
@@ -30,7 +30,6 @@ export const EnhancedAppointmentsTable: React.FC<EnhancedAppointmentsTableProps>
   isUpdating
 }) => {
   const [selectedAppointments, setSelectedAppointments] = useState<string[]>([]);
-  const [editingService, setEditingService] = useState<string | null>(null);
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
@@ -167,35 +166,11 @@ export const EnhancedAppointmentsTable: React.FC<EnhancedAppointmentsTableProps>
                     </TableCell>
                     
                     <TableCell>
-                      {editingService === appointment.id ? (
-                        <ServiceEditor
-                          service={appointment.service}
-                          price={(appointment as any).price}
-                          onSave={(service: string, price?: number) => {
-                            onServiceUpdate(appointment.id, service, price);
-                            setEditingService(null);
-                          }}
-                          onCancel={() => setEditingService(null)}
-                        />
-                      ) : (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setEditingService(appointment.id)}
-                          className="h-auto p-1 hover:bg-gray-100"
-                        >
-                          <div className="text-left">
-                            <p className="font-medium text-gray-900 text-sm">
-                              {appointment.service}
-                            </p>
-                            {(appointment as any).price && (
-                              <p className="text-xs text-green-600">
-                                R$ {(appointment as any).price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                              </p>
-                            )}
-                          </div>
-                        </Button>
-                      )}
+                      <AppointmentServiceInfo
+                        appointment={appointment}
+                        onServiceUpdate={onServiceUpdate}
+                        isUpdating={isUpdating}
+                      />
                     </TableCell>
                     
                     <TableCell>

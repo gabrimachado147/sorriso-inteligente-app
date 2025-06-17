@@ -2,7 +2,7 @@
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AppointmentRecord } from '@/services/supabase/appointments';
-import { AppointmentsTable } from '@/components/Appointments/AppointmentsTable';
+import { EnhancedAppointmentsTable } from '@/components/Appointments/EnhancedAppointmentsTable';
 import { MasterDashboardStats } from './MasterDashboardStats';
 import { MasterDashboardCharts } from './MasterDashboardCharts';
 import { animations } from '@/lib/animations';
@@ -26,7 +26,7 @@ interface MasterDashboardContentProps {
   };
   finalFilteredAppointments: AppointmentRecord[];
   onStatusChange: (appointmentId: string, newStatus: 'confirmed' | 'cancelled' | 'completed' | 'no_show') => void;
-  onServiceUpdate: (appointmentId: string, service: string, price?: number) => void;
+  onServiceUpdate: (appointmentId: string, service: string, price?: number, originalPrice?: number, discountPercent?: number, paymentMethod?: string) => void;
   isUpdating: boolean;
 }
 
@@ -74,10 +74,16 @@ export const MasterDashboardContent: React.FC<MasterDashboardContentProps> = ({
         </TabsContent>
 
         <TabsContent value="appointments" className="space-y-6">
-          <AppointmentsTable
+          <EnhancedAppointmentsTable
             appointments={finalFilteredAppointments}
             onStatusChange={onStatusChange}
             onServiceUpdate={onServiceUpdate}
+            onBulkStatusUpdate={(appointmentIds, status) => {
+              appointmentIds.forEach(id => onStatusChange(id, status as 'confirmed' | 'cancelled' | 'completed' | 'no_show'));
+            }}
+            onSendBulkMessage={(appointmentIds, template) => {
+              console.log('Enviando mensagem em lote:', { appointmentIds, template });
+            }}
             isUpdating={isUpdating}
           />
         </TabsContent>
