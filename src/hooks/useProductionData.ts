@@ -1,4 +1,3 @@
-
 // Hook para usar dados reais de produção
 import { useState, useEffect, useMemo } from 'react';
 import { realClinicsService, type RealClinic, type DentalService } from '@/services/realClinicsService';
@@ -30,8 +29,7 @@ export const useProductionClinics = () => {
       weekdays: "Segunda a Sexta: 8h às 19h",
       saturdays: "Sábado: 8h às 13h",
       sundays: "Domingo: Fechado",
-      full: "Segunda a Sexta: 8h às 19h | Sábado: 8h às 13h | Domingo: Fechado",
-      emergency: "Para emergências, temos atendimento 24h via WhatsApp: (35) 99869-5479"
+      full: "Segunda a Sexta: 8h às 19h | Sábado: 8h às 13h | Domingo: Fechado"
     };
   };
 
@@ -142,7 +140,6 @@ export const useChatContextData = () => {
       currentlyOpen,
       totalClinics: clinics.length,
       availableServices: services.map(s => s.name),
-      emergencyContact: "(35) 99869-5479",
       locations: clinics.map(c => `${c.name} - ${c.city}/${c.state}`),
       workingHours: {
         weekdays: "8h às 19h",
