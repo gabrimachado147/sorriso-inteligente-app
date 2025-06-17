@@ -21,10 +21,16 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Calendar, X, Clock } from 'lucide-react';
+import { Calendar, X, Clock, MoreVertical } from 'lucide-react';
 import { AppointmentActionsService } from '@/services/supabase/appointmentActions';
 import { RealAppointmentRecord } from '@/services/supabase/realAppointments';
 
@@ -110,37 +116,88 @@ export const AppointmentActions: React.FC<AppointmentActionsProps> = ({
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'confirmed':
-        return <Badge className="bg-green-100 text-green-800">Confirmado</Badge>;
+        return <Badge className="bg-green-100 text-green-800 whitespace-nowrap">Confirmado</Badge>;
       case 'cancelled':
-        return <Badge className="bg-red-100 text-red-800">Cancelado</Badge>;
+        return <Badge className="bg-red-100 text-red-800 whitespace-nowrap">Cancelado</Badge>;
       case 'completed':
-        return <Badge className="bg-blue-100 text-blue-800">Concluído</Badge>;
+        return <Badge className="bg-blue-100 text-blue-800 whitespace-nowrap">Concluído</Badge>;
       case 'no_show':
-        return <Badge className="bg-orange-100 text-orange-800">Não Compareceu</Badge>;
+        return <Badge className="bg-orange-100 text-orange-800 whitespace-nowrap">Não Compareceu</Badge>;
       default:
-        return <Badge className="bg-gray-100 text-gray-800">{status}</Badge>;
+        return <Badge className="bg-gray-100 text-gray-800 whitespace-nowrap">{status}</Badge>;
     }
   };
 
   if (!canModify) {
-    return <div className="flex items-center gap-2">{getStatusBadge(appointment.status)}</div>;
+    return (
+      <div className="flex items-center justify-center w-full">
+        {getStatusBadge(appointment.status)}
+      </div>
+    );
   }
 
   return (
-    <div className="flex items-center gap-2">
-      {getStatusBadge(appointment.status)}
+    <div className="flex items-center gap-2 w-full">
+      <div className="flex-shrink-0">
+        {getStatusBadge(appointment.status)}
+      </div>
       
       {!isPastAppointment && (
-        <>
-          {/* Reagendar */}
+        <div className="flex items-center gap-1 ml-auto">
+          {/* Mobile: Dropdown Menu */}
+          <div className="block sm:hidden">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48 bg-white z-50">
+                <Dialog open={isRescheduleOpen} onOpenChange={setIsRescheduleOpen}>
+                  <DialogTrigger asChild>
+                    <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                      <Calendar className="h-4 w-4 mr-2" />
+                      Reagendar
+                    </DropdownMenuItem>
+                  </DialogTrigger>
+                </Dialog>
+                
+                <AlertDialog open={isCancelOpen} onOpenChange={setIsCancelOpen}>
+                  <AlertDialogTrigger asChild>
+                    <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-red-600">
+                      <X className="h-4 w-4 mr-2" />
+                      Cancelar
+                    </DropdownMenuItem>
+                  </AlertDialogTrigger>
+                </AlertDialog>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
+          {/* Desktop: Individual Buttons */}
+          <div className="hidden sm:flex gap-1">
+            <Dialog open={isRescheduleOpen} onOpenChange={setIsRescheduleOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm" className="whitespace-nowrap text-xs">
+                  <Calendar className="h-3 w-3 mr-1" />
+                  Reagendar
+                </Button>
+              </DialogTrigger>
+            </Dialog>
+
+            <AlertDialog open={isCancelOpen} onOpenChange={setIsCancelOpen}>
+              <AlertDialogTrigger asChild>
+                <Button variant="outline" size="sm" className="text-red-600 hover:text-red-700 whitespace-nowrap text-xs">
+                  <X className="h-3 w-3 mr-1" />
+                  Cancelar
+                </Button>
+              </AlertDialogTrigger>
+            </AlertDialog>
+          </div>
+
+          {/* Reagendar Dialog */}
           <Dialog open={isRescheduleOpen} onOpenChange={setIsRescheduleOpen}>
-            <DialogTrigger asChild>
-              <Button variant="outline" size="sm">
-                <Calendar className="h-4 w-4 mr-1" />
-                Reagendar
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="sm:max-w-md">
               <DialogHeader>
                 <DialogTitle>Reagendar Consulta</DialogTitle>
                 <DialogDescription>
@@ -195,14 +252,8 @@ export const AppointmentActions: React.FC<AppointmentActionsProps> = ({
             </DialogContent>
           </Dialog>
 
-          {/* Cancelar */}
+          {/* Cancelar Dialog */}
           <AlertDialog open={isCancelOpen} onOpenChange={setIsCancelOpen}>
-            <AlertDialogTrigger asChild>
-              <Button variant="outline" size="sm" className="text-red-600 hover:text-red-700">
-                <X className="h-4 w-4 mr-1" />
-                Cancelar
-              </Button>
-            </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle>Cancelar Consulta</AlertDialogTitle>
@@ -231,7 +282,7 @@ export const AppointmentActions: React.FC<AppointmentActionsProps> = ({
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
-        </>
+        </div>
       )}
     </div>
   );

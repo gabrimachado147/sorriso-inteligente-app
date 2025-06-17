@@ -1,13 +1,17 @@
 
 import React, { useState } from 'react';
-import { Bell } from 'lucide-react';
+import { Bell, UserCog } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useNotificationSystem } from '@/hooks/useNotificationSystem';
 import { NotificationDrawer } from './NotificationDrawer';
+import { useAuth } from '@/hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 
 export const Header: React.FC = () => {
   const [notificationDrawerOpen, setNotificationDrawerOpen] = useState(false);
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
   const { 
     notifications, 
     unreadCount, 
@@ -15,6 +19,10 @@ export const Header: React.FC = () => {
     markAllAsRead, 
     removeNotification 
   } = useNotificationSystem();
+
+  const handleStaffAccess = () => {
+    navigate('/staff-login');
+  };
 
   return (
     <>
@@ -32,6 +40,19 @@ export const Header: React.FC = () => {
           </div>
 
           <div className="flex items-center space-x-3">
+            {isAuthenticated && (
+              <Button 
+                variant="default"
+                size="sm"
+                onClick={handleStaffAccess}
+                className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-lg mobile-touch-target text-xs md:text-sm px-2 md:px-4"
+              >
+                <UserCog className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2 flex-shrink-0" />
+                <span className="hidden sm:inline">Painel Admin</span>
+                <span className="sm:hidden">Admin</span>
+              </Button>
+            )}
+            
             <Button 
               variant="ghost" 
               size="icon" 

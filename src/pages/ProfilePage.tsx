@@ -4,7 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { User, LogOut, History, Settings, Bell, Shield, UserCog } from 'lucide-react';
+import { User, LogOut, History, Settings, Bell, Shield } from 'lucide-react';
 import { ProfileTabReal } from '@/components/Profile/ProfileTabReal';
 import { HistoryTabReal } from '@/components/Profile/HistoryTabReal';
 import { NotificationsTab } from '@/components/Profile/NotificationsTab';
@@ -12,13 +12,11 @@ import { SecurityTab } from '@/components/Profile/SecurityTab';
 import { AccessibilityTab } from '@/components/Profile/AccessibilityTab';
 import { AuthForm } from '@/components/Auth/AuthForm';
 import { useAuthPage } from '@/hooks/useAuthPage';
-import { useNavigate } from 'react-router-dom';
 import { animations } from '@/lib/animations';
 
 const ProfilePage = () => {
   const { user, isAuthenticated, logout } = useAuth();
   const [activeTab, setActiveTab] = useState('profile');
-  const navigate = useNavigate();
   
   const {
     isLogin,
@@ -32,30 +30,9 @@ const ProfilePage = () => {
     handleEnterWithoutAccount
   } = useAuthPage();
 
-  const handleStaffAccess = () => {
-    navigate('/staff-login');
-  };
-
-  // Botão de acesso administrativo responsivo
-  const AdminAccessButton = () => (
-    <div className="fixed top-4 right-4 z-50">
-      <Button 
-        variant="default"
-        size="sm"
-        onClick={handleStaffAccess}
-        className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-lg mobile-touch-target text-xs md:text-sm truncate max-w-[140px] md:max-w-none"
-      >
-        <UserCog className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2 flex-shrink-0" />
-        <span className="hidden sm:inline">Painel Admin</span>
-        <span className="sm:hidden">Admin</span>
-      </Button>
-    </div>
-  );
-
   if (!isAuthenticated) {
     return (
       <div className={`w-full min-h-screen bg-background overflow-x-hidden ${animations.pageEnter}`}>
-        <AdminAccessButton />
         <div className="mobile-container px-4 py-6">
           <div className="flex items-center justify-center min-h-[70vh]">
             <Card className="w-full max-w-md mx-auto mobile-card-spacing">
@@ -95,11 +72,9 @@ const ProfilePage = () => {
 
   return (
     <div className={`w-full min-h-screen bg-background overflow-x-hidden ${animations.pageEnter}`}>
-      <AdminAccessButton />
-      
       <div className="mobile-container px-4 py-6">
         {/* Header do Perfil */}
-        <div className="text-center mb-6 mt-16">
+        <div className="text-center mb-6">
           <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
             <User className="h-8 w-8 text-primary" />
           </div>

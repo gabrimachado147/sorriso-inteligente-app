@@ -41,7 +41,7 @@ export const HistoryTabReal: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6 overflow-x-hidden">
+    <div className="space-y-6 overflow-x-hidden pb-6">
       <div className="flex items-center justify-between gap-2">
         <h2 className="text-2xl font-bold mobile-text-xl truncate flex-1">Histórico de Consultas</h2>
         <Badge variant="secondary" className="px-3 py-1 mobile-text-sm flex-shrink-0">
@@ -53,11 +53,11 @@ export const HistoryTabReal: React.FC = () => {
         {appointments.map((appointment) => (
           <Card key={appointment.id} className={`${animations.slideInLeft} hover:shadow-md transition-shadow mobile-card-spacing overflow-hidden`}>
             <CardHeader className="pb-3">
-              <div className="flex items-start justify-between gap-2">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <CardTitle className="text-lg mobile-text-lg truncate flex-1 min-w-0">
                   {appointment.service}
                 </CardTitle>
-                <div className="flex-shrink-0">
+                <div className="flex-shrink-0 w-full sm:w-auto overflow-x-auto">
                   <AppointmentActions
                     appointment={appointment}
                     onUpdate={refetch}
@@ -65,7 +65,7 @@ export const HistoryTabReal: React.FC = () => {
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="space-y-4 overflow-hidden">
+            <CardContent className="space-y-4 overflow-hidden pb-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="flex items-center gap-2 text-sm text-gray-600 mobile-text-sm min-w-0">
                   <Calendar className="h-4 w-4 flex-shrink-0" />
