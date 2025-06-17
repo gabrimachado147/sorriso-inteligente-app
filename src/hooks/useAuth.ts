@@ -11,11 +11,33 @@ interface AuthState {
   isAuthenticated: boolean;
 }
 
+interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
+interface RegisterCredentials {
+  email: string;
+  password: string;
+  nome_completo: string;
+  telefone: string;
+}
+
+interface AuthResult {
+  success: boolean;
+  error?: string;
+}
+
 interface AuthContextType extends AuthState {
-  signIn: (email: string, password: string) => Promise<{ error: any }>;
-  signUp: (email: string, password: string, fullName: string, phone: string) => Promise<{ error: any }>;
+  signIn: (credentials: LoginCredentials) => Promise<AuthResult>;
+  signUp: (credentials: RegisterCredentials) => Promise<AuthResult>;
   signOut: () => Promise<void>;
-  resetPassword: (email: string) => Promise<{ error: any }>;
+  resetPassword: (email: string) => Promise<AuthResult>;
+  updatePassword: (newPassword: string) => Promise<AuthResult>;
+  login: (credentials: LoginCredentials) => Promise<AuthResult>;
+  register: (credentials: RegisterCredentials) => Promise<AuthResult>;
+  logout: () => Promise<void>;
+  session: Session | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -37,6 +59,8 @@ export const useAuth = () => {
     error: null,
     isAuthenticated: false
   });
+
+  const [session, setSession] = useState<Session | null>(null);
 
   useEffect(() => {
     if (authInitialized) return;
@@ -60,6 +84,7 @@ export const useAuth = () => {
 
         console.info('useAuth: Current session:', session ? 'Found' : 'None');
         
+        setSession(session);
         setAuthState(prev => ({
           ...prev,
           user: session?.user || null,
@@ -85,6 +110,7 @@ export const useAuth = () => {
       async (event, session) => {
         console.info('useAuth: Auth state changed:', event, session ? 'Session exists' : 'No session');
         
+        setSession(session);
         setAuthState(prev => ({
           ...prev,
           user: session?.user || null,
@@ -104,47 +130,49 @@ export const useAuth = () => {
     };
   }, []);
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = async (credentials: LoginCredentials): Promise<AuthResult> => {
     try {
       setAuthState(prev => ({ ...prev, loading: true, error: null }));
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      const { error } = await supabase.auth.signInWithPassword(credentials);
       
       if (error) {
         setAuthState(prev => ({ ...prev, error: error.message, loading: false }));
+        return { success: false, error: error.message };
       }
       
-      return { error };
+      return { success: true };
     } catch (error: any) {
       const errorMessage = 'Erro ao fazer login';
       setAuthState(prev => ({ ...prev, error: errorMessage, loading: false }));
-      return { error: { message: errorMessage } };
+      return { success: false, error: errorMessage };
     }
   };
 
-  const signUp = async (email: string, password: string, fullName: string, phone: string) => {
+  const signUp = async (credentials: RegisterCredentials): Promise<AuthResult> => {
     try {
       setAuthState(prev => ({ ...prev, loading: true, error: null }));
       
       const { error } = await supabase.auth.signUp({
-        email,
-        password,
+        email: credentials.email,
+        password: credentials.password,
         options: {
           data: {
-            full_name: fullName,
-            phone: phone
+            nome_completo: credentials.nome_completo,
+            telefone: credentials.telefone
           }
         }
       });
       
       if (error) {
         setAuthState(prev => ({ ...prev, error: error.message, loading: false }));
+        return { success: false, error: error.message };
       }
       
-      return { error };
+      return { success: true };
     } catch (error: any) {
       const errorMessage = 'Erro ao criar conta';
       setAuthState(prev => ({ ...prev, error: errorMessage, loading: false }));
-      return { error: { message: errorMessage } };
+      return { success: false, error: errorMessage };
     }
   };
 
@@ -157,23 +185,49 @@ export const useAuth = () => {
     }
   };
 
-  const resetPassword = async (email: string) => {
+  const resetPassword = async (email: string): Promise<AuthResult> => {
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/reset-password`
       });
-      return { error };
+      
+      if (error) {
+        return { success: false, error: error.message };
+      }
+      
+      return { success: true };
     } catch (error: any) {
-      return { error: { message: 'Erro ao enviar email de recuperação' } };
+      return { success: false, error: 'Erro ao enviar email de recuperação' };
+    }
+  };
+
+  const updatePassword = async (newPassword: string): Promise<AuthResult> => {
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+      
+      if (error) {
+        return { success: false, error: error.message };
+      }
+      
+      return { success: true };
+    } catch (error: any) {
+      return { success: false, error: 'Erro ao atualizar senha' };
     }
   };
 
   return {
     ...authState,
+    session,
     signIn,
     signUp,
     signOut,
-    resetPassword
+    resetPassword,
+    updatePassword,
+    login: signIn,
+    register: signUp,
+    logout: signOut
   };
 };
 
