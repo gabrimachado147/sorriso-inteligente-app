@@ -21,6 +21,7 @@ import { Calendar, Clock, MapPin, User, Phone, Mail, DollarSign } from 'lucide-r
 import { animations } from '@/lib/animations';
 import { AppointmentRecord } from '@/services/supabase/appointments';
 import { ServiceEditor } from './ServiceEditor';
+import { AdminAppointmentActions } from './AdminAppointmentActions';
 
 interface AppointmentsTableProps {
   appointments: AppointmentRecord[];
@@ -178,29 +179,35 @@ export const AppointmentsTable: React.FC<AppointmentsTableProps> = ({
                   </TableCell>
 
                   <TableCell>
-                    <Badge className={getStatusColor(appointment.status)}>
-                      {getStatusLabel(appointment.status)}
-                    </Badge>
+                    <div className="flex items-center gap-2">
+                      <Badge className={getStatusColor(appointment.status)}>
+                        {getStatusLabel(appointment.status)}
+                      </Badge>
+                      <Select
+                        value={appointment.status}
+                        onValueChange={(newStatus: 'confirmed' | 'cancelled' | 'completed' | 'no_show') =>
+                          onStatusChange(appointment.id, newStatus)
+                        }
+                        disabled={isUpdating}
+                      >
+                        <SelectTrigger className="w-32">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="confirmed">Confirmado</SelectItem>
+                          <SelectItem value="cancelled">Cancelado</SelectItem>
+                          <SelectItem value="completed">Concluído</SelectItem>
+                          <SelectItem value="no_show">Não Compareceu</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </TableCell>
 
                   <TableCell>
-                    <Select
-                      value={appointment.status}
-                      onValueChange={(newStatus: 'confirmed' | 'cancelled' | 'completed' | 'no_show') =>
-                        onStatusChange(appointment.id, newStatus)
-                      }
-                      disabled={isUpdating}
-                    >
-                      <SelectTrigger className="w-32">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="confirmed">Confirmado</SelectItem>
-                        <SelectItem value="cancelled">Cancelado</SelectItem>
-                        <SelectItem value="completed">Concluído</SelectItem>
-                        <SelectItem value="no_show">Não Compareceu</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <AdminAppointmentActions
+                      appointment={appointment}
+                      onUpdate={() => window.location.reload()}
+                    />
                   </TableCell>
                 </TableRow>
               ))}
