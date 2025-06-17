@@ -63,74 +63,72 @@ export const StaffLogin: React.FC<StaffLoginProps> = ({ onLogin }) => {
   };
 
   return (
-    <div className={`min-h-screen flex items-center justify-center bg-gray-50 p-4 ${animations.fadeIn}`}>
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <div className="flex items-center justify-center mb-4">
-            <div className="bg-primary rounded-full p-3">
-              <Lock className="h-6 w-6 text-white" />
+    <Card className={`w-full mobile-card-spacing ${animations.fadeIn}`}>
+      <CardHeader className="space-y-1 text-center">
+        <div className="flex items-center justify-center mb-4">
+          <div className="bg-primary rounded-full p-3">
+            <Lock className="h-6 w-6 text-white" />
+          </div>
+        </div>
+        <CardTitle className="text-lg text-center">Acesso Funcionários</CardTitle>
+        <p className="text-sm text-muted-foreground text-center">
+          Selecione sua clínica e digite a senha para acessar os agendamentos
+        </p>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="clinic">Clínica</Label>
+            <div className="relative">
+              <Building2 className="absolute left-3 top-3 h-4 w-4 text-gray-400 z-10" />
+              <Select value={selectedClinic} onValueChange={setSelectedClinic}>
+                <SelectTrigger className="pl-10 mobile-input">
+                  <SelectValue placeholder="Selecione sua clínica" />
+                </SelectTrigger>
+                <SelectContent>
+                  {CLINIC_OPTIONS.map((clinic) => (
+                    <SelectItem key={clinic.value} value={clinic.value}>
+                      {clinic.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
-          <CardTitle className="text-2xl text-center">Acesso Funcionários</CardTitle>
-          <p className="text-sm text-gray-600 text-center">
-            Selecione sua clínica e digite a senha para acessar os agendamentos
-          </p>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="clinic">Clínica</Label>
-              <div className="relative">
-                <Building2 className="absolute left-3 top-3 h-4 w-4 text-gray-400 z-10" />
-                <Select value={selectedClinic} onValueChange={setSelectedClinic}>
-                  <SelectTrigger className="pl-10">
-                    <SelectValue placeholder="Selecione sua clínica" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {CLINIC_OPTIONS.map((clinic) => (
-                      <SelectItem key={clinic.value} value={clinic.value}>
-                        {clinic.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="password">Senha</Label>
+            <div className="relative">
+              <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+              <Input
+                id="password"
+                type="password"
+                placeholder="Digite a senha da clínica"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="pl-10 mobile-input"
+                required
+              />
             </div>
+          </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="password">Senha</Label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Digite a senha da clínica"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10"
-                  required
-                />
-              </div>
+          {error && (
+            <div className="flex items-center gap-2 text-red-600 text-sm">
+              <AlertCircle className="h-4 w-4" />
+              {error}
             </div>
+          )}
 
-            {error && (
-              <div className="flex items-center gap-2 text-red-600 text-sm">
-                <AlertCircle className="h-4 w-4" />
-                {error}
-              </div>
-            )}
-
-            <Button 
-              type="submit" 
-              className="w-full" 
-              disabled={isLoading || !selectedClinic}
-            >
-              {isLoading ? 'Entrando...' : 'Entrar'}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
-    </div>
+          <Button 
+            type="submit" 
+            className="w-full mobile-button" 
+            disabled={isLoading || !selectedClinic}
+          >
+            {isLoading ? 'Entrando...' : 'Entrar'}
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
   );
 };
 
