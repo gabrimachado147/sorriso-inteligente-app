@@ -34,20 +34,24 @@ export const ClinicDashboardHeader: React.FC<ClinicDashboardHeaderProps> = ({
 }) => {
   return (
     <div className={`${animations.fadeIn} w-full`}>
-      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 mb-6">
-        <div className="flex items-center gap-3 min-w-0 flex-1">
-          <BarChart3 className="h-6 w-6 md:h-8 md:w-8 text-blue-600 flex-shrink-0" />
-          <div className="min-w-0">
-            <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-blue-600 truncate">
+      {/* Título centralizado com sino posicionado no canto superior direito */}
+      <div className="relative mb-6">
+        {/* Sino de notificação posicionado no canto superior direito */}
+        <div className="absolute top-0 right-0 z-10">
+          <RealtimeNotifications clinicName={clinicName} />
+        </div>
+        
+        {/* Título centralizado */}
+        <div className="text-center px-12">
+          <div className="flex items-center justify-center gap-3 mb-2">
+            <BarChart3 className="h-6 w-6 md:h-8 md:w-8 text-blue-600 flex-shrink-0" />
+            <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-blue-600">
               Dashboard - {clinicName.charAt(0).toUpperCase() + clinicName.slice(1)}
             </h1>
-            <p className="text-sm md:text-base text-gray-600 truncate">
-              Gestão avançada de agendamentos da sua unidade
-            </p>
           </div>
-        </div>
-        <div className="flex-shrink-0">
-          <RealtimeNotifications clinicName={clinicName} />
+          <p className="text-sm md:text-base text-gray-600">
+            Gestão avançada de agendamentos da sua unidade
+          </p>
         </div>
       </div>
 
