@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -36,11 +37,13 @@ import { DeleteAppointmentDialog } from './DeleteAppointmentDialog';
 interface AdminAppointmentActionsProps {
   appointment: AppointmentRecord;
   onUpdate: () => void;
+  onDelete?: (appointmentId: string) => void;
 }
 
 export const AdminAppointmentActions: React.FC<AdminAppointmentActionsProps> = ({
   appointment,
-  onUpdate
+  onUpdate,
+  onDelete
 }) => {
   const [isRescheduleOpen, setIsRescheduleOpen] = useState(false);
   const [isCancelOpen, setIsCancelOpen] = useState(false);
@@ -110,16 +113,10 @@ export const AdminAppointmentActions: React.FC<AdminAppointmentActionsProps> = (
   };
 
   const handleDelete = async () => {
-    setLoading(true);
-    try {
-      await AppointmentActionsService.deleteAppointment(appointment.id);
-      setIsDeleteOpen(false);
-      onUpdate();
-    } catch (error) {
-      console.error('Error deleting appointment:', error);
-    } finally {
-      setLoading(false);
+    if (onDelete) {
+      onDelete(appointment.id);
     }
+    setIsDeleteOpen(false);
   };
 
   const handleContact = (type: 'phone' | 'email') => {
