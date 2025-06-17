@@ -22,7 +22,7 @@ interface MessageTemplate {
 }
 
 interface MessageTemplatesProps {
-  onSendMessage?: (template: MessageTemplate, recipients: string[]) => void;
+  onSendMessage?: (appointmentIds: string[], template: string) => void;
 }
 
 export const MessageTemplates: React.FC<MessageTemplatesProps> = ({ onSendMessage }) => {
@@ -223,7 +223,7 @@ export const MessageTemplates: React.FC<MessageTemplatesProps> = ({ onSendMessag
                   <Button 
                     size="sm" 
                     className="w-full mt-3"
-                    onClick={() => onSendMessage(template, [])}
+                    onClick={() => onSendMessage([], template.name)}
                   >
                     <Send className="h-3 w-3 mr-1" />
                     Usar Template
@@ -279,7 +279,7 @@ const TemplateEditor: React.FC<TemplateEditorProps> = ({ template, onSave, onCan
   const detectedVariables = extractVariables(formData.content);
 
   return (
-    <Card className={`${animations.slideInUp}`}>
+    <Card className={`${animations.slideInTop}`}>
       <CardHeader>
         <CardTitle className="text-lg">
           {template ? 'Editar Template' : 'Novo Template'}

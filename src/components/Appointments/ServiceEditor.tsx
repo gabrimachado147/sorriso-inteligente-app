@@ -2,156 +2,72 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Edit3, DollarSign, Save, X } from 'lucide-react';
-import { AppointmentRecord } from '@/services/supabase/appointments';
-import { animations } from '@/lib/animations';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Check, X } from 'lucide-react';
 
 interface ServiceEditorProps {
-  appointment: AppointmentRecord;
-  onUpdate: (appointmentId: string, service: string, price?: number) => void;
-  isUpdating: boolean;
-}
-
-interface AppointmentWithPrice extends AppointmentRecord {
+  service: string;
   price?: number;
+  onSave: (service: string, price?: number) => void;
+  onCancel: () => void;
 }
-
-const availableServices: string[] = [
-  'Avaliação Gratuita',
-  'Limpeza Dental',
-  'Clareamento Dental',
-  'Ortodontia',
-  'Implantodontia',
-  'Restauração',
-  'Extração',
-  'Canal',
-  'Prótese Dental',
-  'Cirurgia Oral',
-  'Periodontia',
-  'Endodontia',
-  'Estética Dental',
-  'Urgência Dentária'
-];
 
 export const ServiceEditor: React.FC<ServiceEditorProps> = ({
-  appointment,
-  onUpdate,
-  isUpdating
+  service,
+  price,
+  onSave,
+  onCancel
 }) => {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [selectedService, setSelectedService] = useState<string>(appointment.service);
-  const [priceValue, setPriceValue] = useState<string>(
-    (appointment as AppointmentWithPrice).price ? (appointment as AppointmentWithPrice).price!.toString() : ''
-  );
+  const [selectedService, setSelectedService] = useState(service);
+  const [servicePrice, setServicePrice] = useState(price || 0);
 
-  const handleSave = async (): Promise<void> => {
-    const price = priceValue ? parseFloat(priceValue.replace(',', '.')) : undefined;
-    await onUpdate(appointment.id, selectedService, price);
-    setIsOpen(false);
-  };
+  const services = [
+    'Limpeza',
+    'Restauração',
+    'Extração',
+    'Clareamento',
+    'Ortodontia',
+    'Implante',
+    'Canal',
+    'Prótese'
+  ];
 
-  const handleCancel = (): void => {
-    setSelectedService(appointment.service);
-    setPriceValue((appointment as AppointmentWithPrice).price ? (appointment as AppointmentWithPrice).price!.toString() : '');
-    setIsOpen(false);
-  };
-
-  const formatCurrency = (value: string): string => {
-    // Remove caracteres não numéricos exceto vírgula e ponto
-    const numbers = value.replace(/[^\d.,]/g, '');
-    return numbers;
+  const handleSave = () => {
+    onSave(selectedService, servicePrice || undefined);
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className={`h-auto p-1 hover:bg-blue-50 ${animations.buttonHover}`}
-        >
-          <Edit3 className="h-3 w-3" />
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Edit3 className="h-5 w-5" />
-            Editar Serviço - {appointment.name}
-          </DialogTitle>
-        </DialogHeader>
-        
-        <div className="space-y-4 py-4">
-          <div className="space-y-2">
-            <Label htmlFor="service">Tipo de Serviço</Label>
-            <Select value={selectedService} onValueChange={setSelectedService}>
-              <SelectTrigger>
-                <SelectValue placeholder="Selecione o serviço" />
-              </SelectTrigger>
-              <SelectContent>
-                {availableServices.map((service) => (
-                  <SelectItem key={service} value={service}>
-                    {service}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="price" className="flex items-center gap-2">
-              <DollarSign className="h-4 w-4" />
-              Valor do Serviço (R$)
-            </Label>
-            <Input
-              id="price"
-              type="text"
-              placeholder="Ex: 150.00 ou 150,00"
-              value={priceValue}
-              onChange={(e) => {
-                const formattedValue = formatCurrency(e.target.value);
-                setPriceValue(formattedValue);
-              }}
-            />
-            <p className="text-xs text-gray-500">
-              Campo livre - Digite o valor cobrado e forma de pagamento se necessário
-            </p>
-          </div>
-        </div>
-
-        <div className="flex gap-2 justify-end">
-          <Button 
-            variant="outline" 
-            onClick={handleCancel}
-            disabled={isUpdating}
-          >
-            <X className="h-4 w-4 mr-1" />
-            Cancelar
-          </Button>
-          <Button 
-            onClick={handleSave}
-            disabled={isUpdating || !selectedService}
-          >
-            <Save className="h-4 w-4 mr-1" />
-            {isUpdating ? 'Salvando...' : 'Salvar'}
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
+    <div className="flex items-center gap-2 min-w-0">
+      <Select value={selectedService} onValueChange={setSelectedService}>
+        <SelectTrigger className="w-32">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {services.map(service => (
+            <SelectItem key={service} value={service}>
+              {service}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      
+      <Input
+        type="number"
+        value={servicePrice}
+        onChange={(e) => setServicePrice(Number(e.target.value))}
+        placeholder="Preço"
+        className="w-20"
+        min="0"
+        step="0.01"
+      />
+      
+      <Button size="sm" onClick={handleSave} className="h-8 w-8 p-0">
+        <Check className="h-4 w-4" />
+      </Button>
+      
+      <Button size="sm" variant="ghost" onClick={onCancel} className="h-8 w-8 p-0">
+        <X className="h-4 w-4" />
+      </Button>
+    </div>
   );
 };

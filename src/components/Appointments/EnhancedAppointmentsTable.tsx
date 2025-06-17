@@ -57,17 +57,7 @@ export const EnhancedAppointmentsTable: React.FC<EnhancedAppointmentsTableProps>
   };
 
   const formatTime = (timeStr: string) => {
-    return timeStr.slice(0, 5); // Remove seconds if present
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'confirmed': return 'bg-green-100 text-green-800';
-      case 'cancelled': return 'bg-red-100 text-red-800';
-      case 'completed': return 'bg-blue-100 text-blue-800';
-      case 'no_show': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-yellow-100 text-yellow-800';
-    }
+    return timeStr.slice(0, 5);
   };
 
   if (appointments.length === 0) {
@@ -180,9 +170,9 @@ export const EnhancedAppointmentsTable: React.FC<EnhancedAppointmentsTableProps>
                     <TableCell>
                       {editingService === appointment.id ? (
                         <ServiceEditor
-                          currentService={appointment.service}
-                          currentPrice={(appointment as any).price}
-                          onSave={(service, price) => {
+                          service={appointment.service}
+                          price={(appointment as any).price}
+                          onSave={(service: string, price?: number) => {
                             onServiceUpdate(appointment.id, service, price);
                             setEditingService(null);
                           }}
@@ -219,7 +209,7 @@ export const EnhancedAppointmentsTable: React.FC<EnhancedAppointmentsTableProps>
                       <AppointmentStatusBadge
                         status={appointment.status}
                         onStatusChange={(newStatus) => onStatusChange(appointment.id, newStatus)}
-                        disabled={isUpdating}
+                        isUpdating={isUpdating}
                       />
                     </TableCell>
                     
