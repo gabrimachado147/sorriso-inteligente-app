@@ -1,6 +1,6 @@
 
 import { useState, useCallback } from 'react';
-import { XAIService } from '@/services/xai';
+import { xaiService } from '@/services/xai';
 
 export const useXAI = () => {
   const [loading, setLoading] = useState(false);
@@ -12,7 +12,7 @@ export const useXAI = () => {
     setLoading(true);
     try {
       console.log('Gerando insight com XAI:', prompt);
-      const result = await XAIService.chat(prompt);
+      const result = await xaiService.generateDevelopmentInsight(prompt);
       console.log('Insight gerado:', result);
       return result;
     } catch (error) {
@@ -25,9 +25,9 @@ export const useXAI = () => {
 
   const checkConfiguration = useCallback(async () => {
     try {
-      // Simular verificação de configuração
       console.log('Verificando configuração XAI...');
-      setConfigured(true); // Por enquanto, sempre configurado para desenvolvimento
+      const isConfigured = xaiService.isConfigured();
+      setConfigured(isConfigured);
     } catch (error) {
       console.error('Erro ao verificar configuração XAI:', error);
       setConfigured(false);
