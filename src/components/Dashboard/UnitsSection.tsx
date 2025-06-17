@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { memo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { MapPin } from 'lucide-react';
@@ -10,7 +10,7 @@ interface UnitsSectionProps {
   onScheduleClinic: (clinicId?: string) => void;
 }
 
-export const UnitsSection: React.FC<UnitsSectionProps> = ({
+export const UnitsSection: React.FC<UnitsSectionProps> = memo(({
   onViewUnits,
   onScheduleClinic
 }) => {
@@ -40,7 +40,7 @@ export const UnitsSection: React.FC<UnitsSectionProps> = ({
       <CardContent>
         <div className="space-y-3">
           {featuredClinics.map((clinic) => (
-            <div key={clinic.name} className={`p-3 border rounded-lg ${animations.cardHover}`}>
+            <div key={clinic.id} className={`p-3 border rounded-lg ${animations.cardHover}`}>
               <div className="flex justify-between items-start gap-3">
                 <div className="flex-1 min-w-0">
                   <h4 className="font-medium text-sm">{clinic.name}</h4>
@@ -51,6 +51,7 @@ export const UnitsSection: React.FC<UnitsSectionProps> = ({
                   variant="outline"
                   onClick={() => onScheduleClinic(clinic.id)}
                   className={`${animations.buttonHover} px-3 py-1 text-xs shrink-0`}
+                  aria-label={`Agendar consulta na ${clinic.name}`}
                 >
                   Agendar
                 </Button>
@@ -63,6 +64,7 @@ export const UnitsSection: React.FC<UnitsSectionProps> = ({
               variant="ghost" 
               className={`text-primary text-sm ${animations.buttonHover}`}
               onClick={onViewUnits}
+              aria-label="Ver todas as unidades"
             >
               Ver todas as unidades
             </Button>
@@ -71,4 +73,6 @@ export const UnitsSection: React.FC<UnitsSectionProps> = ({
       </CardContent>
     </Card>
   );
-};
+});
+
+UnitsSection.displayName = 'UnitsSection';

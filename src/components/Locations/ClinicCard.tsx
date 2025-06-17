@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { memo } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -36,7 +36,7 @@ interface ClinicCardProps {
   onSchedule: (clinicName: string) => void;
 }
 
-export const ClinicCard: React.FC<ClinicCardProps> = ({
+export const ClinicCard: React.FC<ClinicCardProps> = memo(({
   clinic,
   index,
   availableServices,
@@ -95,7 +95,7 @@ export const ClinicCard: React.FC<ClinicCardProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
               <div className="flex items-center gap-2">
                 <Clock className="h-4 w-4 text-primary" />
-                <span>Segunda a Sexta: 8h às 19h | Sábado: 8h às 13h</span>
+                <span>{clinic.workingHours}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Users className="h-4 w-4 text-primary" />
@@ -125,6 +125,7 @@ export const ClinicCard: React.FC<ClinicCardProps> = ({
                 variant="outline"
                 className={animations.buttonHover}
                 onClick={() => onCall(clinic.phone, clinic.name)}
+                aria-label={`Ligar para ${clinic.name}`}
               >
                 <Phone className="h-4 w-4 mr-1" />
                 Ligar
@@ -135,6 +136,7 @@ export const ClinicCard: React.FC<ClinicCardProps> = ({
                 variant="outline"
                 className={`bg-green-50 border-green-200 text-green-700 hover:bg-green-100 ${animations.buttonHover}`}
                 onClick={() => onWhatsApp(clinic.name)}
+                aria-label={`Enviar WhatsApp para ${clinic.name}`}
               >
                 <MessageSquare className="h-4 w-4 mr-1" />
                 WhatsApp
@@ -145,6 +147,7 @@ export const ClinicCard: React.FC<ClinicCardProps> = ({
                 variant="outline"
                 className={animations.buttonHover}
                 onClick={() => onRoute(clinic.address, clinic.city, clinic.state, clinic.name)}
+                aria-label={`Ver rota para ${clinic.name}`}
               >
                 <Navigation className="h-4 w-4 mr-1" />
                 Como Chegar
@@ -154,6 +157,7 @@ export const ClinicCard: React.FC<ClinicCardProps> = ({
                 size="sm"
                 className={`ml-auto ${animations.buttonHover}`}
                 onClick={() => onSchedule(clinic.name)}
+                aria-label={`Agendar consulta na ${clinic.name}`}
               >
                 Agendar Consulta
               </Button>
@@ -163,4 +167,6 @@ export const ClinicCard: React.FC<ClinicCardProps> = ({
       </CardContent>
     </Card>
   );
-};
+});
+
+ClinicCard.displayName = 'ClinicCard';

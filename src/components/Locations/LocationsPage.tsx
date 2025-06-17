@@ -1,12 +1,15 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { EnhancedSkeleton } from "@/components/ui/enhanced-skeleton";
 import { toastSuccess, toastCall, toastLocation, toastAppointment } from "@/components/ui/custom-toast";
 import { animations } from "@/lib/animations";
-import { apiService } from "@/services/api";
 import { LocationsPageHeader } from "./LocationsPageHeader";
 import { ClinicCard } from "./ClinicCard";
+import { LocationsFilters } from "./LocationsFilters";
+import { EmptyResults } from "./EmptyResults";
+import { FilterState } from "@/components/ui/filters";
+import { useClinics } from "@/hooks/useClinics";
 
 interface Clinic {
   id: string;
@@ -30,8 +33,35 @@ interface Service {
 
 const LocationsPage: React.FC = () => {
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [clinics, setClinics] = useState<Clinic[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const { clinics: realClinics } = useClinics();
+  
+  const [filters, setFilters] = useState<FilterState>({
+    search: '',
+    clinic: '',
+    service: '',
+    dateFrom: undefined,
+    dateTo: undefined,
+    status: ''
+  });
+
+  // Converter dados reais para o formato da interface
+  const clinics: Clinic[] = useMemo(() => {
+    return realClinics.map(clinic => ({
+      id: clinic.id,
+      name: clinic.name,
+      address: `Rua Principal, 123`,
+      city: clinic.city,
+      state: clinic.state,
+      phone: '(35) 99891-3803',
+      whatsapp: '5531971147487',
+      email: 'contato@senhorrsorriso.com.br',
+      coordinates: { lat: -21.7833, lng: -43.3500 },
+      available: true,
+      services: ['avaliacao-gratuita', 'limpeza', 'restauracao', 'ortodontia', 'implantodontia'],
+      workingHours: 'Segunda a Sexta: 8h às 19h | Sábado: 8h às 13h'
+    }));
+  }, [realClinics]);
 
   // Serviços atualizados com todos os tratamentos odontológicos
   const availableServices: Service[] = [
@@ -48,21 +78,28 @@ const LocationsPage: React.FC = () => {
     { id: 'urgencia', name: 'Atendimento de Urgência' }
   ];
 
-  // Carregar clínicas reais
-  useEffect(() => {
-    const loadClinics = async (): Promise<void> => {
-      try {
-        setIsLoading(true);
-        const clinicsData = await apiService.clinics.getAll();
-        setClinics(clinicsData);
-      } catch (error) {
-        console.error('Erro ao carregar clínicas:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  // Filtrar clínicas com base nos filtros
+  const filteredClinics = useMemo(() => {
+    return clinics.filter(clinic => {
+      const matchesSearch = !filters.search || 
+        clinic.name.toLowerCase().includes(filters.search.toLowerCase()) ||
+        clinic.city.toLowerCase().includes(filters.search.toLowerCase()) ||
+        clinic.state.toLowerCase().includes(filters.search.toLowerCase()) ||
+        clinic.address.toLowerCase().includes(filters.search.toLowerCase());
 
-    loadClinics();
+      const matchesService = !filters.service || 
+        clinic.services.includes(filters.service);
+
+      return matchesSearch && matchesService;
+    });
+  }, [clinics, filters]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
   }, []);
 
   const handleCall = (phone: string, clinicName: string): void => {
@@ -89,6 +126,17 @@ const LocationsPage: React.FC = () => {
     toastAppointment("Agendamento", `Redirecionando para agendamento na ${clinicName}`);
   };
 
+  const clearFilters = (): void => {
+    setFilters({
+      search: '',
+      clinic: '',
+      service: '',
+      dateFrom: undefined,
+      dateTo: undefined,
+      status: ''
+    });
+  };
+
   if (isLoading) {
     return (
       <div className="p-6 space-y-6">
@@ -100,23 +148,34 @@ const LocationsPage: React.FC = () => {
   return (
     <div className={`p-6 space-y-6 pb-24 ${animations.pageEnter}`}>
       {/* Header */}
-      <LocationsPageHeader filteredClinicsCount={clinics.length} />
+      <LocationsPageHeader filteredClinicsCount={filteredClinics.length} />
+
+      {/* Filtros */}
+      <LocationsFilters
+        filters={filters}
+        onFiltersChange={setFilters}
+        availableServices={availableServices}
+      />
 
       {/* Lista de Unidades */}
-      <div className="space-y-4 mb-8">
-        {clinics.map((clinic, index) => (
-          <ClinicCard
-            key={clinic.id}
-            clinic={clinic}
-            index={index}
-            availableServices={availableServices}
-            onCall={handleCall}
-            onWhatsApp={handleWhatsApp}
-            onRoute={handleRoute}
-            onSchedule={handleSchedule}
-          />
-        ))}
-      </div>
+      {filteredClinics.length === 0 ? (
+        <EmptyResults onClearFilters={clearFilters} />
+      ) : (
+        <div className="space-y-4 mb-8">
+          {filteredClinics.map((clinic, index) => (
+            <ClinicCard
+              key={clinic.id}
+              clinic={clinic}
+              index={index}
+              availableServices={availableServices}
+              onCall={handleCall}
+              onWhatsApp={handleWhatsApp}
+              onRoute={handleRoute}
+              onSchedule={handleSchedule}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };
