@@ -79,8 +79,8 @@ export const useOptimizedQuery = <T = any>(
       const start = (page - 1) * pageSize;
       const end = start + pageSize - 1;
 
-      // Build query
-      let query = supabase.from(table).select(select, { count: 'exact' });
+      // Build query - use any type to avoid strict table typing issues
+      let query = (supabase as any).from(table).select(select, { count: 'exact' });
 
       // Apply filters
       Object.entries(debouncedFilters).forEach(([key, value]) => {
@@ -107,7 +107,7 @@ export const useOptimizedQuery = <T = any>(
         throw queryError;
       }
 
-      const fetchedData = result || [];
+      const fetchedData = (result || []) as T[];
       const total = count || 0;
 
       setData(fetchedData);

@@ -12,8 +12,7 @@ import {
   Zap, 
   HardDrive, 
   RefreshCw,
-  Trash2,
-  Sync
+  Trash2
 } from 'lucide-react';
 
 export const PWAOptimizationPanel = memo(() => {
@@ -113,7 +112,7 @@ export const PWAOptimizationPanel = memo(() => {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Modo Offline</CardTitle>
-          <Sync className="h-4 w-4 text-purple-600" />
+          <RefreshCw className="h-4 w-4 text-purple-600" />
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
