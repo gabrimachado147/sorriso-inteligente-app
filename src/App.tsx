@@ -23,6 +23,12 @@ import AppointmentsPageReal from "./pages/AppointmentsPageReal";
 import StaffLoginPage from "./pages/StaffLoginPage";
 import AdminDashboardPage from "./pages/AdminDashboardPage";
 import NotFound from "./pages/NotFound";
+
+// Institutional Site Components
+import InstitutionalLayout from "./pages/InstitutionalLayout";
+import InstitutionalHome from "./pages/InstitutionalHome";
+import AboutPage from "./pages/AboutPage";
+
 import { useAnalytics } from "./hooks/useAnalytics";
 import { useRealtimeSync } from "./hooks/useRealtimeSync";
 import { useNotificationIntegration } from "./hooks/useNotificationIntegration";
@@ -52,6 +58,17 @@ const AppContent = () => {
     <ErrorBoundary>
       <div className="w-full min-h-screen mobile-scroll">
         <Routes>
+          {/* Site Institucional Routes */}
+          <Route path="/site" element={<InstitutionalLayout><Outlet /></InstitutionalLayout>}>
+            <Route index element={<InstitutionalHome />} />
+            <Route path="about" element={<AboutPage />} />
+            <Route path="services" element={<div>Services Page - Em desenvolvimento</div>} />
+            <Route path="locations" element={<div>Locations Page - Em desenvolvimento</div>} />
+            <Route path="blog" element={<div>Blog Page - Em desenvolvimento</div>} />
+            <Route path="contact" element={<div>Contact Page - Em desenvolvimento</div>} />
+          </Route>
+
+          {/* PWA App Routes */}
           <Route path="/" element={<MainLayout><Outlet /></MainLayout>}>
             <Route index element={<Index />} />
             <Route path="chat" element={<ChatPage />} />
