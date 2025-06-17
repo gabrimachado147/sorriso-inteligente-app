@@ -30,9 +30,9 @@ export const useDashboardData = (filteredAppointments: AppointmentRecord[]) => {
     const conversionRate = filteredAppointments.length > 0 ? 
       Math.round(((confirmedAppointments.length + completedAppointments.length) / filteredAppointments.length) * 100) : 0;
 
-    // Calcular receita total corretamente
+    // Calcular receita total corrigida - usando apenas preços válidos
     const totalRevenue = filteredAppointments.reduce((total, apt) => {
-      const price = apt.price || 0;
+      const price = apt.price && apt.price > 0 ? apt.price : 0;
       return total + price;
     }, 0);
 
@@ -55,9 +55,10 @@ export const useDashboardData = (filteredAppointments: AppointmentRecord[]) => {
       });
     }
 
-    // Distribuição de serviços
+    // Distribuição de serviços - nomes completos e organizados
     const serviceStats = filteredAppointments.reduce((acc, apt) => {
-      acc[apt.service] = (acc[apt.service] || 0) + 1;
+      const serviceName = apt.service.trim();
+      acc[serviceName] = (acc[serviceName] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
 
@@ -65,9 +66,10 @@ export const useDashboardData = (filteredAppointments: AppointmentRecord[]) => {
       .map(([service, count], index) => ({
         name: service,
         value: count,
-        color: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'][index % 5]
+        color: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#84cc16', '#f97316'][index % 8]
       }))
-      .sort((a, b) => b.value - a.value);
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 8);
 
     // Dados de status
     const statusData = [
