@@ -2,7 +2,6 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Calendar, MapPin } from 'lucide-react';
 import { animations } from '@/lib/animations';
 import { useNavigate } from 'react-router-dom';
 
@@ -36,8 +35,7 @@ export const HeroWelcomeSection: React.FC<HeroWelcomeSectionProps> = ({
             disabled={schedulingLoading}
             aria-label="Agendar avaliação odontológica gratuita"
           >
-            <Calendar className="h-4 w-4 mr-2" />
-            {schedulingLoading ? 'Agendando...' : 'Agendar Avaliação Gratuita'}
+            {schedulingLoading ? 'Agendando...' : 'Agendar Avaliação'}
           </Button>
           <Button 
             variant="outline"
@@ -45,8 +43,7 @@ export const HeroWelcomeSection: React.FC<HeroWelcomeSectionProps> = ({
             onClick={onViewUnits}
             aria-label="Ver todas as unidades da Senhor Sorriso"
           >
-            <MapPin className="h-4 w-4 mr-2" />
-            Ver Nossas Unidades
+            Nossas Unidades
           </Button>
         </div>
       </CardContent>
