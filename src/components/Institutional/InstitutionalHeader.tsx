@@ -21,10 +21,10 @@ export const InstitutionalHeader: React.FC = () => {
 
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50 w-full shadow-sm">
-      <div className="mobile-container">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between py-4">
           {/* Logo */}
-          <Link to="/institutional" className="flex items-center space-x-3 mobile-focus">
+          <Link to="/institutional" className="flex items-center space-x-3 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-lg">
             <div className="w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden bg-primary/10">
               <img 
                 src="/lovable-uploads/a077d15e-e6ba-4de3-833a-6913d8203ffd.png" 
@@ -32,7 +32,7 @@ export const InstitutionalHeader: React.FC = () => {
                 className="w-full h-full object-contain"
               />
             </div>
-            <h1 className="text-xl font-bold text-primary mobile-text-lg">Senhor Sorriso</h1>
+            <h1 className="text-xl font-bold text-primary">Senhor Sorriso</h1>
           </Link>
 
           {/* Desktop Navigation */}
@@ -42,7 +42,7 @@ export const InstitutionalHeader: React.FC = () => {
                 <Link
                   key={item.href}
                   to={item.href}
-                  className="text-gray-700 hover:text-primary mobile-transition mobile-focus font-medium"
+                  className="text-gray-700 hover:text-primary transition-colors duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded"
                 >
                   {item.label}
                 </Link>
@@ -55,7 +55,7 @@ export const InstitutionalHeader: React.FC = () => {
             <div className="hidden lg:flex items-center space-x-4 text-sm text-gray-600">
               <div className="flex items-center space-x-2">
                 <Phone className="h-4 w-4" />
-                <span>(11) 99999-9999</span>
+                <span>(35) 99891-3803</span>
               </div>
               <div className="flex items-center space-x-2">
                 <Mail className="h-4 w-4" />
@@ -67,7 +67,7 @@ export const InstitutionalHeader: React.FC = () => {
           {/* CTA Button - Desktop */}
           {!isMobile && (
             <Button asChild className="hidden md:flex">
-              <Link to="/">Acessar App</Link>
+              <Link to="/app">Acessar App</Link>
             </Button>
           )}
 
@@ -77,7 +77,7 @@ export const InstitutionalHeader: React.FC = () => {
               variant="ghost"
               size="icon"
               onClick={toggleMenu}
-              className="mobile-touch-target"
+              className="min-h-[44px] min-w-[44px]"
             >
               {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </Button>
@@ -91,7 +91,7 @@ export const InstitutionalHeader: React.FC = () => {
               <Link
                 key={item.href}
                 to={item.href}
-                className="block py-3 px-4 text-gray-700 hover:text-primary hover:bg-gray-50 rounded-lg mobile-transition mobile-touch-target font-medium"
+                className="block py-3 px-4 text-gray-700 hover:text-primary hover:bg-gray-50 rounded-lg transition-all duration-200 min-h-[44px] font-medium"
                 onClick={() => setIsMenuOpen(false)}
               >
                 {item.label}
@@ -101,15 +101,15 @@ export const InstitutionalHeader: React.FC = () => {
             <div className="border-t border-gray-200 pt-4 space-y-3">
               <div className="flex items-center space-x-2 px-4 text-sm text-gray-600">
                 <Phone className="h-4 w-4" />
-                <span>(11) 99999-9999</span>
+                <span>(35) 99891-3803</span>
               </div>
               <div className="flex items-center space-x-2 px-4 text-sm text-gray-600">
                 <Mail className="h-4 w-4" />
                 <span>contato@senhorrsorriso.com</span>
               </div>
               <div className="px-4 pt-2">
-                <Button asChild className="w-full mobile-touch-target">
-                  <Link to="/" onClick={() => setIsMenuOpen(false)}>
+                <Button asChild className="w-full min-h-[44px]">
+                  <Link to="/app" onClick={() => setIsMenuOpen(false)}>
                     Acessar App
                   </Link>
                 </Button>

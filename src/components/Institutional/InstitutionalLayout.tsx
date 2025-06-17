@@ -13,7 +13,7 @@ export const InstitutionalLayout: React.FC<InstitutionalLayoutProps> = ({ childr
     <div className="min-h-screen bg-background w-full overflow-x-hidden">
       <InstitutionalHeader />
       <main className="w-full">
-        <div className="mobile-container max-w-7xl mx-auto">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {children}
         </div>
       </main>
