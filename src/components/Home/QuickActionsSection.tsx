@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -29,7 +28,7 @@ export const QuickActionsSection: React.FC = () => {
     },
     {
       icon: MessageCircle,
-      title: "Chat",
+      title: "Chat Suporte",
       description: "Tire suas dúvidas conosco",
       buttonText: "Iniciar Chat",
       buttonVariant: "outline" as const,
