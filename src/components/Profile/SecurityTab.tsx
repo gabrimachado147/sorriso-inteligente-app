@@ -66,57 +66,60 @@ export const SecurityTab = () => {
 
   return (
     <div className="space-y-6">
-      <Card className={animations.fadeIn}>
+      <Card className={`${animations.fadeIn} mobile-card-spacing`}>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 mobile-text-lg">
             <Lock className="h-5 w-5" />
             Alterar Senha
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="currentPassword">Senha Atual</Label>
+            <Label htmlFor="currentPassword" className="mobile-text-sm">Senha Atual</Label>
             <Input
               id="currentPassword"
               type="password"
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
               placeholder="Digite sua senha atual"
+              className="mobile-input"
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="newPassword">Nova Senha</Label>
+            <Label htmlFor="newPassword" className="mobile-text-sm">Nova Senha</Label>
             <Input
               id="newPassword"
               type="password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               placeholder="Digite sua nova senha"
+              className="mobile-input"
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Confirmar Nova Senha</Label>
+            <Label htmlFor="confirmPassword" className="mobile-text-sm">Confirmar Nova Senha</Label>
             <Input
               id="confirmPassword"
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Confirme sua nova senha"
+              className="mobile-input"
             />
           </div>
           <Button 
             onClick={handlePasswordChange}
             disabled={isChangingPassword}
-            className="w-full"
+            className="w-full mobile-button"
           >
             {isChangingPassword ? 'Alterando...' : 'Alterar Senha'}
           </Button>
         </CardContent>
       </Card>
 
-      <Card className={animations.fadeIn}>
+      <Card className={`${animations.fadeIn} mobile-card-spacing`}>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 mobile-text-lg">
             <Shield className="h-5 w-5" />
             Configurações de Segurança
           </CardTitle>
@@ -126,8 +129,8 @@ export const SecurityTab = () => {
             <div className="flex items-center gap-3">
               <Smartphone className="h-5 w-5 text-blue-600" />
               <div>
-                <p className="font-medium">Autenticação em Duas Etapas</p>
-                <p className="text-sm text-gray-600">Adicione uma camada extra de segurança</p>
+                <p className="font-medium mobile-text-sm">Autenticação em Duas Etapas</p>
+                <p className="text-sm text-gray-600 mobile-text-xs">Adicione uma camada extra de segurança</p>
               </div>
             </div>
             <Switch
@@ -140,8 +143,8 @@ export const SecurityTab = () => {
             <div className="flex items-center gap-3">
               <AlertTriangle className="h-5 w-5 text-orange-600" />
               <div>
-                <p className="font-medium">Alertas de Login</p>
-                <p className="text-sm text-gray-600">Receba notificações de novos logins</p>
+                <p className="font-medium mobile-text-sm">Alertas de Login</p>
+                <p className="text-sm text-gray-600 mobile-text-xs">Receba notificações de novos logins</p>
               </div>
             </div>
             <Switch
@@ -151,7 +154,7 @@ export const SecurityTab = () => {
           </div>
 
           <div className="space-y-3">
-            <Label htmlFor="sessionTimeout">Timeout de Sessão (minutos)</Label>
+            <Label htmlFor="sessionTimeout" className="mobile-text-sm">Timeout de Sessão (minutos)</Label>
             <Input
               id="sessionTimeout"
               type="number"
@@ -159,8 +162,9 @@ export const SecurityTab = () => {
               onChange={(e) => setSessionTimeout(e.target.value)}
               min="5"
               max="120"
+              className="mobile-input"
             />
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-gray-500 mobile-text-xs">
               Sua sessão expirará automaticamente após este período de inatividade
             </p>
           </div>

@@ -15,9 +15,9 @@ export const AccessibilityTab = () => {
     <div className="space-y-6">
       <AccessibilityPanel />
       
-      <Card className={animations.fadeIn}>
+      <Card className={`${animations.fadeIn} mobile-card-spacing`}>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 mobile-text-lg">
             <Settings className="h-5 w-5" />
             Tema e Aparência
           </CardTitle>
@@ -25,8 +25,8 @@ export const AccessibilityTab = () => {
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <Label>Tema Atual</Label>
-              <p className="text-sm text-gray-600">
+              <Label className="mobile-text-sm">Tema Atual</Label>
+              <p className="text-sm text-gray-600 mobile-text-xs">
                 {theme === 'auto' ? 'Automático (baseado no horário)' : 
                  theme === 'dark' ? 'Escuro' : 'Claro'}
               </p>
@@ -36,6 +36,7 @@ export const AccessibilityTab = () => {
                 variant={theme === 'light' ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => changeTheme('light')}
+                className="mobile-touch-target"
               >
                 Claro
               </Button>
@@ -43,6 +44,7 @@ export const AccessibilityTab = () => {
                 variant={theme === 'dark' ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => changeTheme('dark')}
+                className="mobile-touch-target"
               >
                 Escuro
               </Button>
@@ -50,6 +52,7 @@ export const AccessibilityTab = () => {
                 variant={theme === 'auto' ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => changeTheme('auto')}
+                className="mobile-touch-target"
               >
                 Auto
               </Button>

@@ -86,9 +86,9 @@ export const QuickLinks: React.FC<QuickLinksProps> = ({ onTabChange }) => {
   ];
 
   return (
-    <Card className={`${animations.fadeIn} mb-8`}>
+    <Card className={`${animations.fadeIn} mb-8 mobile-card-spacing`}>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+        <CardTitle className="flex items-center gap-2 mobile-text-lg">
           <Settings className="h-5 w-5 text-primary" />
           Recursos Avançados
         </CardTitle>
@@ -99,7 +99,7 @@ export const QuickLinks: React.FC<QuickLinksProps> = ({ onTabChange }) => {
             <Button
               key={index}
               variant="outline"
-              className={`h-auto p-4 text-left justify-start hover:shadow-md transition-all duration-200 ${animations.buttonHover}`}
+              className={`h-auto p-4 text-left justify-start hover:shadow-md transition-all duration-200 mobile-touch-target ${animations.buttonHover}`}
               onClick={link.action}
             >
               <div className="flex items-start gap-3 w-full">
@@ -107,10 +107,10 @@ export const QuickLinks: React.FC<QuickLinksProps> = ({ onTabChange }) => {
                   <link.icon className="h-4 w-4 text-white" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-medium text-sm text-gray-900 truncate">
+                  <p className="font-medium text-sm text-gray-900 truncate mobile-text-sm">
                     {link.title}
                   </p>
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-gray-500 mt-1 mobile-text-xs">
                     {link.description}
                   </p>
                 </div>

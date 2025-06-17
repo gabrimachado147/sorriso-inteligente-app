@@ -79,9 +79,13 @@ const AdminDashboardPage = () => {
       </div>
 
       {/* Dashboard Content */}
-      <div className={`mobile-container px-4 py-6 ${animations.pageEnter}`}>
-        <AdminDashboard appointments={appointments} stats={stats} />
-      </div>
+      <main className="flex-1 w-full mobile-scroll">
+        <div className="mobile-container px-4 py-6">
+          <div className={`space-y-6 ${animations.pageEnter}`}>
+            <AdminDashboard appointments={appointments} stats={stats} />
+          </div>
+        </div>
+      </main>
     </div>
   );
 };

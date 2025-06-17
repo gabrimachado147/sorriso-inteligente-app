@@ -47,7 +47,7 @@ export const NotificationsTab = () => {
     return (
       <div className="space-y-6">
         <div className="animate-pulse">
-          <div className="h-32 bg-gray-200 rounded"></div>
+          <div className="h-32 bg-gray-200 rounded mobile-skeleton"></div>
         </div>
       </div>
     );
@@ -55,9 +55,9 @@ export const NotificationsTab = () => {
 
   return (
     <div className="space-y-6">
-      <Card className={animations.fadeIn}>
+      <Card className={`${animations.fadeIn} mobile-card-spacing`}>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 mobile-text-lg">
             <Bell className="h-5 w-5" />
             Preferências de Notificação
           </CardTitle>
@@ -67,8 +67,8 @@ export const NotificationsTab = () => {
             <div className="flex items-center gap-3">
               <Mail className="h-5 w-5 text-blue-600" />
               <div>
-                <p className="font-medium">Lembretes por Email</p>
-                <p className="text-sm text-gray-600">Receba lembretes de consultas por email</p>
+                <p className="font-medium mobile-text-sm">Lembretes por Email</p>
+                <p className="text-sm text-gray-600 mobile-text-xs">Receba lembretes de consultas por email</p>
               </div>
             </div>
             <Switch
@@ -81,8 +81,8 @@ export const NotificationsTab = () => {
             <div className="flex items-center gap-3">
               <Smartphone className="h-5 w-5 text-green-600" />
               <div>
-                <p className="font-medium">Notificações Push</p>
-                <p className="text-sm text-gray-600">Receba notificações no dispositivo</p>
+                <p className="font-medium mobile-text-sm">Notificações Push</p>
+                <p className="text-sm text-gray-600 mobile-text-xs">Receba notificações no dispositivo</p>
               </div>
             </div>
             <Switch
@@ -95,8 +95,8 @@ export const NotificationsTab = () => {
             <div className="flex items-center gap-3">
               <MessageSquare className="h-5 w-5 text-purple-600" />
               <div>
-                <p className="font-medium">SMS</p>
-                <p className="text-sm text-gray-600">Receba lembretes por SMS</p>
+                <p className="font-medium mobile-text-sm">SMS</p>
+                <p className="text-sm text-gray-600 mobile-text-xs">Receba lembretes por SMS</p>
               </div>
             </div>
             <Switch
@@ -109,8 +109,8 @@ export const NotificationsTab = () => {
             <div className="flex items-center gap-3">
               <Mail className="h-5 w-5 text-orange-600" />
               <div>
-                <p className="font-medium">Emails Promocionais</p>
-                <p className="text-sm text-gray-600">Receba ofertas e novidades</p>
+                <p className="font-medium mobile-text-sm">Emails Promocionais</p>
+                <p className="text-sm text-gray-600 mobile-text-xs">Receba ofertas e novidades</p>
               </div>
             </div>
             <Switch

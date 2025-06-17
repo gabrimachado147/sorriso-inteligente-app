@@ -55,27 +55,29 @@ const ProfilePage = () => {
     return (
       <div className={`space-y-6 ${animations.pageEnter}`}>
         <AdminAccessButton />
-        <Card className="mobile-card-spacing">
-          <CardHeader className="text-center pb-4">
-            <CardTitle className="mobile-text-xl">Acesse sua Conta</CardTitle>
-            <p className="text-muted-foreground mobile-text-base">
-              Faça login para acessar seu perfil e histórico
-            </p>
-          </CardHeader>
-          <CardContent>
-            <AuthForm 
-              isLogin={isLogin}
-              formData={formData}
-              loading={loading}
-              onInputChange={handleInputChange}
-              onPhoneChange={handlePhoneChange}
-              onSubmit={handleSubmit}
-              onToggleMode={handleToggleMode}
-              onPasswordReset={handlePasswordReset}
-              onEnterWithoutAccount={handleEnterWithoutAccount}
-            />
-          </CardContent>
-        </Card>
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <Card className="w-full max-w-md mx-auto mobile-card-spacing">
+            <CardHeader className="text-center pb-4">
+              <CardTitle className="mobile-text-xl">Acesse sua Conta</CardTitle>
+              <p className="text-muted-foreground mobile-text-base">
+                Faça login para acessar seu perfil e histórico
+              </p>
+            </CardHeader>
+            <CardContent>
+              <AuthForm 
+                isLogin={isLogin}
+                formData={formData}
+                loading={loading}
+                onInputChange={handleInputChange}
+                onPhoneChange={handlePhoneChange}
+                onSubmit={handleSubmit}
+                onToggleMode={handleToggleMode}
+                onPasswordReset={handlePasswordReset}
+                onEnterWithoutAccount={handleEnterWithoutAccount}
+              />
+            </CardContent>
+          </Card>
+        </div>
       </div>
     );
   }

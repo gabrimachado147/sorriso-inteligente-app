@@ -1,13 +1,12 @@
 
 import React from 'react';
 import { LazyLocationsPage } from '@/components/Locations/LazyLocationsPage';
+import { animations } from '@/lib/animations';
 
 const ClinicsPage = () => {
   return (
-    <div className="min-h-screen bg-background w-full">
-      <div className="w-full">
-        <LazyLocationsPage />
-      </div>
+    <div className={`space-y-6 ${animations.pageEnter}`}>
+      <LazyLocationsPage />
     </div>
   );
 };

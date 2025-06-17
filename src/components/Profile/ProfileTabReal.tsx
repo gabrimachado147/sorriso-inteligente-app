@@ -62,8 +62,8 @@ export const ProfileTabReal: React.FC<ProfileTabRealProps> = ({ onTabChange }) =
     return (
       <div className="space-y-6">
         <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded w-1/3 mb-4"></div>
-          <div className="h-32 bg-gray-200 rounded"></div>
+          <div className="h-8 bg-gray-200 rounded w-1/3 mb-4 mobile-skeleton-text"></div>
+          <div className="h-32 bg-gray-200 rounded mobile-skeleton"></div>
         </div>
       </div>
     );
@@ -71,7 +71,7 @@ export const ProfileTabReal: React.FC<ProfileTabRealProps> = ({ onTabChange }) =
 
   return (
     <div className="space-y-6">
-      <Card className={animations.fadeIn}>
+      <Card className={`${animations.fadeIn} mobile-card-spacing`}>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -82,6 +82,7 @@ export const ProfileTabReal: React.FC<ProfileTabRealProps> = ({ onTabChange }) =
               variant={editMode ? "default" : "outline"}
               size="sm"
               onClick={() => editMode ? handleSaveProfile() : setEditMode(true)}
+              className="mobile-touch-target"
             >
               {editMode ? 'Salvar' : 'Editar'}
             </Button>
@@ -90,49 +91,52 @@ export const ProfileTabReal: React.FC<ProfileTabRealProps> = ({ onTabChange }) =
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="nome">Nome Completo</Label>
+              <Label htmlFor="nome" className="mobile-text-sm">Nome Completo</Label>
               <Input
                 id="nome"
                 value={formData.full_name}
                 onChange={(e) => setFormData(prev => ({ ...prev, full_name: e.target.value }))}
                 disabled={!editMode}
                 placeholder={!profile ? "Digite seu nome completo" : undefined}
+                className="mobile-input"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="telefone">Telefone</Label>
+              <Label htmlFor="telefone" className="mobile-text-sm">Telefone</Label>
               <Input
                 id="telefone"
                 value={formData.phone}
                 onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
                 disabled={!editMode}
                 placeholder={!profile ? "(11) 99999-9999" : undefined}
+                className="mobile-input"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="mobile-text-sm">Email</Label>
               <Input
                 id="email"
                 value={user?.email || ''}
                 disabled
-                className="bg-gray-100"
+                className="bg-gray-100 mobile-input"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="data_nascimento">Data de Nascimento</Label>
+              <Label htmlFor="data_nascimento" className="mobile-text-sm">Data de Nascimento</Label>
               <Input
                 id="data_nascimento"
                 type="date"
                 value={formData.date_of_birth}
                 onChange={(e) => setFormData(prev => ({ ...prev, date_of_birth: e.target.value }))}
                 disabled={!editMode}
+                className="mobile-input"
               />
             </div>
           </div>
           
           {!profile && (
             <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-md">
-              <p className="text-blue-700 text-sm">
+              <p className="text-blue-700 text-sm mobile-text-sm">
                 Complete seu perfil para uma melhor experiência no app.
               </p>
             </div>
