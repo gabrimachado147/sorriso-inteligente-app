@@ -1,6 +1,5 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { PRODUCTION_CONFIG } from '@/config/production';
 
 interface AccessibilitySettings {
   highContrast: boolean;
@@ -73,13 +72,22 @@ export const AccessibilityManager: React.FC<{ children: React.ReactNode }> = ({ 
       }
 
       // Listen for changes
-      highContrastQuery.addListener((e) => {
+      const handleHighContrastChange = (e: MediaQueryListEvent) => {
         setSettings(prev => ({ ...prev, highContrast: e.matches }));
-      });
+      };
 
-      reducedMotionQuery.addListener((e) => {
+      const handleReducedMotionChange = (e: MediaQueryListEvent) => {
         setSettings(prev => ({ ...prev, reducedMotion: e.matches }));
-      });
+      };
+
+      highContrastQuery.addEventListener('change', handleHighContrastChange);
+      reducedMotionQuery.addEventListener('change', handleReducedMotionChange);
+
+      // Cleanup listeners
+      return () => {
+        highContrastQuery.removeEventListener('change', handleHighContrastChange);
+        reducedMotionQuery.removeEventListener('change', handleReducedMotionChange);
+      };
     }
   };
 
@@ -135,7 +143,9 @@ export const AccessibilityManager: React.FC<{ children: React.ReactNode }> = ({ 
     document.body.appendChild(announcement);
     
     setTimeout(() => {
-      document.body.removeChild(announcement);
+      if (document.body.contains(announcement)) {
+        document.body.removeChild(announcement);
+      }
     }, 1000);
   };
 
@@ -152,7 +162,7 @@ export const AccessibilityManager: React.FC<{ children: React.ReactNode }> = ({ 
     }}>
       {children}
       {/* SVG filters for color blindness */}
-      <svg style={{ position: 'absolute', width: 0, height: 0 }}>
+      <svg style={{ position: 'absolute', width: 0, height: 0 }} aria-hidden="true">
         <defs>
           <filter id="protanopia-filter">
             <feColorMatrix values="0.567, 0.433, 0,     0, 0
