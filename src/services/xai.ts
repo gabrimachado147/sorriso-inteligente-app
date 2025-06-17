@@ -76,7 +76,7 @@ class XAIService {
     }
 
     const request: XAIRequest = {
-      model: 'grok-beta',
+      model: 'grok-2-1212',  // Modelo atualizado que existe
       messages,
       temperature: 0.7,
       max_tokens: 1000,
@@ -98,7 +98,15 @@ class XAIService {
       if (!response.ok) {
         const errorText = await response.text();
         console.error('XAI API error:', response.status, errorText);
-        throw new Error(`XAI API error: ${response.status} ${response.statusText}`);
+        
+        // Mensagem de erro mais específica
+        if (response.status === 404) {
+          throw new Error(`Modelo não encontrado. Verifique se o modelo ${request.model} está disponível.`);
+        } else if (response.status === 401) {
+          throw new Error('Chave da API inválida. Verifique sua configuração.');
+        } else {
+          throw new Error(`Erro da API XAI: ${response.status} - ${errorText}`);
+        }
       }
 
       const data: XAIResponse = await response.json();
