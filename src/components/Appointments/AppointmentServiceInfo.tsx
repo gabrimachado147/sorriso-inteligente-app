@@ -1,6 +1,7 @@
 
-import React from 'react';
-import { DollarSign } from 'lucide-react';
+import React, { useState } from 'react';
+import { DollarSign, Edit2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { AppointmentRecord } from '@/services/supabase/appointments';
 import { ServiceEditor } from './ServiceEditor';
 
@@ -15,6 +16,28 @@ export const AppointmentServiceInfo: React.FC<AppointmentServiceInfoProps> = ({
   onServiceUpdate,
   isUpdating
 }) => {
+  const [isEditing, setIsEditing] = useState(false);
+
+  const handleSave = (service: string, price?: number) => {
+    onServiceUpdate(appointment.id, service, price);
+    setIsEditing(false);
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+  };
+
+  if (isEditing) {
+    return (
+      <ServiceEditor
+        service={appointment.service}
+        price={(appointment as any).price}
+        onSave={handleSave}
+        onCancel={handleCancel}
+      />
+    );
+  }
+
   return (
     <div className="flex items-center gap-2">
       <div className="flex-1">
@@ -28,11 +51,15 @@ export const AppointmentServiceInfo: React.FC<AppointmentServiceInfoProps> = ({
           </div>
         )}
       </div>
-      <ServiceEditor
-        appointment={appointment}
-        onUpdate={onServiceUpdate}
-        isUpdating={isUpdating}
-      />
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => setIsEditing(true)}
+        disabled={isUpdating}
+        className="h-8 w-8 p-0"
+      >
+        <Edit2 className="h-4 w-4" />
+      </Button>
     </div>
   );
 };

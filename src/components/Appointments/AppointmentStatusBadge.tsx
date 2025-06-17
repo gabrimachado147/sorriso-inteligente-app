@@ -5,12 +5,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 
 interface AppointmentStatusBadgeProps {
   status: string;
-  onStatusChange: (newStatus: 'confirmed' | 'cancelled' | 'completed' | 'no_show') => void;
+  appointmentId: string;
+  onStatusChange: (appointmentId: string, newStatus: 'confirmed' | 'cancelled' | 'completed' | 'no_show') => void;
   isUpdating?: boolean;
 }
 
 export const AppointmentStatusBadge: React.FC<AppointmentStatusBadgeProps> = ({
   status,
+  appointmentId,
   onStatusChange,
   isUpdating = false
 }) => {
@@ -34,10 +36,14 @@ export const AppointmentStatusBadge: React.FC<AppointmentStatusBadgeProps> = ({
     }
   };
 
+  const handleStatusChange = (newStatus: 'confirmed' | 'cancelled' | 'completed' | 'no_show') => {
+    onStatusChange(appointmentId, newStatus);
+  };
+
   return (
     <Select 
       value={status} 
-      onValueChange={onStatusChange}
+      onValueChange={handleStatusChange}
       disabled={isUpdating}
     >
       <SelectTrigger className="w-32 h-8 border-0 p-0">
