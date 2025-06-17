@@ -3,8 +3,9 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Phone, User, Lock, Mail } from 'lucide-react';
+import { Phone, User, Lock, Mail, UserCog } from 'lucide-react';
 import { AuthFormData } from '@/hooks/useAuthForm';
+import { useNavigate } from 'react-router-dom';
 
 interface AuthFormProps {
   isLogin: boolean;
@@ -29,6 +30,12 @@ export const AuthForm: React.FC<AuthFormProps> = ({
   onPasswordReset,
   onEnterWithoutAccount
 }) => {
+  const navigate = useNavigate();
+
+  const handleStaffAccess = () => {
+    navigate('/staff-login');
+  };
+
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <div className="space-y-2">
@@ -135,7 +142,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
       </div>
 
       {isLogin && (
-        <div className="mt-4 text-center">
+        <div className="mt-4 text-center space-y-3">
           <Button 
             variant="link" 
             className="text-sm text-muted-foreground p-0 h-auto" 
@@ -144,6 +151,17 @@ export const AuthForm: React.FC<AuthFormProps> = ({
             type="button"
           >
             Esqueci minha senha
+          </Button>
+
+          <Button 
+            variant="default"
+            size="sm"
+            onClick={handleStaffAccess}
+            className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-lg text-sm"
+            type="button"
+          >
+            <UserCog className="h-4 w-4 mr-2 flex-shrink-0" />
+            Painel Admin
           </Button>
         </div>
       )}
