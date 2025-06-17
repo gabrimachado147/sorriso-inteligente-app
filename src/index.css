@@ -62,7 +62,14 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground overflow-x-hidden;
+  }
+  
+  /* Prevent horizontal scroll globally */
+  html, body {
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100vw;
   }
 }
 
@@ -76,7 +83,7 @@
 
   /* Padding responsivo para cards em mobile */
   .mobile-card-spacing {
-    @apply p-4;
+    @apply p-4 overflow-hidden;
   }
 
   @screen md {
@@ -87,27 +94,27 @@
 
   /* Typography responsiva */
   .mobile-text-xs {
-    @apply text-xs;
+    @apply text-xs truncate;
   }
 
   .mobile-text-sm {
-    @apply text-sm;
+    @apply text-sm truncate;
   }
 
   .mobile-text-base {
-    @apply text-sm;
+    @apply text-sm truncate;
   }
 
   .mobile-text-lg {
-    @apply text-base;
+    @apply text-base truncate;
   }
 
   .mobile-text-xl {
-    @apply text-lg;
+    @apply text-lg truncate;
   }
 
   .mobile-text-2xl {
-    @apply text-xl;
+    @apply text-xl truncate;
   }
 
   @screen md {
@@ -149,11 +156,12 @@
   .mobile-scroll {
     -webkit-overflow-scrolling: touch;
     scroll-behavior: smooth;
+    overflow-x: hidden;
   }
 
   /* Container responsivo */
   .mobile-container {
-    @apply px-4 mx-auto max-w-md;
+    @apply px-4 mx-auto max-w-md overflow-x-hidden;
   }
 
   @screen md {
@@ -170,7 +178,7 @@
 
   /* Grid responsivo */
   .mobile-grid {
-    @apply grid grid-cols-1 gap-4;
+    @apply grid grid-cols-1 gap-4 overflow-hidden;
   }
 
   @screen md {
@@ -187,25 +195,25 @@
 
   /* Botões mobile-friendly */
   .mobile-button {
-    @apply px-6 py-3 text-base font-medium rounded-lg mobile-touch-target;
+    @apply px-6 py-3 text-base font-medium rounded-lg mobile-touch-target truncate overflow-hidden;
   }
 
   .mobile-button-sm {
-    @apply px-4 py-2 text-sm font-medium rounded-md mobile-touch-target;
+    @apply px-4 py-2 text-sm font-medium rounded-md mobile-touch-target truncate overflow-hidden;
   }
 
   .mobile-button-lg {
-    @apply px-8 py-4 text-lg font-semibold rounded-xl mobile-touch-target;
+    @apply px-8 py-4 text-lg font-semibold rounded-xl mobile-touch-target truncate overflow-hidden;
   }
 
   /* Input fields mobile-friendly */
   .mobile-input {
-    @apply mobile-touch-target px-4 py-3 text-base rounded-lg border border-input bg-background;
+    @apply mobile-touch-target px-4 py-3 text-base rounded-lg border border-input bg-background overflow-hidden;
   }
 
   /* Navigation mobile */
   .mobile-nav-item {
-    @apply mobile-touch-target flex flex-col items-center justify-center px-2 py-3 text-xs font-medium;
+    @apply mobile-touch-target flex flex-col items-center justify-center px-2 py-3 text-xs font-medium overflow-hidden;
   }
 
   /* Loading states */
@@ -255,6 +263,19 @@
   .mobile-press {
     @apply active:scale-95 mobile-transition;
   }
+  
+  /* Prevent overflow utilities */
+  .no-overflow {
+    @apply overflow-hidden;
+  }
+  
+  .no-overflow-x {
+    @apply overflow-x-hidden;
+  }
+  
+  .safe-container {
+    @apply w-full max-w-full overflow-x-hidden;
+  }
 }
 
 /* Correções específicas para PWA */
@@ -263,11 +284,13 @@
   * {
     -webkit-tap-highlight-color: transparent;
     -webkit-touch-callout: none;
+    box-sizing: border-box;
   }
 
   /* Scroll suave */
   html {
     scroll-behavior: smooth;
+    overflow-x: hidden;
   }
 
   /* Otimização de fontes */
@@ -281,6 +304,7 @@
   html, body {
     overflow-x: hidden;
     width: 100%;
+    max-width: 100vw;
   }
 
   /* Scrollbar customizada */
@@ -303,7 +327,7 @@
   }
 }
 
-/* Animações específicas para mobile */
+/* ... keep existing code (animations and remaining styles) */
 @keyframes mobile-slide-up {
   from {
     transform: translateY(20px);

@@ -1,62 +1,48 @@
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Clock } from 'lucide-react';
-import { animations } from '@/lib/animations';
-import { useTimeSlots } from '@/hooks/useTimeSlots';
 
 interface TimeSelectorProps {
-  selectedDate: Date | undefined;
   selectedTime: string;
   onTimeSelect: (time: string) => void;
+  selectedDate?: Date;
 }
 
+const timeSlots = [
+  '08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
+  '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30'
+];
+
 export const TimeSelector: React.FC<TimeSelectorProps> = ({
-  selectedDate,
   selectedTime,
-  onTimeSelect
+  onTimeSelect,
+  selectedDate
 }) => {
-  const { timeSlots, isWeekend, isClosed } = useTimeSlots(selectedDate);
+  if (!selectedDate) {
+    return (
+      <div className="p-6 text-center text-muted-foreground">
+        <Clock className="h-8 w-8 mx-auto mb-2 opacity-50" />
+        <p className="mobile-text-sm">Selecione uma data primeiro</p>
+      </div>
+    );
+  }
 
   return (
-    <Card className={`${animations.slideInRight} ${animations.cardHover} w-full`}>
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 mobile-text-lg">
-          <Clock className="h-5 w-5" />
-          Horários Disponíveis
-          {isWeekend && (
-            <Badge variant="secondary" className="ml-2 text-xs">Sábado - Até 13:00</Badge>
-          )}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        {isClosed ? (
-          <p className="text-center text-gray-500 py-8 mobile-text-base">
-            Não funcionamos aos domingos
-          </p>
-        ) : timeSlots.length === 0 ? (
-          <p className="text-center text-gray-500 py-8 mobile-text-base">
-            Selecione uma data para ver os horários
-          </p>
-        ) : (
-          <div className="grid grid-cols-3 md:grid-cols-4 gap-3">
-            {timeSlots.map((time) => (
-              <Button
-                key={time}
-                variant={selectedTime === time ? "default" : "outline"}
-                className={`${animations.buttonHover} ${
-                  selectedTime === time ? animations.scaleIn : ''
-                } mobile-text-sm mobile-touch-target py-3 px-2 text-center`}
-                onClick={() => onTimeSelect(time)}
-              >
-                {time}
-              </Button>
-            ))}
-          </div>
-        )}
-      </CardContent>
-    </Card>
+    <div className="p-4 space-y-4 overflow-hidden">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 overflow-hidden">
+        {timeSlots.map((time) => (
+          <Button
+            key={time}
+            variant={selectedTime === time ? 'default' : 'outline'}
+            onClick={() => onTimeSelect(time)}
+            className="mobile-button-sm text-xs md:text-sm truncate overflow-hidden"
+            size="sm"
+          >
+            {time}
+          </Button>
+        ))}
+      </div>
+    </div>
   );
 };
