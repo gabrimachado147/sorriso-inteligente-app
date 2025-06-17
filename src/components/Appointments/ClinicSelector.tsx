@@ -2,32 +2,25 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { MapPin, Clock } from 'lucide-react';
+import { useClinics, type Clinic } from '@/hooks/useClinics';
 
 export interface ClinicSelectorProps {
   selectedClinic: string;
   onClinicSelect: (clinicId: string) => void;
-  clinics?: {
-    id: string;
-    name: string;
-    city: string;
-    state: string;
-  }[];
-  filteredClinics?: {
-    id: string;
-    name: string;
-    city: string;
-    state: string;
-  }[];
+  clinics?: Clinic[];
+  filteredClinics?: Clinic[];
 }
 
 export const ClinicSelector: React.FC<ClinicSelectorProps> = ({
   selectedClinic,
   onClinicSelect,
-  clinics,
+  clinics: propClinics,
   filteredClinics
 }) => {
-  // Use filteredClinics if provided, otherwise use clinics
-  const clinicsToShow = filteredClinics || clinics || [];
+  const { clinics: hookClinics } = useClinics();
+  
+  // Use filteredClinics if provided, otherwise use propClinics or hookClinics
+  const clinicsToShow = filteredClinics || propClinics || hookClinics;
 
   return (
     <div className="grid grid-cols-1 gap-4 w-full">
