@@ -31,6 +31,18 @@ export const DevelopmentPanel: React.FC = () => {
 
   console.log('DevelopmentPanel será exibido');
 
+  // Função helper para acessar deviceMemory de forma segura
+  const getDeviceMemory = () => {
+    const nav = navigator as any;
+    return nav.deviceMemory || 'N/A';
+  };
+
+  // Função helper para acessar connection de forma segura
+  const getConnectionType = () => {
+    const nav = navigator as any;
+    return nav.connection?.effectiveType || 'N/A';
+  };
+
   return (
     <div className="fixed bottom-4 right-4 z-50 max-w-2xl">
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
@@ -147,8 +159,11 @@ export const DevelopmentPanel: React.FC = () => {
                         <p className="font-semibold">Performance Logs:</p>
                         <div className="space-y-1 pl-2 text-xs">
                           <p>• Render Count: Verificar console</p>
-                          <p>• Memory Usage: {navigator.deviceMemory || 'N/A'} GB</p>
-                          <p>• Connection: {(navigator as any).connection?.effectiveType || 'N/A'}</p>
+                          <p>• Memory Usage: {getDeviceMemory()} GB</p>
+                          <p>• Connection: {getConnectionType()}</p>
+                          <p>• User Agent: {navigator.userAgent.substring(0, 50)}...</p>
+                          <p>• Screen: {window.screen.width}x{window.screen.height}</p>
+                          <p>• Viewport: {window.innerWidth}x{window.innerHeight}</p>
                         </div>
                       </div>
                     </div>
