@@ -41,7 +41,7 @@ export class OptimizedSupabaseService {
       .order('full_name', { ascending: true });
 
     if (error) throw error;
-    return (data || []) as PatientData[];
+    return (data as unknown as PatientData[]) || [];
   }
 
   // Optimized appointment queries with pagination
@@ -80,7 +80,7 @@ export class OptimizedSupabaseService {
     const { data, error, count } = await query;
 
     if (error) throw error;
-    return { data: (data || []) as AppointmentData[], count: count || 0 };
+    return { data: (data as unknown as AppointmentData[]) || [], count: count || 0 };
   }
 
   // Search patients with optimized indexing
@@ -93,7 +93,7 @@ export class OptimizedSupabaseService {
       .limit(50);
 
     if (error) throw error;
-    return (data || []) as PatientData[];
+    return (data as unknown as PatientData[]) || [];
   }
 
   // Get appointments by date range with clinic filter
@@ -116,13 +116,13 @@ export class OptimizedSupabaseService {
 
     const { data, error } = await query;
     if (error) throw error;
-    return (data || []) as AppointmentData[];
+    return (data as unknown as AppointmentData[]) || [];
   }
 
   // Get patient statistics
   static async getPatientStats(): Promise<{
-    total: number;
-    newThisMonth: number;
+    totalPatients: number;
+    newPatientsThisMonth: number;
     activeAppointments: number;
   }> {
     const currentMonth = new Date().toISOString().slice(0, 7);
@@ -134,8 +134,8 @@ export class OptimizedSupabaseService {
     ]);
 
     return {
-      total: patientsResult.count || 0,
-      newThisMonth: newPatientsResult.count || 0,
+      totalPatients: patientsResult.count || 0,
+      newPatientsThisMonth: newPatientsResult.count || 0,
       activeAppointments: appointmentsResult.count || 0
     };
   }
