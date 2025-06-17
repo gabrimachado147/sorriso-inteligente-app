@@ -50,6 +50,7 @@ const AppointmentSchedulerReal: React.FC<AppointmentSchedulerRealProps> = ({ res
         <h1 className="text-xl md:text-2xl font-bold mobile-text-xl">
           {rescheduleId ? 'Reagendar Consulta' : 'Agendar Consulta'}
         </h1>
+        <div></div>
       </div>
 
       {/* Progress Indicator */}
