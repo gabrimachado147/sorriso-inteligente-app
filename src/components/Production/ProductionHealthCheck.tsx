@@ -265,7 +265,7 @@ export const ProductionHealthCheck: React.FC = () => {
             <div className="text-sm text-blue-700 space-y-1">
               <div>• Ambiente: {import.meta.env.MODE}</div>
               <div>• URL Base: {PRODUCTION_CONFIG.APP_URL}</div>
-              <div>• Erros recentes: {errorTracker.getRecentErrors(5).length}</div>
+              <div>• Erros recentes: {errorTracker.getRecentErrors().length}</div>
               <div>• Métricas coletadas: {performanceMonitor.getMetrics().length}</div>
             </div>
           </div>
