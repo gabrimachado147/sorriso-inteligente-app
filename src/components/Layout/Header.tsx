@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useNotificationSystem } from '@/hooks/useNotificationSystem';
 import { NotificationDrawer } from './NotificationDrawer';
+import { DesktopNavigation } from './DesktopNavigation';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 
@@ -50,6 +51,9 @@ export const Header: React.FC = () => {
             </div>
             <h1 className="text-lg sm:text-xl font-bold text-primary mobile-text-lg">Senhor Sorriso</h1>
           </div>
+
+          {/* Navegação Desktop */}
+          <DesktopNavigation />
 
           <div className="flex items-center space-x-3">
             {!loading && isAuthenticated && (
