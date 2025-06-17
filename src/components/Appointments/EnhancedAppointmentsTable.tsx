@@ -59,6 +59,34 @@ export const EnhancedAppointmentsTable: React.FC<EnhancedAppointmentsTableProps>
     return timeStr.slice(0, 5);
   };
 
+  // Função para simplificar o nome da clínica
+  const simplifyClinicName = (clinicName: string) => {
+    // Remove "Senhor Sorriso" e outros prefixos/sufixos
+    const cleanName = clinicName
+      .replace(/senhor sorriso/gi, '')
+      .replace(/dr\./gi, '')
+      .replace(/dra\./gi, '')
+      .replace(/unidade/gi, '')
+      .replace(/filial/gi, '')
+      .replace(/\s*-\s*/g, ' ')
+      .trim();
+    
+    // Mapear nomes específicos se necessário
+    const cityMappings: { [key: string]: string } = {
+      'capao bonito': 'Capão Bonito',
+      'capão bonito': 'Capão Bonito',
+      'itarare': 'Itararé',
+      'itararé': 'Itararé',
+      'itapeva': 'Itapeva',
+      'formiga': 'Formiga',
+      'campo belo': 'Campo Belo',
+      'campobelo': 'Campo Belo'
+    };
+
+    const lowerName = cleanName.toLowerCase();
+    return cityMappings[lowerName] || cleanName || clinicName;
+  };
+
   if (appointments.length === 0) {
     return (
       <Card className={animations.fadeIn}>
@@ -92,7 +120,7 @@ export const EnhancedAppointmentsTable: React.FC<EnhancedAppointmentsTableProps>
                       checked={isAllSelected}
                       onCheckedChange={handleSelectAll}
                       aria-label="Selecionar todos"
-                      className={isPartiallySelected ? "data-[state=checked]:bg-primary" : ""}
+                      className={`h-5 w-5 ${isPartiallySelected ? "data-[state=checked]:bg-primary" : ""}`}
                     />
                   </TableHead>
                   <TableHead>Paciente</TableHead>
@@ -118,6 +146,7 @@ export const EnhancedAppointmentsTable: React.FC<EnhancedAppointmentsTableProps>
                           handleSelectAppointment(appointment.id, checked as boolean)
                         }
                         aria-label={`Selecionar agendamento de ${appointment.name}`}
+                        className="h-5 w-5"
                       />
                     </TableCell>
                     
@@ -175,7 +204,7 @@ export const EnhancedAppointmentsTable: React.FC<EnhancedAppointmentsTableProps>
                     
                     <TableCell>
                       <Badge variant="secondary" className="text-xs">
-                        {appointment.clinic}
+                        {simplifyClinicName(appointment.clinic)}
                       </Badge>
                     </TableCell>
                     
