@@ -36,47 +36,50 @@ const ProfilePage = () => {
     navigate('/staff-login');
   };
 
-  // Botão de acesso administrativo fixo no topo
+  // Botão de acesso administrativo responsivo
   const AdminAccessButton = () => (
     <div className="fixed top-4 right-4 z-50">
       <Button 
         variant="default"
         size="sm"
         onClick={handleStaffAccess}
-        className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-lg px-3 py-2 mobile-touch-target"
+        className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-lg mobile-touch-target text-xs md:text-sm truncate max-w-[140px] md:max-w-none"
       >
-        <UserCog className="h-4 w-4 mr-2" />
-        Painel Administrativo
+        <UserCog className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2 flex-shrink-0" />
+        <span className="hidden sm:inline">Painel Admin</span>
+        <span className="sm:hidden">Admin</span>
       </Button>
     </div>
   );
 
   if (!isAuthenticated) {
     return (
-      <div className={`mobile-container px-4 py-6 ${animations.pageEnter}`}>
+      <div className={`w-full min-h-screen bg-background overflow-x-hidden ${animations.pageEnter}`}>
         <AdminAccessButton />
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <Card className="w-full max-w-md mx-auto mobile-card-spacing">
-            <CardHeader className="text-center pb-4">
-              <CardTitle className="mobile-text-xl">Acesse sua Conta</CardTitle>
-              <p className="text-muted-foreground mobile-text-base">
-                Faça login para acessar seu perfil e histórico
-              </p>
-            </CardHeader>
-            <CardContent>
-              <AuthForm 
-                isLogin={isLogin}
-                formData={formData}
-                loading={loading}
-                onInputChange={handleInputChange}
-                onPhoneChange={handlePhoneChange}
-                onSubmit={handleSubmit}
-                onToggleMode={handleToggleMode}
-                onPasswordReset={handlePasswordReset}
-                onEnterWithoutAccount={handleEnterWithoutAccount}
-              />
-            </CardContent>
-          </Card>
+        <div className="mobile-container px-4 py-6">
+          <div className="flex items-center justify-center min-h-[70vh]">
+            <Card className="w-full max-w-md mx-auto mobile-card-spacing">
+              <CardHeader className="text-center pb-4">
+                <CardTitle className="mobile-text-xl">Acesse sua Conta</CardTitle>
+                <p className="text-muted-foreground mobile-text-base">
+                  Faça login para acessar seu perfil e histórico
+                </p>
+              </CardHeader>
+              <CardContent>
+                <AuthForm 
+                  isLogin={isLogin}
+                  formData={formData}
+                  loading={loading}
+                  onInputChange={handleInputChange}
+                  onPhoneChange={handlePhoneChange}
+                  onSubmit={handleSubmit}
+                  onToggleMode={handleToggleMode}
+                  onPasswordReset={handlePasswordReset}
+                  onEnterWithoutAccount={handleEnterWithoutAccount}
+                />
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
     );
@@ -91,78 +94,99 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className={`mobile-container px-4 py-6 ${animations.pageEnter}`}>
+    <div className={`w-full min-h-screen bg-background overflow-x-hidden ${animations.pageEnter}`}>
       <AdminAccessButton />
       
-      {/* Header do Perfil */}
-      <div className="text-center mb-8 mt-16">
-        <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
-          <User className="h-8 w-8 text-primary" />
+      <div className="mobile-container px-4 py-6">
+        {/* Header do Perfil */}
+        <div className="text-center mb-6 mt-16">
+          <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
+            <User className="h-8 w-8 text-primary" />
+          </div>
+          <h1 className="text-xl font-bold mobile-text-lg mb-1 truncate">
+            {user?.user_metadata?.nome_completo || user?.email}
+          </h1>
+          <p className="text-muted-foreground mobile-text-sm truncate px-4">
+            {user?.email}
+          </p>
         </div>
-        <h1 className="text-xl font-bold mobile-text-lg mb-1">
-          {user?.user_metadata?.nome_completo || user?.email}
-        </h1>
-        <p className="text-muted-foreground mobile-text-sm">
-          {user?.email}
-        </p>
+
+        {/* Tabs do Perfil */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+          <div className="overflow-x-auto mobile-scroll">
+            <TabsList className="grid grid-cols-5 w-full min-w-[480px] md:min-w-0 h-auto bg-white/50 backdrop-blur-sm border border-gray-200/50 rounded-lg p-1">
+              <TabsTrigger 
+                value="profile" 
+                className="mobile-text-xs p-2 flex flex-col items-center mobile-touch-target rounded-md min-w-0"
+              >
+                <User className="h-3 w-3 md:h-4 md:w-4 mb-1 flex-shrink-0" />
+                <span className="truncate w-full text-center">Perfil</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="history" 
+                className="mobile-text-xs p-2 flex flex-col items-center mobile-touch-target rounded-md min-w-0"
+              >
+                <History className="h-3 w-3 md:h-4 md:w-4 mb-1 flex-shrink-0" />
+                <span className="truncate w-full text-center">Histórico</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="notifications" 
+                className="mobile-text-xs p-2 flex flex-col items-center mobile-touch-target rounded-md min-w-0"
+              >
+                <Bell className="h-3 w-3 md:h-4 md:w-4 mb-1 flex-shrink-0" />
+                <span className="truncate w-full text-center">Notific.</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="security" 
+                className="mobile-text-xs p-2 flex flex-col items-center mobile-touch-target rounded-md min-w-0"
+              >
+                <Shield className="h-3 w-3 md:h-4 md:w-4 mb-1 flex-shrink-0" />
+                <span className="truncate w-full text-center">Segur.</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="accessibility" 
+                className="mobile-text-xs p-2 flex flex-col items-center mobile-touch-target rounded-md min-w-0"
+              >
+                <Settings className="h-3 w-3 md:h-4 md:w-4 mb-1 flex-shrink-0" />
+                <span className="truncate w-full text-center">Access.</span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
+
+          <div className="overflow-x-hidden">
+            <TabsContent value="profile" className="mt-4">
+              <ProfileTabReal onTabChange={setActiveTab} />
+            </TabsContent>
+
+            <TabsContent value="history" className="mt-4">
+              <HistoryTabReal />
+            </TabsContent>
+
+            <TabsContent value="notifications" className="mt-4">
+              <NotificationsTab />
+            </TabsContent>
+
+            <TabsContent value="security" className="mt-4">
+              <SecurityTab />
+            </TabsContent>
+
+            <TabsContent value="accessibility" className="mt-4">
+              <AccessibilityTab />
+            </TabsContent>
+          </div>
+        </Tabs>
+
+        {/* Botão de Logout */}
+        <Button
+          onClick={handleSignOut}
+          variant="outline"
+          className="w-full mobile-button h-12 mt-6 truncate"
+          size="lg"
+        >
+          <LogOut className="h-4 w-4 md:h-5 md:w-5 mr-2 flex-shrink-0" />
+          <span className="truncate">Sair da Conta</span>
+        </Button>
       </div>
-
-      {/* Tabs do Perfil */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 mb-4 h-auto bg-white/50 backdrop-blur-sm border border-gray-200/50 rounded-lg">
-          <TabsTrigger value="profile" className="mobile-text-xs p-2 flex flex-col md:flex-row items-center mobile-touch-target rounded-md">
-            <User className="h-4 w-4 mb-1 md:mb-0 md:mr-1" />
-            <span>Perfil</span>
-          </TabsTrigger>
-          <TabsTrigger value="history" className="mobile-text-xs p-2 flex flex-col md:flex-row items-center mobile-touch-target rounded-md">
-            <History className="h-4 w-4 mb-1 md:mb-0 md:mr-1" />
-            <span>Histórico</span>
-          </TabsTrigger>
-          <TabsTrigger value="notifications" className="mobile-text-xs p-2 flex flex-col md:flex-row items-center mobile-touch-target rounded-md">
-            <Bell className="h-4 w-4 mb-1 md:mb-0 md:mr-1" />
-            <span>Notificações</span>
-          </TabsTrigger>
-          <TabsTrigger value="security" className="mobile-text-xs p-2 flex flex-col md:flex-row items-center mobile-touch-target rounded-md">
-            <Shield className="h-4 w-4 mb-1 md:mb-0 md:mr-1" />
-            <span>Segurança</span>
-          </TabsTrigger>
-          <TabsTrigger value="accessibility" className="mobile-text-xs p-2 flex flex-col md:flex-row items-center mobile-touch-target rounded-md">
-            <Settings className="h-4 w-4 mb-1 md:mb-0 md:mr-1" />
-            <span>Acessibilidade</span>
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="profile">
-          <ProfileTabReal onTabChange={setActiveTab} />
-        </TabsContent>
-
-        <TabsContent value="history">
-          <HistoryTabReal />
-        </TabsContent>
-
-        <TabsContent value="notifications">
-          <NotificationsTab />
-        </TabsContent>
-
-        <TabsContent value="security">
-          <SecurityTab />
-        </TabsContent>
-
-        <TabsContent value="accessibility">
-          <AccessibilityTab />
-        </TabsContent>
-      </Tabs>
-
-      {/* Botão de Logout */}
-      <Button
-        onClick={handleSignOut}
-        variant="outline"
-        className="w-full mobile-button h-12 mt-8"
-        size="lg"
-      >
-        <LogOut className="h-5 w-5 mr-2" />
-        Sair da Conta
-      </Button>
     </div>
   );
 };

@@ -14,9 +14,9 @@ export const HistoryTabReal: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-4 overflow-x-hidden">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="animate-pulse">
+          <div key={i} className="animate-pulse overflow-hidden">
             <div className="h-32 bg-gray-200 rounded mobile-card-spacing"></div>
           </div>
         ))}
@@ -26,13 +26,13 @@ export const HistoryTabReal: React.FC = () => {
 
   if (appointments.length === 0) {
     return (
-      <Card className={`${animations.fadeIn} mobile-card-spacing`}>
+      <Card className={`${animations.fadeIn} mobile-card-spacing overflow-hidden`}>
         <CardContent className="text-center py-12">
           <Calendar className="h-16 w-16 mx-auto text-gray-400 mb-4" />
           <h3 className="text-lg font-semibold text-gray-600 mb-2 mobile-text-lg">
             Nenhum agendamento encontrado
           </h3>
-          <p className="text-gray-500 mobile-text-base">
+          <p className="text-gray-500 mobile-text-base px-4">
             Seus agendamentos aparecerão aqui após serem criados.
           </p>
         </CardContent>
@@ -41,60 +41,62 @@ export const HistoryTabReal: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold mobile-text-xl">Histórico de Consultas</h2>
-        <Badge variant="secondary" className="px-3 py-1 mobile-text-sm">
+    <div className="space-y-6 overflow-x-hidden">
+      <div className="flex items-center justify-between gap-2">
+        <h2 className="text-2xl font-bold mobile-text-xl truncate flex-1">Histórico de Consultas</h2>
+        <Badge variant="secondary" className="px-3 py-1 mobile-text-sm flex-shrink-0">
           {appointments.length} consulta{appointments.length !== 1 ? 's' : ''}
         </Badge>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-4 overflow-x-hidden">
         {appointments.map((appointment) => (
-          <Card key={appointment.id} className={`${animations.slideInLeft} hover:shadow-md transition-shadow mobile-card-spacing`}>
+          <Card key={appointment.id} className={`${animations.slideInLeft} hover:shadow-md transition-shadow mobile-card-spacing overflow-hidden`}>
             <CardHeader className="pb-3">
-              <div className="flex items-center justify-between flex-wrap gap-2">
-                <CardTitle className="text-lg mobile-text-lg">
+              <div className="flex items-start justify-between gap-2">
+                <CardTitle className="text-lg mobile-text-lg truncate flex-1 min-w-0">
                   {appointment.service}
                 </CardTitle>
-                <AppointmentActions
-                  appointment={appointment}
-                  onUpdate={refetch}
-                />
+                <div className="flex-shrink-0">
+                  <AppointmentActions
+                    appointment={appointment}
+                    onUpdate={refetch}
+                  />
+                </div>
               </div>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 overflow-hidden">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex items-center gap-2 text-sm text-gray-600 mobile-text-sm">
+                <div className="flex items-center gap-2 text-sm text-gray-600 mobile-text-sm min-w-0">
                   <Calendar className="h-4 w-4 flex-shrink-0" />
                   <span className="truncate">
                     {format(parseISO(appointment.date), 'PPP', { locale: ptBR })}
                   </span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600 mobile-text-sm">
+                <div className="flex items-center gap-2 text-sm text-gray-600 mobile-text-sm min-w-0">
                   <Clock className="h-4 w-4 flex-shrink-0" />
                   <span className="truncate">{appointment.time}</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600 mobile-text-sm md:col-span-2">
+                <div className="flex items-center gap-2 text-sm text-gray-600 mobile-text-sm md:col-span-2 min-w-0">
                   <MapPin className="h-4 w-4 flex-shrink-0" />
                   <span className="truncate">{appointment.clinic}</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600 mobile-text-sm md:col-span-2">
+                <div className="flex items-center gap-2 text-sm text-gray-600 mobile-text-sm md:col-span-2 min-w-0">
                   <Stethoscope className="h-4 w-4 flex-shrink-0" />
                   <span className="truncate">{appointment.service}</span>
                 </div>
               </div>
               
               {appointment.notes && (
-                <div className="mt-3 p-3 bg-gray-50 rounded-md">
-                  <p className="text-sm text-gray-700 mobile-text-sm">
+                <div className="mt-3 p-3 bg-gray-50 rounded-md overflow-hidden">
+                  <p className="text-sm text-gray-700 mobile-text-sm break-words">
                     <strong>Observações:</strong> {appointment.notes}
                   </p>
                 </div>
               )}
               
               <div className="flex items-center gap-2 text-xs text-gray-500 mt-3 mobile-text-xs">
-                <span>
+                <span className="truncate">
                   Criado em {format(parseISO(appointment.created_at), 'PPp', { locale: ptBR })}
                 </span>
               </div>

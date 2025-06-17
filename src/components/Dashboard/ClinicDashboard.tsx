@@ -78,14 +78,18 @@ export const ClinicDashboard: React.FC<ClinicDashboardProps> = ({ appointments, 
   };
 
   return (
-    <div className={`space-y-6 ${animations.pageEnter}`}>
+    <div className={`space-y-6 ${animations.pageEnter} overflow-x-hidden`}>
       {/* Header */}
-      <div className={`${animations.fadeIn}`}>
-        <h1 className="text-3xl font-bold flex items-center gap-3 mb-2 text-blue-600">
-          <BarChart3 className="h-8 w-8" />
-          Dashboard - {clinicName.charAt(0).toUpperCase() + clinicName.slice(1)} 🏥
-        </h1>
-        <p className="text-gray-600 mb-6">Gestão de agendamentos da sua unidade</p>
+      <div className={`${animations.fadeIn} overflow-x-hidden`}>
+        <div className="flex items-center gap-3 mb-2 min-w-0">
+          <BarChart3 className="h-6 w-6 md:h-8 md:w-8 text-blue-600 flex-shrink-0" />
+          <h1 className="text-2xl md:text-3xl font-bold text-blue-600 mobile-text-xl truncate">
+            Dashboard - {clinicName.charAt(0).toUpperCase() + clinicName.slice(1)}
+          </h1>
+        </div>
+        <p className="text-gray-600 mb-6 mobile-text-base truncate">
+          Gestão de agendamentos da sua unidade
+        </p>
 
         {/* Filtros */}
         <DashboardFilters
@@ -109,45 +113,57 @@ export const ClinicDashboard: React.FC<ClinicDashboardProps> = ({ appointments, 
       />
 
       {/* Tabs */}
-      <Tabs defaultValue="overview" className={`${animations.fadeIn}`}>
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="overview">Visão Geral</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
-          <TabsTrigger value="appointments">Agendamentos</TabsTrigger>
-        </TabsList>
+      <Tabs defaultValue="overview" className={`${animations.fadeIn} overflow-x-hidden`}>
+        <div className="overflow-x-auto mobile-scroll">
+          <TabsList className="grid grid-cols-3 w-full min-w-[300px] md:min-w-0">
+            <TabsTrigger value="overview" className="mobile-text-sm truncate">
+              Visão Geral
+            </TabsTrigger>
+            <TabsTrigger value="analytics" className="mobile-text-sm truncate">
+              Analytics
+            </TabsTrigger>
+            <TabsTrigger value="appointments" className="mobile-text-sm truncate">
+              Agendamentos
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
-        <TabsContent value="overview" className="space-y-6">
-          <DashboardCharts
-            monthlyData={dashboardData.monthlyData}
-            servicesData={dashboardData.servicesData}
-            statusData={dashboardData.statusData}
-            confirmedAppointments={dashboardData.confirmedAppointments}
-            completedAppointments={dashboardData.completedAppointments}
-            pendingAppointments={dashboardData.pendingAppointments}
-            cancelledAppointments={dashboardData.cancelledAppointments}
-          />
-        </TabsContent>
+        <div className="overflow-x-hidden">
+          <TabsContent value="overview" className="space-y-6 mt-4">
+            <DashboardCharts
+              monthlyData={dashboardData.monthlyData}
+              servicesData={dashboardData.servicesData}
+              statusData={dashboardData.statusData}
+              confirmedAppointments={dashboardData.confirmedAppointments}
+              completedAppointments={dashboardData.completedAppointments}
+              pendingAppointments={dashboardData.pendingAppointments}
+              cancelledAppointments={dashboardData.cancelledAppointments}
+            />
+          </TabsContent>
 
-        <TabsContent value="analytics" className="space-y-6">
-          <DashboardCharts
-            monthlyData={dashboardData.monthlyData}
-            servicesData={dashboardData.servicesData}
-            statusData={dashboardData.statusData}
-            confirmedAppointments={dashboardData.confirmedAppointments}
-            completedAppointments={dashboardData.completedAppointments}
-            pendingAppointments={dashboardData.pendingAppointments}
-            cancelledAppointments={dashboardData.cancelledAppointments}
-          />
-        </TabsContent>
+          <TabsContent value="analytics" className="space-y-6 mt-4">
+            <DashboardCharts
+              monthlyData={dashboardData.monthlyData}
+              servicesData={dashboardData.servicesData}
+              statusData={dashboardData.statusData}
+              confirmedAppointments={dashboardData.confirmedAppointments}
+              completedAppointments={dashboardData.completedAppointments}
+              pendingAppointments={dashboardData.pendingAppointments}
+              cancelledAppointments={dashboardData.cancelledAppointments}
+            />
+          </TabsContent>
 
-        <TabsContent value="appointments" className="space-y-6">
-          <AppointmentsTable
-            appointments={filteredAppointments}
-            onStatusChange={handleUpdateStatus}
-            onServiceUpdate={handleUpdateService}
-            isUpdating={updateAppointmentStatus.isPending || updateAppointmentService.isPending}
-          />
-        </TabsContent>
+          <TabsContent value="appointments" className="space-y-6 mt-4 overflow-x-hidden">
+            <div className="overflow-x-auto">
+              <AppointmentsTable
+                appointments={filteredAppointments}
+                onStatusChange={handleUpdateStatus}
+                onServiceUpdate={handleUpdateService}
+                isUpdating={updateAppointmentStatus.isPending || updateAppointmentService.isPending}
+              />
+            </div>
+          </TabsContent>
+        </div>
       </Tabs>
     </div>
   );
