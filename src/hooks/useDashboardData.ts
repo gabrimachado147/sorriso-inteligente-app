@@ -30,9 +30,10 @@ export const useDashboardData = (filteredAppointments: AppointmentRecord[]) => {
     const conversionRate = filteredAppointments.length > 0 ? 
       Math.round(((confirmedAppointments.length + completedAppointments.length) / filteredAppointments.length) * 100) : 0;
 
+    // Calcular receita total corretamente
     const totalRevenue = filteredAppointments.reduce((total, apt) => {
-      const price = (apt as any).price;
-      return total + (price || 0);
+      const price = apt.price || 0;
+      return total + price;
     }, 0);
 
     // Dados mensais dos últimos 6 meses

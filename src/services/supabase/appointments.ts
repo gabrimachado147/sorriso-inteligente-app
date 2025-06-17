@@ -13,6 +13,7 @@ export interface AppointmentRecord {
   status: string;
   notes?: string;
   source?: string;
+  price?: number;
   created_at: string;
   updated_at: string;
   clinic_filter?: string;
@@ -46,6 +47,7 @@ const normalizeAppointment = (data: AppointmentRow): AppointmentRecord => ({
   status: data.status,
   notes: data.notes || undefined,
   source: data.source || undefined,
+  price: data.price || undefined,
   created_at: data.created_at,
   updated_at: data.updated_at,
   clinic_filter: data.clinic_filter || undefined

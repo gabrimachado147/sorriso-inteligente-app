@@ -22,10 +22,10 @@ export const useMasterDashboardData = (filteredAppointments: AppointmentRecord[]
     const uniqueClinics = new Set(filteredAppointments.map(apt => apt.clinic));
     const totalClinics = uniqueClinics.size;
     
-    // Receita total
+    // Receita total correta
     const totalRevenue = filteredAppointments.reduce((total, apt) => {
-      const price = (apt as any).price;
-      return total + (price || 0);
+      const price = apt.price || 0;
+      return total + price;
     }, 0);
 
     // Taxa de conversão
@@ -39,7 +39,7 @@ export const useMasterDashboardData = (filteredAppointments: AppointmentRecord[]
     const clinicStats = Array.from(uniqueClinics).map(clinic => {
       const clinicAppointments = filteredAppointments.filter(apt => apt.clinic === clinic);
       const confirmed = clinicAppointments.filter(apt => apt.status === 'confirmed' || apt.status === 'completed');
-      const revenue = clinicAppointments.reduce((total, apt) => total + ((apt as any).price || 0), 0);
+      const revenue = clinicAppointments.reduce((total, apt) => total + (apt.price || 0), 0);
       
       return {
         name: clinic,
@@ -67,7 +67,7 @@ export const useMasterDashboardData = (filteredAppointments: AppointmentRecord[]
         month: monthName,
         agendamentos: monthAppointments.length,
         conversoes: monthAppointments.filter(apt => apt.status === 'confirmed' || apt.status === 'completed').length,
-        receita: monthAppointments.reduce((total, apt) => total + ((apt as any).price || 0), 0)
+        receita: monthAppointments.reduce((total, apt) => total + (apt.price || 0), 0)
       });
     }
 
