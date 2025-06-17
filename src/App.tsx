@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -25,7 +24,7 @@ import StaffLoginPage from "./pages/StaffLoginPage";
 import AdminDashboardPage from "./pages/AdminDashboardPage";
 import InstitutionalHome from "./pages/InstitutionalHome";
 import ServicesPage from "./components/Institutional/ServicesPage";
-import { LocationsPage } from "./components/Institutional/LocationsPage";
+import LocationsPage from "./components/Institutional/LocationsPage";
 import AboutPage from "./components/Institutional/AboutPage";
 import ContactPage from "./components/Institutional/ContactPage";
 import NotFound from "./pages/NotFound";
