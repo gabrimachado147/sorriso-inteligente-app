@@ -14,7 +14,7 @@ export const ServicesOverviewSection: React.FC = () => {
   return (
     <div className={`space-y-8 px-4 ${animations.slideInRight}`}>
       <div className="text-center">
-        <h2 className="text-4xl font-bold text-primary mb-4 mobile-text-xl">Nossos Serviços</h2>
+        <h2 className="text-lg font-bold text-primary mb-4 mobile-text-xl">Nossos Serviços</h2>
         <p className="text-muted-foreground text-lg mobile-text-base">Tratamentos completos para toda a família</p>
       </div>
 

@@ -18,7 +18,7 @@ const AppointmentsPageReal = () => {
     <div className={`space-y-6 ${animations.pageEnter}`}>
       {/* Header */}
       <div className="text-center">
-        <h1 className="text-2xl font-bold mobile-text-xl flex items-center justify-center gap-2">
+        <h1 className="text-lg font-bold mobile-text-xl flex items-center justify-center gap-2">
           <Calendar className="h-6 w-6 text-primary" />
           Minhas Consultas
         </h1>
@@ -30,7 +30,7 @@ const AppointmentsPageReal = () => {
       {/* Quick Actions */}
       <Card className="mobile-card-spacing">
         <CardHeader>
-          <CardTitle className="mobile-text-lg">Ações Rápidas</CardTitle>
+          <CardTitle className="mobile-text-lg text-lg text-center">Ações Rápidas</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
@@ -49,7 +49,7 @@ const AppointmentsPageReal = () => {
       {/* Histórico de Consultas */}
       <Card className="mobile-card-spacing">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 mobile-text-lg">
+          <CardTitle className="flex items-center justify-center gap-2 mobile-text-lg text-lg">
             <History className="h-5 w-5" />
             Histórico de Consultas
           </CardTitle>

@@ -29,8 +29,8 @@ const AuthPage = () => {
               className="w-12 h-12 object-contain"
             />
           </div>
-          <CardTitle className="mobile-text-xl">Bem-vindo ao Senhor Sorriso</CardTitle>
-          <p className="text-muted-foreground mobile-text-base">
+          <CardTitle className="mobile-text-xl text-lg text-center">Bem-vindo ao Senhor Sorriso</CardTitle>
+          <p className="text-muted-foreground mobile-text-base text-center">
             Acesse sua conta ou crie uma nova
           </p>
         </CardHeader>

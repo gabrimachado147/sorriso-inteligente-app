@@ -24,7 +24,7 @@ const NotFound = () => {
           <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
             <span className="text-3xl">😕</span>
           </div>
-          <CardTitle className="mobile-text-xl">Página não encontrada</CardTitle>
+          <CardTitle className="mobile-text-xl text-lg text-center">Página não encontrada</CardTitle>
           <p className="text-muted-foreground mobile-text-base">
             A página que você está procurando não existe ou foi movida.
           </p>

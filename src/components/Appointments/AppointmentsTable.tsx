@@ -36,7 +36,7 @@ export const AppointmentsTable: React.FC<AppointmentsTableProps> = ({
   return (
     <Card className={animations.fadeIn}>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+        <CardTitle className="flex items-center justify-center gap-2 text-lg">
           <Calendar className="h-5 w-5" />
           Agendamentos ({appointments.length})
         </CardTitle>

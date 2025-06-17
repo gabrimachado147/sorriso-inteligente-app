@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -13,7 +12,7 @@ export const HistoryTab = () => {
     <div className="space-y-6">
       <Card className={animations.fadeIn}>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center justify-center gap-2 text-lg">
             <History className="h-5 w-5" />
             Histórico de Consultas
           </CardTitle>

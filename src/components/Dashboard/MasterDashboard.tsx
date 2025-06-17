@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Crown } from 'lucide-react';
 import { animations } from '@/lib/animations';
@@ -88,8 +87,8 @@ export const MasterDashboard: React.FC<MasterDashboardProps> = ({ appointments, 
   return (
     <div className={`space-y-6 ${animations.pageEnter}`}>
       {/* Header */}
-      <div className={`${animations.fadeIn}`}>
-        <h1 className="text-3xl font-bold flex items-center gap-3 mb-2 text-purple-600">
+      <div className={`${animations.fadeIn} text-center`}>
+        <h1 className="text-lg font-bold flex items-center justify-center gap-3 mb-2 text-purple-600">
           <Crown className="h-8 w-8" />
           Dashboard Master - Gestão Geral 👑
         </h1>

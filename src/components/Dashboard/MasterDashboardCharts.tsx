@@ -54,7 +54,7 @@ export const MasterDashboardCharts: React.FC<MasterDashboardChartsProps> = ({
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <Card className="border-blue-200 shadow-md">
         <CardHeader className="pb-4">
-          <CardTitle className="text-blue-700 text-lg font-semibold">Performance por Clínica</CardTitle>
+          <CardTitle className="text-blue-700 text-lg font-semibold text-center">Performance por Clínica</CardTitle>
         </CardHeader>
         <CardContent className="pt-0">
           {clinicStats.length > 0 ? (
@@ -121,7 +121,7 @@ export const MasterDashboardCharts: React.FC<MasterDashboardChartsProps> = ({
 
       <Card className="border-green-200 shadow-md">
         <CardHeader className="pb-4">
-          <CardTitle className="text-green-700 text-lg font-semibold">Tendência Mensal</CardTitle>
+          <CardTitle className="text-green-700 text-lg font-semibold text-center">Tendência Mensal</CardTitle>
         </CardHeader>
         <CardContent className="pt-0">
           {monthlyTrend.length > 0 ? (
@@ -194,7 +194,7 @@ export const MasterDashboardCharts: React.FC<MasterDashboardChartsProps> = ({
 
       <Card className="border-purple-200">
         <CardHeader>
-          <CardTitle className="text-purple-700">Distribuição de Serviços</CardTitle>
+          <CardTitle className="text-purple-700 text-lg text-center">Distribuição de Serviços</CardTitle>
         </CardHeader>
         <CardContent>
           {serviceDistribution.length > 0 ? (
@@ -244,7 +244,7 @@ export const MasterDashboardCharts: React.FC<MasterDashboardChartsProps> = ({
 
       <Card className="border-indigo-200">
         <CardHeader>
-          <CardTitle className="text-indigo-700">Status dos Agendamentos</CardTitle>
+          <CardTitle className="text-indigo-700 text-lg text-center">Status dos Agendamentos</CardTitle>
         </CardHeader>
         <CardContent>
           {statusBreakdown.length > 0 ? (
@@ -274,7 +274,7 @@ export const MasterDashboardCharts: React.FC<MasterDashboardChartsProps> = ({
 
       <Card className="lg:col-span-2 border-gray-200">
         <CardHeader>
-          <CardTitle className="text-gray-700">Ranking de Clínicas</CardTitle>
+          <CardTitle className="text-gray-700 text-lg text-center">Ranking de Clínicas</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">

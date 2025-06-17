@@ -22,6 +22,12 @@ const StaffLoginPage = () => {
       <div className="mobile-container px-4 py-6 flex items-center justify-center min-h-screen">
         <Card className="w-full max-w-md mx-auto mobile-card-spacing">
           <CardContent className="p-6">
+            <div className="text-center mb-6">
+              <h1 className="text-lg font-bold">Login da Equipe</h1>
+              <p className="text-muted-foreground mt-2">
+                Acesse o painel administrativo
+              </p>
+            </div>
             <StaffLogin onLogin={handleLogin} />
           </CardContent>
         </Card>

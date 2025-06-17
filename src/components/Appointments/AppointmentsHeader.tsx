@@ -16,8 +16,8 @@ export const AppointmentsHeader: React.FC<AppointmentsHeaderProps> = ({
 }) => {
   return (
     <div className="flex items-center justify-between">
-      <div>
-        <h1 className="text-2xl font-bold flex items-center gap-2">
+      <div className="text-center flex-1">
+        <h1 className="text-lg font-bold flex items-center justify-center gap-2">
           <Calendar className="h-6 w-6 text-primary" />
           Agendamentos - {userClinicName}
         </h1>

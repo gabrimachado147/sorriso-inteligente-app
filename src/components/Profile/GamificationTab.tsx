@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -13,7 +12,7 @@ export const GamificationTab = () => {
     <div className="space-y-6">
       <Card className={animations.fadeIn}>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center justify-center gap-2 text-lg">
             <Gamepad2 className="h-5 w-5" />
             Sistema de Pontuação
           </CardTitle>
@@ -31,7 +30,7 @@ export const GamificationTab = () => {
           </div>
           
           <div>
-            <h4 className="font-medium mb-3 flex items-center gap-2">
+            <h4 className="font-medium mb-3 flex items-center justify-center gap-2 text-lg">
               <Award className="h-4 w-4" />
               Conquistas
             </h4>

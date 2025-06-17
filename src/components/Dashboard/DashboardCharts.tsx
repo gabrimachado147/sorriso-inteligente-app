@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -53,7 +52,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <Card className="border-green-200">
         <CardHeader>
-          <CardTitle className="text-green-700">Tendência Mensal</CardTitle>
+          <CardTitle className="text-green-700 text-lg text-center">Tendência Mensal</CardTitle>
         </CardHeader>
         <CardContent>
           {monthlyData.length > 0 ? (
@@ -107,7 +106,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({
 
       <Card className="border-purple-200">
         <CardHeader>
-          <CardTitle className="text-purple-700">Distribuição de Serviços</CardTitle>
+          <CardTitle className="text-purple-700 text-lg text-center">Distribuição de Serviços</CardTitle>
         </CardHeader>
         <CardContent>
           {servicesData.length > 0 ? (
@@ -159,7 +158,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({
 
       <Card className="border-indigo-200">
         <CardHeader>
-          <CardTitle className="text-indigo-700">Status dos Agendamentos</CardTitle>
+          <CardTitle className="text-indigo-700 text-lg text-center">Status dos Agendamentos</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -206,7 +205,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({
 
       <Card className="border-gray-200">
         <CardHeader>
-          <CardTitle className="text-gray-700">Resumo da Clínica</CardTitle>
+          <CardTitle className="text-gray-700 text-lg text-center">Resumo da Clínica</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">

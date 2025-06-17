@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,10 +17,10 @@ export const CTASection: React.FC = () => {
           <div className="flex justify-center mb-6">
             <Heart className="h-14 w-14 text-primary" />
           </div>
-          <CardTitle className="text-3xl text-primary mobile-text-xl">
+          <CardTitle className="text-lg text-primary mobile-text-xl text-center">
             Pronto para cuidar do seu sorriso?
           </CardTitle>
-          <CardDescription className="text-xl mobile-text-lg">
+          <CardDescription className="text-xl mobile-text-lg text-center">
             Agende sua consulta hoje mesmo e dê o primeiro passo para um sorriso mais saudável e bonito.
           </CardDescription>
         </CardHeader>

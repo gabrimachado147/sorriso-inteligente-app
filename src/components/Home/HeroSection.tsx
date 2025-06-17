@@ -20,12 +20,12 @@ export const HeroSection: React.FC = () => {
       </div>
 
       <div className="space-y-4">
-        <h1 className={`text-2xl md:text-4xl font-bold text-primary mobile-text-xl leading-tight ${animations.fadeInUp}`}
+        <h1 className={`text-lg md:text-4xl font-bold text-primary mobile-text-xl leading-tight ${animations.fadeInUp} text-center`}
            style={{ animationDelay: '300ms', animationFillMode: 'both' }}>
           Senhor Sorriso
         </h1>
         
-        <p className={`text-base md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed mobile-text-base px-4 ${animations.fadeInUp}`}
+        <p className={`text-base md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed mobile-text-base px-4 ${animations.fadeInUp} text-center`}
            style={{ animationDelay: '400ms', animationFillMode: 'both' }}>
           Cuidando do seu sorriso com carinho e profissionalismo. 
           Agendamentos fáceis, atendimento de qualidade.
@@ -33,7 +33,7 @@ export const HeroSection: React.FC = () => {
       </div>
       
       {user && (
-        <div className={`bg-primary/10 mobile-card-spacing rounded-lg inline-block mobile-scale-in ${animations.fadeInUp}`}
+        <div className={`bg-primary/10 mobile-card-spacing rounded-lg inline-block mobile-scale-in ${animations.fadeInUp} text-center`}
              style={{ animationDelay: '600ms', animationFillMode: 'both' }}>
           <p className="text-lg text-primary font-medium mobile-text-base">
             Bem-vindo de volta, {user.user_metadata?.nome_completo || user.email}! 😊
