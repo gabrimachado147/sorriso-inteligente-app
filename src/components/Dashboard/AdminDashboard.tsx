@@ -20,7 +20,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ appointments, st
   const [dateFilter, setDateFilter] = useState<string>('all');
 
   // Mutations para atualização
-  const { updateAppointmentStatus, updateAppointmentService, /* updateAppointment */ } = useAppointments();
+  const { updateAppointmentStatus, updateAppointmentService, updateAppointment } = useAppointments();
 
   // Filtrar agendamentos pela clínica do usuário logado PRIMEIRO
   const clinicFilteredAppointments = useMemo(() => {
