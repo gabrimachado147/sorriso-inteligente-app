@@ -27,6 +27,8 @@ export const XAIInsightPanel: React.FC<XAIInsightPanelProps> = ({ onInsight }) =
     if (result) {
       setInsight(result);
       onInsight?.(result);
+    } else {
+      setInsight('Erro ao gerar insight. Verifique a configuração da API.');
     }
   };
 

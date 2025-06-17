@@ -10,6 +10,8 @@ interface MainLayoutProps {
 }
 
 export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
+  console.log('MainLayout renderizando, isDevelopment:', isDevelopment);
+  
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
@@ -19,7 +21,12 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       <BottomNavigation />
       
       {/* Painel de desenvolvimento - só aparece em dev */}
-      {isDevelopment && <DevelopmentPanel />}
+      {isDevelopment && (
+        <>
+          {console.log('Renderizando DevelopmentPanel no MainLayout')}
+          <DevelopmentPanel />
+        </>
+      )}
     </div>
   );
 };

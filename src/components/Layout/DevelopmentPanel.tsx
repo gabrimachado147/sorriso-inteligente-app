@@ -20,10 +20,15 @@ export const DevelopmentPanel: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('insights');
 
+  console.log('DevelopmentPanel renderizando:', { isDevelopment, showDevTools: DEVELOPMENT_CONFIG.SHOW_DEV_TOOLS });
+
   // Só renderiza em desenvolvimento
   if (!isDevelopment || !DEVELOPMENT_CONFIG.SHOW_DEV_TOOLS) {
+    console.log('DevelopmentPanel não será exibido');
     return null;
   }
+
+  console.log('DevelopmentPanel será exibido');
 
   return (
     <div className="fixed bottom-4 right-4 z-50 max-w-sm">
@@ -92,10 +97,12 @@ export const DevelopmentPanel: React.FC = () => {
 
               {activeTab === 'db' && (
                 <div className="text-sm text-gray-600">
-                  <p>Ferramentas de banco de dados em desenvolvimento...</p>
+                  <p>Ferramentas de banco de dados:</p>
                   <p className="mt-2">• Supabase Status: ✅ Conectado</p>
                   <p>• RLS Policies: ✅ Ativas</p>
                   <p>• User Profiles: ✅ Configurado</p>
+                  <p>• Environment: {import.meta.env.MODE}</p>
+                  <p>• API URL: {import.meta.env.VITE_SUPABASE_URL ? '✅ Configurado' : '❌ Não configurado'}</p>
                 </div>
               )}
 
@@ -105,6 +112,9 @@ export const DevelopmentPanel: React.FC = () => {
                   <p className="mt-2">• Environment: {import.meta.env.MODE}</p>
                   <p>• Logging: {DEVELOPMENT_CONFIG.VERBOSE_LOGGING ? '✅' : '❌'}</p>
                   <p>• XAI Insights: {DEVELOPMENT_CONFIG.ENABLE_XAI_INSIGHTS ? '✅' : '❌'}</p>
+                  <p>• Performance Monitor: {DEVELOPMENT_CONFIG.ENABLE_DEV_PERFORMANCE_MONITOR ? '✅' : '❌'}</p>
+                  <p>• Dev Mode: {import.meta.env.DEV ? '✅' : '❌'}</p>
+                  <p>• URL atual: {window.location.pathname}</p>
                 </div>
               )}
             </CardContent>

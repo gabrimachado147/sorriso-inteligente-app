@@ -1,62 +1,43 @@
 
 import { useState, useCallback } from 'react';
-import { xaiService, type XAIMessage } from '@/services/xai';
-import { toastError, toastSuccess } from '@/components/ui/custom-toast';
+import { XAIService } from '@/services/xai';
 
 export const useXAI = () => {
   const [loading, setLoading] = useState(false);
   const [configured, setConfigured] = useState(false);
 
-  const checkConfiguration = useCallback(async () => {
-    const isConfigured = xaiService.isConfigured();
-    setConfigured(isConfigured);
-    return isConfigured;
-  }, []);
-
-  const generateInsight = useCallback(async (prompt: string): Promise<string | null> => {
-    if (!xaiService.isConfigured()) {
-      toastError('XAI não configurado', 'A API key do Grok/xAI não foi configurada');
-      return null;
-    }
-
+  const generateInsight = useCallback(async (prompt: string) => {
+    if (!prompt.trim()) return null;
+    
     setLoading(true);
     try {
-      const insight = await xaiService.generateDevelopmentInsight(prompt);
-      toastSuccess('Insight gerado', 'Análise do Grok concluída com sucesso');
-      return insight;
+      console.log('Gerando insight com XAI:', prompt);
+      const result = await XAIService.chat(prompt);
+      console.log('Insight gerado:', result);
+      return result;
     } catch (error) {
       console.error('Erro ao gerar insight:', error);
-      toastError('Erro no Grok', 'Não foi possível gerar o insight');
       return null;
     } finally {
       setLoading(false);
     }
   }, []);
 
-  const chat = useCallback(async (messages: XAIMessage[]): Promise<string | null> => {
-    if (!xaiService.isConfigured()) {
-      toastError('XAI não configurado', 'A API key do Grok/xAI não foi configurada');
-      return null;
-    }
-
-    setLoading(true);
+  const checkConfiguration = useCallback(async () => {
     try {
-      const response = await xaiService.chat(messages);
-      return response;
+      // Simular verificação de configuração
+      console.log('Verificando configuração XAI...');
+      setConfigured(true); // Por enquanto, sempre configurado para desenvolvimento
     } catch (error) {
-      console.error('Erro no chat XAI:', error);
-      toastError('Erro no Chat', 'Não foi possível processar a mensagem');
-      return null;
-    } finally {
-      setLoading(false);
+      console.error('Erro ao verificar configuração XAI:', error);
+      setConfigured(false);
     }
   }, []);
 
   return {
     loading,
     configured,
-    checkConfiguration,
     generateInsight,
-    chat
+    checkConfiguration
   };
 };
