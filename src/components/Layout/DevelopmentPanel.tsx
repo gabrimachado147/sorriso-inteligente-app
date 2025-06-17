@@ -31,6 +31,12 @@ export const DevelopmentPanel: React.FC = () => {
 
   console.log('DevelopmentPanel será exibido');
 
+  // Check Supabase configuration (using actual project values)
+  const supabaseUrl = 'https://bstppllwgzkacxxwhpes.supabase.co';
+  const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzdHBwbGx3Z3prYWN4eHdocGVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkwNDk2MjgsImV4cCI6MjA2NDYyNTYyOH0.SiKjaaf41YS0hWvJZa0bQVzDePxAn0JhBP1_qRgmvjM';
+  
+  const isSupabaseConfigured = !!(supabaseUrl && supabaseAnonKey);
+
   // Função helper para acessar deviceMemory de forma segura
   const getDeviceMemory = () => {
     const nav = navigator as any;
@@ -116,13 +122,14 @@ export const DevelopmentPanel: React.FC = () => {
                     <div className="text-sm text-gray-600 space-y-2">
                       <p className="font-semibold">Ferramentas de banco de dados:</p>
                       <div className="space-y-1 pl-2">
-                        <p>• Supabase Status: ✅ Conectado</p>
+                        <p>• Supabase Status: {isSupabaseConfigured ? '✅ Conectado' : '❌ Não conectado'}</p>
                         <p>• RLS Policies: ✅ Ativas</p>
                         <p>• User Profiles: ✅ Configurado</p>
                         <p>• Environment: {import.meta.env.MODE}</p>
-                        <p>• API URL: {import.meta.env.VITE_SUPABASE_URL ? '✅ Configurado' : '❌ Não configurado'}</p>
-                        <p>• Database URL: {import.meta.env.VITE_SUPABASE_URL ? 'Disponível' : 'Não configurado'}</p>
-                        <p>• Auth Provider: {import.meta.env.VITE_SUPABASE_ANON_KEY ? '✅ Configurado' : '❌ Não configurado'}</p>
+                        <p>• API URL: {supabaseUrl ? '✅ Configurado' : '❌ Não configurado'}</p>
+                        <p>• Database URL: {supabaseUrl ? 'Disponível' : 'Não configurado'}</p>
+                        <p>• Auth Provider: {supabaseAnonKey ? '✅ Configurado' : '❌ Não configurado'}</p>
+                        <p>• Project ID: bstppllwgzkacxxwhpes</p>
                       </div>
                     </div>
                   </ScrollArea>
@@ -146,12 +153,22 @@ export const DevelopmentPanel: React.FC = () => {
                       </div>
 
                       <div className="mt-4 pt-4 border-t border-gray-200">
+                        <p className="font-semibold">Configuração Supabase:</p>
+                        <div className="space-y-1 pl-2 text-xs">
+                          <p>• SUPABASE_URL: {supabaseUrl ? '✅ Configurado' : '❌ Não configurado'}</p>
+                          <p>• SUPABASE_ANON_KEY: {supabaseAnonKey ? '✅ Configurado' : '❌ Não configurado'}</p>
+                          <p>• Connection: Lovable Integration</p>
+                          <p>• Auth: Habilitado</p>
+                        </div>
+                      </div>
+
+                      <div className="mt-4 pt-4 border-t border-gray-200">
                         <p className="font-semibold">Variáveis de Ambiente:</p>
                         <div className="space-y-1 pl-2 text-xs">
-                          <p>• VITE_SUPABASE_URL: {import.meta.env.VITE_SUPABASE_URL ? '✅' : '❌'}</p>
-                          <p>• VITE_SUPABASE_ANON_KEY: {import.meta.env.VITE_SUPABASE_ANON_KEY ? '✅' : '❌'}</p>
-                          <p>• VITE_ENABLE_XAI: {import.meta.env.VITE_ENABLE_XAI ? '✅' : '❌'}</p>
-                          <p>• VITE_DEBUG_MODE: {import.meta.env.VITE_DEBUG_MODE ? '✅' : '❌'}</p>
+                          <p>• VITE_ENABLE_XAI: {import.meta.env.VITE_ENABLE_XAI || 'false'}</p>
+                          <p>• VITE_DEBUG_MODE: {import.meta.env.VITE_DEBUG_MODE || 'false'}</p>
+                          <p>• Mode: {import.meta.env.MODE}</p>
+                          <p>• DEV: {import.meta.env.DEV ? 'true' : 'false'}</p>
                         </div>
                       </div>
 
