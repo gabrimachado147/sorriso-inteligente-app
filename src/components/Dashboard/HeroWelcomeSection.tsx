@@ -26,10 +26,10 @@ export const HeroWelcomeSection: React.FC<HeroWelcomeSectionProps> = ({
 
   return (
     <Card className={`bg-gradient-to-r from-primary to-blue-600 text-white ${animations.fadeIn}`}>
-      <CardContent className="p-6">
+      <CardContent className="p-6 text-center">
         <h1 className="text-2xl font-bold mb-2">Bem-vindo à Senhor Sorriso!</h1>
         <p className="mb-4 opacity-90">Seu sorriso perfeito está a um clique de distância</p>
-        <div className="flex flex-col sm:flex-row gap-2">
+        <div className="flex flex-col sm:flex-row gap-2 justify-center">
           <Button 
             className={`bg-white text-primary hover:bg-gray-100 ${animations.buttonHover}`}
             onClick={handleScheduleEvaluation}
