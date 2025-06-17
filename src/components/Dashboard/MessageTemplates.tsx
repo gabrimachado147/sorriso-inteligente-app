@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { toastSuccess, toastError } from '@/components/ui/custom-toast';
 import { useMessageTemplates, type MessageTemplate } from '@/hooks/useMessageTemplates';
@@ -54,7 +55,10 @@ export const MessageTemplates: React.FC<MessageTemplatesProps> = ({
   const [editingTemplate, setEditingTemplate] = useState<MessageTemplate | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [previewAppointment, setPreviewAppointment] = useState<AppointmentRecord | null>(null);
+  const [previewData, setPreviewData] = useState<{
+    template: MessageTemplate | null;
+    appointment: AppointmentRecord | null;
+  }>({ template: null, appointment: null });
 
   const filteredTemplates = templates.filter(template => 
     selectedCategory === 'all' || template.category === selectedCategory
@@ -89,7 +93,7 @@ export const MessageTemplates: React.FC<MessageTemplatesProps> = ({
 
   const handleCopyTemplate = (template: MessageTemplate) => {
     navigator.clipboard.writeText(template.content);
-    toastSuccess('Copiado!', 'Conteúdo copiado para a área de transferência');
+    toastSuccess('Copiado!', 'Conteúdo do template copiado para a área de transferência');
   };
 
   const handleSendTemplate = async (template: MessageTemplate) => {
@@ -111,6 +115,14 @@ export const MessageTemplates: React.FC<MessageTemplatesProps> = ({
     if (success && onSendMessage) {
       onSendMessage(confirmedAppointments.map(apt => apt.id), template.name);
     }
+  };
+
+  const handlePreviewTemplate = (template: MessageTemplate, appointment: AppointmentRecord) => {
+    setPreviewData({ template, appointment });
+  };
+
+  const handleClosePreview = () => {
+    setPreviewData({ template: null, appointment: null });
   };
 
   const handleQuickSendReminders = async () => {
@@ -161,7 +173,7 @@ export const MessageTemplates: React.FC<MessageTemplatesProps> = ({
                 onEdit={setEditingTemplate}
                 onDelete={handleDeleteTemplate}
                 onSend={handleSendTemplate}
-                onPreview={setPreviewAppointment}
+                onPreview={handlePreviewTemplate}
               />
             </div>
           ))}
@@ -170,10 +182,10 @@ export const MessageTemplates: React.FC<MessageTemplatesProps> = ({
 
       {/* Preview Modal */}
       <MessagePreviewModal
-        previewAppointment={previewAppointment}
-        templates={filteredTemplates}
+        template={previewData.template}
+        appointment={previewData.appointment}
         previewMessage={previewMessage}
-        onClose={() => setPreviewAppointment(null)}
+        onClose={handleClosePreview}
       />
 
       {/* Editor de Template */}

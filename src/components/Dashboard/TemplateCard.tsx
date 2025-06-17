@@ -16,7 +16,7 @@ interface TemplateCardProps {
   onEdit: (template: MessageTemplate) => void;
   onDelete: (templateId: string) => void;
   onSend: (template: MessageTemplate) => void;
-  onPreview: (appointment: AppointmentRecord) => void;
+  onPreview: (template: MessageTemplate, appointment: AppointmentRecord) => void;
 }
 
 const categoryLabels = {
@@ -45,6 +45,18 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({
   onSend,
   onPreview
 }) => {
+  const handlePreview = () => {
+    if (appointments.length > 0) {
+      onPreview(template, appointments[0]);
+    }
+  };
+
+  const handleDelete = () => {
+    if (window.confirm(`Tem certeza que deseja excluir o template "${template.name}"?`)) {
+      onDelete(template.id);
+    }
+  };
+
   return (
     <Card className={`${animations.fadeIn} hover:shadow-md transition-shadow w-full h-full flex flex-col`}>
       <CardHeader className="pb-3 flex-shrink-0">
@@ -64,7 +76,7 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({
               size="sm"
               onClick={() => onCopy(template)}
               className="h-8 w-8 p-0"
-              title="Copiar"
+              title="Copiar template"
             >
               <Copy className="h-3 w-3" />
             </Button>
@@ -73,16 +85,16 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({
               size="sm"
               onClick={() => onEdit(template)}
               className="h-8 w-8 p-0"
-              title="Editar"
+              title="Editar template"
             >
               <Edit className="h-3 w-3" />
             </Button>
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => onDelete(template.id)}
+              onClick={handleDelete}
               className="h-8 w-8 p-0 text-red-500 hover:text-red-700"
-              title="Excluir"
+              title="Excluir template"
             >
               <Trash2 className="h-3 w-3" />
             </Button>
@@ -121,23 +133,23 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({
             size="sm" 
             className="flex-1 min-w-0"
             onClick={() => onSend(template)}
-            disabled={isSending}
+            disabled={isSending || appointments.length === 0}
+            title={appointments.length === 0 ? "Nenhum agendamento disponível" : "Enviar mensagem"}
           >
             <Send className="h-3 w-3 mr-1 flex-shrink-0" />
             <span className="truncate">{isSending ? 'Enviando...' : 'Enviar'}</span>
           </Button>
           
-          {appointments.length > 0 && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => onPreview(appointments[0])}
-              className="flex-shrink-0"
-              title="Visualizar"
-            >
-              <Eye className="h-3 w-3" />
-            </Button>
-          )}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handlePreview}
+            className="flex-shrink-0"
+            disabled={appointments.length === 0}
+            title={appointments.length === 0 ? "Nenhum agendamento para visualizar" : "Visualizar mensagem"}
+          >
+            <Eye className="h-3 w-3" />
+          </Button>
         </div>
       </CardContent>
     </Card>
