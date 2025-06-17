@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { MainLayout } from '@/components/Layout/MainLayout';
-import { HomePage } from '@/components/Dashboard/HomePage';
+import HomePage from '@/components/Dashboard/HomePage';
 import { PageHead } from '@/components/SEO/PageHead';
 
 const Index = () => {

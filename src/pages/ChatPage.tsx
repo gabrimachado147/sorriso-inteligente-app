@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { MainLayout } from '@/components/Layout/MainLayout';
-import { ChatBot } from '@/components/Chat/ChatBot';
+import ChatBot from '@/components/Chat/ChatBot';
 import { PageHead } from '@/components/SEO/PageHead';
 
 const ChatPage = () => {

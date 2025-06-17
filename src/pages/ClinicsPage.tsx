@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { MainLayout } from '@/components/Layout/MainLayout';
-import { LocationsPage } from '@/components/Locations/LocationsPage';
+import LocationsPage from '@/components/Locations/LocationsPage';
 import { PageHead } from '@/components/SEO/PageHead';
 
 const ClinicsPage = () => {
