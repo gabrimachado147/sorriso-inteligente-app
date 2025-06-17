@@ -37,24 +37,40 @@ interface XAIResponse {
 class XAIService {
   private apiKey: string | null = null;
   private baseURL = 'https://api.x.ai/v1';
+  private initialized = false;
 
   constructor() {
     this.initializeApiKey();
   }
 
   private async initializeApiKey() {
+    if (this.initialized) return;
+    
     try {
-      // Buscar a chave da API dos secrets do Supabase
+      console.log('Inicializando chave XAI...');
       const { data, error } = await supabase.functions.invoke('get-xai-key');
       if (!error && data?.apiKey) {
         this.apiKey = data.apiKey;
+        console.log('Chave XAI configurada com sucesso');
+      } else {
+        console.warn('XAI API key not found in Supabase secrets');
       }
     } catch (error) {
-      console.warn('XAI API key not configured:', error);
+      console.warn('Erro ao buscar chave XAI:', error);
+    } finally {
+      this.initialized = true;
+    }
+  }
+
+  async ensureInitialized() {
+    if (!this.initialized) {
+      await this.initializeApiKey();
     }
   }
 
   async chat(messages: XAIMessage[], options: Partial<XAIRequest> = {}): Promise<string> {
+    await this.ensureInitialized();
+    
     if (!this.apiKey) {
       throw new Error('XAI API key not configured');
     }
@@ -68,6 +84,8 @@ class XAIService {
     };
 
     try {
+      console.log('Enviando request para XAI:', { model: request.model, messagesCount: messages.length });
+      
       const response = await fetch(`${this.baseURL}/chat/completions`, {
         method: 'POST',
         headers: {
@@ -78,10 +96,13 @@ class XAIService {
       });
 
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error('XAI API error:', response.status, errorText);
         throw new Error(`XAI API error: ${response.status} ${response.statusText}`);
       }
 
       const data: XAIResponse = await response.json();
+      console.log('Resposta recebida do XAI:', data.choices[0]?.message?.content?.substring(0, 100) + '...');
       return data.choices[0]?.message?.content || 'Resposta não disponível';
     } catch (error) {
       console.error('XAI Service error:', error);
@@ -93,7 +114,10 @@ class XAIService {
     const messages: XAIMessage[] = [
       {
         role: 'system',
-        content: 'Você é um assistente especializado em desenvolvimento web com React, TypeScript e Supabase. Forneça insights úteis e práticos para desenvolvimento.'
+        content: `Você é um assistente especializado em desenvolvimento web com React, TypeScript e Supabase. 
+        Você está analisando o projeto "Sorriso Inteligente", um PWA para clínicas odontológicas.
+        Forneça insights úteis, práticos e específicos para desenvolvimento.
+        Responda em português brasileiro de forma clara e objetiva.`
       },
       {
         role: 'user',
@@ -106,6 +130,12 @@ class XAIService {
 
   isConfigured(): boolean {
     return !!this.apiKey;
+  }
+
+  async refreshConfiguration() {
+    this.initialized = false;
+    this.apiKey = null;
+    await this.initializeApiKey();
   }
 }
 

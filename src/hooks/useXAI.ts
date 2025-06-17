@@ -26,11 +26,33 @@ export const useXAI = () => {
   const checkConfiguration = useCallback(async () => {
     try {
       console.log('Verificando configuração XAI...');
+      
+      // Forçar a inicialização da chave se necessário
+      await xaiService.ensureInitialized();
+      
       const isConfigured = xaiService.isConfigured();
+      console.log('XAI configurado:', isConfigured);
       setConfigured(isConfigured);
+      
+      return isConfigured;
     } catch (error) {
       console.error('Erro ao verificar configuração XAI:', error);
       setConfigured(false);
+      return false;
+    }
+  }, []);
+
+  const refreshConfiguration = useCallback(async () => {
+    try {
+      console.log('Atualizando configuração XAI...');
+      await xaiService.refreshConfiguration();
+      const isConfigured = xaiService.isConfigured();
+      setConfigured(isConfigured);
+      return isConfigured;
+    } catch (error) {
+      console.error('Erro ao atualizar configuração XAI:', error);
+      setConfigured(false);
+      return false;
     }
   }, []);
 
@@ -38,6 +60,7 @@ export const useXAI = () => {
     loading,
     configured,
     generateInsight,
-    checkConfiguration
+    checkConfiguration,
+    refreshConfiguration
   };
 };

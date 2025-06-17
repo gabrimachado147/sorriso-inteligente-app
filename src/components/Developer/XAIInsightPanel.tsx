@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { useXAI } from '@/hooks/useXAI';
-import { Brain, Lightbulb, Code, AlertCircle } from 'lucide-react';
+import { Brain, Lightbulb, Code, AlertCircle, RefreshCw } from 'lucide-react';
 
 interface XAIInsightPanelProps {
   onInsight?: (insight: string) => void;
@@ -14,7 +14,7 @@ interface XAIInsightPanelProps {
 export const XAIInsightPanel: React.FC<XAIInsightPanelProps> = ({ onInsight }) => {
   const [prompt, setPrompt] = useState('');
   const [insight, setInsight] = useState('');
-  const { loading, configured, generateInsight, checkConfiguration } = useXAI();
+  const { loading, configured, generateInsight, checkConfiguration, refreshConfiguration } = useXAI();
 
   React.useEffect(() => {
     checkConfiguration();
@@ -30,6 +30,10 @@ export const XAIInsightPanel: React.FC<XAIInsightPanelProps> = ({ onInsight }) =
     } else {
       setInsight('Erro ao gerar insight. Verifique a configuração da API.');
     }
+  };
+
+  const handleRefreshConfig = async () => {
+    await refreshConfiguration();
   };
 
   const quickPrompts = [
@@ -48,10 +52,19 @@ export const XAIInsightPanel: React.FC<XAIInsightPanelProps> = ({ onInsight }) =
             XAI/Grok não configurado
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-3">
           <p className="text-orange-700 text-sm">
             Configure a API key do Grok no Supabase para usar insights de IA durante o desenvolvimento.
           </p>
+          <Button
+            onClick={handleRefreshConfig}
+            variant="outline"
+            size="sm"
+            className="w-full"
+          >
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Verificar Configuração
+          </Button>
         </CardContent>
       </Card>
     );
@@ -66,6 +79,14 @@ export const XAIInsightPanel: React.FC<XAIInsightPanelProps> = ({ onInsight }) =
           <Badge variant="secondary" className="bg-purple-100 text-purple-700">
             Ativo
           </Badge>
+          <Button
+            onClick={handleRefreshConfig}
+            variant="ghost"
+            size="sm"
+            className="ml-auto"
+          >
+            <RefreshCw className="h-3 w-3" />
+          </Button>
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
