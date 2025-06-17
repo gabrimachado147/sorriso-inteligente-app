@@ -1,0 +1,140 @@
+
+import React from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Copy, Edit, Trash2, Send, Eye } from 'lucide-react';
+import { animations } from '@/lib/animations';
+import { MessageTemplate } from '@/hooks/useMessageTemplates';
+import { AppointmentRecord } from '@/services/supabase/appointments';
+
+interface TemplateCardProps {
+  template: MessageTemplate;
+  isSending: boolean;
+  appointments: AppointmentRecord[];
+  onCopy: (template: MessageTemplate) => void;
+  onEdit: (template: MessageTemplate) => void;
+  onDelete: (templateId: string) => void;
+  onSend: (template: MessageTemplate) => void;
+  onPreview: (appointment: AppointmentRecord) => void;
+}
+
+const categoryLabels = {
+  reminder: 'Lembrete',
+  confirmation: 'Confirmação',
+  rescheduling: 'Reagendamento',
+  follow_up: 'Pós-consulta',
+  marketing: 'Marketing'
+};
+
+const categoryColors = {
+  reminder: 'bg-blue-100 text-blue-700',
+  confirmation: 'bg-green-100 text-green-700',
+  rescheduling: 'bg-yellow-100 text-yellow-700',
+  follow_up: 'bg-purple-100 text-purple-700',
+  marketing: 'bg-pink-100 text-pink-700'
+};
+
+export const TemplateCard: React.FC<TemplateCardProps> = ({
+  template,
+  isSending,
+  appointments,
+  onCopy,
+  onEdit,
+  onDelete,
+  onSend,
+  onPreview
+}) => {
+  return (
+    <Card className={`${animations.fadeIn} hover:shadow-md transition-shadow w-full max-w-sm`}>
+      <CardHeader className="pb-3">
+        <div className="flex items-start justify-between">
+          <div className="flex-1">
+            <CardTitle className="text-sm font-medium">{template.name}</CardTitle>
+            <Badge 
+              variant="secondary" 
+              className={`mt-1 text-xs ${categoryColors[template.category]}`}
+            >
+              {categoryLabels[template.category]}
+            </Badge>
+          </div>
+          <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onCopy(template)}
+              className="h-6 w-6 p-0"
+            >
+              <Copy className="h-3 w-3" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onEdit(template)}
+              className="h-6 w-6 p-0"
+            >
+              <Edit className="h-3 w-3" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onDelete(template.id)}
+              className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
+            >
+              <Trash2 className="h-3 w-3" />
+            </Button>
+          </div>
+        </div>
+      </CardHeader>
+      
+      <CardContent className="pt-0">
+        <div className="space-y-3">
+          <div>
+            <p className="text-xs font-medium text-gray-600 mb-1">Assunto:</p>
+            <p className="text-sm">{template.subject}</p>
+          </div>
+          
+          <div>
+            <p className="text-xs font-medium text-gray-600 mb-1">Conteúdo:</p>
+            <p className="text-sm text-gray-700 line-clamp-3">{template.content}</p>
+          </div>
+          
+          {template.variables.length > 0 && (
+            <div>
+              <p className="text-xs font-medium text-gray-600 mb-1">Variáveis:</p>
+              <div className="flex flex-wrap gap-1">
+                {template.variables.map(variable => (
+                  <Badge key={variable} variant="outline" className="text-xs">
+                    {variable}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          <div className="flex gap-2">
+            <Button 
+              size="sm" 
+              className="flex-1"
+              onClick={() => onSend(template)}
+              disabled={isSending}
+            >
+              <Send className="h-3 w-3 mr-1" />
+              {isSending ? 'Enviando...' : 'Enviar'}
+            </Button>
+            
+            {appointments.length > 0 && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onPreview(appointments[0])}
+              >
+                <Eye className="h-3 w-3" />
+              </Button>
+            )}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
