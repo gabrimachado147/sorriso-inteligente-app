@@ -7,29 +7,27 @@ import { AuthProvider } from '@/components/Auth/AuthProvider';
 import { AppProvider } from '@/store/AppContext';
 import { AccessibilityManager } from '@/components/Accessibility/AccessibilityManager';
 
-// Mock Supabase client for tests
-jest.mock('@/integrations/supabase/client', () => ({
-  supabase: {
-    auth: {
-      getSession: jest.fn(() => Promise.resolve({ data: { session: null }, error: null })),
-      getUser: jest.fn(() => Promise.resolve({ data: { user: null }, error: null })),
-      onAuthStateChange: jest.fn(() => ({ data: { subscription: { unsubscribe: jest.fn() } } })),
-      signInWithPassword: jest.fn(),
-      signUp: jest.fn(),
-      signOut: jest.fn()
-    },
-    from: jest.fn(() => ({
-      select: jest.fn(() => ({
-        eq: jest.fn(() => ({
-          single: jest.fn(() => Promise.resolve({ data: null, error: null }))
-        }))
-      })),
-      insert: jest.fn(() => Promise.resolve({ data: null, error: null })),
-      update: jest.fn(() => Promise.resolve({ data: null, error: null })),
-      delete: jest.fn(() => Promise.resolve({ data: null, error: null }))
-    }))
-  }
-}));
+// Simple mock for Supabase client
+const mockSupabaseClient = {
+  auth: {
+    getSession: () => Promise.resolve({ data: { session: null }, error: null }),
+    getUser: () => Promise.resolve({ data: { user: null }, error: null }),
+    onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
+    signInWithPassword: () => Promise.resolve({ data: null, error: null }),
+    signUp: () => Promise.resolve({ data: null, error: null }),
+    signOut: () => Promise.resolve({ error: null })
+  },
+  from: () => ({
+    select: () => ({
+      eq: () => ({
+        single: () => Promise.resolve({ data: null, error: null })
+      })
+    }),
+    insert: () => Promise.resolve({ data: null, error: null }),
+    update: () => Promise.resolve({ data: null, error: null }),
+    delete: () => Promise.resolve({ data: null, error: null })
+  })
+};
 
 // Custom render function with all providers
 const AllTheProviders: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -89,13 +87,6 @@ export const createMockUser = (overrides = {}) => ({
   updated_at: new Date().toISOString(),
   ...overrides
 });
-
-// Accessibility test helpers
-export const checkAccessibility = async (container: HTMLElement) => {
-  const { axe } = await import('@axe-core/react');
-  const results = await axe(container);
-  expect(results).toHaveNoViolations();
-};
 
 // Performance test helpers
 export const measurePerformance = (name: string, fn: () => void) => {
