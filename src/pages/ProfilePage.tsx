@@ -53,7 +53,7 @@ const ProfilePage = () => {
 
   if (!isAuthenticated) {
     return (
-      <div className={`space-y-6 ${animations.pageEnter}`}>
+      <div className={`mobile-container px-4 py-6 ${animations.pageEnter}`}>
         <AdminAccessButton />
         <div className="flex items-center justify-center min-h-[60vh]">
           <Card className="w-full max-w-md mx-auto mobile-card-spacing">
@@ -91,24 +91,11 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className={`space-y-6 ${animations.pageEnter}`}>
+    <div className={`mobile-container px-4 py-6 ${animations.pageEnter}`}>
       <AdminAccessButton />
       
-      {/* Botão de acesso para funcionários no header */}
-      <div className="flex justify-end">
-        <Button 
-          variant="outline" 
-          size="sm"
-          onClick={handleStaffAccess}
-          className="bg-white/90 backdrop-blur-sm border-primary/20 hover:bg-primary/10 px-3 py-2 mobile-touch-target"
-        >
-          <Shield className="h-4 w-4 mr-2" />
-          Acesso Funcionários
-        </Button>
-      </div>
-
       {/* Header do Perfil */}
-      <div className="text-center">
+      <div className="text-center mb-8 mt-16">
         <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
           <User className="h-8 w-8 text-primary" />
         </div>
@@ -121,25 +108,25 @@ const ProfilePage = () => {
       </div>
 
       {/* Tabs do Perfil */}
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 mb-4 h-auto">
-          <TabsTrigger value="profile" className="mobile-text-xs p-2 flex flex-col md:flex-row items-center mobile-touch-target">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 mb-4 h-auto bg-white/50 backdrop-blur-sm border border-gray-200/50 rounded-lg">
+          <TabsTrigger value="profile" className="mobile-text-xs p-2 flex flex-col md:flex-row items-center mobile-touch-target rounded-md">
             <User className="h-4 w-4 mb-1 md:mb-0 md:mr-1" />
             <span>Perfil</span>
           </TabsTrigger>
-          <TabsTrigger value="history" className="mobile-text-xs p-2 flex flex-col md:flex-row items-center mobile-touch-target">
+          <TabsTrigger value="history" className="mobile-text-xs p-2 flex flex-col md:flex-row items-center mobile-touch-target rounded-md">
             <History className="h-4 w-4 mb-1 md:mb-0 md:mr-1" />
             <span>Histórico</span>
           </TabsTrigger>
-          <TabsTrigger value="notifications" className="mobile-text-xs p-2 flex flex-col md:flex-row items-center mobile-touch-target">
+          <TabsTrigger value="notifications" className="mobile-text-xs p-2 flex flex-col md:flex-row items-center mobile-touch-target rounded-md">
             <Bell className="h-4 w-4 mb-1 md:mb-0 md:mr-1" />
             <span>Notificações</span>
           </TabsTrigger>
-          <TabsTrigger value="security" className="mobile-text-xs p-2 flex flex-col md:flex-row items-center mobile-touch-target">
+          <TabsTrigger value="security" className="mobile-text-xs p-2 flex flex-col md:flex-row items-center mobile-touch-target rounded-md">
             <Shield className="h-4 w-4 mb-1 md:mb-0 md:mr-1" />
             <span>Segurança</span>
           </TabsTrigger>
-          <TabsTrigger value="accessibility" className="mobile-text-xs p-2 flex flex-col md:flex-row items-center mobile-touch-target">
+          <TabsTrigger value="accessibility" className="mobile-text-xs p-2 flex flex-col md:flex-row items-center mobile-touch-target rounded-md">
             <Settings className="h-4 w-4 mb-1 md:mb-0 md:mr-1" />
             <span>Acessibilidade</span>
           </TabsTrigger>
@@ -170,7 +157,7 @@ const ProfilePage = () => {
       <Button
         onClick={handleSignOut}
         variant="outline"
-        className="w-full mobile-button h-12"
+        className="w-full mobile-button h-12 mt-8"
         size="lg"
       >
         <LogOut className="h-5 w-5 mr-2" />
