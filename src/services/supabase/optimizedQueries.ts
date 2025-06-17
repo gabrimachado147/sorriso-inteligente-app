@@ -33,7 +33,7 @@ export type AppointmentData = {
 export class OptimizedSupabaseService {
   // Efficient patient queries with specific field selection
   static async getPatients(fields?: string[]): Promise<PatientData[]> {
-    const selectFields = fields?.join(', ') || 'id, full_name, phone, email, date_of_birth, created_at, updated_at';
+    const selectFields = fields?.join(', ') || 'id, full_name, phone, date_of_birth, created_at, updated_at';
     
     const { data, error } = await supabase
       .from('user_profiles')
@@ -41,7 +41,7 @@ export class OptimizedSupabaseService {
       .order('full_name', { ascending: true });
 
     if (error) throw error;
-    return data as PatientData[];
+    return (data || []) as PatientData[];
   }
 
   // Optimized appointment queries with pagination
@@ -80,20 +80,20 @@ export class OptimizedSupabaseService {
     const { data, error, count } = await query;
 
     if (error) throw error;
-    return { data: data as AppointmentData[], count: count || 0 };
+    return { data: (data || []) as AppointmentData[], count: count || 0 };
   }
 
   // Search patients with optimized indexing
   static async searchPatients(searchTerm: string): Promise<PatientData[]> {
     const { data, error } = await supabase
       .from('user_profiles')
-      .select('id, full_name, phone, email, created_at')
-      .or(`full_name.ilike.%${searchTerm}%,phone.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%`)
+      .select('id, full_name, phone, created_at')
+      .or(`full_name.ilike.%${searchTerm}%,phone.ilike.%${searchTerm}%`)
       .order('full_name', { ascending: true })
       .limit(50);
 
     if (error) throw error;
-    return data as PatientData[];
+    return (data || []) as PatientData[];
   }
 
   // Get appointments by date range with clinic filter
@@ -116,7 +116,7 @@ export class OptimizedSupabaseService {
 
     const { data, error } = await query;
     if (error) throw error;
-    return data as AppointmentData[];
+    return (data || []) as AppointmentData[];
   }
 
   // Get patient statistics

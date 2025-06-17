@@ -109,7 +109,7 @@ export const useAppStore = create<AppStore>()(
         }
       },
 
-      fetchAppointments: async (options = {}) => {
+      fetchAppointments: async (options: { page?: number; reset?: boolean } = {}) => {
         const { page = 1, reset = false } = options;
         const { filters, appointmentsPagination } = get();
         
@@ -140,7 +140,7 @@ export const useAppStore = create<AppStore>()(
         }
       },
 
-      setFilters: (newFilters) => {
+      setFilters: (newFilters: Partial<AppStore['filters']>) => {
         set({ 
           filters: { ...get().filters, ...newFilters }
         });
@@ -157,11 +157,11 @@ export const useAppStore = create<AppStore>()(
         }
       },
 
-      addPatient: (patient) => {
+      addPatient: (patient: PatientData) => {
         set({ patients: [patient, ...get().patients] });
       },
 
-      updatePatient: (id, updatedData) => {
+      updatePatient: (id: string, updatedData: Partial<PatientData>) => {
         set({
           patients: get().patients.map(patient =>
             patient.id === id ? { ...patient, ...updatedData } : patient
@@ -169,11 +169,11 @@ export const useAppStore = create<AppStore>()(
         });
       },
 
-      addAppointment: (appointment) => {
+      addAppointment: (appointment: AppointmentData) => {
         set({ appointments: [appointment, ...get().appointments] });
       },
 
-      updateAppointment: (id, updatedData) => {
+      updateAppointment: (id: string, updatedData: Partial<AppointmentData>) => {
         set({
           appointments: get().appointments.map(appointment =>
             appointment.id === id ? { ...appointment, ...updatedData } : appointment
@@ -181,7 +181,7 @@ export const useAppStore = create<AppStore>()(
         });
       },
 
-      removeAppointment: (id) => {
+      removeAppointment: (id: string) => {
         set({
           appointments: get().appointments.filter(appointment => appointment.id !== id)
         });
