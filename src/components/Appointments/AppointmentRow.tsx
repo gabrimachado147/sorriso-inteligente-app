@@ -14,6 +14,7 @@ interface AppointmentRowProps {
   appointment: AppointmentRecord;
   onStatusChange: (appointmentId: string, newStatus: 'confirmed' | 'cancelled' | 'completed' | 'no_show') => void;
   onServiceUpdate: (appointmentId: string, service: string, price?: number) => void;
+  onDelete?: (appointmentId: string) => void;
   isUpdating: boolean;
 }
 
@@ -21,6 +22,7 @@ export const AppointmentRow: React.FC<AppointmentRowProps> = ({
   appointment,
   onStatusChange,
   onServiceUpdate,
+  onDelete,
   isUpdating
 }) => {
   return (
@@ -79,6 +81,7 @@ export const AppointmentRow: React.FC<AppointmentRowProps> = ({
         <AdminAppointmentActions
           appointment={appointment}
           onUpdate={() => window.location.reload()}
+          onDelete={onDelete}
         />
       </TableCell>
     </TableRow>

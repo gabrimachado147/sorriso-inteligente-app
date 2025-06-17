@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useAppointments } from '@/hooks/useAppointments';
 import { useAppointmentsFilters } from '@/hooks/useAppointmentsFilters';
@@ -21,7 +20,7 @@ const AppointmentsPage = () => {
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [selectedDate, setSelectedDate] = useState('');
 
-  const { appointments, isLoading, stats, statsLoading, updateAppointmentStatus, updateAppointmentService } = useAppointments();
+  const { appointments, isLoading, stats, statsLoading, updateAppointmentStatus, updateAppointmentService, deleteAppointment } = useAppointments();
 
   const { filteredAppointments, availableClinics, userClinicName } = useAppointmentsFilters({
     appointments,
@@ -48,6 +47,10 @@ const AppointmentsPage = () => {
 
   const handleServiceUpdate = (appointmentId: string, service: string, price?: number) => {
     updateAppointmentService.mutate({ appointmentId, service, price });
+  };
+
+  const handleDelete = (appointmentId: string) => {
+    deleteAppointment.mutate(appointmentId);
   };
 
   if (!loggedInUser) {
@@ -116,7 +119,8 @@ const AppointmentsPage = () => {
             appointments={filteredAppointments}
             onStatusChange={handleStatusChange}
             onServiceUpdate={handleServiceUpdate}
-            isUpdating={updateAppointmentStatus.isPending || updateAppointmentService.isPending}
+            onDelete={handleDelete}
+            isUpdating={updateAppointmentStatus.isPending || updateAppointmentService.isPending || deleteAppointment.isPending}
           />
         </TabsContent>
       </Tabs>

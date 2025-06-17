@@ -291,4 +291,32 @@ export class AppointmentService {
       throw error;
     }
   }
+
+  /**
+   * Delete appointment permanently
+   */
+  static async deleteAppointment(appointmentId: string): Promise<void> {
+    try {
+      // First delete related user_appointments entries
+      const { error: userAppointmentError } = await supabase
+        .from('user_appointments')
+        .delete()
+        .eq('appointment_id', appointmentId);
+
+      if (userAppointmentError) {
+        console.error('Error deleting user appointment links:', userAppointmentError);
+      }
+
+      // Then delete the appointment itself
+      const { error } = await supabase
+        .from('appointments')
+        .delete()
+        .eq('id', appointmentId);
+
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error deleting appointment:', error);
+      throw error;
+    }
+  }
 }

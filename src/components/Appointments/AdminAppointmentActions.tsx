@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -29,9 +28,10 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { MoreHorizontal, Calendar, X, Phone, Mail } from 'lucide-react';
+import { MoreHorizontal, Calendar, X, Phone, Mail, Trash2 } from 'lucide-react';
 import { AppointmentActionsService } from '@/services/supabase/appointmentActions';
 import { AppointmentRecord } from '@/services/supabase/appointments';
+import { DeleteAppointmentDialog } from './DeleteAppointmentDialog';
 
 interface AdminAppointmentActionsProps {
   appointment: AppointmentRecord;
@@ -44,6 +44,7 @@ export const AdminAppointmentActions: React.FC<AdminAppointmentActionsProps> = (
 }) => {
   const [isRescheduleOpen, setIsRescheduleOpen] = useState(false);
   const [isCancelOpen, setIsCancelOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [rescheduleData, setRescheduleData] = useState({
     newDate: '',
@@ -108,6 +109,19 @@ export const AdminAppointmentActions: React.FC<AdminAppointmentActionsProps> = (
     }
   };
 
+  const handleDelete = async () => {
+    setLoading(true);
+    try {
+      await AppointmentActionsService.deleteAppointment(appointment.id);
+      setIsDeleteOpen(false);
+      onUpdate();
+    } catch (error) {
+      console.error('Error deleting appointment:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleContact = (type: 'phone' | 'email') => {
     if (type === 'phone' && appointment.phone) {
       window.open(`tel:${appointment.phone}`, '_blank');
@@ -159,6 +173,15 @@ export const AdminAppointmentActions: React.FC<AdminAppointmentActionsProps> = (
               </DropdownMenuItem>
             </>
           )}
+          
+          <DropdownMenuSeparator />
+          <DropdownMenuItem 
+            onClick={() => setIsDeleteOpen(true)}
+            className="text-red-600 focus:text-red-600"
+          >
+            <Trash2 className="mr-2 h-4 w-4" />
+            Excluir permanentemente
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
@@ -251,6 +274,15 @@ export const AdminAppointmentActions: React.FC<AdminAppointmentActionsProps> = (
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Dialog de Exclusão */}
+      <DeleteAppointmentDialog
+        isOpen={isDeleteOpen}
+        onClose={() => setIsDeleteOpen(false)}
+        onConfirm={handleDelete}
+        appointment={appointment}
+        isDeleting={loading}
+      />
     </>
   );
 };

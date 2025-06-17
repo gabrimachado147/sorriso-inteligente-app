@@ -90,6 +90,21 @@ export const useAppointments = (phone?: string) => {
     }
   })
 
+  // Delete appointment
+  const deleteAppointment = useMutation({
+    mutationFn: async (appointmentId: string) => {
+      return AppointmentService.deleteAppointment(appointmentId)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['appointments'] })
+      toastSuccess('Agendamento Excluído', 'O agendamento foi removido permanentemente')
+    },
+    onError: (error) => {
+      toastError('Erro', 'Não foi possível excluir o agendamento')
+      console.error('Erro ao excluir agendamento:', error)
+    }
+  })
+
   // Buscar estatísticas
   const {
     data: stats,
@@ -107,6 +122,7 @@ export const useAppointments = (phone?: string) => {
     createAppointment,
     updateAppointmentStatus,
     updateAppointmentService,
+    deleteAppointment,
     stats,
     statsLoading
   }
