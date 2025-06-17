@@ -47,47 +47,66 @@ export const MasterDashboardContent: React.FC<MasterDashboardContentProps> = ({
         conversionRate={dashboardData.conversionRate}
       />
 
-      {/* Tabs */}
-      <Tabs defaultValue="overview" className={`${animations.fadeIn}`}>
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="overview">Visão Geral</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
-          <TabsTrigger value="appointments">Agendamentos</TabsTrigger>
-        </TabsList>
+      {/* Tabs com espaçamento ajustado */}
+      <div className={`${animations.fadeIn} w-full`}>
+        <Tabs defaultValue="overview" className="w-full">
+          <div className="flex justify-center w-full mb-6">
+            <TabsList className="grid grid-cols-3 w-full max-w-md h-11 bg-gray-100 rounded-lg p-1">
+              <TabsTrigger 
+                value="overview" 
+                className="data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm transition-all duration-200 text-sm font-medium px-4 py-2 rounded-md"
+              >
+                Visão Geral
+              </TabsTrigger>
+              <TabsTrigger 
+                value="analytics" 
+                className="data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm transition-all duration-200 text-sm font-medium px-4 py-2 rounded-md"
+              >
+                Analytics
+              </TabsTrigger>
+              <TabsTrigger 
+                value="appointments" 
+                className="data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm transition-all duration-200 text-sm font-medium px-4 py-2 rounded-md"
+              >
+                Agendamentos
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
-        <TabsContent value="overview" className="space-y-6">
-          <MasterDashboardCharts
-            clinicStats={dashboardData.clinicStats}
-            monthlyTrend={dashboardData.monthlyTrend}
-            serviceDistribution={dashboardData.serviceDistribution}
-            statusBreakdown={dashboardData.statusBreakdown}
-          />
-        </TabsContent>
+          <TabsContent value="overview" className="space-y-6 mt-6">
+            <MasterDashboardCharts
+              clinicStats={dashboardData.clinicStats}
+              monthlyTrend={dashboardData.monthlyTrend}
+              serviceDistribution={dashboardData.serviceDistribution}
+              statusBreakdown={dashboardData.statusBreakdown}
+            />
+          </TabsContent>
 
-        <TabsContent value="analytics" className="space-y-6">
-          <MasterDashboardCharts
-            clinicStats={dashboardData.clinicStats}
-            monthlyTrend={dashboardData.monthlyTrend}
-            serviceDistribution={dashboardData.serviceDistribution}
-            statusBreakdown={dashboardData.statusBreakdown}
-          />
-        </TabsContent>
+          <TabsContent value="analytics" className="space-y-6 mt-6">
+            <MasterDashboardCharts
+              clinicStats={dashboardData.clinicStats}
+              monthlyTrend={dashboardData.monthlyTrend}
+              serviceDistribution={dashboardData.serviceDistribution}
+              statusBreakdown={dashboardData.statusBreakdown}
+            />
+          </TabsContent>
 
-        <TabsContent value="appointments" className="space-y-6">
-          <EnhancedAppointmentsTable
-            appointments={finalFilteredAppointments}
-            onStatusChange={onStatusChange}
-            onServiceUpdate={onServiceUpdate}
-            onBulkStatusUpdate={(appointmentIds, status) => {
-              appointmentIds.forEach(id => onStatusChange(id, status as 'confirmed' | 'cancelled' | 'completed' | 'no_show'));
-            }}
-            onSendBulkMessage={(appointmentIds, template) => {
-              console.log('Enviando mensagem em lote:', { appointmentIds, template });
-            }}
-            isUpdating={isUpdating}
-          />
-        </TabsContent>
-      </Tabs>
+          <TabsContent value="appointments" className="space-y-6 mt-6">
+            <EnhancedAppointmentsTable
+              appointments={finalFilteredAppointments}
+              onStatusChange={onStatusChange}
+              onServiceUpdate={onServiceUpdate}
+              onBulkStatusUpdate={(appointmentIds, status) => {
+                appointmentIds.forEach(id => onStatusChange(id, status as 'confirmed' | 'cancelled' | 'completed' | 'no_show'));
+              }}
+              onSendBulkMessage={(appointmentIds, template) => {
+                console.log('Enviando mensagem em lote:', { appointmentIds, template });
+              }}
+              isUpdating={isUpdating}
+            />
+          </TabsContent>
+        </Tabs>
+      </div>
     </>
   );
 };

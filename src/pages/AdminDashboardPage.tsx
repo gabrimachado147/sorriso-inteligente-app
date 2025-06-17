@@ -1,6 +1,5 @@
-
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { AdminDashboard } from '@/components/Dashboard/AdminDashboard';
 import { PageHead } from '@/components/SEO/PageHead';
 import { useAppointments } from '@/hooks/useAppointments';
@@ -10,6 +9,7 @@ import { animations } from '@/lib/animations';
 
 const AdminDashboardPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [staffClinic, setStaffClinic] = useState<string>('');
   const { appointments, isLoading } = useAppointments();
 
@@ -32,7 +32,13 @@ const AdminDashboardPage = () => {
   };
 
   const handleGoBack = () => {
-    navigate('/');
+    // Check if there's a previous page in the browser history within the dashboard
+    if (window.history.length > 1 && location.key !== 'default') {
+      navigate(-1);
+    } else {
+      // If no history or this is the first page, go to dashboard overview
+      navigate('/admin-dashboard');
+    }
   };
 
   if (isLoading) {
