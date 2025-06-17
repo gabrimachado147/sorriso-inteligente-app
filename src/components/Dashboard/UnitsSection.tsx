@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { MapPin } from 'lucide-react';
 import { animations } from '@/lib/animations';
+import { useProductionClinics } from '@/hooks/useProductionData';
 
 interface UnitsSectionProps {
   onViewUnits: () => void;
@@ -14,20 +15,29 @@ export const UnitsSection: React.FC<UnitsSectionProps> = memo(({
   onViewUnits,
   onScheduleClinic
 }) => {
-  const featuredClinics = [
-    {
-      id: 'campo-belo',
-      name: 'Campo Belo - MG',
-      address: 'Av. Afonso Pena, 151, Centro',
-      phone: '(35) 99891-3803'
-    },
-    {
-      id: 'formiga',
-      name: 'Formiga - MG', 
-      address: 'R. Barão de Piumhy, 198, Centro',
-      phone: '(37) 3443-0520'
-    }
-  ];
+  const { clinics, loading } = useProductionClinics();
+
+  if (loading) {
+    return (
+      <Card className={animations.slideInLeft}>
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center text-lg">
+            <MapPin className="h-5 w-5 mr-2" />
+            Nossas Unidades
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="animate-pulse">
+                <div className="h-20 bg-gray-200 rounded-lg"></div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className={animations.slideInLeft}>
@@ -39,12 +49,13 @@ export const UnitsSection: React.FC<UnitsSectionProps> = memo(({
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
-          {featuredClinics.map((clinic) => (
+          {clinics.map((clinic) => (
             <div key={clinic.id} className={`p-3 border rounded-lg ${animations.cardHover}`}>
               <div className="flex justify-between items-start gap-3">
                 <div className="flex-1 min-w-0">
                   <h4 className="font-medium text-sm">{clinic.name}</h4>
                   <p className="text-xs text-gray-600 mt-1">{clinic.address}</p>
+                  <p className="text-xs text-gray-500 mt-1">{clinic.phone}</p>
                 </div>
                 <Button 
                   size="sm" 
@@ -58,17 +69,6 @@ export const UnitsSection: React.FC<UnitsSectionProps> = memo(({
               </div>
             </div>
           ))}
-          
-          <div className="text-center pt-2">
-            <Button 
-              variant="ghost" 
-              className={`text-primary text-sm ${animations.buttonHover}`}
-              onClick={onViewUnits}
-              aria-label="Ver todas as unidades"
-            >
-              Ver todas as unidades
-            </Button>
-          </div>
         </div>
       </CardContent>
     </Card>
