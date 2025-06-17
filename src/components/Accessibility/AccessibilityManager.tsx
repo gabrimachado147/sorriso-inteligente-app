@@ -46,7 +46,8 @@ export const AccessibilityManager: React.FC<{ children: React.ReactNode }> = ({ 
     }
 
     // Detect system preferences
-    detectSystemPreferences();
+    const cleanup = detectSystemPreferences();
+    return cleanup;
   }, []);
 
   useEffect(() => {
@@ -83,12 +84,15 @@ export const AccessibilityManager: React.FC<{ children: React.ReactNode }> = ({ 
       highContrastQuery.addEventListener('change', handleHighContrastChange);
       reducedMotionQuery.addEventListener('change', handleReducedMotionChange);
 
-      // Cleanup listeners
+      // Return cleanup function
       return () => {
         highContrastQuery.removeEventListener('change', handleHighContrastChange);
         reducedMotionQuery.removeEventListener('change', handleReducedMotionChange);
       };
     }
+
+    // Return undefined if window.matchMedia is not available
+    return undefined;
   };
 
   const applyAccessibilitySettings = (settings: AccessibilitySettings) => {
