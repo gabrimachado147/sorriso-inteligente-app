@@ -13,8 +13,12 @@ const SchedulePage = () => {
         keywords="agendar consulta, dentista, agendamento online, horário disponível, consulta odontológica, Senhor Sorriso"
         url="https://senhorsorrisso.com.br/schedule"
       />
-      <div className={`space-y-6 ${animations.pageEnter}`}>
-        <AppointmentSchedulerReal />
+      <div className={`w-full min-h-screen bg-background overflow-x-hidden ${animations.pageEnter}`}>
+        <div className="mobile-container px-4 py-6 max-w-4xl mx-auto">
+          <div className="space-y-6 overflow-x-hidden">
+            <AppointmentSchedulerReal />
+          </div>
+        </div>
       </div>
     </>
   );

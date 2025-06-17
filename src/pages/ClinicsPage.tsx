@@ -1,21 +1,30 @@
 
 import React from 'react';
 import { MainLayout } from '@/components/Layout/MainLayout';
-import LocationsPage from '@/components/Locations/LocationsPage';
+import { LazyLocationsPage } from '@/components/Locations/LazyLocationsPage';
 import { PageHead } from '@/components/SEO/PageHead';
+import { animations } from '@/lib/animations';
 
 const ClinicsPage = () => {
   return (
     <>
       <PageHead
-        title="Nossas Clínicas - Localização e Contato"
-        description="Encontre a clínica Senhor Sorriso mais próxima de você. Endereços, telefones e horários de funcionamento de todas as unidades."
-        keywords="clínicas Senhor Sorriso, localização, endereço, telefone, horário funcionamento, unidades"
+        title="Nossas Clínicas - Senhor Sorriso"
+        description="Encontre a clínica Senhor Sorriso mais próxima de você. Localizações em Campo Belo-MG, Formiga-MG e Itararé-SP."
+        keywords="clínicas dentárias, localização, Campo Belo, Formiga, Itararé, endereços, Senhor Sorriso"
         url="https://senhorsorrisso.com.br/clinics"
       />
-      <MainLayout>
-        <LocationsPage />
-      </MainLayout>
+      <div className="w-full min-h-screen bg-background overflow-x-hidden">
+        <MainLayout>
+          <div className={`w-full overflow-x-hidden ${animations.pageEnter}`}>
+            <div className="mobile-container px-4 py-6 max-w-6xl mx-auto">
+              <div className="space-y-6 overflow-x-hidden">
+                <LazyLocationsPage />
+              </div>
+            </div>
+          </div>
+        </MainLayout>
+      </div>
     </>
   );
 };

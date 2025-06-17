@@ -37,12 +37,20 @@ const AdminDashboardPage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center overflow-x-hidden">
-        <div className="text-center px-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="mobile-text-base">Carregando dashboard...</p>
+      <>
+        <PageHead
+          title="Dashboard Administrativo - Senhor Sorriso"
+          description="Painel administrativo para gestão de agendamentos e operações da rede Senhor Sorriso."
+          keywords="dashboard administrativo, gestão agendamentos, painel admin, operações, Senhor Sorriso"
+          url="https://senhorsorrisso.com.br/admin-dashboard"
+        />
+        <div className="min-h-screen bg-background flex items-center justify-center overflow-x-hidden">
+          <div className="text-center px-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="mobile-text-base">Carregando dashboard...</p>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
@@ -62,10 +70,10 @@ const AdminDashboardPage = () => {
         keywords="dashboard administrativo, gestão agendamentos, painel admin, operações, Senhor Sorriso"
         url="https://senhorsorrisso.com.br/admin-dashboard"
       />
-      <div className="min-h-screen bg-background overflow-x-hidden">
+      <div className="min-h-screen bg-background w-full overflow-x-hidden">
         {/* Header */}
-        <div className="bg-white shadow-sm border-b">
-          <div className="mobile-container px-4 py-4">
+        <div className="bg-white shadow-sm border-b w-full">
+          <div className="mobile-container px-4 py-4 max-w-7xl mx-auto">
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-2 min-w-0 flex-1">
                 <Button 
@@ -101,9 +109,9 @@ const AdminDashboardPage = () => {
         </div>
 
         {/* Dashboard Content */}
-        <main className="flex-1 w-full mobile-scroll overflow-x-hidden">
-          <div className="mobile-container px-4 py-6">
-            <div className={`space-y-6 ${animations.pageEnter} overflow-x-hidden`}>
+        <main className="flex-1 w-full overflow-x-hidden">
+          <div className="mobile-container px-4 py-6 max-w-7xl mx-auto">
+            <div className={`space-y-6 ${animations.pageEnter} overflow-x-hidden w-full`}>
               <AdminDashboard appointments={appointments} stats={stats} />
             </div>
           </div>

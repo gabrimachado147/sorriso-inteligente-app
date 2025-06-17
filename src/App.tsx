@@ -20,7 +20,6 @@ const AuthPage = React.lazy(() => import('@/pages/AuthPage'));
 const ChatPage = React.lazy(() => import('@/pages/ChatPage'));
 const SchedulePage = React.lazy(() => import('@/pages/SchedulePage'));
 const ClinicsPage = React.lazy(() => import('@/pages/ClinicsPage'));
-const EmergencyPage = React.lazy(() => import('@/pages/EmergencyPage'));
 const ProfilePage = React.lazy(() => import('@/pages/ProfilePage'));
 const NotFoundPage = React.lazy(() => import('@/pages/NotFound'));
 
@@ -40,10 +39,10 @@ const queryClient = new QueryClient({
 
 // Enhanced loading component
 const LoadingFallback = () => (
-  <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-blue-50 to-white">
-    <div className="text-center">
+  <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-blue-50 to-white overflow-x-hidden">
+    <div className="text-center px-4">
       <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-      <p className="text-gray-600 animate-pulse">Carregando Senhor Sorriso...</p>
+      <p className="text-gray-600 animate-pulse mobile-text-base">Carregando Senhor Sorriso...</p>
     </div>
   </div>
 );
@@ -116,7 +115,7 @@ function App() {
           <AppProvider>
             <AuthProvider>
               <Router>
-                <div className="App min-h-screen bg-background">
+                <div className="App min-h-screen bg-background overflow-x-hidden">
                   <Suspense fallback={<LoadingFallback />}>
                     <Routes>
                       <Route path="/" element={<IndexPage />} />
@@ -124,7 +123,6 @@ function App() {
                       <Route path="/chat" element={<ChatPage />} />
                       <Route path="/schedule" element={<SchedulePage />} />
                       <Route path="/clinics" element={<ClinicsPage />} />
-                      <Route path="/emergency" element={<EmergencyPage />} />
                       <Route path="/profile" element={<ProfilePage />} />
                       <Route path="*" element={<NotFoundPage />} />
                     </Routes>
