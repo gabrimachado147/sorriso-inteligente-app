@@ -43,8 +43,8 @@ export const HistoryTabReal: React.FC = () => {
   return (
     <div className="space-y-6 overflow-x-hidden pb-6">
       <div className="flex items-center justify-between gap-2">
-        <h2 className="text-lg font-bold truncate flex-1">Histórico de Consultas</h2>
-        <Badge variant="secondary" className="px-3 py-1 mobile-text-sm flex-shrink-0">
+        <h3 className="text-lg font-bold truncate flex-1">Histórico de Consultas</h3>
+        <Badge variant="secondary" className="px-3 py-1 mobile-text-sm flex-shrink-0 bg-gray-100 text-gray-800">
           {appointments.length} consulta{appointments.length !== 1 ? 's' : ''}
         </Badge>
       </div>
@@ -67,21 +67,21 @@ export const HistoryTabReal: React.FC = () => {
             </CardHeader>
             <CardContent className="space-y-4 overflow-hidden pb-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex items-center gap-2 text-sm text-gray-600 mobile-text-sm min-w-0">
+                <div className="flex items-center gap-2 text-sm text-gray-700 mobile-text-sm min-w-0">
                   <Calendar className="h-4 w-4 flex-shrink-0" />
                   <span className="truncate">
                     {format(parseISO(appointment.date), 'PPP', { locale: ptBR })}
                   </span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600 mobile-text-sm min-w-0">
+                <div className="flex items-center gap-2 text-sm text-gray-700 mobile-text-sm min-w-0">
                   <Clock className="h-4 w-4 flex-shrink-0" />
                   <span className="truncate">{appointment.time}</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600 mobile-text-sm md:col-span-2 min-w-0">
+                <div className="flex items-center gap-2 text-sm text-gray-700 mobile-text-sm md:col-span-2 min-w-0">
                   <MapPin className="h-4 w-4 flex-shrink-0" />
                   <span className="truncate">{appointment.clinic}</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600 mobile-text-sm md:col-span-2 min-w-0">
+                <div className="flex items-center gap-2 text-sm text-gray-700 mobile-text-sm md:col-span-2 min-w-0">
                   <Stethoscope className="h-4 w-4 flex-shrink-0" />
                   <span className="truncate">{appointment.service}</span>
                 </div>

@@ -81,7 +81,7 @@ const ProfilePage = () => {
           <h1 className="text-lg font-bold mb-1 truncate">
             {user?.user_metadata?.nome_completo || user?.email}
           </h1>
-          <p className="text-muted-foreground mobile-text-sm truncate px-4">
+          <p className="text-gray-700 mobile-text-sm truncate px-4">
             {user?.email}
           </p>
         </div>
@@ -92,35 +92,40 @@ const ProfilePage = () => {
             <TabsList className="grid grid-cols-5 w-full min-w-[480px] md:min-w-0 h-auto bg-white/50 backdrop-blur-sm border border-gray-200/50 rounded-lg p-1">
               <TabsTrigger 
                 value="profile" 
-                className="mobile-text-xs p-2 flex flex-col items-center mobile-touch-target rounded-md min-w-0"
+                className="mobile-text-xs p-2 flex flex-col items-center mobile-touch-target rounded-md min-w-0 text-gray-700 data-[state=active]:text-gray-900 data-[state=active]:bg-white"
+                aria-label="Aba do perfil do usuário"
               >
                 <User className="h-3 w-3 md:h-4 md:w-4 mb-1 flex-shrink-0" />
                 <span className="truncate w-full text-center">Perfil</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="history" 
-                className="mobile-text-xs p-2 flex flex-col items-center mobile-touch-target rounded-md min-w-0"
+                className="mobile-text-xs p-2 flex flex-col items-center mobile-touch-target rounded-md min-w-0 text-gray-700 data-[state=active]:text-gray-900 data-[state=active]:bg-white"
+                aria-label="Histórico de consultas"
               >
                 <History className="h-3 w-3 md:h-4 md:w-4 mb-1 flex-shrink-0" />
                 <span className="truncate w-full text-center">Histórico</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="notifications" 
-                className="mobile-text-xs p-2 flex flex-col items-center mobile-touch-target rounded-md min-w-0"
+                className="mobile-text-xs p-2 flex flex-col items-center mobile-touch-target rounded-md min-w-0 text-gray-700 data-[state=active]:text-gray-900 data-[state=active]:bg-white"
+                aria-label="Configurações de notificações"
               >
                 <Bell className="h-3 w-3 md:h-4 md:w-4 mb-1 flex-shrink-0" />
                 <span className="truncate w-full text-center">Notific.</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="security" 
-                className="mobile-text-xs p-2 flex flex-col items-center mobile-touch-target rounded-md min-w-0"
+                className="mobile-text-xs p-2 flex flex-col items-center mobile-touch-target rounded-md min-w-0 text-gray-700 data-[state=active]:text-gray-900 data-[state=active]:bg-white"
+                aria-label="Configurações de segurança"
               >
                 <Shield className="h-3 w-3 md:h-4 md:w-4 mb-1 flex-shrink-0" />
                 <span className="truncate w-full text-center">Segur.</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="accessibility" 
-                className="mobile-text-xs p-2 flex flex-col items-center mobile-touch-target rounded-md min-w-0"
+                className="mobile-text-xs p-2 flex flex-col items-center mobile-touch-target rounded-md min-w-0 text-gray-700 data-[state=active]:text-gray-900 data-[state=active]:bg-white"
+                aria-label="Configurações de acessibilidade"
               >
                 <Settings className="h-3 w-3 md:h-4 md:w-4 mb-1 flex-shrink-0" />
                 <span className="truncate w-full text-center">Access.</span>
@@ -155,8 +160,9 @@ const ProfilePage = () => {
         <Button
           onClick={handleSignOut}
           variant="outline"
-          className="w-full mobile-button h-12 mt-6 truncate"
+          className="w-full mobile-button h-12 mt-6 truncate text-gray-900 border-gray-300 hover:bg-gray-50"
           size="lg"
+          aria-label="Sair da conta do usuário"
         >
           <LogOut className="h-4 w-4 md:h-5 md:w-5 mr-2 flex-shrink-0" />
           <span className="truncate">Sair da Conta</span>

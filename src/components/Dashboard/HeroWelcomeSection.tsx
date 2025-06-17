@@ -27,21 +27,23 @@ export const HeroWelcomeSection: React.FC<HeroWelcomeSectionProps> = ({
   return (
     <Card className={`bg-gradient-to-r from-primary to-blue-600 text-white ${animations.fadeIn}`}>
       <CardContent className="p-6 text-center">
-        <h1 className="text-2xl font-bold mb-2">Bem-vindo à Senhor Sorriso!</h1>
+        <h2 className="text-2xl font-bold mb-2">Bem-vindo à Senhor Sorriso!</h2>
         <p className="mb-4 opacity-90">Seu sorriso perfeito está a um clique de distância</p>
         <div className="flex flex-col sm:flex-row gap-2 justify-center">
           <Button 
-            className={`bg-white text-primary hover:bg-gray-100 ${animations.buttonHover}`}
+            className={`bg-white text-gray-900 hover:bg-gray-100 font-medium ${animations.buttonHover}`}
             onClick={handleScheduleEvaluation}
             disabled={schedulingLoading}
+            aria-label="Agendar avaliação odontológica gratuita"
           >
             <Calendar className="h-4 w-4 mr-2" />
             {schedulingLoading ? 'Agendando...' : 'Agendar Avaliação Gratuita'}
           </Button>
           <Button 
             variant="outline"
-            className={`bg-transparent border-white text-white hover:bg-white hover:text-primary ${animations.buttonHover}`}
+            className={`bg-transparent border-white text-white hover:bg-white hover:text-gray-900 font-medium ${animations.buttonHover}`}
             onClick={onViewUnits}
+            aria-label="Ver todas as unidades da Senhor Sorriso"
           >
             <MapPin className="h-4 w-4 mr-2" />
             Ver Nossas Unidades

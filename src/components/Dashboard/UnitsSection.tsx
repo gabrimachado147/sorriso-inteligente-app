@@ -53,15 +53,15 @@ export const UnitsSection: React.FC<UnitsSectionProps> = memo(({
             <div key={clinic.id} className={`p-3 border rounded-lg ${animations.cardHover}`}>
               <div className="flex justify-between items-start gap-3">
                 <div className="flex-1 min-w-0">
-                  <h4 className="font-medium text-sm">{clinic.name}</h4>
-                  <p className="text-xs text-gray-600 mt-1">{clinic.address}</p>
+                  <h4 className="font-medium text-sm text-gray-900">{clinic.name}</h4>
+                  <p className="text-xs text-gray-700 mt-1">{clinic.address}</p>
                 </div>
                 <Button 
                   size="sm" 
                   variant="outline"
                   onClick={() => onScheduleClinic(clinic.id)}
-                  className={`${animations.buttonHover} px-3 py-1 text-xs shrink-0`}
-                  aria-label={`Agendar consulta na ${clinic.name}`}
+                  className={`${animations.buttonHover} px-3 py-1 text-xs shrink-0 text-gray-900 border-gray-300 hover:bg-gray-50 font-medium`}
+                  aria-label={`Agendar consulta na unidade ${clinic.name}`}
                 >
                   Agendar
                 </Button>
