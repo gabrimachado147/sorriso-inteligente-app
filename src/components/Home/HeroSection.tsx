@@ -4,7 +4,20 @@ import { useAuth } from '@/hooks/useAuth';
 import { animations, microAnimations } from '@/lib/animations';
 
 export const HeroSection: React.FC = () => {
-  const { user } = useAuth();
+  const { user, loading, isAuthenticated } = useAuth();
+
+  // Add logging to debug user data
+  React.useEffect(() => {
+    console.log('HeroSection: Auth state:', {
+      user: user ? {
+        id: user.id,
+        email: user.email,
+        metadata: user.user_metadata
+      } : null,
+      loading,
+      isAuthenticated
+    });
+  }, [user, loading, isAuthenticated]);
 
   return (
     <div className={`text-center space-y-6 mobile-card-spacing ${microAnimations.heroSection}`}>
@@ -32,12 +45,18 @@ export const HeroSection: React.FC = () => {
         </p>
       </div>
       
-      {user && (
+      {!loading && user && isAuthenticated && (
         <div className={`bg-primary/10 mobile-card-spacing rounded-lg inline-block mobile-scale-in ${animations.fadeInUp} text-center`}
              style={{ animationDelay: '600ms', animationFillMode: 'both' }}>
           <p className="text-lg text-primary font-medium mobile-text-base">
-            Bem-vindo de volta, {user.user_metadata?.nome_completo || user.email}! 😊
+            Bem-vindo de volta, {user.user_metadata?.nome_completo || user.email?.split('@')[0] || 'usuário'}! 😊
           </p>
+        </div>
+      )}
+      
+      {loading && (
+        <div className="text-center">
+          <p className="text-muted-foreground">Carregando...</p>
         </div>
       )}
     </div>

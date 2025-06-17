@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 
 export const Header: React.FC = () => {
   const [notificationDrawerOpen, setNotificationDrawerOpen] = useState(false);
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user, loading } = useAuth();
   const navigate = useNavigate();
   const { 
     notifications, 
@@ -19,6 +19,18 @@ export const Header: React.FC = () => {
     markAllAsRead, 
     removeNotification 
   } = useNotificationSystem();
+
+  // Add logging to debug auth state in header
+  React.useEffect(() => {
+    console.log('Header: Auth state:', {
+      isAuthenticated,
+      user: user ? {
+        id: user.id,
+        email: user.email
+      } : null,
+      loading
+    });
+  }, [isAuthenticated, user, loading]);
 
   const handleStaffAccess = () => {
     navigate('/staff-login');
@@ -40,7 +52,7 @@ export const Header: React.FC = () => {
           </div>
 
           <div className="flex items-center space-x-3">
-            {isAuthenticated && (
+            {!loading && isAuthenticated && (
               <Button 
                 variant="default"
                 size="sm"

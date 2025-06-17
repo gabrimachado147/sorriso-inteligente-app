@@ -42,9 +42,6 @@ interface AuthContextType extends AuthState {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Singleton pattern to prevent multiple initializations
-let authInitialized = false;
-
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context) {
@@ -63,13 +60,11 @@ export const useAuth = () => {
   const [session, setSession] = useState<Session | null>(null);
 
   useEffect(() => {
-    if (authInitialized) return;
-    authInitialized = true;
-
     console.info('useAuth: Initializing auth...');
 
     const initAuth = async () => {
       try {
+        // First, get the current session
         const { data: { session }, error } = await supabase.auth.getSession();
         
         if (error) {
@@ -83,6 +78,14 @@ export const useAuth = () => {
         }
 
         console.info('useAuth: Current session:', session ? 'Found' : 'None');
+        
+        if (session) {
+          console.info('useAuth: User data:', {
+            id: session.user.id,
+            email: session.user.email,
+            metadata: session.user.user_metadata
+          });
+        }
         
         setSession(session);
         setAuthState(prev => ({
@@ -110,6 +113,14 @@ export const useAuth = () => {
       async (event, session) => {
         console.info('useAuth: Auth state changed:', event, session ? 'Session exists' : 'No session');
         
+        if (session?.user) {
+          console.info('useAuth: User authenticated:', {
+            id: session.user.id,
+            email: session.user.email,
+            metadata: session.user.user_metadata
+          });
+        }
+        
         setSession(session);
         setAuthState(prev => ({
           ...prev,
@@ -126,22 +137,31 @@ export const useAuth = () => {
 
     return () => {
       subscription.unsubscribe();
-      authInitialized = false;
     };
   }, []);
 
   const signIn = async (credentials: LoginCredentials): Promise<AuthResult> => {
     try {
+      console.info('useAuth: Attempting sign in for:', credentials.email);
       setAuthState(prev => ({ ...prev, loading: true, error: null }));
-      const { error } = await supabase.auth.signInWithPassword(credentials);
+      
+      const { data, error } = await supabase.auth.signInWithPassword(credentials);
       
       if (error) {
+        console.error('useAuth: Sign in error:', error);
         setAuthState(prev => ({ ...prev, error: error.message, loading: false }));
         return { success: false, error: error.message };
       }
       
+      console.info('useAuth: Sign in successful:', {
+        userId: data.user?.id,
+        email: data.user?.email,
+        metadata: data.user?.user_metadata
+      });
+      
       return { success: true };
     } catch (error: any) {
+      console.error('useAuth: Sign in exception:', error);
       const errorMessage = 'Erro ao fazer login';
       setAuthState(prev => ({ ...prev, error: errorMessage, loading: false }));
       return { success: false, error: errorMessage };
@@ -150,9 +170,10 @@ export const useAuth = () => {
 
   const signUp = async (credentials: RegisterCredentials): Promise<AuthResult> => {
     try {
+      console.info('useAuth: Attempting sign up for:', credentials.email);
       setAuthState(prev => ({ ...prev, loading: true, error: null }));
       
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email: credentials.email,
         password: credentials.password,
         options: {
@@ -164,12 +185,15 @@ export const useAuth = () => {
       });
       
       if (error) {
+        console.error('useAuth: Sign up error:', error);
         setAuthState(prev => ({ ...prev, error: error.message, loading: false }));
         return { success: false, error: error.message };
       }
       
+      console.info('useAuth: Sign up successful:', data.user?.email);
       return { success: true };
     } catch (error: any) {
+      console.error('useAuth: Sign up exception:', error);
       const errorMessage = 'Erro ao criar conta';
       setAuthState(prev => ({ ...prev, error: errorMessage, loading: false }));
       return { success: false, error: errorMessage };
@@ -178,8 +202,10 @@ export const useAuth = () => {
 
   const signOut = async () => {
     try {
+      console.info('useAuth: Attempting sign out');
       setAuthState(prev => ({ ...prev, loading: true }));
       await supabase.auth.signOut();
+      console.info('useAuth: Sign out successful');
     } catch (error) {
       console.error('useAuth: Sign out error:', error);
     }
