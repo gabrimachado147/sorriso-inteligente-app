@@ -14,7 +14,6 @@ import ClinicsPage from "./pages/ClinicsPage";
 import ChatPage from "./pages/ChatPage";
 import ProfilePage from "./pages/ProfilePage";
 import StaffLoginPage from "./pages/StaffLoginPage";
-import AppointmentDetailsPage from "./pages/AppointmentDetailsPage";
 
 // Institutional Website Pages
 import InstitutionalHome from "./pages/InstitutionalHome";
@@ -39,7 +38,6 @@ const App = () => (
           <Route path="/chat" element={<MainLayout><ChatPage /></MainLayout>} />
           <Route path="/profile" element={<MainLayout><ProfilePage /></MainLayout>} />
           <Route path="/staff-login" element={<MainLayout><StaffLoginPage /></MainLayout>} />
-          <Route path="/appointment/:id" element={<MainLayout><AppointmentDetailsPage /></MainLayout>} />
           
           {/* Institutional Website Routes */}
           <Route path="/site" element={<InstitutionalLayout><InstitutionalHome /></InstitutionalLayout>} />
