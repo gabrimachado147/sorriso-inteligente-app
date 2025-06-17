@@ -190,19 +190,33 @@ Este projeto está licenciado sob a licença MIT.
 
 ## Integração com Supabase
 
-O projeto utiliza Supabase para autenticação, banco de dados e realtime. A configuração está em `src/integrations/supabase/client.ts` e usa variáveis de ambiente (`VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY`).
+O projeto utiliza Supabase para autenticação, banco de dados e realtime. A configuração está em `src/integrations/supabase/client.ts` (para o app) e `src/integrations/supabase/client.test.ts` (exclusivo para testes automatizados).
 
-- Para acessar dados, use o client importando:
+- **No app:**
   ```ts
   import { supabase } from '@/integrations/supabase/client';
   ```
-- Os serviços e hooks já usam o Supabase para CRUD de agendamentos, perfis, etc.
-- Testes automatizados de integração estão em `tests/supabase.integration.test.ts` e rodam no CI.
+- **Nos testes automatizados:**
+  ```ts
+  import { supabase } from '../src/integrations/supabase/client.test';
+  ```
+- O client de teste usa apenas `process.env` e é compatível com Jest/Node.
+- O client do app usa `import.meta.env` (Vite/browser).
 
-Para onboarding:
-- Peça acesso ao painel do Supabase.
-- Configure as variáveis de ambiente no `.env` local.
-- Rode `npm test` para validar integração localmente.
+### Variáveis de ambiente para testes
+
+- Crie um arquivo `.env.test` na raiz do projeto (veja `.env.test.example`).
+- Defina as variáveis:
+  - `VITE_SUPABASE_URL`
+  - `VITE_SUPABASE_ANON_KEY`
+- O workflow do GitHub Actions já utiliza essas variáveis para rodar os testes de integração.
+
+### Onboarding para novos devs
+
+1. Peça acesso ao painel do Supabase.
+2. Configure as variáveis de ambiente no `.env` e `.env.test`.
+3. Rode `npm test` para validar integração localmente.
+4. Sempre use o client correto em cada contexto (app ou teste).
 
 ---
 

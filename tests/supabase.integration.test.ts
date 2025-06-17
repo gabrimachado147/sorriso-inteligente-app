@@ -1,5 +1,4 @@
-
-import { supabase } from '../src/integrations/supabase/client';
+import { supabase } from '../src/integrations/supabase/client.test';
 
 describe('Supabase Integration', () => {
   it('deve conectar e buscar dados da tabela de agendamentos', async () => {
