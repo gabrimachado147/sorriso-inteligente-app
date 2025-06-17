@@ -1,4 +1,5 @@
 
+import React from 'react';
 import { performanceMonitor } from '@/services/performance/performanceMonitor';
 
 // Performance utility functions

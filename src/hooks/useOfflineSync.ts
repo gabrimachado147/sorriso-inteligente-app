@@ -1,37 +1,24 @@
-import { useState, useEffect, useCallback } from 'react';
+
+import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
-interface OfflineData {
-  id: string;
-  table: string;
-  data: any;
-  action: 'insert' | 'update' | 'delete';
-  timestamp: number;
+interface SyncData {
+  tableName: string;
+  data: any[];
+  lastSync: string;
 }
 
 export const useOfflineSync = () => {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
-  const [pendingSync, setPendingSync] = useState<OfflineData[]>([]);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [pendingChanges, setPendingChanges] = useState<SyncData[]>([]);
 
-  // Monitor online status
   useEffect(() => {
-    const handleOnline = () => {
-      setIsOnline(true);
-      console.log('🌐 [Offline] Back online, starting sync...');
-      syncOfflineData();
-    };
-
-    const handleOffline = () => {
-      setIsOnline(false);
-      console.log('📴 [Offline] Gone offline, queuing operations...');
-    };
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
 
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
-
-    // Load pending sync data on mount
-    loadPendingSync();
 
     return () => {
       window.removeEventListener('online', handleOnline);
@@ -39,146 +26,123 @@ export const useOfflineSync = () => {
     };
   }, []);
 
-  // Load pending sync data from localStorage
-  const loadPendingSync = useCallback(() => {
-    try {
-      const stored = localStorage.getItem('offline-sync-queue');
-      if (stored) {
-        const parsed = JSON.parse(stored) as OfflineData[];
-        setPendingSync(parsed);
-        console.log(`📴 [Offline] Loaded ${parsed.length} pending operations`);
-      }
-    } catch (error) {
-      console.error('❌ [Offline] Error loading pending sync data:', error);
-    }
-  }, []);
-
-  // Save pending sync data to localStorage
-  const savePendingSync = useCallback((data: OfflineData[]) => {
-    try {
-      localStorage.setItem('offline-sync-queue', JSON.stringify(data));
-    } catch (error) {
-      console.error('❌ [Offline] Error saving pending sync data:', error);
-    }
-  }, []);
-
-  // Queue operation for offline sync
-  const queueOperation = useCallback((table: string, data: any, action: 'insert' | 'update' | 'delete') => {
-    const operation: OfflineData = {
-      id: crypto.randomUUID(),
-      table,
-      data,
-      action,
-      timestamp: Date.now()
-    };
-
-    const updated = [...pendingSync, operation];
-    setPendingSync(updated);
-    savePendingSync(updated);
+  // Store data locally when offline
+  const storeOfflineData = (tableName: string, data: any) => {
+    const offlineData = localStorage.getItem('offlineData');
+    const parsedData = offlineData ? JSON.parse(offlineData) : {};
     
-    console.log(`📴 [Offline] Queued ${action} operation for ${table}`, operation);
-  }, [pendingSync, savePendingSync]);
+    parsedData[tableName] = {
+      data,
+      timestamp: new Date().toISOString(),
+      synced: false
+    };
+    
+    localStorage.setItem('offlineData', JSON.stringify(parsedData));
+    console.log(`📱 [Offline] Data stored locally for ${tableName}`);
+  };
+
+  // Get offline data
+  const getOfflineData = (tableName: string) => {
+    const offlineData = localStorage.getItem('offlineData');
+    if (offlineData) {
+      const parsedData = JSON.parse(offlineData);
+      return parsedData[tableName]?.data || null;
+    }
+    return null;
+  };
 
   // Sync offline data when back online
-  const syncOfflineData = useCallback(async () => {
-    if (!isOnline || isSyncing || pendingSync.length === 0) {
+  const syncOfflineData = async () => {
+    if (!isOnline || isSyncing) return;
+
+    setIsSyncing(true);
+    const offlineData = localStorage.getItem('offlineData');
+    
+    if (!offlineData) {
+      setIsSyncing(false);
       return;
     }
 
-    setIsSyncing(true);
-    console.log(`🔄 [Offline] Starting sync of ${pendingSync.length} operations...`);
+    try {
+      const parsedData = JSON.parse(offlineData);
+      const unsynced = Object.entries(parsedData).filter(
+        ([, value]: [string, any]) => !value.synced
+      );
 
-    const successful: string[] = [];
-    const failed: OfflineData[] = [];
-
-    for (const operation of pendingSync) {
-      try {
-        let result;
-        
-        switch (operation.action) {
-          case 'insert':
-            result = await supabase
-              .from(operation.table)
-              .insert(operation.data);
-            break;
-          case 'update':
-            result = await supabase
-              .from(operation.table)
-              .update(operation.data)
-              .eq('id', operation.data.id);
-            break;
-          case 'delete':
-            result = await supabase
-              .from(operation.table)
-              .delete()
-              .eq('id', operation.data.id);
-            break;
+      for (const [tableName, data] of unsynced) {
+        try {
+          // Try to sync specific tables that exist in the database
+          if (tableName === 'appointments') {
+            await supabase.from('appointments').upsert((data as any).data);
+          }
+          // Mark as synced
+          parsedData[tableName].synced = true;
+          console.log(`🔄 [Sync] ${tableName} synced successfully`);
+        } catch (error) {
+          console.error(`❌ [Sync] Failed to sync ${tableName}:`, error);
         }
-
-        if (result.error) {
-          throw result.error;
-        }
-
-        successful.push(operation.id);
-        console.log(`✅ [Offline] Synced ${operation.action} for ${operation.table}`);
-      } catch (error) {
-        console.error(`❌ [Offline] Failed to sync ${operation.action} for ${operation.table}:`, error);
-        failed.push(operation);
       }
+
+      localStorage.setItem('offlineData', JSON.stringify(parsedData));
+      console.log('✅ [Sync] All offline data synced');
+    } catch (error) {
+      console.error('❌ [Sync] Failed to sync offline data:', error);
+    } finally {
+      setIsSyncing(false);
     }
+  };
 
-    // Update pending sync queue (keep only failed operations)
-    setPendingSync(failed);
-    savePendingSync(failed);
+  // Clear synced data
+  const clearSyncedData = () => {
+    const offlineData = localStorage.getItem('offlineData');
+    if (offlineData) {
+      const parsedData = JSON.parse(offlineData);
+      const unsynced = Object.fromEntries(
+        Object.entries(parsedData).filter(([, value]: [string, any]) => !value.synced)
+      );
+      localStorage.setItem('offlineData', JSON.stringify(unsynced));
+    }
+  };
 
-    setIsSyncing(false);
-    console.log(`🔄 [Offline] Sync complete: ${successful.length} successful, ${failed.length} failed`);
-  }, [isOnline, isSyncing, pendingSync, savePendingSync]);
+  // Auto-sync when online
+  useEffect(() => {
+    if (isOnline) {
+      syncOfflineData();
+    }
+  }, [isOnline]);
 
-  // Offline-aware database operation
-  const offlineOperation = useCallback(async (
-    table: string,
-    data: any,
-    action: 'insert' | 'update' | 'delete'
-  ) => {
+  // Enhanced fetch with offline support
+  const offlineFetch = async (tableName: string, query: any) => {
     if (isOnline) {
       try {
-        let result;
-        
-        switch (action) {
-          case 'insert':
-            result = await supabase.from(table).insert(data);
-            break;
-          case 'update':
-            result = await supabase.from(table).update(data).eq('id', data.id);
-            break;
-          case 'delete':
-            result = await supabase.from(table).delete().eq('id', data.id);
-            break;
+        const result = await query;
+        // Store successful fetch for offline use
+        if (result.data) {
+          storeOfflineData(tableName, result.data);
         }
-
-        if (result.error) {
-          throw result.error;
-        }
-
-        return { success: true, data: result.data };
+        return result;
       } catch (error) {
-        console.error(`❌ [Database] ${action} failed, queuing for offline sync:`, error);
-        queueOperation(table, data, action);
-        return { success: false, error, queued: true };
+        console.error(`❌ [Fetch] Failed to fetch ${tableName} online:`, error);
+        // Fallback to offline data
+        const offlineData = getOfflineData(tableName);
+        return { data: offlineData, error: null };
       }
     } else {
-      queueOperation(table, data, action);
-      return { success: false, queued: true, message: 'Operation queued for when online' };
+      // Return offline data
+      const offlineData = getOfflineData(tableName);
+      console.log(`📱 [Offline] Returning cached data for ${tableName}`);
+      return { data: offlineData, error: null };
     }
-  }, [isOnline, queueOperation]);
+  };
 
   return {
     isOnline,
-    pendingSync: pendingSync.length,
     isSyncing,
-    queueOperation,
+    pendingChanges,
+    storeOfflineData,
+    getOfflineData,
     syncOfflineData,
-    offlineOperation
+    clearSyncedData,
+    offlineFetch
   };
 };

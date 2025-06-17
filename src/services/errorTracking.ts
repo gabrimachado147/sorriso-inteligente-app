@@ -1,3 +1,4 @@
+
 import React from 'react';
 
 interface ErrorContext {
@@ -49,6 +50,10 @@ class ErrorTracker {
     return this.errors;
   }
 
+  getRecentErrors(): Array<{ error: Error; context: ErrorContext }> {
+    return this.errors.slice(-10);
+  }
+
   clearErrors(): void {
     this.errors = [];
   }
@@ -92,7 +97,7 @@ export const createErrorBoundary = (component: string) => {
       return { hasError: true };
     }
 
-    componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    override componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
       errorTracker.reportError(error, {
         component,
         action: 'Component Error',
@@ -100,7 +105,7 @@ export const createErrorBoundary = (component: string) => {
       });
     }
 
-    render() {
+    override render() {
       if (this.state.hasError) {
         return React.createElement('div', {
           className: 'p-4 text-center text-red-600'
