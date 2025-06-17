@@ -2,17 +2,28 @@
 import { useNavigate } from 'react-router-dom';
 import { toastInfo } from '@/components/ui/custom-toast';
 
-export const useHomePageNavigation = () => {
+type QuickAction = 'schedule' | 'chat' | 'clinics' | 'emergency' | string;
+
+interface HomePageNavigationActions {
+  handleViewUnits: () => void;
+  handleReschedule: (appointmentId?: string) => void;
+  handleViewAllAppointments: () => void;
+  handleScheduleClinic: (clinicId?: string) => void;
+  handleQuickAction: (action: QuickAction) => void;
+  handleEmergencyCall: () => void;
+}
+
+export const useHomePageNavigation = (): HomePageNavigationActions => {
   const navigate = useNavigate();
 
-  const handleViewUnits = () => {
+  const handleViewUnits = (): void => {
     navigate('/clinics');
     setTimeout(() => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }, 100);
   };
 
-  const handleReschedule = (appointmentId?: string) => {
+  const handleReschedule = (appointmentId?: string): void => {
     if (appointmentId) {
       navigate(`/schedule?reschedule=${appointmentId}`);
     } else {
@@ -23,14 +34,14 @@ export const useHomePageNavigation = () => {
     }, 100);
   };
 
-  const handleViewAllAppointments = () => {
+  const handleViewAllAppointments = (): void => {
     navigate('/appointments');
     setTimeout(() => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }, 100);
   };
 
-  const handleScheduleClinic = (clinicId?: string) => {
+  const handleScheduleClinic = (clinicId?: string): void => {
     const url = clinicId ? `/schedule?clinic=${clinicId}` : '/schedule';
     navigate(url);
     setTimeout(() => {
@@ -38,7 +49,7 @@ export const useHomePageNavigation = () => {
     }, 100);
   };
 
-  const handleQuickAction = (action: string) => {
+  const handleQuickAction = (action: QuickAction): void => {
     switch (action) {
       case 'schedule':
         navigate('/schedule');
@@ -60,7 +71,7 @@ export const useHomePageNavigation = () => {
     }, 100);
   };
 
-  const handleEmergencyCall = () => {
+  const handleEmergencyCall = (): void => {
     try {
       const emergencyPhone = 'tel:+5535998913803';
       window.location.href = emergencyPhone;
