@@ -5,12 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { animations } from '@/lib/animations';
 import { availableServices } from '@/components/Appointments/constants/services';
+import { useHomeNavigation } from '@/hooks/useHomeNavigation';
 
-interface ServicesOverviewSectionProps {
-  onNavigate: (path: string) => void;
-}
-
-export const ServicesOverviewSection: React.FC<ServicesOverviewSectionProps> = ({ onNavigate }) => {
+export const ServicesOverviewSection: React.FC = () => {
+  const { handleScheduleNavigation } = useHomeNavigation();
   const popularServices = ['avaliacao-gratuita', 'limpeza', 'ortodontia', 'estetica-dental'];
 
   return (
@@ -23,7 +21,7 @@ export const ServicesOverviewSection: React.FC<ServicesOverviewSectionProps> = (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {availableServices.map((service, index) => (
           <Card key={service.id} className={`${animations.cardHover} h-full cursor-pointer relative mobile-card-spacing mobile-touch-target`}
-                onClick={() => onNavigate('/schedule')}>
+                onClick={handleScheduleNavigation}>
             <CardHeader className="text-center pb-4">
               <div className="mx-auto mb-4 text-primary">
                 {React.cloneElement(service.icon as React.ReactElement, { className: "h-10 w-10" })}
@@ -38,7 +36,7 @@ export const ServicesOverviewSection: React.FC<ServicesOverviewSectionProps> = (
                 className="w-full mobile-touch-target text-base"
                 onClick={(e) => {
                   e.stopPropagation();
-                  onNavigate('/schedule');
+                  handleScheduleNavigation();
                 }}
               >
                 Agendar

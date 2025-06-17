@@ -3,18 +3,19 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar, MessageCircle, MapPin, Phone } from 'lucide-react';
-import { toastInfo } from '@/components/ui/custom-toast';
 import { animations, getStaggerStyle } from '@/lib/animations';
+import { useHomeNavigation } from '@/hooks/useHomeNavigation';
+import { useContactActions } from '@/hooks/useContactActions';
 
-interface QuickActionsSectionProps {
-  onNavigate: (path: string) => void;
-  onEmergencyCall: () => void;
-}
+export const QuickActionsSection: React.FC = () => {
+  const { 
+    handleScheduleNavigation,
+    handleChatNavigation,
+    handleClinicsNavigation
+  } = useHomeNavigation();
+  
+  const { handleEmergencyCall } = useContactActions();
 
-export const QuickActionsSection: React.FC<QuickActionsSectionProps> = ({ 
-  onNavigate, 
-  onEmergencyCall 
-}) => {
   const actions = [
     {
       icon: Calendar,
@@ -22,7 +23,7 @@ export const QuickActionsSection: React.FC<QuickActionsSectionProps> = ({
       description: "Marque sua consulta rapidamente",
       buttonText: "Novo Agendamento",
       buttonVariant: "default" as const,
-      path: "/schedule",
+      onClick: handleScheduleNavigation,
       borderColor: "border-primary/20 hover:border-primary/40",
       bgColor: ""
     },
@@ -32,7 +33,7 @@ export const QuickActionsSection: React.FC<QuickActionsSectionProps> = ({
       description: "Tire suas dúvidas conosco",
       buttonText: "Iniciar Chat",
       buttonVariant: "outline" as const,
-      path: "/chat",
+      onClick: handleChatNavigation,
       borderColor: "border-primary/20 hover:border-primary/40",
       bgColor: ""
     },
@@ -42,7 +43,7 @@ export const QuickActionsSection: React.FC<QuickActionsSectionProps> = ({
       description: "Encontre a unidade mais próxima",
       buttonText: "Ver Locais",
       buttonVariant: "outline" as const,
-      path: "/clinics",
+      onClick: handleClinicsNavigation,
       borderColor: "border-primary/20 hover:border-primary/40",
       bgColor: ""
     },
@@ -52,7 +53,7 @@ export const QuickActionsSection: React.FC<QuickActionsSectionProps> = ({
       description: "Contato para urgências",
       buttonText: "Contatar Agora",
       buttonVariant: "destructive" as const,
-      path: "",
+      onClick: handleEmergencyCall,
       borderColor: "border-red-200 hover:border-red-400",
       bgColor: "bg-red-50"
     }
@@ -77,7 +78,7 @@ export const QuickActionsSection: React.FC<QuickActionsSectionProps> = ({
               mobile-touch-target
             `}
             style={getStaggerStyle(index, 150)}
-            onClick={() => isEmergency ? onEmergencyCall() : onNavigate(action.path)}
+            onClick={action.onClick}
           >
             <CardHeader className="text-center pb-4 flex-grow">
               <div className={`mx-auto mb-4 ${animations.iconHover}`}>
@@ -99,11 +100,7 @@ export const QuickActionsSection: React.FC<QuickActionsSectionProps> = ({
                 className={`w-full mobile-touch-target text-base ${animations.buttonHover}`}
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (isEmergency) {
-                    onEmergencyCall();
-                  } else {
-                    onNavigate(action.path);
-                  }
+                  action.onClick();
                 }}
               >
                 {action.buttonText}
