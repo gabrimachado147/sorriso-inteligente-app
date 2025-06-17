@@ -28,13 +28,6 @@ const HomePage: React.FC = () => {
 
   return (
     <div className={`p-4 space-y-6 ${animations.pageEnter}`}>
-      <div className="text-center mb-6">
-        <h1 className="text-lg font-bold">Bem-vindo ao Senhor Sorriso</h1>
-        <p className="text-muted-foreground mt-2">
-          Sua saúde bucal em primeiro lugar
-        </p>
-      </div>
-
       <HeroWelcomeSection 
         onViewUnits={handleViewUnits}
         schedulingLoading={schedulingLoading}
