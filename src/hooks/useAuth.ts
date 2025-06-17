@@ -1,3 +1,4 @@
+
 import { useState, useEffect, createContext, useContext } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { User, Session } from '@supabase/supabase-js';
@@ -172,7 +173,7 @@ export const useAuth = () => {
       console.info('useAuth: Attempting sign up for:', credentials.email);
       setAuthState(prev => ({ ...prev, loading: true, error: null }));
       
-      // Corrigindo os campos para o formato esperado pelo Supabase
+      // Usando os campos corretos que o trigger espera
       const { data, error } = await supabase.auth.signUp({
         email: credentials.email,
         password: credentials.password,
