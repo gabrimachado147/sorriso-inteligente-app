@@ -5,7 +5,7 @@ import { CheckCircle, Heart, Sparkles, Zap } from 'lucide-react';
 
 interface MicroInteractionProps {
   children: React.ReactNode;
-  type?: 'hover-lift' | 'click-ripple' | 'success-pulse' | 'attention-shake';
+  type?: 'hover-lift' | 'click-ripple' | 'success-pulse' | 'attention-shake' | 'scale-in';
   trigger?: 'hover' | 'click' | 'auto';
   className?: string;
   delay?: number;
@@ -50,6 +50,10 @@ export const MicroInteraction: React.FC<MicroInteractionProps> = ({
         return isActive 
           ? 'animate-[shake_0.5s_ease-in-out] transition-all' 
           : 'transition-all';
+      case 'scale-in':
+        return isActive 
+          ? 'animate-scale-in transition-all duration-200' 
+          : trigger === 'auto' ? 'opacity-0 scale-95' : 'transition-all duration-200';
       default:
         return '';
     }
@@ -69,6 +73,15 @@ export const MicroInteraction: React.FC<MicroInteractionProps> = ({
       setTimeout(() => setIsActive(false), 150);
     }
   };
+
+  // For auto trigger with scale-in, set active immediately on mount
+  useEffect(() => {
+    if (trigger === 'auto' && type === 'scale-in' && delay === 0) {
+      setIsActive(true);
+      setHasTriggered(true);
+    }
+    return undefined;
+  }, [trigger, type, delay]);
 
   return (
     <div
@@ -106,7 +119,6 @@ export const SuccessAnimation: React.FC<{ show: boolean; onComplete?: () => void
   );
 };
 
-// Componente para feedback de carregamento
 export const LoadingMicroInteraction: React.FC<{ 
   loading: boolean; 
   children: React.ReactNode;
