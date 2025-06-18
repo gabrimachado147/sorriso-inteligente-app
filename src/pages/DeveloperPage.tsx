@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { MainLayout } from '@/components/Layout/MainLayout';
 import { PageHead } from '@/components/SEO/PageHead';
@@ -13,6 +12,7 @@ import { SystemTab } from '@/components/Developer/SystemTab';
 import { OtherTabsContent } from '@/components/Developer/OtherTabsContent';
 import { PerformanceMonitor } from '@/components/Developer/PerformanceMonitor';
 import { AIPageAnalyzer } from '@/components/Developer/AIPageAnalyzer';
+import { EnhancedAIPageAnalyzer } from '@/components/Developer/EnhancedAIPageAnalyzer';
 import { DeveloperErrorBoundary } from '@/components/Developer/DeveloperErrorBoundary';
 import { useDevelopmentPanel } from '@/hooks/useDevelopmentPanel';
 import { animations } from '@/lib/animations';
@@ -54,12 +54,12 @@ const DeveloperPage = () => {
                   </div>
                 </DeveloperErrorBoundary>
 
-                {/* Enhanced AI Page Analyzer */}
+                {/* Enhanced AI Page Analyzer with Page Selector */}
                 <DeveloperErrorBoundary>
                   <div className="relative">
                     <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-xl blur-xl" />
                     <div className="relative">
-                      <AIPageAnalyzer />
+                      <EnhancedAIPageAnalyzer />
                     </div>
                   </div>
                 </DeveloperErrorBoundary>
