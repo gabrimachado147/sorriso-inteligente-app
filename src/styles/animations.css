@@ -162,6 +162,17 @@
   }
 }
 
+@keyframes slide-in-top {
+  from {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @keyframes gentle-fade-in {
   from {
     opacity: 0;
@@ -180,6 +191,28 @@
   }
   60% {
     transform: translateY(-5px);
+  }
+}
+
+@keyframes modal-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes emergency-pulse {
+  0%, 100% {
+    background-color: rgba(220, 38, 38, 0.1);
+    transform: scale(1);
+  }
+  50% {
+    background-color: rgba(220, 38, 38, 0.2);
+    transform: scale(1.02);
   }
 }
 

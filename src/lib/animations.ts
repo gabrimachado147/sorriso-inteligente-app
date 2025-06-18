@@ -11,11 +11,19 @@ export const animations = {
   slideInRight: 'opacity-0 translate-x-8 animate-[slide-in-right_0.6s_ease-out_forwards]',
   slideInLeft: 'opacity-0 -translate-x-8 animate-[slide-in-left_0.6s_ease-out_forwards]',
   slideInBottom: 'opacity-0 translate-y-8 animate-[slide-in-bottom_0.6s_ease-out_forwards]',
+  slideInTop: 'opacity-0 -translate-y-8 animate-[slide-in-top_0.6s_ease-out_forwards]',
   
   // Interactive animations
   cardHover: 'transition-all duration-300 hover:shadow-lg hover:-translate-y-1',
   buttonHover: 'transition-all duration-200 hover:scale-105 active:scale-95',
   imageHover: 'transition-transform duration-300 hover:scale-110',
+  iconHover: 'transition-transform duration-200 hover:scale-110',
+  
+  // Modal and overlay animations
+  modalEnter: 'animate-[modal-enter_0.3s_ease-out]',
+  
+  // Emergency and special animations
+  emergencyPulse: 'animate-[emergency-pulse_2s_ease-in-out_infinite]',
   
   // Stagger animations
   staggerChildren: 'stagger-animation',
