@@ -21,6 +21,13 @@ export const XAIPromptInput: React.FC<XAIPromptInputProps> = ({
   onRefreshConfig,
   loading
 }) => {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && e.ctrlKey && !loading && prompt.trim()) {
+      e.preventDefault();
+      onGenerateInsight();
+    }
+  };
+
   return (
     <Card className="border-purple-200">
       <CardHeader>
@@ -35,8 +42,9 @@ export const XAIPromptInput: React.FC<XAIPromptInputProps> = ({
             variant="ghost"
             size="sm"
             className="ml-auto"
+            disabled={loading}
           >
-            <RefreshCw className="h-3 w-3" />
+            <RefreshCw className={`h-3 w-3 ${loading ? 'animate-spin' : ''}`} />
           </Button>
         </CardTitle>
       </CardHeader>
@@ -48,8 +56,10 @@ export const XAIPromptInput: React.FC<XAIPromptInputProps> = ({
           <Textarea
             value={prompt}
             onChange={(e) => onPromptChange(e.target.value)}
-            placeholder="Digite sua pergunta específica sobre o projeto..."
+            onKeyDown={handleKeyDown}
+            placeholder="Digite sua pergunta específica sobre o projeto... (Ctrl+Enter para enviar)"
             className="min-h-[120px] resize-none"
+            disabled={loading}
           />
         </div>
 
@@ -59,7 +69,10 @@ export const XAIPromptInput: React.FC<XAIPromptInputProps> = ({
           className="w-full"
         >
           {loading ? (
-            'Gerando insight...'
+            <>
+              <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+              Gerando insight...
+            </>
           ) : (
             <>
               <Code className="h-4 w-4 mr-2" />
@@ -67,6 +80,10 @@ export const XAIPromptInput: React.FC<XAIPromptInputProps> = ({
             </>
           )}
         </Button>
+
+        <div className="text-xs text-gray-500 text-center">
+          Dica: Use Ctrl+Enter para enviar rapidamente
+        </div>
       </CardContent>
     </Card>
   );

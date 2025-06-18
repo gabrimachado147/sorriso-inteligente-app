@@ -1,42 +1,27 @@
 
-// Configurações específicas para desenvolvimento
+// Configurações de desenvolvimento
+export const isDevelopment = import.meta.env.DEV || import.meta.env.MODE === 'development';
+
 export const DEVELOPMENT_CONFIG = {
-  // XAI/Grok Integration
-  ENABLE_XAI_INSIGHTS: import.meta.env.VITE_ENABLE_XAI === 'true' || import.meta.env.DEV,
+  // Sempre mostrar dev tools em desenvolvimento
+  SHOW_DEV_TOOLS: true,
   
-  // Debug Settings
-  VERBOSE_LOGGING: import.meta.env.VITE_DEBUG_MODE === 'true' || import.meta.env.DEV,
+  // Habilitar insights XAI
+  ENABLE_XAI_INSIGHTS: true,
   
-  // Development Tools
-  SHOW_DEV_TOOLS: import.meta.env.DEV || import.meta.env.VITE_SHOW_DEV_TOOLS === 'true',
+  // Logging verboso
+  VERBOSE_LOGGING: isDevelopment,
   
-  // Performance Monitoring in Development
-  ENABLE_DEV_PERFORMANCE_MONITOR: import.meta.env.DEV,
+  // Monitor de performance
+  ENABLE_DEV_PERFORMANCE_MONITOR: isDevelopment,
   
-  // Feature Flags for Development
-  ENABLE_EXPERIMENTAL_FEATURES: import.meta.env.VITE_ENABLE_EXPERIMENTAL === 'true',
-} as const;
-
-// Environment Detection
-export const isDevelopment = import.meta.env.DEV;
-export const isStaging = import.meta.env.VITE_ENVIRONMENT === 'staging';
-export const isProduction = import.meta.env.VITE_ENVIRONMENT === 'production';
-
-// Development Utilities
-export const devLog = (...args: any[]) => {
-  if (DEVELOPMENT_CONFIG.VERBOSE_LOGGING) {
-    console.log('[DEV]', ...args);
-  }
+  // Debug mode
+  DEBUG_MODE: isDevelopment
 };
 
-export const devWarn = (...args: any[]) => {
-  if (DEVELOPMENT_CONFIG.VERBOSE_LOGGING) {
-    console.warn('[DEV]', ...args);
-  }
-};
-
-export const devError = (...args: any[]) => {
-  if (DEVELOPMENT_CONFIG.VERBOSE_LOGGING) {
-    console.error('[DEV]', ...args);
-  }
-};
+// Log de configuração
+console.log('🔧 Development Config:', {
+  isDevelopment,
+  showDevTools: DEVELOPMENT_CONFIG.SHOW_DEV_TOOLS,
+  environment: import.meta.env.MODE
+});

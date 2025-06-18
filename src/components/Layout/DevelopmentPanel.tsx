@@ -28,15 +28,19 @@ export const DevelopmentPanel: React.FC = () => {
     projectInfo
   } = useDevelopmentPanel();
 
-  console.log('DevelopmentPanel renderizando:', { isDevelopment, showDevTools: DEVELOPMENT_CONFIG.SHOW_DEV_TOOLS });
+  console.log('🔧 DevelopmentPanel renderizando:', { 
+    isDevelopment, 
+    showDevTools: DEVELOPMENT_CONFIG.SHOW_DEV_TOOLS,
+    mode: import.meta.env.MODE 
+  });
 
-  // Só renderiza em desenvolvimento
-  if (!isDevelopment || !DEVELOPMENT_CONFIG.SHOW_DEV_TOOLS) {
-    console.log('DevelopmentPanel não será exibido');
+  // Forçar exibição em desenvolvimento
+  if (!DEVELOPMENT_CONFIG.SHOW_DEV_TOOLS) {
+    console.log('❌ Dev Tools desabilitado na configuração');
     return null;
   }
 
-  console.log('DevelopmentPanel será exibido');
+  console.log('✅ Dev Tools será exibido');
 
   return (
     <div className="fixed bottom-4 right-4 z-50 max-w-4xl">
@@ -45,7 +49,7 @@ export const DevelopmentPanel: React.FC = () => {
           <Button
             variant="outline"
             size="sm"
-            className="mb-2 bg-purple-100 border-purple-300 hover:bg-purple-200"
+            className="mb-2 bg-purple-100 border-purple-300 hover:bg-purple-200 shadow-lg"
           >
             <Settings className="h-4 w-4 mr-2" />
             Dev Tools
@@ -58,7 +62,7 @@ export const DevelopmentPanel: React.FC = () => {
         </CollapsibleTrigger>
         
         <CollapsibleContent>
-          <Card className="w-full max-w-4xl border-purple-300 shadow-lg">
+          <Card className="w-full max-w-4xl border-purple-300 shadow-xl bg-white">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm flex items-center gap-2">
                 <Code className="h-4 w-4" />
