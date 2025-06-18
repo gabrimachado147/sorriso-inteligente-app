@@ -150,21 +150,23 @@ export const MessageTemplates: React.FC<MessageTemplatesProps> = ({
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 space-y-6 overflow-hidden">
+    <div className="w-full max-w-7xl mx-auto px-4 space-y-6 overflow-x-hidden">
       {/* Header centralizado */}
-      <MessageTemplatesHeader
-        selectedCategory={selectedCategory}
-        setSelectedCategory={setSelectedCategory}
-        onCreateNew={() => setIsCreating(true)}
-        onQuickSendReminders={handleQuickSendReminders}
-        isSending={isSending}
-      />
+      <div className="w-full overflow-x-hidden">
+        <MessageTemplatesHeader
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+          onCreateNew={() => setIsCreating(true)}
+          onQuickSendReminders={handleQuickSendReminders}
+          isSending={isSending}
+        />
+      </div>
 
-      {/* Templates Grid Responsivo */}
-      <div className="w-full overflow-hidden">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-fr">
+      {/* Templates Grid Responsivo - Corrigido overflow */}
+      <div className="w-full overflow-x-hidden">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-fr w-full">
           {filteredTemplates.map(template => (
-            <div key={template.id} className="w-full">
+            <div key={template.id} className="w-full min-w-0">
               <TemplateCard
                 template={template}
                 isSending={isSending}
@@ -190,14 +192,16 @@ export const MessageTemplates: React.FC<MessageTemplatesProps> = ({
 
       {/* Editor de Template */}
       {(isCreating || editingTemplate) && (
-        <TemplateEditor
-          template={editingTemplate}
-          onSave={handleSaveTemplate}
-          onCancel={() => {
-            setEditingTemplate(null);
-            setIsCreating(false);
-          }}
-        />
+        <div className="w-full overflow-x-hidden">
+          <TemplateEditor
+            template={editingTemplate}
+            onSave={handleSaveTemplate}
+            onCancel={() => {
+              setEditingTemplate(null);
+              setIsCreating(false);
+            }}
+          />
+        </div>
       )}
     </div>
   );

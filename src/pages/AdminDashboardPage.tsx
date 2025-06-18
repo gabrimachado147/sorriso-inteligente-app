@@ -1,10 +1,11 @@
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { AdminDashboard } from '@/components/Dashboard/AdminDashboard';
 import { PageHead } from '@/components/SEO/PageHead';
 import { useAppointments } from '@/hooks/useAppointments';
 import { Button } from '@/components/ui/button';
-import { LogOut, ArrowLeft } from 'lucide-react';
+import { LogOut, ArrowLeft, Sparkles } from 'lucide-react';
 import { animations } from '@/lib/animations';
 
 const AdminDashboardPage = () => {
@@ -32,11 +33,9 @@ const AdminDashboardPage = () => {
   };
 
   const handleGoBack = () => {
-    // Check if there's a previous page in the browser history within the dashboard
     if (window.history.length > 1 && location.key !== 'default') {
       navigate(-1);
     } else {
-      // If no history or this is the first page, go to dashboard overview
       navigate('/admin-dashboard');
     }
   };
@@ -45,22 +44,27 @@ const AdminDashboardPage = () => {
     return (
       <>
         <PageHead
-          title="Dashboard Administrativo - Senhor Sorriso"
-          description="Painel administrativo para gestão de agendamentos e operações da rede Senhor Sorriso."
-          keywords="dashboard administrativo, gestão agendamentos, painel admin, operações, Senhor Sorriso"
+          title="Dashboard Administrativo - Sorriso Inteligente"
+          description="Painel administrativo para gestão de agendamentos e operações da rede Sorriso Inteligente."
+          keywords="dashboard administrativo, gestão agendamentos, painel admin, operações, Sorriso Inteligente"
           url="https://senhorsorrisso.com.br/admin-dashboard"
         />
-        <div className="min-h-screen bg-background flex items-center justify-center overflow-x-hidden">
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
           <div className="text-center px-4">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="mobile-text-base">Carregando dashboard...</p>
+            <div className="relative mb-6">
+              <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-200 border-t-blue-600 mx-auto"></div>
+              <Sparkles className="h-6 w-6 text-yellow-500 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
+            </div>
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">
+              Preparando seu Sorriso Inteligente...
+            </h2>
+            <p className="text-gray-600">Carregando dashboard com carinho ✨</p>
           </div>
         </div>
       </>
     );
   }
 
-  // Calcular estatísticas básicas
   const stats = {
     total: appointments.length,
     confirmed: appointments.filter(apt => apt.status === 'confirmed').length,
@@ -71,32 +75,34 @@ const AdminDashboardPage = () => {
   return (
     <>
       <PageHead
-        title="Dashboard Administrativo - Senhor Sorriso"
-        description="Painel administrativo para gestão de agendamentos e operações da rede Senhor Sorriso."
-        keywords="dashboard administrativo, gestão agendamentos, painel admin, operações, Senhor Sorriso"
+        title="Dashboard Administrativo - Sorriso Inteligente"
+        description="Painel administrativo para gestão de agendamentos e operações da rede Sorriso Inteligente."
+        keywords="dashboard administrativo, gestão agendamentos, painel admin, operações, Sorriso Inteligente"
         url="https://senhorsorrisso.com.br/admin-dashboard"
       />
-      <div className="min-h-screen bg-background w-full overflow-x-hidden">
-        {/* Header */}
-        <div className="bg-white shadow-sm border-b w-full">
-          <div className="mobile-container px-4 py-4 max-w-7xl mx-auto">
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2 min-w-0 flex-1">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+        {/* Header Melhorado */}
+        <div className="bg-white shadow-lg border-b border-blue-100">
+          <div className="max-w-7xl mx-auto px-4 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
                 <Button 
                   variant="ghost" 
                   size="sm" 
                   onClick={handleGoBack} 
-                  className="mobile-touch-target flex-shrink-0"
+                  className="text-gray-600 hover:text-blue-600 hover:bg-blue-50"
                 >
-                  <ArrowLeft className="h-4 w-4 mr-1" />
-                  <span className="hidden sm:inline">Voltar</span>
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Voltar
                 </Button>
-                <div className="min-w-0 flex-1 text-center">
-                  <h1 className="text-lg font-semibold mobile-text-lg truncate">
-                    Dashboard Admin
+                <div className="h-6 w-px bg-gray-300"></div>
+                <div>
+                  <h1 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                    <Sparkles className="h-5 w-5 text-blue-600" />
+                    Sorriso Inteligente
                   </h1>
-                  <p className="text-sm text-muted-foreground mobile-text-sm truncate">
-                    {staffClinic.charAt(0).toUpperCase() + staffClinic.slice(1)}
+                  <p className="text-sm text-gray-600">
+                    Dashboard • {staffClinic.charAt(0).toUpperCase() + staffClinic.slice(1)}
                   </p>
                 </div>
               </div>
@@ -104,22 +110,20 @@ const AdminDashboardPage = () => {
               <Button 
                 variant="outline" 
                 onClick={handleLogout} 
-                className="mobile-touch-target flex-shrink-0"
+                className="text-gray-600 hover:text-red-600 hover:border-red-300 hover:bg-red-50"
                 size="sm"
               >
-                <LogOut className="h-4 w-4 mr-1" />
-                <span className="hidden sm:inline">Sair</span>
+                <LogOut className="h-4 w-4 mr-2" />
+                Sair com Segurança
               </Button>
             </div>
           </div>
         </div>
 
         {/* Dashboard Content */}
-        <main className="flex-1 w-full overflow-x-hidden">
-          <div className="mobile-container px-4 py-6 max-w-7xl mx-auto">
-            <div className={`space-y-6 ${animations.pageEnter} overflow-x-hidden w-full`}>
-              <AdminDashboard appointments={appointments} stats={stats} />
-            </div>
+        <main className="max-w-7xl mx-auto px-4 py-6">
+          <div className={`${animations.pageEnter}`}>
+            <AdminDashboard appointments={appointments} stats={stats} />
           </div>
         </main>
       </div>
