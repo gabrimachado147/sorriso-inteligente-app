@@ -102,25 +102,27 @@ export const ClinicDashboard: React.FC<ClinicDashboardProps> = ({ appointments, 
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 lg:px-6">
-      <div className={`space-y-6 ${animations.pageEnter}`}>
+    <div className="w-full max-w-7xl mx-auto px-4 lg:px-6 overflow-x-hidden">
+      <div className={`space-y-6 ${animations.pageEnter} w-full overflow-x-hidden`}>
         {/* Header com notificações - Centralizado */}
-        <ClinicDashboardHeader
-          clinicName={clinicName}
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          statusFilter={statusFilter}
-          setStatusFilter={setStatusFilter}
-          dateFilter={dateFilter}
-          setDateFilter={setDateFilter}
-          periodFilter={periodFilter}
-          setPeriodFilter={setPeriodFilter}
-          onExportData={exportData}
-          onRefresh={handleRefresh}
-        />
+        <div className="w-full overflow-x-hidden">
+          <ClinicDashboardHeader
+            clinicName={clinicName}
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            statusFilter={statusFilter}
+            setStatusFilter={setStatusFilter}
+            dateFilter={dateFilter}
+            setDateFilter={setDateFilter}
+            periodFilter={periodFilter}
+            setPeriodFilter={setPeriodFilter}
+            onExportData={exportData}
+            onRefresh={handleRefresh}
+          />
+        </div>
 
-        {/* Cards de Estatísticas - Centralizados */}
-        <div className="w-full">
+        {/* Cards de Estatísticas - Centralizados e sem duplicação */}
+        <div className="w-full overflow-x-hidden">
           <DashboardStats
             totalAppointments={dashboardData.totalAppointments}
             conversionRate={dashboardData.conversionRate}
@@ -130,23 +132,27 @@ export const ClinicDashboard: React.FC<ClinicDashboardProps> = ({ appointments, 
         </div>
 
         {/* Navigation - Centralizada */}
-        <div className={`${animations.fadeIn} w-full`}>
-          <ClinicDashboardTabs
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
-          />
+        <div className={`${animations.fadeIn} w-full overflow-x-hidden`}>
+          <div className="w-full overflow-x-hidden">
+            <ClinicDashboardTabs
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+            />
+          </div>
 
-          <ClinicDashboardContent
-            activeTab={activeTab}
-            filteredAppointments={filteredAppointments}
-            dashboardData={dashboardData}
-            clinicName={clinicName}
-            onStatusChange={handleUpdateStatus}
-            onServiceUpdate={handleUpdateService}
-            onBulkStatusUpdate={handleBulkStatusUpdate}
-            onSendBulkMessage={handleSendBulkMessage}
-            isUpdating={updateAppointmentStatus.isPending || updateAppointmentService.isPending}
-          />
+          <div className="w-full overflow-x-hidden">
+            <ClinicDashboardContent
+              activeTab={activeTab}
+              filteredAppointments={filteredAppointments}
+              dashboardData={dashboardData}
+              clinicName={clinicName}
+              onStatusChange={handleUpdateStatus}
+              onServiceUpdate={handleUpdateService}
+              onBulkStatusUpdate={handleBulkStatusUpdate}
+              onSendBulkMessage={handleSendBulkMessage}
+              isUpdating={updateAppointmentStatus.isPending || updateAppointmentService.isPending}
+            />
+          </div>
         </div>
       </div>
     </div>

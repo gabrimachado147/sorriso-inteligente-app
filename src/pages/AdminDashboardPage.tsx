@@ -33,11 +33,9 @@ const AdminDashboardPage = () => {
   };
 
   const handleGoBack = () => {
-    // Check if there's a previous page in the browser history within the dashboard
     if (window.history.length > 1 && location.key !== 'default') {
       navigate(-1);
     } else {
-      // If no history or this is the first page, go to dashboard overview
       navigate('/admin-dashboard');
     }
   };
@@ -61,7 +59,6 @@ const AdminDashboardPage = () => {
     );
   }
 
-  // Calcular estatísticas básicas
   const stats = {
     total: appointments.length,
     confirmed: appointments.filter(apt => apt.status === 'confirmed').length,
@@ -77,10 +74,10 @@ const AdminDashboardPage = () => {
         keywords="dashboard administrativo, gestão agendamentos, painel admin, operações, Senhor Sorriso"
         url="https://senhorsorrisso.com.br/admin-dashboard"
       />
-      <div className="min-h-screen bg-background">
-        {/* Header */}
+      <div className="min-h-screen bg-background overflow-x-hidden">
+        {/* Header - Corrigido overflow */}
         <div className="bg-white shadow-sm border-b w-full">
-          <div className="mobile-container px-4 py-4 max-w-7xl mx-auto">
+          <div className="w-full px-4 py-4 max-w-7xl mx-auto">
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-2 min-w-0 flex-1">
                 <Button 
@@ -115,10 +112,10 @@ const AdminDashboardPage = () => {
           </div>
         </div>
 
-        {/* Dashboard Content */}
-        <main className="flex-1">
-          <div className="mobile-container px-4 py-6 max-w-7xl mx-auto">
-            <div className={`space-y-6 ${animations.pageEnter}`}>
+        {/* Dashboard Content - Corrigido overflow */}
+        <main className="flex-1 w-full overflow-x-hidden">
+          <div className="w-full px-4 py-6 max-w-7xl mx-auto overflow-x-hidden">
+            <div className={`space-y-6 ${animations.pageEnter} w-full overflow-x-hidden`}>
               <AdminDashboard appointments={appointments} stats={stats} />
             </div>
           </div>
