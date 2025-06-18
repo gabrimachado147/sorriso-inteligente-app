@@ -76,28 +76,30 @@ const DeveloperPage = () => {
         keywords="developer tools, IA, desenvolvimento, Grok, insights, debug, performance, automação"
         url="https://senhorsorrisso.com.br/developer"
       />
-      <div className="w-full min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
+      <div className="w-full min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 overflow-x-hidden">
         <MainLayout>
           <DeveloperErrorBoundary>
             <div className={`w-full ${animations.pageEnter}`}>
-              <div className="container mx-auto px-4 py-6 space-y-8">
+              <div className="container mx-auto px-4 py-6 space-y-6 lg:space-y-8 max-w-7xl">
                 {/* Breadcrumbs */}
                 <DeveloperBreadcrumbs />
 
                 {/* Enhanced Header */}
                 <DeveloperPageHeader />
 
-                {/* Success Stories Section */}
-                <DeveloperErrorBoundary>
-                  <DeveloperSuccessStories />
-                </DeveloperErrorBoundary>
+                {/* Success Stories Section - Hidden on mobile for better performance */}
+                <div className="hidden lg:block">
+                  <DeveloperErrorBoundary>
+                    <DeveloperSuccessStories />
+                  </DeveloperErrorBoundary>
+                </div>
 
                 {/* Performance Score Overview */}
                 {!optimizationLoading && performanceScore > 0 && (
                   <div className="text-center">
-                    <div className="inline-flex items-center gap-3 bg-gradient-to-r from-green-50 to-blue-50 px-6 py-3 rounded-full border border-green-200">
-                      <span className="text-sm font-medium">Performance Score:</span>
-                      <span className={`text-xl font-bold ${
+                    <div className="inline-flex items-center gap-2 lg:gap-3 bg-gradient-to-r from-green-50 to-blue-50 px-4 lg:px-6 py-2 lg:py-3 rounded-full border border-green-200">
+                      <span className="text-xs lg:text-sm font-medium">Performance Score:</span>
+                      <span className={`text-lg lg:text-xl font-bold ${
                         performanceScore >= 80 ? 'text-green-600' : 
                         performanceScore >= 60 ? 'text-yellow-600' : 'text-red-600'
                       }`}>
@@ -107,20 +109,22 @@ const DeveloperPage = () => {
                   </div>
                 )}
 
-                {/* Enhanced AI Page Analyzer */}
-                <DeveloperErrorBoundary>
-                  <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-xl blur-xl" />
+                {/* Enhanced AI Page Analyzer - Responsive layout */}
+                <div className="hidden lg:block">
+                  <DeveloperErrorBoundary>
                     <div className="relative">
-                      <EnhancedAIPageAnalyzer />
+                      <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-xl blur-xl" />
+                      <div className="relative">
+                        <EnhancedAIPageAnalyzer />
+                      </div>
                     </div>
-                  </div>
-                </DeveloperErrorBoundary>
+                  </DeveloperErrorBoundary>
+                </div>
 
-                {/* Main Layout with Enhanced Navigation */}
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                {/* Main Layout - Responsive grid */}
+                <div className="grid grid-cols-1 xl:grid-cols-4 gap-4 lg:gap-8">
                   {/* Enhanced Navigation Sidebar */}
-                  <div className="lg:col-span-1">
+                  <div className="xl:col-span-1">
                     <div className="sticky top-4">
                       <EnhancedDeveloperNavigation 
                         activeSection={activeSection}
@@ -130,11 +134,11 @@ const DeveloperPage = () => {
                   </div>
 
                   {/* Content Area */}
-                  <div className="lg:col-span-3">
+                  <div className="xl:col-span-3">
                     <div className="relative">
                       <div className="absolute inset-0 bg-white/40 rounded-2xl blur-2xl" />
                       <div className="relative bg-white/60 backdrop-blur-sm rounded-2xl border border-white/30 shadow-xl">
-                        <Tabs value={activeSection} className="w-full p-6">
+                        <Tabs value={activeSection} className="w-full p-4 lg:p-6">
                           {renderContent()}
                         </Tabs>
                       </div>

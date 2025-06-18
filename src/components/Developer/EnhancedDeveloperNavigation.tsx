@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { 
   Brain, 
@@ -140,20 +139,20 @@ export const EnhancedDeveloperNavigation: React.FC<EnhancedDeveloperNavigationPr
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 lg:space-y-6 w-full">
       <div className="text-center">
-        <h2 className="text-xl font-bold mb-2">🚀 Central de Desenvolvimento</h2>
-        <p className="text-sm text-gray-600">
+        <h2 className="text-lg lg:text-xl font-bold mb-2">🚀 Central de Desenvolvimento</h2>
+        <p className="text-xs lg:text-sm text-gray-600 px-2">
           Ferramentas avançadas para otimizar seu workflow
         </p>
       </div>
 
       {categories.map(category => (
         <div key={category.id} className="space-y-2">
-          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">
+          <h3 className="text-xs lg:text-sm font-semibold text-gray-500 uppercase tracking-wide px-1">
             {category.name}
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-2 lg:gap-3">
             {category.items.map(item => {
               const IconComponent = item.icon;
               const isActive = activeSection === item.id;
@@ -168,29 +167,29 @@ export const EnhancedDeveloperNavigation: React.FC<EnhancedDeveloperNavigationPr
                   } ${getCategoryColor(item.category)}`}
                   onClick={item.onClick}
                 >
-                  <CardContent className="p-4">
+                  <CardContent className="p-3 lg:p-4">
                     <div className="flex items-start justify-between">
-                      <div className="flex items-start gap-3 flex-1">
-                        <div className={`p-2 rounded-lg ${
+                      <div className="flex items-start gap-2 lg:gap-3 flex-1 min-w-0">
+                        <div className={`p-1.5 lg:p-2 rounded-lg flex-shrink-0 ${
                           isActive 
                             ? 'bg-primary text-white' 
                             : 'bg-gray-100 text-gray-600'
                         }`}>
-                          <IconComponent className="h-4 w-4" />
+                          <IconComponent className="h-3 w-3 lg:h-4 lg:w-4" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <h4 className="font-medium text-sm truncate">
+                          <div className="flex items-center gap-1 lg:gap-2 mb-1 flex-wrap">
+                            <h4 className="font-medium text-xs lg:text-sm truncate">
                               {item.title}
                             </h4>
                             {getStatusBadge(item.status)}
                           </div>
-                          <p className="text-xs text-gray-600 line-clamp-2">
+                          <p className="text-xs text-gray-600 line-clamp-2 lg:line-clamp-none">
                             {item.description}
                           </p>
                         </div>
                       </div>
-                      <ChevronRight className={`h-4 w-4 transition-transform duration-200 ${
+                      <ChevronRight className={`h-3 w-3 lg:h-4 lg:w-4 transition-transform duration-200 flex-shrink-0 ml-1 ${
                         isActive ? 'text-primary rotate-90' : 'text-gray-400'
                       }`} />
                     </div>

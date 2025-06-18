@@ -55,13 +55,14 @@ const BottomNavigation = () => {
     }
   ];
 
-  if (!isMobile) {
-    return null; // Esconder navegação inferior em desktop
+  // Mostrar navegação inferior apenas em mobile e tablets pequenos
+  if (!isMobile && window.innerWidth > 768) {
+    return null;
   }
 
   return (
-    <nav className={`fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-gray-200 z-50 safe-bottom ${animations.slideInBottom}`}>
-      <div className="mobile-container px-2">
+    <nav className={`fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-gray-200 z-50 safe-bottom ${animations.slideInBottom} md:hidden`}>
+      <div className="container mx-auto px-2 max-w-md">
         <div className="flex justify-around items-center py-2">
           {navItems.map((item, index) => {
             const Icon = item.icon;

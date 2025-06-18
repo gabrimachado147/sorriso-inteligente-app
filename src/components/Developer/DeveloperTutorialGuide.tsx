@@ -78,12 +78,12 @@ export const DeveloperTutorialGuide: React.FC = () => {
   };
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-3">
-          <BookOpen className="h-6 w-6 text-primary" />
-          Guia Interativo de Desenvolvimento
-          <Badge variant="secondary" className="bg-purple-100 text-purple-700">
+    <Card className="w-full max-w-none">
+      <CardHeader className="px-4 md:px-6">
+        <CardTitle className="flex flex-col sm:flex-row sm:items-center gap-3 text-lg md:text-xl">
+          <BookOpen className="h-5 w-5 md:h-6 md:w-6 text-primary flex-shrink-0" />
+          <span className="truncate">Guia Interativo de Desenvolvimento</span>
+          <Badge variant="secondary" className="bg-purple-100 text-purple-700 self-start sm:self-auto">
             {completedSteps.length}/{tutorialSteps.length} Concluídos
           </Badge>
         </CardTitle>
@@ -95,74 +95,75 @@ export const DeveloperTutorialGuide: React.FC = () => {
           <Progress value={progress} className="h-2" />
         </div>
       </CardHeader>
-      <CardContent className="space-y-4">
-        {tutorialSteps.map((step, index) => {
-          const isCompleted = completedSteps.includes(step.id);
-          const isCurrent = index === currentStep;
-          
-          return (
-            <div
-              key={step.id}
-              className={`p-4 rounded-lg border transition-all duration-200 ${
-                isCurrent 
-                  ? 'border-primary bg-primary/5 shadow-md' 
-                  : isCompleted 
-                    ? 'border-green-200 bg-green-50' 
-                    : 'border-gray-200 hover:border-gray-300'
-              }`}
-            >
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    {isCompleted ? (
-                      <CheckCircle className="h-5 w-5 text-green-600" />
-                    ) : (
-                      <PlayCircle className="h-5 w-5 text-primary" />
-                    )}
-                    <h3 className="font-medium">{step.title}</h3>
-                    <Badge 
-                      variant="outline" 
-                      className={getDifficultyColor(step.difficulty)}
-                    >
-                      {step.difficulty}
-                    </Badge>
-                  </div>
-                  <p className="text-sm text-gray-600 mb-3">{step.description}</p>
-                  <div className="flex items-center gap-4">
-                    <span className="text-xs text-gray-500">⏱️ {step.duration}</span>
-                    {isCurrent && (
-                      <Button
-                        size="sm"
-                        onClick={() => markStepCompleted(step.id)}
-                        className="text-xs"
+      <CardContent className="space-y-4 px-4 md:px-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {tutorialSteps.map((step, index) => {
+            const isCompleted = completedSteps.includes(step.id);
+            const isCurrent = index === currentStep;
+            
+            return (
+              <div
+                key={step.id}
+                className={`p-4 rounded-lg border transition-all duration-200 ${
+                  isCurrent 
+                    ? 'border-primary bg-primary/5 shadow-md' 
+                    : isCompleted 
+                      ? 'border-green-200 bg-green-50' 
+                      : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-2 flex-wrap">
+                      {isCompleted ? (
+                        <CheckCircle className="h-4 w-4 md:h-5 md:w-5 text-green-600 flex-shrink-0" />
+                      ) : (
+                        <PlayCircle className="h-4 w-4 md:h-5 md:w-5 text-primary flex-shrink-0" />
+                      )}
+                      <h3 className="font-medium text-sm md:text-base truncate">{step.title}</h3>
+                      <Badge 
+                        variant="outline" 
+                        className={`${getDifficultyColor(step.difficulty)} text-xs flex-shrink-0`}
                       >
-                        Marcar como Concluído
-                        <CheckCircle className="h-3 w-3 ml-1" />
-                      </Button>
-                    )}
+                        {step.difficulty}
+                      </Badge>
+                    </div>
+                    <p className="text-xs md:text-sm text-gray-600 mb-3 line-clamp-2">{step.description}</p>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                      <span className="text-xs text-gray-500">⏱️ {step.duration}</span>
+                      {isCurrent && (
+                        <Button
+                          size="sm"
+                          onClick={() => markStepCompleted(step.id)}
+                          className="text-xs w-full sm:w-auto"
+                        >
+                          <span className="hidden sm:inline">Marcar como Concluído</span>
+                          <span className="sm:hidden">Concluir</span>
+                          <CheckCircle className="h-3 w-3 ml-1 flex-shrink-0" />
+                        </Button>
+                      )}
+                    </div>
                   </div>
+                  {isCurrent && (
+                    <ArrowRight className="h-4 w-4 md:h-5 md:w-5 text-primary animate-pulse flex-shrink-0 ml-2" />
+                  )}
                 </div>
-                {isCurrent && (
-                  <ArrowRight className="h-5 w-5 text-primary animate-pulse" />
-                )}
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
 
         {progress === 100 && (
-          <div className="text-center p-6 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border border-purple-200">
-            <Trophy className="h-12 w-12 text-yellow-500 mx-auto mb-2" />
-            <h3 className="font-bold text-lg mb-2">🎉 Parabéns!</h3>
-            <p className="text-gray-600">
+          <div className="text-center p-4 md:p-6 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border border-purple-200">
+            <Trophy className="h-10 w-10 md:h-12 md:w-12 text-yellow-500 mx-auto mb-2" />
+            <h3 className="font-bold text-base md:text-lg mb-2">🎉 Parabéns!</h3>
+            <p className="text-sm md:text-base text-gray-600 max-w-md mx-auto">
               Você completou todos os tutoriais e está pronto para dominar as ferramentas de desenvolvimento!
             </p>
-            <div className="flex justify-center gap-2 mt-3">
-              <Star className="h-5 w-5 text-yellow-500 fill-current" />
-              <Star className="h-5 w-5 text-yellow-500 fill-current" />
-              <Star className="h-5 w-5 text-yellow-500 fill-current" />
-              <Star className="h-5 w-5 text-yellow-500 fill-current" />
-              <Star className="h-5 w-5 text-yellow-500 fill-current" />
+            <div className="flex justify-center gap-1 md:gap-2 mt-3">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className="h-4 w-4 md:h-5 md:w-5 text-yellow-500 fill-current" />
+              ))}
             </div>
           </div>
         )}
