@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Textarea } from '@/components/ui/textarea';
 import { useCodeAnalysis } from '@/hooks/useCodeAnalysis';
-import { OptimizedDataTable } from './OptimizedDataTable';
+import { OptimizedDataProcessor } from './OptimizedDataProcessor';
 import { DataItem } from '@/types/developer';
 import { 
   Brain, 
@@ -23,7 +23,7 @@ export const LiveCodeAnalysis: React.FC = () => {
   const { analysisResult, metrics, loading, runCodeAnalysis, generateOptimizedCode } = useCodeAnalysis();
   const [codeInput, setCodeInput] = React.useState('');
 
-  // Dados de exemplo para demonstração
+  // Dados de exemplo otimizados para demonstração
   const sampleData: DataItem[] = [
     { id: '1', name: 'Component A', value: 85, status: 'active' },
     { id: '2', name: 'Component B', value: 92, status: 'active' },
@@ -31,10 +31,6 @@ export const LiveCodeAnalysis: React.FC = () => {
     { id: '4', name: 'Hook Custom', value: 95, status: 'active' },
     { id: '5', name: 'Service API', value: 88, status: 'pending' }
   ];
-
-  const handleDataUpdate = (id: string, updates: Partial<DataItem>) => {
-    console.log('Updating item:', id, updates);
-  };
 
   return (
     <div className="space-y-6">
@@ -132,11 +128,10 @@ export const LiveCodeAnalysis: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* Exemplo prático de otimização */}
-      <OptimizedDataTable 
-        data={sampleData} 
-        onUpdate={handleDataUpdate}
-        loading={loading}
+      {/* Componente otimizado implementado */}
+      <OptimizedDataProcessor 
+        initialData={sampleData} 
+        title="Processador de Dados com Otimizações"
       />
 
       {/* Sugestões de implementação */}
@@ -151,19 +146,23 @@ export const LiveCodeAnalysis: React.FC = () => {
           <CardContent className="space-y-3">
             <div className="flex items-center gap-2 text-sm">
               <CheckCircle className="h-4 w-4 text-green-600" />
-              <span>useMemo para cálculos custosos</span>
+              <span>useMemo para cálculos custosos ✓</span>
             </div>
             <div className="flex items-center gap-2 text-sm">
               <CheckCircle className="h-4 w-4 text-green-600" />
-              <span>useCallback para funções otimizadas</span>
+              <span>useCallback para funções otimizadas ✓</span>
             </div>
             <div className="flex items-center gap-2 text-sm">
               <CheckCircle className="h-4 w-4 text-green-600" />
-              <span>React.memo para evitar re-renders</span>
+              <span>React.memo para evitar re-renders ✓</span>
             </div>
             <div className="flex items-center gap-2 text-sm">
               <CheckCircle className="h-4 w-4 text-green-600" />
-              <span>Tipagem TypeScript rigorosa</span>
+              <span>Tipagem TypeScript rigorosa ✓</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm">
+              <CheckCircle className="h-4 w-4 text-green-600" />
+              <span>Hook customizado useDataProcessor ✓</span>
             </div>
           </CardContent>
         </Card>
@@ -190,7 +189,7 @@ export const LiveCodeAnalysis: React.FC = () => {
             </div>
             <div className="flex items-center gap-2 text-sm">
               <Badge variant="outline" className="text-xs">TODO</Badge>
-              <span>Monitorar performance</span>
+              <span>Monitorar performance em produção</span>
             </div>
           </CardContent>
         </Card>
@@ -200,7 +199,7 @@ export const LiveCodeAnalysis: React.FC = () => {
       {analysisResult && (
         <Card className="bg-gray-50">
           <CardHeader>
-            <CardTitle className="text-lg">Código Otimizado Sugerido</CardTitle>
+            <CardTitle className="text-lg">Código Otimizado Implementado</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
