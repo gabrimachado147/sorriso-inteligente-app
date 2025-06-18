@@ -55,6 +55,7 @@ export const RealtimeNotifications: React.FC<RealtimeNotificationsProps> = ({
       case 'error': 
         return AlertCircle;
       case 'info':
+        return Info;
       default: 
         return Info;
     }
