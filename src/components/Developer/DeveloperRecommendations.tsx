@@ -1,10 +1,12 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { 
   Lightbulb, 
   AlertTriangle, 
@@ -20,12 +22,20 @@ import {
   Clock,
   Users,
   Globe,
-  Smartphone
+  Smartphone,
+  Info,
+  Play
 } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 export const DeveloperRecommendations: React.FC = () => {
+  const [implementingId, setImplementingId] = useState<number | null>(null);
+  const [implementedIds, setImplementedIds] = useState<number[]>([]);
+  const { toast } = useToast();
+
   const criticalRecommendations = [
     {
+      id: 1,
       type: 'performance',
       priority: 'high',
       title: 'Implementar Code Splitting Avançado',
@@ -36,9 +46,32 @@ export const DeveloperRecommendations: React.FC = () => {
       icon: Zap,
       color: 'red',
       currentScore: 65,
-      targetScore: 90
+      targetScore: 90,
+      detailedSteps: [
+        'Implementar React.lazy() para componentes de página',
+        'Configurar Webpack code splitting por rotas',
+        'Adicionar prefetch para chunks críticos',
+        'Otimizar imports dinâmicos'
+      ],
+      codeExample: `// Exemplo de implementação
+import { lazy, Suspense } from 'react';
+
+const HomePage = lazy(() => import('./pages/HomePage'));
+const ProfilePage = lazy(() => import('./pages/ProfilePage'));
+
+function App() {
+  return (
+    <Suspense fallback={<div>Carregando...</div>}>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/profile" element={<ProfilePage />} />
+      </Routes>
+    </Suspense>
+  );
+}`
     },
     {
+      id: 2,
       type: 'security',
       priority: 'high',
       title: 'Atualizar Dependências Críticas',
@@ -49,9 +82,21 @@ export const DeveloperRecommendations: React.FC = () => {
       icon: Shield,
       color: 'red',
       currentScore: 75,
-      targetScore: 95
+      targetScore: 95,
+      detailedSteps: [
+        'Executar npm audit para identificar vulnerabilidades',
+        'Atualizar dependências críticas uma por vez',
+        'Testar funcionalidades após cada atualização',
+        'Documentar mudanças de breaking changes'
+      ],
+      codeExample: `# Comandos para execução
+npm audit
+npm audit fix
+npm update
+npm install package@latest`
     },
     {
+      id: 3,
       type: 'architecture',
       priority: 'medium',
       title: 'Refatorar Context API',
@@ -62,9 +107,22 @@ export const DeveloperRecommendations: React.FC = () => {
       icon: Code,
       color: 'orange',
       currentScore: 70,
-      targetScore: 85
+      targetScore: 85,
+      detailedSteps: [
+        'Identificar contextos com muitas responsabilidades',
+        'Criar contextos específicos por domínio',
+        'Implementar Context Providers compostos',
+        'Migrar componentes gradualmente'
+      ],
+      codeExample: `// Exemplo de contexto específico
+const UserContext = createContext();
+const ThemeContext = createContext();
+const NotificationContext = createContext();
+
+// Em vez de um AppContext gigante`
     },
     {
+      id: 4,
       type: 'database',
       priority: 'medium',
       title: 'Otimizar Queries N+1',
@@ -75,9 +133,25 @@ export const DeveloperRecommendations: React.FC = () => {
       icon: Database,
       color: 'orange',
       currentScore: 60,
-      targetScore: 90
+      targetScore: 90,
+      detailedSteps: [
+        'Identificar queries com problema N+1',
+        'Implementar joins no Supabase',
+        'Adicionar eager loading',
+        'Monitorar performance das queries'
+      ],
+      codeExample: `// Exemplo de otimização
+const { data } = await supabase
+  .from('appointments')
+  .select(\`
+    *,
+    clinics (*),
+    users (*)
+  \`)
+  .limit(10);`
     },
     {
+      id: 5,
       type: 'ux',
       priority: 'low',
       title: 'Implementar Skeleton Loading',
@@ -88,9 +162,37 @@ export const DeveloperRecommendations: React.FC = () => {
       icon: Users,
       color: 'green',
       currentScore: 80,
-      targetScore: 95
+      targetScore: 95,
+      detailedSteps: [
+        'Criar componentes de Skeleton',
+        'Identificar pontos de carregamento',
+        'Implementar progressivamente',
+        'Testar em diferentes velocidades de conexão'
+      ],
+      codeExample: `// Componente Skeleton
+const Skeleton = ({ className }) => (
+  <div className={\`animate-pulse bg-gray-200 rounded \${className}\`} />
+);
+
+// Uso
+{loading ? <Skeleton className="h-4 w-full" /> : <Content />}`
     }
   ];
+
+  const handleImplement = async (recommendation: typeof criticalRecommendations[0]) => {
+    setImplementingId(recommendation.id);
+    
+    // Simular implementação
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    setImplementedIds(prev => [...prev, recommendation.id]);
+    setImplementingId(null);
+    
+    toast({
+      title: "Implementação Iniciada",
+      description: `${recommendation.title} foi adicionado à fila de implementação.`,
+    });
+  };
 
   const quickWins = [
     {
@@ -207,6 +309,8 @@ export const DeveloperRecommendations: React.FC = () => {
           {criticalRecommendations.map((rec, index) => {
             const Icon = rec.icon;
             const progressValue = (rec.currentScore / rec.targetScore) * 100;
+            const isImplementing = implementingId === rec.id;
+            const isImplemented = implementedIds.includes(rec.id);
             
             return (
               <Card key={index} className="border-l-4 border-l-purple-500">
@@ -220,6 +324,12 @@ export const DeveloperRecommendations: React.FC = () => {
                           <Badge className={getPriorityColor(rec.priority)} variant="outline">
                             {rec.priority}
                           </Badge>
+                          {isImplemented && (
+                            <Badge className="bg-green-100 text-green-700">
+                              <CheckCircle className="h-3 w-3 mr-1" />
+                              Implementado
+                            </Badge>
+                          )}
                         </div>
                         <p className="text-sm text-muted-foreground mb-3">{rec.description}</p>
                         
@@ -245,13 +355,75 @@ export const DeveloperRecommendations: React.FC = () => {
                       </div>
                     </div>
                     <div className="flex flex-col gap-2">
-                      <Button size="sm" className="bg-purple-600 hover:bg-purple-700">
-                        <ArrowUp className="h-3 w-3 mr-1" />
-                        Implementar
+                      <Button 
+                        size="sm" 
+                        className="bg-purple-600 hover:bg-purple-700"
+                        onClick={() => handleImplement(rec)}
+                        disabled={isImplementing || isImplemented}
+                      >
+                        {isImplementing ? (
+                          <Clock className="h-3 w-3 mr-1 animate-spin" />
+                        ) : isImplemented ? (
+                          <CheckCircle className="h-3 w-3 mr-1" />
+                        ) : (
+                          <ArrowUp className="h-3 w-3 mr-1" />
+                        )}
+                        {isImplementing ? 'Implementando...' : isImplemented ? 'Implementado' : 'Implementar'}
                       </Button>
-                      <Button size="sm" variant="outline">
-                        Detalhes
-                      </Button>
+                      
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button size="sm" variant="outline">
+                            <Info className="h-3 w-3 mr-1" />
+                            Detalhes
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+                          <DialogHeader>
+                            <DialogTitle className="flex items-center gap-2">
+                              <Icon className={`h-5 w-5 ${getIconColor(rec.color)}`} />
+                              {rec.title}
+                            </DialogTitle>
+                            <DialogDescription>
+                              {rec.description}
+                            </DialogDescription>
+                          </DialogHeader>
+                          
+                          <div className="space-y-4">
+                            <Alert>
+                              <AlertTriangle className="h-4 w-4" />
+                              <AlertDescription>
+                                <strong>Impacto:</strong> {rec.impact}<br />
+                                <strong>Esforço:</strong> {rec.effort} ({rec.timeline})<br />
+                                <strong>Prioridade:</strong> {rec.priority}
+                              </AlertDescription>
+                            </Alert>
+
+                            <div>
+                              <h4 className="font-medium mb-2">Passos de Implementação:</h4>
+                              <ol className="list-decimal list-inside space-y-1 text-sm">
+                                {rec.detailedSteps.map((step, idx) => (
+                                  <li key={idx}>{step}</li>
+                                ))}
+                              </ol>
+                            </div>
+
+                            <div>
+                              <h4 className="font-medium mb-2">Exemplo de Código:</h4>
+                              <pre className="bg-gray-100 p-3 rounded text-xs overflow-x-auto">
+                                <code>{rec.codeExample}</code>
+                              </pre>
+                            </div>
+
+                            <div className="flex items-center justify-between pt-4 border-t">
+                              <div className="text-sm text-muted-foreground">
+                                Progresso atual: {rec.currentScore}/{rec.targetScore}
+                              </div>
+                              <Progress value={progressValue} className="w-32 h-2" />
+                            </div>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
                     </div>
                   </div>
                 </CardContent>
@@ -284,6 +456,7 @@ export const DeveloperRecommendations: React.FC = () => {
                     </div>
                   </div>
                   <Button size="sm" variant="outline" className="w-full">
+                    <Play className="h-3 w-3 mr-1" />
                     Implementar Agora
                   </Button>
                 </CardContent>
