@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { MainLayout } from '@/components/Layout/MainLayout';
 import { PageHead } from '@/components/SEO/PageHead';
@@ -34,6 +33,7 @@ import {
   BookOpen
 } from 'lucide-react';
 import { LiveCodeAnalysis } from '@/components/Developer/LiveCodeAnalysis';
+import { AIPageAnalyzer } from '@/components/Developer/AIPageAnalyzer';
 
 const DeveloperPage = () => {
   const { isSupabaseConfigured, projectInfo } = useDevelopmentPanel();
@@ -70,6 +70,11 @@ const DeveloperPage = () => {
                 {/* Performance Monitor */}
                 <DeveloperErrorBoundary>
                   <PerformanceMonitor />
+                </DeveloperErrorBoundary>
+
+                {/* AI Page Analyzer - Nova seção destacada */}
+                <DeveloperErrorBoundary>
+                  <AIPageAnalyzer />
                 </DeveloperErrorBoundary>
 
                 {/* Main Tabs */}
