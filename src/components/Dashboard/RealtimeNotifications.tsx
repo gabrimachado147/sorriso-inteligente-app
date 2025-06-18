@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Bell, X, AlertCircle, CheckCircle, Info, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -49,10 +48,15 @@ export const RealtimeNotifications: React.FC<RealtimeNotificationsProps> = ({
 
   const getIcon = (type: Notification['type']) => {
     switch (type) {
-      case 'success': return CheckCircle;
-      case 'warning': return AlertTriangle;
-      case 'error': return AlertCircle;
-      default: return Info;
+      case 'success': 
+        return CheckCircle;
+      case 'warning': 
+        return AlertTriangle;
+      case 'error': 
+        return AlertCircle;
+      case 'info':
+      default: 
+        return Info;
     }
   };
 

@@ -50,7 +50,7 @@ export const ReportGenerator: React.FC<ReportGeneratorProps> = ({
 }) => {
   const [selectedTemplate, setSelectedTemplate] = useState<ReportTemplate | null>(null);
   const [reportName, setReportName] = useState('');
-  const [format, setFormat] = useState<'pdf' | 'excel' | 'csv'>('pdf');
+  const [reportFormat, setReportFormat] = useState<'pdf' | 'excel' | 'csv'>('pdf');
   const [dateRange, setDateRange] = useState<{from: Date; to: Date}>({
     from: new Date(new Date().setDate(new Date().getDate() - 30)),
     to: new Date()
@@ -61,7 +61,7 @@ export const ReportGenerator: React.FC<ReportGeneratorProps> = ({
   const handleTemplateSelect = (template: ReportTemplate) => {
     setSelectedTemplate(template);
     setSelectedFields(template.fields);
-    setFormat(template.defaultFormat);
+    setReportFormat(template.defaultFormat);
     setReportName(`Relatório ${template.name} - ${format(new Date(), 'dd/MM/yyyy', { locale: ptBR })}`);
   };
 
@@ -79,7 +79,7 @@ export const ReportGenerator: React.FC<ReportGeneratorProps> = ({
     const config: ReportConfig = {
       templateId: selectedTemplate.id,
       name: reportName,
-      format,
+      format: reportFormat,
       dateRange,
       selectedFields,
       filters
@@ -154,7 +154,7 @@ export const ReportGenerator: React.FC<ReportGeneratorProps> = ({
               </div>
               <div>
                 <Label htmlFor="format">Formato</Label>
-                <Select value={format} onValueChange={(value: 'pdf' | 'excel' | 'csv') => setFormat(value)}>
+                <Select value={reportFormat} onValueChange={(value: 'pdf' | 'excel' | 'csv') => setReportFormat(value)}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
