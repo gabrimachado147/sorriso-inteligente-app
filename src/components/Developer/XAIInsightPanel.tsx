@@ -1,54 +1,152 @@
 
-import React from 'react';
-import { useXAIInsightPanel } from '@/hooks/useXAIInsightPanel';
-import { XAIConfigurationWarning } from './XAIConfigurationWarning';
-import { XAIPromptInput } from './XAIPromptInput';
-import { XAIQuickPrompts } from './XAIQuickPrompts';
-import { XAIInsightDisplay } from './XAIInsightDisplay';
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
+import { useXAI } from '@/hooks/useXAI';
+import { Brain, Lightbulb, Code, AlertCircle, RefreshCw } from 'lucide-react';
 
 interface XAIInsightPanelProps {
   onInsight?: (insight: string) => void;
 }
 
 export const XAIInsightPanel: React.FC<XAIInsightPanelProps> = ({ onInsight }) => {
-  const {
-    prompt,
-    setPrompt,
-    insight,
-    expandedPrompt,
-    setExpandedPrompt,
-    loading,
-    configured,
-    handleGenerateInsight,
-    handleRefreshConfig,
-    checkConfiguration
-  } = useXAIInsightPanel(onInsight);
+  const [prompt, setPrompt] = useState('');
+  const [insight, setInsight] = useState('');
+  const { loading, configured, generateInsight, checkConfiguration, refreshConfiguration } = useXAI();
 
   React.useEffect(() => {
     checkConfiguration();
   }, [checkConfiguration]);
 
+  const handleGenerateInsight = async () => {
+    if (!prompt.trim()) return;
+
+    const result = await generateInsight(prompt);
+    if (result) {
+      setInsight(result);
+      onInsight?.(result);
+    } else {
+      setInsight('Erro ao gerar insight. Verifique a configuração da API.');
+    }
+  };
+
+  const handleRefreshConfig = async () => {
+    await refreshConfiguration();
+  };
+
+  const quickPrompts = [
+    'Analise a arquitetura atual do projeto Sorriso Inteligente',
+    'Sugira melhorias de performance para esta aplicação React',
+    'Como posso otimizar o uso do Supabase neste projeto?',
+    'Identifique possíveis problemas de segurança no código',
+  ];
+
   if (!configured) {
-    return <XAIConfigurationWarning onRefreshConfig={handleRefreshConfig} />;
+    return (
+      <Card className="border-orange-200 bg-orange-50">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-orange-800">
+            <AlertCircle className="h-5 w-5" />
+            XAI/Grok não configurado
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <p className="text-orange-700 text-sm">
+            Configure a API key do Grok no Supabase para usar insights de IA durante o desenvolvimento.
+          </p>
+          <Button
+            onClick={handleRefreshConfig}
+            variant="outline"
+            size="sm"
+            className="w-full"
+          >
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Verificar Configuração
+          </Button>
+        </CardContent>
+      </Card>
+    );
   }
 
   return (
-    <div className="space-y-4">
-      <XAIPromptInput
-        prompt={prompt}
-        onPromptChange={setPrompt}
-        onGenerateInsight={handleGenerateInsight}
-        onRefreshConfig={handleRefreshConfig}
-        loading={loading}
-      />
+    <Card className="border-purple-200">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Brain className="h-5 w-5 text-purple-600" />
+          Grok Development Insights
+          <Badge variant="secondary" className="bg-purple-100 text-purple-700">
+            Ativo
+          </Badge>
+          <Button
+            onClick={handleRefreshConfig}
+            variant="ghost"
+            size="sm"
+            className="ml-auto"
+          >
+            <RefreshCw className="h-3 w-3" />
+          </Button>
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div>
+          <label className="text-sm font-medium mb-2 block">
+            Prompt para o Grok:
+          </label>
+          <Textarea
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            placeholder="Digite sua pergunta sobre o projeto..."
+            className="min-h-[80px]"
+          />
+        </div>
 
-      <XAIQuickPrompts
-        expandedPrompt={expandedPrompt}
-        onExpandPrompt={setExpandedPrompt}
-        onSelectPrompt={setPrompt}
-      />
+        <div className="flex flex-wrap gap-2">
+          {quickPrompts.map((quickPrompt, index) => (
+            <Button
+              key={index}
+              variant="outline"
+              size="sm"
+              onClick={() => setPrompt(quickPrompt)}
+              className="text-xs"
+            >
+              <Lightbulb className="h-3 w-3 mr-1" />
+              {quickPrompt.substring(0, 30)}...
+            </Button>
+          ))}
+        </div>
 
-      <XAIInsightDisplay insight={insight} />
-    </div>
+        <Button
+          onClick={handleGenerateInsight}
+          disabled={!prompt.trim() || loading}
+          className="w-full"
+        >
+          {loading ? (
+            'Gerando insight...'
+          ) : (
+            <>
+              <Code className="h-4 w-4 mr-2" />
+              Gerar Insight
+            </>
+          )}
+        </Button>
+
+        {insight && (
+          <Card className="bg-purple-50 border-purple-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm text-purple-800">
+                Insight do Grok:
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <div className="text-sm text-purple-900 whitespace-pre-wrap">
+                {insight}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </CardContent>
+    </Card>
   );
 };

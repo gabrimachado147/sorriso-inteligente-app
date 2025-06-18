@@ -78,8 +78,8 @@ export const DesktopNavigation: React.FC = () => {
   };
 
   return (
-    <NavigationMenu className="hidden lg:flex">
-      <NavigationMenuList className="flex-wrap">
+    <NavigationMenu className="hidden md:flex">
+      <NavigationMenuList>
         {navigationItems.map((item) => {
           const Icon = item.icon;
           const isActive = isActiveRoute(item.href);
@@ -89,13 +89,13 @@ export const DesktopNavigation: React.FC = () => {
               <NavigationMenuLink
                 className={cn(
                   navigationMenuTriggerStyle(),
-                  "cursor-pointer flex items-center space-x-2 px-3 py-2 text-sm lg:text-base whitespace-nowrap",
+                  "cursor-pointer flex items-center space-x-2 px-3 py-2",
                   isActive && "bg-accent text-accent-foreground font-medium"
                 )}
                 onClick={item.onClick}
               >
-                <Icon className="h-4 w-4 flex-shrink-0" />
-                <span className="hidden xl:inline">{item.title}</span>
+                <Icon className="h-4 w-4" />
+                <span>{item.title}</span>
               </NavigationMenuLink>
             </NavigationMenuItem>
           );

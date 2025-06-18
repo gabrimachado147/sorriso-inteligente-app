@@ -1,138 +1,191 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { XAIInsightPanel } from '@/components/Developer/XAIInsightPanel';
-import { DevelopmentPanelTabs } from '@/components/Developer/DevelopmentPanelTabs';
-import { ProjectInfoTab } from '@/components/Developer/ProjectInfoTab';
-import { DatabaseInfoTab } from '@/components/Developer/DatabaseInfoTab';
-import { DebugInfoTab } from '@/components/Developer/DebugInfoTab';
-import { useDevelopmentPanel } from '@/hooks/useDevelopmentPanel';
 import { DEVELOPMENT_CONFIG, isDevelopment } from '@/config/development';
-import { useNavigate } from 'react-router-dom';
 import { 
   Settings, 
   ChevronDown, 
   ChevronUp, 
-  Code,
-  ExternalLink
+  Code, 
+  Database, 
+  Zap,
+  Eye
 } from 'lucide-react';
 
 export const DevelopmentPanel: React.FC = () => {
-  const navigate = useNavigate();
-  const {
-    isOpen,
-    setIsOpen,
-    activeTab,
-    setActiveTab,
-    isSupabaseConfigured,
-    projectInfo
-  } = useDevelopmentPanel();
+  const [isOpen, setIsOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('insights');
 
-  console.log('🔧 DevelopmentPanel renderizando:', { 
-    isDevelopment, 
-    showDevTools: DEVELOPMENT_CONFIG.SHOW_DEV_TOOLS,
-    mode: import.meta.env.MODE 
-  });
+  console.log('DevelopmentPanel renderizando:', { isDevelopment, showDevTools: DEVELOPMENT_CONFIG.SHOW_DEV_TOOLS });
 
-  if (!DEVELOPMENT_CONFIG.SHOW_DEV_TOOLS) {
-    console.log('❌ Dev Tools desabilitado na configuração');
+  // Só renderiza em desenvolvimento
+  if (!isDevelopment || !DEVELOPMENT_CONFIG.SHOW_DEV_TOOLS) {
+    console.log('DevelopmentPanel não será exibido');
     return null;
   }
 
-  console.log('✅ Dev Tools será exibido');
+  console.log('DevelopmentPanel será exibido');
+
+  // Check Supabase configuration (using actual project values)
+  const supabaseUrl = 'https://bstppllwgzkacxxwhpes.supabase.co';
+  const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzdHBwbGx3Z3prYWN4eHdocGVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkwNDk2MjgsImV4cCI6MjA2NDYyNTYyOH0.SiKjaaf41YS0hWvJZa0bQVzDePxAn0JhBP1_qRgmvjM';
+  
+  const isSupabaseConfigured = !!(supabaseUrl && supabaseAnonKey);
+
+  // Função helper para acessar deviceMemory de forma segura
+  const getDeviceMemory = () => {
+    const nav = navigator as any;
+    return nav.deviceMemory || 'N/A';
+  };
+
+  // Função helper para acessar connection de forma segura
+  const getConnectionType = () => {
+    const nav = navigator as any;
+    return nav.connection?.effectiveType || 'N/A';
+  };
 
   return (
-    <div className="fixed bottom-4 right-4 z-40 max-w-sm">
+    <div className="fixed bottom-4 right-4 z-50 max-w-2xl">
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-        <div className="space-y-2">
-          {/* Botão para página completa */}
+        <CollapsibleTrigger asChild>
           <Button
-            onClick={() => navigate('/developer')}
             variant="outline"
             size="sm"
-            className="w-full bg-blue-100 border-blue-300 hover:bg-blue-200 shadow-lg"
+            className="mb-2 bg-purple-100 border-purple-300 hover:bg-purple-200"
           >
-            <Code className="h-4 w-4 mr-2" />
-            Página Completa
-            <ExternalLink className="h-3 w-3 ml-2" />
+            <Settings className="h-4 w-4 mr-2" />
+            Dev Tools
+            {isOpen ? (
+              <ChevronUp className="h-4 w-4 ml-2" />
+            ) : (
+              <ChevronDown className="h-4 w-4 ml-2" />
+            )}
           </Button>
-
-          {/* Painel compacto */}
-          <CollapsibleTrigger asChild>
-            <Button
-              variant="outline"
-              size="sm"
-              className="w-full bg-purple-100 border-purple-300 hover:bg-purple-200 shadow-lg"
-            >
-              <Settings className="h-4 w-4 mr-2" />
-              Dev Tools Mini
-              {isOpen ? (
-                <ChevronUp className="h-4 w-4 ml-2" />
-              ) : (
-                <ChevronDown className="h-4 w-4 ml-2" />
-              )}
-            </Button>
-          </CollapsibleTrigger>
-        </div>
+        </CollapsibleTrigger>
         
         <CollapsibleContent>
-          <Card className="w-full max-w-sm border-purple-300 shadow-xl bg-white mt-2 max-h-96 overflow-hidden">
+          <Card className="w-full max-w-2xl border-purple-300 shadow-lg">
             <CardHeader className="pb-2">
-              <CardTitle className="text-xs flex items-center gap-2">
-                <Code className="h-3 w-3" />
-                Dev Tools - Mini
-                <Badge variant="secondary" className="bg-purple-100 text-purple-700 text-xs">
-                  COMPACTO
+              <CardTitle className="text-sm flex items-center gap-2">
+                <Code className="h-4 w-4" />
+                Painel de Desenvolvimento
+                <Badge variant="secondary" className="bg-purple-100 text-purple-700">
+                  DEV
                 </Badge>
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3 p-3">
-              <DevelopmentPanelTabs 
-                activeTab={activeTab} 
-                onTabChange={setActiveTab} 
-              />
+            <CardContent className="space-y-4">
+              <div className="flex flex-wrap gap-1">
+                <Button
+                  variant={activeTab === 'insights' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setActiveTab('insights')}
+                  className="text-xs"
+                >
+                  <Zap className="h-3 w-3 mr-1" />
+                  AI Insights
+                </Button>
+                <Button
+                  variant={activeTab === 'db' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setActiveTab('db')}
+                  className="text-xs"
+                >
+                  <Database className="h-3 w-3 mr-1" />
+                  Database
+                </Button>
+                <Button
+                  variant={activeTab === 'debug' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setActiveTab('debug')}
+                  className="text-xs"
+                >
+                  <Eye className="h-3 w-3 mr-1" />
+                  Debug
+                </Button>
+              </div>
 
-              <div className="max-h-60 overflow-y-auto">
+              <div className="h-96">
                 {activeTab === 'insights' && (
-                  <div className="space-y-2">
-                    <p className="text-xs text-gray-600">
-                      ⚡ Use a página completa para insights detalhados
-                    </p>
-                    <Button
-                      onClick={() => navigate('/developer')}
-                      variant="outline"
-                      size="sm"
-                      className="w-full text-xs"
-                    >
-                      Abrir IA Insights
-                    </Button>
-                  </div>
-                )}
-
-                {activeTab === 'project' && (
-                  <div className="scale-75 origin-top-left">
-                    <ProjectInfoTab projectInfo={projectInfo} />
-                  </div>
+                  <ScrollArea className="h-full">
+                    <XAIInsightPanel />
+                  </ScrollArea>
                 )}
 
                 {activeTab === 'db' && (
-                  <div className="scale-75 origin-top-left">
-                    <DatabaseInfoTab isSupabaseConfigured={isSupabaseConfigured} />
-                  </div>
+                  <ScrollArea className="h-full p-4">
+                    <div className="text-sm text-gray-600 space-y-2">
+                      <p className="font-semibold">Ferramentas de banco de dados:</p>
+                      <div className="space-y-1 pl-2">
+                        <p>• Supabase Status: {isSupabaseConfigured ? '✅ Conectado' : '❌ Não conectado'}</p>
+                        <p>• RLS Policies: ✅ Ativas</p>
+                        <p>• User Profiles: ✅ Configurado</p>
+                        <p>• Environment: {import.meta.env.MODE}</p>
+                        <p>• API URL: {supabaseUrl ? '✅ Configurado' : '❌ Não configurado'}</p>
+                        <p>• Database URL: {supabaseUrl ? 'Disponível' : 'Não configurado'}</p>
+                        <p>• Auth Provider: {supabaseAnonKey ? '✅ Configurado' : '❌ Não configurado'}</p>
+                        <p>• Project ID: bstppllwgzkacxxwhpes</p>
+                      </div>
+                    </div>
+                  </ScrollArea>
                 )}
 
                 {activeTab === 'debug' && (
-                  <div className="scale-75 origin-top-left">
-                    <DebugInfoTab />
-                  </div>
-                )}
-              </div>
+                  <ScrollArea className="h-full p-4">
+                    <div className="text-sm text-gray-600 space-y-2">
+                      <p className="font-semibold">Informações de Debug:</p>
+                      <div className="space-y-1 pl-2">
+                        <p>• Environment: {import.meta.env.MODE}</p>
+                        <p>• Logging: {DEVELOPMENT_CONFIG.VERBOSE_LOGGING ? '✅' : '❌'}</p>
+                        <p>• XAI Insights: {DEVELOPMENT_CONFIG.ENABLE_XAI_INSIGHTS ? '✅' : '❌'}</p>
+                        <p>• Performance Monitor: {DEVELOPMENT_CONFIG.ENABLE_DEV_PERFORMANCE_MONITOR ? '✅' : '❌'}</p>
+                        <p>• Dev Mode: {import.meta.env.DEV ? '✅' : '❌'}</p>
+                        <p>• URL atual: {window.location.pathname}</p>
+                        <p>• Build Time: {new Date().toLocaleString()}</p>
+                        <p>• Node Version: {import.meta.env.NODE_ENV || 'N/A'}</p>
+                        <p>• Hot Reload: {import.meta.env.DEV ? '✅ Ativo' : '❌ Inativo'}</p>
+                        <p>• Source Maps: {import.meta.env.DEV ? '✅ Disponível' : '❌ Não disponível'}</p>
+                      </div>
 
-              <div className="text-xs text-center text-gray-500 pt-2 border-t">
-                Para funcionalidades completas, use a página dedicada
+                      <div className="mt-4 pt-4 border-t border-gray-200">
+                        <p className="font-semibold">Configuração Supabase:</p>
+                        <div className="space-y-1 pl-2 text-xs">
+                          <p>• SUPABASE_URL: {supabaseUrl ? '✅ Configurado' : '❌ Não configurado'}</p>
+                          <p>• SUPABASE_ANON_KEY: {supabaseAnonKey ? '✅ Configurado' : '❌ Não configurado'}</p>
+                          <p>• Connection: Lovable Integration</p>
+                          <p>• Auth: Habilitado</p>
+                        </div>
+                      </div>
+
+                      <div className="mt-4 pt-4 border-t border-gray-200">
+                        <p className="font-semibold">Variáveis de Ambiente:</p>
+                        <div className="space-y-1 pl-2 text-xs">
+                          <p>• VITE_ENABLE_XAI: {import.meta.env.VITE_ENABLE_XAI || 'false'}</p>
+                          <p>• VITE_DEBUG_MODE: {import.meta.env.VITE_DEBUG_MODE || 'false'}</p>
+                          <p>• Mode: {import.meta.env.MODE}</p>
+                          <p>• DEV: {import.meta.env.DEV ? 'true' : 'false'}</p>
+                        </div>
+                      </div>
+
+                      <div className="mt-4 pt-4 border-t border-gray-200">
+                        <p className="font-semibold">Performance Logs:</p>
+                        <div className="space-y-1 pl-2 text-xs">
+                          <p>• Render Count: Verificar console</p>
+                          <p>• Memory Usage: {getDeviceMemory()} GB</p>
+                          <p>• Connection: {getConnectionType()}</p>
+                          <p>• User Agent: {navigator.userAgent.substring(0, 50)}...</p>
+                          <p>• Screen: {window.screen.width}x{window.screen.height}</p>
+                          <p>• Viewport: {window.innerWidth}x{window.innerHeight}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </ScrollArea>
+                )}
               </div>
             </CardContent>
           </Card>

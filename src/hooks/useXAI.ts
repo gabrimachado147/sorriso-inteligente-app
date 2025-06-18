@@ -7,19 +7,16 @@ export const useXAI = () => {
   const [configured, setConfigured] = useState(false);
 
   const generateInsight = useCallback(async (prompt: string) => {
-    if (!prompt.trim()) {
-      console.warn('Prompt vazio fornecido');
-      return null;
-    }
+    if (!prompt.trim()) return null;
     
     setLoading(true);
     try {
-      console.log('🤖 Gerando insight com XAI:', prompt.substring(0, 100) + '...');
+      console.log('Gerando insight com XAI:', prompt);
       const result = await xaiService.generateDevelopmentInsight(prompt);
-      console.log('✅ Insight gerado:', result ? 'Sucesso' : 'Falhou');
+      console.log('Insight gerado:', result);
       return result;
     } catch (error) {
-      console.error('❌ Erro ao gerar insight:', error);
+      console.error('Erro ao gerar insight:', error);
       return null;
     } finally {
       setLoading(false);
@@ -28,18 +25,18 @@ export const useXAI = () => {
 
   const checkConfiguration = useCallback(async () => {
     try {
-      console.log('🔍 Verificando configuração XAI...');
+      console.log('Verificando configuração XAI...');
       
       // Forçar a inicialização da chave se necessário
       await xaiService.ensureInitialized();
       
       const isConfigured = xaiService.isConfigured();
-      console.log('🔧 XAI configurado:', isConfigured);
+      console.log('XAI configurado:', isConfigured);
       setConfigured(isConfigured);
       
       return isConfigured;
     } catch (error) {
-      console.error('❌ Erro ao verificar configuração XAI:', error);
+      console.error('Erro ao verificar configuração XAI:', error);
       setConfigured(false);
       return false;
     }
@@ -47,14 +44,13 @@ export const useXAI = () => {
 
   const refreshConfiguration = useCallback(async () => {
     try {
-      console.log('🔄 Atualizando configuração XAI...');
+      console.log('Atualizando configuração XAI...');
       await xaiService.refreshConfiguration();
       const isConfigured = xaiService.isConfigured();
       setConfigured(isConfigured);
-      console.log('✅ Configuração atualizada:', isConfigured);
       return isConfigured;
     } catch (error) {
-      console.error('❌ Erro ao atualizar configuração XAI:', error);
+      console.error('Erro ao atualizar configuração XAI:', error);
       setConfigured(false);
       return false;
     }

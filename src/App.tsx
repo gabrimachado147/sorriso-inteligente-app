@@ -17,16 +17,12 @@ import { PRODUCTION_CONFIG } from '@/config/production';
 // Lazy load pages for better performance
 const IndexPage = React.lazy(() => import('@/pages/Index'));
 const AuthPage = React.lazy(() => import('@/pages/AuthPage'));
-const EnhancedChatPage = React.lazy(() => import('@/pages/EnhancedChatPage'));
+const ChatPage = React.lazy(() => import('@/pages/ChatPage'));
 const SchedulePage = React.lazy(() => import('@/pages/SchedulePage'));
-const EnhancedClinicsPage = React.lazy(() => import('@/pages/EnhancedClinicsPage'));
-const EnhancedProfilePage = React.lazy(() => import('@/pages/EnhancedProfilePage'));
-const EnhancedAnalyticsPage = React.lazy(() => import('@/pages/EnhancedAnalyticsPage'));
-const EnhancedGamificationPage = React.lazy(() => import('@/pages/EnhancedGamificationPage'));
-const EnhancedRemindersPage = React.lazy(() => import('@/pages/EnhancedRemindersPage'));
+const ClinicsPage = React.lazy(() => import('@/pages/ClinicsPage'));
+const ProfilePage = React.lazy(() => import('@/pages/ProfilePage'));
 const StaffLoginPage = React.lazy(() => import('@/pages/StaffLoginPage'));
 const AdminDashboardPage = React.lazy(() => import('@/pages/AdminDashboardPage'));
-const DeveloperPage = React.lazy(() => import('@/pages/DeveloperPage'));
 const NotFoundPage = React.lazy(() => import('@/pages/NotFound'));
 
 // Create QueryClient with production-ready defaults
@@ -126,16 +122,12 @@ function App() {
                     <Routes>
                       <Route path="/" element={<IndexPage />} />
                       <Route path="/auth" element={<AuthPage />} />
-                      <Route path="/chat" element={<EnhancedChatPage />} />
+                      <Route path="/chat" element={<ChatPage />} />
                       <Route path="/schedule" element={<SchedulePage />} />
-                      <Route path="/clinics" element={<EnhancedClinicsPage />} />
-                      <Route path="/profile" element={<EnhancedProfilePage />} />
-                      <Route path="/analytics" element={<EnhancedAnalyticsPage />} />
-                      <Route path="/gamification" element={<EnhancedGamificationPage />} />
-                      <Route path="/reminders" element={<EnhancedRemindersPage />} />
+                      <Route path="/clinics" element={<ClinicsPage />} />
+                      <Route path="/profile" element={<ProfilePage />} />
                       <Route path="/staff-login" element={<StaffLoginPage />} />
                       <Route path="/admin-dashboard" element={<AdminDashboardPage />} />
-                      {import.meta.env.DEV && <Route path="/developer" element={<DeveloperPage />} />}
                       <Route path="*" element={<NotFoundPage />} />
                     </Routes>
                   </Suspense>
