@@ -69,7 +69,7 @@ export const OptimizedDataTable: React.FC<OptimizedProps> = memo(({
 
         {/* Lista otimizada */}
         <div className="space-y-2 max-h-60 overflow-y-auto">
-          {filteredData.map((item) => (
+          {filteredData.map((item: DataItem) => (
             <OptimizedDataRow 
               key={item.id} 
               item={item} 

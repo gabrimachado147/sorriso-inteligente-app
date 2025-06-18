@@ -25,6 +25,39 @@ export const useDataProcessor = (initialData: DataItem[]) => {
     return data.reduce((acc, item) => acc + item.value, 0);
   }, [data]);
 
+  // Filtered data (same as data for now, but can be extended for filtering)
+  const filteredData = useMemo(() => data, [data]);
+
+  // Total value (same as expensive calculation)
+  const totalValue = expensiveCalculation;
+
+  // Active count
+  const activeCount = useMemo(() => {
+    return data.filter(item => item.status === 'active').length;
+  }, [data]);
+
+  // Batch update function
+  const performBatchUpdate = useCallback(async (updates: Array<{ id: string; updates: Partial<DataItem> }>) => {
+    setLoading(true);
+    try {
+      // Simulate async operation
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      setData(prev => {
+        const newData = [...prev];
+        updates.forEach(({ id, updates: itemUpdates }) => {
+          const index = newData.findIndex(item => item.id === id);
+          if (index !== -1) {
+            newData[index] = { ...newData[index], ...itemUpdates };
+          }
+        });
+        return newData;
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   const statistics = useMemo(() => {
     const activeItems = data.filter(item => item.status === 'active');
     const inactiveItems = data.filter(item => item.status === 'inactive');
@@ -51,6 +84,10 @@ export const useDataProcessor = (initialData: DataItem[]) => {
     addItem, 
     statistics, 
     expensiveCalculation,
+    filteredData,
+    totalValue,
+    activeCount,
+    performBatchUpdate,
     setLoadingState 
   };
 };
