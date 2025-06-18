@@ -2,7 +2,7 @@
 import React from 'react';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Eye, TrendingUp, Calendar, MessageSquare, Settings } from 'lucide-react';
+import { Eye, TrendingUp, Calendar, MessageSquare, FileText } from 'lucide-react';
 
 interface ClinicDashboardTabsProps {
   activeTab: string;
@@ -12,9 +12,9 @@ interface ClinicDashboardTabsProps {
 const tabOptions = [
   { value: 'overview', label: 'Visão Geral', icon: Eye },
   { value: 'analytics', label: 'Analytics', icon: TrendingUp },
+  { value: 'reports', label: 'Relatórios', icon: FileText },
   { value: 'appointments', label: 'Agendamentos', icon: Calendar },
-  { value: 'messages', label: 'Mensagens', icon: MessageSquare },
-  { value: 'advanced', label: 'Avançado', icon: Settings }
+  { value: 'messages', label: 'Mensagens', icon: MessageSquare }
 ];
 
 export const ClinicDashboardTabs: React.FC<ClinicDashboardTabsProps> = ({

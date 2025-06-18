@@ -6,6 +6,7 @@ import { EnhancedAppointmentsTable } from '@/components/Appointments/EnhancedApp
 import { DashboardCharts } from './DashboardCharts';
 import { AdvancedAnalytics } from './AdvancedAnalytics';
 import { MessageTemplates } from './MessageTemplates';
+import { ReportGenerator, defaultReportTemplates } from './ReportGenerator';
 
 interface ClinicDashboardContentProps {
   activeTab: string;
@@ -30,6 +31,11 @@ export const ClinicDashboardContent: React.FC<ClinicDashboardContentProps> = ({
   onSendBulkMessage,
   isUpdating
 }) => {
+  const handleGenerateReport = async (config: any) => {
+    console.log('Gerando relatório:', config);
+    // Implementar lógica de geração de relatório
+  };
+
   const renderContent = (tabValue: string) => {
     switch (tabValue) {
       case 'overview':
@@ -51,6 +57,14 @@ export const ClinicDashboardContent: React.FC<ClinicDashboardContentProps> = ({
             clinicName={clinicName}
           />
         );
+      case 'reports':
+        return (
+          <ReportGenerator
+            templates={defaultReportTemplates}
+            onGenerateReport={handleGenerateReport}
+            isGenerating={false}
+          />
+        );
       case 'appointments':
         return (
           <div className="w-full">
@@ -66,15 +80,18 @@ export const ClinicDashboardContent: React.FC<ClinicDashboardContentProps> = ({
         );
       case 'messages':
         return <MessageTemplates onSendMessage={onSendBulkMessage} appointments={filteredAppointments} />;
-      case 'advanced':
+      default:
         return (
-          <AdvancedAnalytics 
-            appointments={filteredAppointments} 
-            clinicName={clinicName}
+          <DashboardCharts
+            monthlyData={dashboardData.monthlyData}
+            servicesData={dashboardData.servicesData}
+            statusData={dashboardData.statusData}
+            confirmedAppointments={dashboardData.confirmedAppointments}
+            completedAppointments={dashboardData.completedAppointments}
+            pendingAppointments={dashboardData.pendingAppointments}
+            cancelledAppointments={dashboardData.cancelledAppointments}
           />
         );
-      default:
-        return null;
     }
   };
 
@@ -90,14 +107,14 @@ export const ClinicDashboardContent: React.FC<ClinicDashboardContentProps> = ({
             <TabsContent value="analytics" className="space-y-6 mt-0">
               {renderContent('analytics')}
             </TabsContent>
+            <TabsContent value="reports" className="space-y-6 mt-0">
+              {renderContent('reports')}
+            </TabsContent>
             <TabsContent value="appointments" className="space-y-6 mt-0">
               {renderContent('appointments')}
             </TabsContent>
             <TabsContent value="messages" className="space-y-6 mt-0">
               {renderContent('messages')}
-            </TabsContent>
-            <TabsContent value="advanced" className="space-y-6 mt-0">
-              {renderContent('advanced')}
             </TabsContent>
           </div>
         </Tabs>
