@@ -100,28 +100,8 @@ export const PageSelector: React.FC<PageSelectorProps> = ({
           </div>
         )}
 
-        <div className="flex gap-2">
-          <Button
-            onClick={onAnalyzePage}
-            disabled={!selectedPage || loading}
-            className="flex-1"
-          >
-            {loading ? (
-              <>
-                <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                Analisando Página...
-              </>
-            ) : (
-              <>
-                <Globe className="h-4 w-4 mr-2" />
-                Analisar Página Selecionada
-              </>
-            )}
-          </Button>
-        </div>
-
         <div className="text-xs text-center text-muted-foreground pt-2 border-t">
-          💡 Dica: Selecione uma página e clique em "Analisar" para obter insights estratégicos específicos
+          💡 Dica: Selecione uma página e configure a IA desejada antes de analisar
         </div>
       </CardContent>
     </Card>

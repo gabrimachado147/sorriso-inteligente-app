@@ -3,7 +3,7 @@ import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
-const ASSISTANT_ID = 'asst_TWl3QmvNw0am7N05klbS5zJh'; // Enigma Strategist
+const DEFAULT_ASSISTANT_ID = 'asst_TWl3QmvNw0am7N05klbS5zJh'; // Seu assistant como padrão
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -14,6 +14,7 @@ interface AnalysisRequest {
   route: string;
   content: string;
   userContext?: string;
+  assistantId?: string;
 }
 
 serve(async (req) => {
@@ -31,9 +32,9 @@ serve(async (req) => {
   }
 
   try {
-    const { route, content, userContext }: AnalysisRequest = await req.json();
+    const { route, content, userContext, assistantId = DEFAULT_ASSISTANT_ID }: AnalysisRequest = await req.json();
 
-    console.log(`Iniciando análise da página: ${route}`);
+    console.log(`Iniciando análise da página: ${route} com assistant: ${assistantId}`);
 
     // 1. Criar Thread
     const threadResponse = await fetch('https://api.openai.com/v1/threads', {
@@ -103,7 +104,7 @@ Por favor, forneça uma análise estratégica detalhada incluindo:
         'OpenAI-Beta': 'assistants=v2',
       },
       body: JSON.stringify({
-        assistant_id: ASSISTANT_ID,
+        assistant_id: assistantId,
       }),
     });
 
@@ -182,6 +183,7 @@ Por favor, forneça uma análise estratégica detalhada incluindo:
         analysis,
         route,
         timestamp: new Date().toISOString(),
+        aiUsed: assistantId,
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

@@ -16,11 +16,13 @@ import {
   CheckCircle
 } from 'lucide-react';
 import { PageSelector } from './PageSelector';
+import { AISelector } from './AISelector';
 
 interface AnalysisResult {
   analysis: string;
   route: string;
   timestamp: string;
+  aiUsed: string;
 }
 
 export const EnhancedAIPageAnalyzer: React.FC = () => {
@@ -29,6 +31,7 @@ export const EnhancedAIPageAnalyzer: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [userContext, setUserContext] = useState('');
   const [selectedPage, setSelectedPage] = useState(window.location.pathname);
+  const [selectedAI, setSelectedAI] = useState('asst_TWl3QmvNw0am7N05klbS5zJh'); // Seu assistant como padrão
 
   const handleAnalyzePage = async () => {
     setLoading(true);
@@ -50,13 +53,18 @@ export const EnhancedAIPageAnalyzer: React.FC = () => {
         throw new Error('Não foi possível capturar o conteúdo da página');
       }
 
-      console.log('🧠 Iniciando análise com IA Estratégica para:', selectedPage);
+      console.log('🧠 Iniciando análise com IA:', selectedAI, 'para:', selectedPage);
 
-      const { data, error: functionError } = await supabase.functions.invoke('ai-page-analyzer', {
+      // Escolher a edge function baseada na IA selecionada
+      const functionName = selectedAI.startsWith('asst_') ? 'ai-page-analyzer' : 'ai-page-analyzer-direct';
+
+      const { data, error: functionError } = await supabase.functions.invoke(functionName, {
         body: {
           route: selectedPage,
           content: content.substring(0, 8000), // Limitar tamanho
           userContext: userContext.trim() || undefined,
+          aiModel: selectedAI,
+          assistantId: selectedAI.startsWith('asst_') ? selectedAI : undefined,
         },
       });
 
@@ -68,7 +76,10 @@ export const EnhancedAIPageAnalyzer: React.FC = () => {
         throw new Error(data.error);
       }
 
-      setResult(data);
+      setResult({
+        ...data,
+        aiUsed: selectedAI
+      });
       console.log('✅ Análise concluída com sucesso para:', selectedPage);
 
     } catch (err: any) {
@@ -100,20 +111,32 @@ export const EnhancedAIPageAnalyzer: React.FC = () => {
     navigator.clipboard.writeText(text);
   };
 
-  const downloadAnalysis = (analysis: string, route: string) => {
+  const downloadAnalysis = (analysis: string, route: string, aiUsed: string) => {
     const blob = new Blob([analysis], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `analise-ai-${route.replace(/\//g, '-') || 'pagina'}-${new Date().toISOString().split('T')[0]}.txt`;
+    a.download = `analise-${aiUsed.replace('asst_', '').substring(0, 8)}-${route.replace(/\//g, '-') || 'pagina'}-${new Date().toISOString().split('T')[0]}.txt`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
 
+  const getAIDisplayName = (aiId: string) => {
+    if (aiId === 'asst_TWl3QmvNw0am7N05klbS5zJh') return 'Enigma Strategist (Seu Assistant)';
+    if (aiId === 'gpt-4o-mini') return 'GPT-4o Mini';
+    if (aiId === 'gpt-4o') return 'GPT-4o';
+    return aiId;
+  };
+
   return (
     <div className="space-y-6">
+      <AISelector
+        selectedAI={selectedAI}
+        onAIChange={setSelectedAI}
+      />
+
       <PageSelector
         selectedPage={selectedPage}
         onPageChange={setSelectedPage}
@@ -125,16 +148,16 @@ export const EnhancedAIPageAnalyzer: React.FC = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Brain className="h-6 w-6 text-purple-600" />
-            Análise Estratégica com IA
+            Análise Estratégica com IA Selecionada
             <Badge variant="secondary" className="bg-purple-100 text-purple-700">
-              Enigma Strategist
+              {getAIDisplayName(selectedAI)}
             </Badge>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-3">
             <p className="text-sm text-muted-foreground">
-              Use o assistente especializado para obter análises estratégicas detalhadas da página selecionada.
+              Use a IA selecionada para obter análises estratégicas detalhadas da página escolhida.
             </p>
 
             <div>
@@ -166,7 +189,7 @@ export const EnhancedAIPageAnalyzer: React.FC = () => {
                   Análise concluída para a página: <strong>{result.route}</strong>
                   <br />
                   <span className="text-xs text-muted-foreground">
-                    Gerada em: {new Date(result.timestamp).toLocaleString('pt-BR')}
+                    IA utilizada: {getAIDisplayName(result.aiUsed)} | Gerada em: {new Date(result.timestamp).toLocaleString('pt-BR')}
                   </span>
                 </AlertDescription>
               </Alert>
@@ -190,7 +213,7 @@ export const EnhancedAIPageAnalyzer: React.FC = () => {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => downloadAnalysis(result.analysis, result.route)}
+                        onClick={() => downloadAnalysis(result.analysis, result.route, result.aiUsed)}
                         className="h-8 w-8 p-0"
                       >
                         <Download className="h-3 w-3" />
@@ -205,7 +228,7 @@ export const EnhancedAIPageAnalyzer: React.FC = () => {
                     </div>
                   </div>
                   <div className="mt-3 p-3 bg-purple-100 rounded text-xs text-purple-700">
-                    <strong>💡 Dica:</strong> Esta análise foi gerada pelo Assistant Enigma Strategist especializado em estratégia digital. 
+                    <strong>💡 Dica:</strong> Esta análise foi gerada pela IA {getAIDisplayName(result.aiUsed)}. 
                     Use os botões acima para copiar ou baixar o conteúdo completo.
                   </div>
                 </CardContent>
@@ -214,7 +237,7 @@ export const EnhancedAIPageAnalyzer: React.FC = () => {
           )}
 
           <div className="text-xs text-center text-muted-foreground pt-2 border-t">
-            Powered by OpenAI Assistant API • Enigma Strategist
+            Powered by OpenAI Assistant API • IA Configurável
           </div>
         </CardContent>
       </Card>
