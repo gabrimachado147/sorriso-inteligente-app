@@ -1,15 +1,13 @@
 
 import React, { useState } from 'react';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Table, TableBody } from '@/components/ui/table';
 import { Card, CardContent } from '@/components/ui/card';
 import { AppointmentRecord } from '@/services/supabase/appointments';
-import { AppointmentStatusBadge } from './AppointmentStatusBadge';
-import { AppointmentServiceInfo } from './AppointmentServiceInfo';
 import { BulkActions } from './BulkActions';
-import { Phone, Mail, Calendar, Clock, User } from 'lucide-react';
+import { AppointmentTableHeader } from './AppointmentTableHeader';
+import { EnhancedAppointmentRow } from './EnhancedAppointmentRow';
+import { AppointmentTableFooter } from './AppointmentTableFooter';
+import { Calendar } from 'lucide-react';
 import { animations } from '@/lib/animations';
 
 interface EnhancedAppointmentsTableProps {
@@ -50,43 +48,6 @@ export const EnhancedAppointmentsTable: React.FC<EnhancedAppointmentsTableProps>
   const isAllSelected = appointments.length > 0 && selectedAppointments.length === appointments.length;
   const isPartiallySelected = selectedAppointments.length > 0 && selectedAppointments.length < appointments.length;
 
-  const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('pt-BR');
-  };
-
-  const formatTime = (timeStr: string) => {
-    return timeStr.slice(0, 5);
-  };
-
-  // Função para simplificar o nome da clínica
-  const simplifyClinicName = (clinicName: string) => {
-    // Remove "Senhor Sorriso" e outros prefixos/sufixos
-    const cleanName = clinicName
-      .replace(/senhor sorriso/gi, '')
-      .replace(/dr\./gi, '')
-      .replace(/dra\./gi, '')
-      .replace(/unidade/gi, '')
-      .replace(/filial/gi, '')
-      .replace(/\s*-\s*/g, ' ')
-      .trim();
-    
-    // Mapear nomes específicos se necessário
-    const cityMappings: { [key: string]: string } = {
-      'capao bonito': 'Capão Bonito',
-      'capão bonito': 'Capão Bonito',
-      'itarare': 'Itararé',
-      'itararé': 'Itararé',
-      'itapeva': 'Itapeva',
-      'formiga': 'Formiga',
-      'campo belo': 'Campo Belo',
-      'campobelo': 'Campo Belo'
-    };
-
-    const lowerName = cleanName.toLowerCase();
-    return cityMappings[lowerName] || cleanName || clinicName;
-  };
-
   if (appointments.length === 0) {
     return (
       <Card className={animations.fadeIn}>
@@ -113,110 +74,22 @@ export const EnhancedAppointmentsTable: React.FC<EnhancedAppointmentsTableProps>
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-12">
-                    <Checkbox
-                      checked={isAllSelected}
-                      onCheckedChange={handleSelectAll}
-                      aria-label="Selecionar todos"
-                      className={`h-5 w-5 ${isPartiallySelected ? "data-[state=checked]:bg-primary" : ""}`}
-                    />
-                  </TableHead>
-                  <TableHead>Paciente</TableHead>
-                  <TableHead>Contato</TableHead>
-                  <TableHead>Data/Hora</TableHead>
-                  <TableHead>Serviço</TableHead>
-                  <TableHead>Clínica</TableHead>
-                  <TableHead>Status</TableHead>
-                </TableRow>
-              </TableHeader>
+              <AppointmentTableHeader
+                isAllSelected={isAllSelected}
+                isPartiallySelected={isPartiallySelected}
+                onSelectAll={handleSelectAll}
+              />
               <TableBody>
                 {appointments.map((appointment) => (
-                  <TableRow 
+                  <EnhancedAppointmentRow
                     key={appointment.id}
-                    className={`hover:bg-gray-50 transition-colors ${
-                      selectedAppointments.includes(appointment.id) ? 'bg-blue-50' : ''
-                    }`}
-                  >
-                    <TableCell>
-                      <Checkbox
-                        checked={selectedAppointments.includes(appointment.id)}
-                        onCheckedChange={(checked) => 
-                          handleSelectAppointment(appointment.id, checked as boolean)
-                        }
-                        aria-label={`Selecionar agendamento de ${appointment.name}`}
-                        className="h-5 w-5"
-                      />
-                    </TableCell>
-                    
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <User className="h-4 w-4 text-gray-400" />
-                        <div>
-                          <p className="font-medium text-gray-900">{appointment.name}</p>
-                          {appointment.email && (
-                            <p className="text-xs text-gray-500">{appointment.email}</p>
-                          )}
-                        </div>
-                      </div>
-                    </TableCell>
-                    
-                    <TableCell>
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-1 text-sm">
-                          <Phone className="h-3 w-3 text-gray-400" />
-                          <span>{appointment.phone}</span>
-                        </div>
-                        {appointment.email && (
-                          <div className="flex items-center gap-1 text-sm text-gray-500">
-                            <Mail className="h-3 w-3 text-gray-400" />
-                            <span className="truncate max-w-32">{appointment.email}</span>
-                          </div>
-                        )}
-                      </div>
-                    </TableCell>
-                    
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4 text-gray-400" />
-                        <div>
-                          <p className="font-medium text-gray-900">
-                            {formatDate(appointment.date)}
-                          </p>
-                          <div className="flex items-center gap-1">
-                            <Clock className="h-3 w-3 text-gray-400" />
-                            <span className="text-sm text-gray-600">
-                              {formatTime(appointment.time)}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </TableCell>
-                    
-                    <TableCell>
-                      <AppointmentServiceInfo
-                        appointment={appointment}
-                        onServiceUpdate={onServiceUpdate}
-                        isUpdating={isUpdating}
-                      />
-                    </TableCell>
-                    
-                    <TableCell>
-                      <Badge variant="secondary" className="text-xs">
-                        {simplifyClinicName(appointment.clinic)}
-                      </Badge>
-                    </TableCell>
-                    
-                    <TableCell>
-                      <AppointmentStatusBadge
-                        status={appointment.status}
-                        appointmentId={appointment.id}
-                        onStatusChange={onStatusChange}
-                        isUpdating={isUpdating}
-                      />
-                    </TableCell>
-                  </TableRow>
+                    appointment={appointment}
+                    isSelected={selectedAppointments.includes(appointment.id)}
+                    onSelect={handleSelectAppointment}
+                    onStatusChange={onStatusChange}
+                    onServiceUpdate={onServiceUpdate}
+                    isUpdating={isUpdating}
+                  />
                 ))}
               </TableBody>
             </Table>
@@ -224,16 +97,10 @@ export const EnhancedAppointmentsTable: React.FC<EnhancedAppointmentsTableProps>
         </CardContent>
       </Card>
 
-      <div className="flex items-center justify-between text-sm text-gray-600">
-        <div>
-          Mostrando {appointments.length} agendamento{appointments.length !== 1 ? 's' : ''}
-          {selectedAppointments.length > 0 && (
-            <span className="ml-2 text-blue-600">
-              ({selectedAppointments.length} selecionado{selectedAppointments.length !== 1 ? 's' : ''})
-            </span>
-          )}
-        </div>
-      </div>
+      <AppointmentTableFooter
+        totalAppointments={appointments.length}
+        selectedCount={selectedAppointments.length}
+      />
     </div>
   );
 };
