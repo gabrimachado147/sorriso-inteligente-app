@@ -28,6 +28,8 @@ export const RealtimeNotifications: React.FC<RealtimeNotificationsProps> = ({
       }, 3000);
       return () => clearTimeout(timer);
     }
+    // Return undefined for the case when unreadCount is 0
+    return undefined;
   }, [unreadCount]);
 
   return (
