@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Bell, X, AlertCircle, CheckCircle, Info, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -69,7 +70,7 @@ export const RealtimeNotifications: React.FC<RealtimeNotificationsProps> = ({
     }
   };
 
-  const formatTime = (timestamp: Date) => {
+  const formatTime = (timestamp: Date): string => {
     const now = new Date();
     const diff = now.getTime() - timestamp.getTime();
     const minutes = Math.floor(diff / 60000);
