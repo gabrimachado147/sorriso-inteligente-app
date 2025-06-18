@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { MainLayout } from '@/components/Layout/MainLayout';
 import { PageHead } from '@/components/SEO/PageHead';
@@ -28,6 +27,7 @@ import {
   Terminal,
   Cpu
 } from 'lucide-react';
+import { LiveCodeAnalysis } from '@/components/Developer/LiveCodeAnalysis';
 
 const DeveloperPage = () => {
   const { isSupabaseConfigured, projectInfo } = useDevelopmentPanel();
@@ -61,8 +61,12 @@ const DeveloperPage = () => {
               </div>
 
               {/* Main Tabs */}
-              <Tabs defaultValue="ai-assistant" className="w-full">
-                <TabsList className="grid w-full grid-cols-6 h-12">
+              <Tabs defaultValue="live-analysis" className="w-full">
+                <TabsList className="grid w-full grid-cols-7 h-12">
+                  <TabsTrigger value="live-analysis" className="flex items-center gap-2">
+                    <Brain className="h-4 w-4" />
+                    <span className="hidden sm:inline">Live Analysis</span>
+                  </TabsTrigger>
                   <TabsTrigger value="ai-assistant" className="flex items-center gap-2">
                     <Bot className="h-4 w-4" />
                     <span className="hidden sm:inline">IA Assistant</span>
@@ -88,6 +92,24 @@ const DeveloperPage = () => {
                     <span className="hidden sm:inline">System</span>
                   </TabsTrigger>
                 </TabsList>
+
+                {/* Live Analysis Tab - Nova funcionalidade principal */}
+                <TabsContent value="live-analysis" className="space-y-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Brain className="h-6 w-6 text-purple-600" />
+                        Análise de Código ao Vivo
+                        <Badge variant="secondary" className="bg-purple-100 text-purple-700">
+                          IMPLEMENTADO
+                        </Badge>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <LiveCodeAnalysis />
+                    </CardContent>
+                  </Card>
+                </TabsContent>
 
                 {/* AI Assistant Tab */}
                 <TabsContent value="ai-assistant" className="space-y-6">
