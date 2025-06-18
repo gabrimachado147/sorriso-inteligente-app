@@ -34,6 +34,16 @@ export const EnhancedAIPageAnalyzer: React.FC = () => {
   const [selectedAI, setSelectedAI] = useState('asst_TWl3QmvNw0am7N05klbS5zJh'); // Seu assistant como padrão
 
   const handleAnalyzePage = async () => {
+    if (!selectedPage) {
+      setError('Por favor, selecione uma página para análise');
+      return;
+    }
+
+    if (!selectedAI) {
+      setError('Por favor, selecione uma IA para realizar a análise');
+      return;
+    }
+
     setLoading(true);
     setError(null);
     setResult(null);
@@ -148,7 +158,7 @@ export const EnhancedAIPageAnalyzer: React.FC = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Brain className="h-6 w-6 text-purple-600" />
-            Análise Estratégica com IA Selecionada
+            Configuração de Análise Estratégica
             <Badge variant="secondary" className="bg-purple-100 text-purple-700">
               {getAIDisplayName(selectedAI)}
             </Badge>
@@ -157,7 +167,7 @@ export const EnhancedAIPageAnalyzer: React.FC = () => {
         <CardContent className="space-y-4">
           <div className="space-y-3">
             <p className="text-sm text-muted-foreground">
-              Use a IA selecionada para obter análises estratégicas detalhadas da página escolhida.
+              Configure o contexto adicional para personalizar sua análise estratégica.
             </p>
 
             <div>

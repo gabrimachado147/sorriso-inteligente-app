@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Globe, ExternalLink, RefreshCw } from 'lucide-react';
+import { Globe, ExternalLink, RefreshCw, Sparkles } from 'lucide-react';
 
 interface PageSelectorProps {
   selectedPage: string;
@@ -39,6 +39,8 @@ export const PageSelector: React.FC<PageSelectorProps> = ({
       window.open(selectedPage, '_blank');
     }
   };
+
+  const canAnalyze = selectedPage && !loading;
 
   return (
     <Card className="border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50">
@@ -99,6 +101,28 @@ export const PageSelector: React.FC<PageSelectorProps> = ({
             </div>
           </div>
         )}
+
+        {/* Botão de Análise */}
+        <div className="pt-2 border-t">
+          <Button
+            onClick={onAnalyzePage}
+            disabled={!canAnalyze}
+            className="w-full"
+            size="lg"
+          >
+            {loading ? (
+              <>
+                <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                Analisando com IA...
+              </>
+            ) : (
+              <>
+                <Sparkles className="h-4 w-4 mr-2" />
+                Analisar Página Selecionada
+              </>
+            )}
+          </Button>
+        </div>
 
         <div className="text-xs text-center text-muted-foreground pt-2 border-t">
           💡 Dica: Selecione uma página e configure a IA desejada antes de analisar
