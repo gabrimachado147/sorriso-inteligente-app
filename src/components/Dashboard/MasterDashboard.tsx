@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Crown } from 'lucide-react';
 import { animations } from '@/lib/animations';
@@ -7,6 +6,7 @@ import { useAppointments } from '@/hooks/useAppointments';
 import { useAppointmentsFilters } from '@/hooks/useAppointmentsFilters';
 import { useMasterDashboardData } from '@/hooks/useMasterDashboardData';
 import { useMasterDashboardFilters } from '@/hooks/useMasterDashboardFilters';
+import { EnhancedMasterDashboard } from './EnhancedMasterDashboard';
 import { MasterDashboardFilters } from './MasterDashboardFilters';
 import { MasterDashboardContent } from './MasterDashboardContent';
 import { MessageTemplates } from './MessageTemplates';
@@ -17,6 +17,14 @@ interface MasterDashboardProps {
 }
 
 export const MasterDashboard: React.FC<MasterDashboardProps> = ({ appointments, stats }) => {
+  const [showEnhanced, setShowEnhanced] = useState(true);
+  
+  // Se o usuário preferir a versão aprimorada, usa o novo componente
+  if (showEnhanced) {
+    return <EnhancedMasterDashboard appointments={appointments} stats={stats} />;
+  }
+
+  // Mantém a implementação original como fallback
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedClinic, setSelectedClinic] = useState<string>('all');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
