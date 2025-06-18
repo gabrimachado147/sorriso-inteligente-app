@@ -29,6 +29,7 @@ export const MicroInteraction: React.FC<MicroInteractionProps> = ({
       }, delay);
       return () => clearTimeout(timer);
     }
+    return undefined;
   }, [trigger, delay]);
 
   const getAnimationClasses = (): string => {
@@ -91,6 +92,7 @@ export const SuccessAnimation: React.FC<{ show: boolean; onComplete?: () => void
       const timer = setTimeout(onComplete, 2000);
       return () => clearTimeout(timer);
     }
+    return undefined;
   }, [show, onComplete]);
 
   if (!show) return null;
