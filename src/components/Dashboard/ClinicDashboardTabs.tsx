@@ -24,7 +24,7 @@ export const ClinicDashboardTabs: React.FC<ClinicDashboardTabsProps> = ({
   return (
     <div className="w-full">
       {/* Mobile Dropdown */}
-      <div className="block md:hidden mb-4">
+      <div className="block md:hidden mb-6">
         <Select value={activeTab} onValueChange={setActiveTab}>
           <SelectTrigger className="w-full max-w-sm mx-auto">
             <SelectValue placeholder="Selecione uma seção" />
@@ -45,20 +45,20 @@ export const ClinicDashboardTabs: React.FC<ClinicDashboardTabsProps> = ({
         </Select>
       </div>
 
-      {/* Desktop Tabs */}
+      {/* Desktop Tabs - Single level navigation */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="hidden md:block w-full">
         <div className="w-full flex justify-center mb-6">
-          <TabsList className="inline-flex h-12 items-center justify-center rounded-lg bg-gray-100 p-1 text-muted-foreground">
+          <TabsList className="inline-flex h-12 items-center justify-center rounded-xl bg-gray-100 p-1 text-muted-foreground shadow-sm border">
             {tabOptions.map((option) => {
               const Icon = option.icon;
               return (
                 <TabsTrigger 
                   key={option.value}
                   value={option.value} 
-                  className="inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-2 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm gap-2"
+                  className="inline-flex items-center justify-center whitespace-nowrap rounded-lg px-4 py-2.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-white data-[state=active]:text-foreground data-[state=active]:shadow-sm gap-2 min-w-[120px]"
                 >
                   <Icon className="h-4 w-4" />
-                  <span className="hidden lg:inline">{option.label}</span>
+                  <span>{option.label}</span>
                 </TabsTrigger>
               );
             })}

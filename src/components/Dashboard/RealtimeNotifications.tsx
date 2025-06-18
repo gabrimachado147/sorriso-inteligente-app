@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Bell, X, AlertCircle, CheckCircle, Info, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -38,7 +39,6 @@ export const RealtimeNotifications: React.FC<RealtimeNotificationsProps> = ({
   useEffect(() => {
     if (unreadCount > 0) {
       setHasNewNotifications(true);
-      // Auto-hide the new notification indicator after 3 seconds
       const timer = setTimeout(() => {
         setHasNewNotifications(false);
       }, 3000);
@@ -69,7 +69,6 @@ export const RealtimeNotifications: React.FC<RealtimeNotificationsProps> = ({
       case 'error': 
         return 'text-red-600 bg-red-50 border-red-200';
       case 'info':
-        return 'text-blue-600 bg-blue-50 border-blue-200';
       default: 
         return 'text-blue-600 bg-blue-50 border-blue-200';
     }
@@ -116,7 +115,7 @@ export const RealtimeNotifications: React.FC<RealtimeNotificationsProps> = ({
             className="fixed inset-0 z-40" 
             onClick={() => setIsOpen(false)}
           />
-          <div className={`absolute right-0 top-12 w-80 max-h-96 bg-white border rounded-lg shadow-lg z-50 ${animations.fadeIn}`}>
+          <div className={`absolute right-0 top-12 w-80 max-h-96 bg-white border rounded-lg shadow-lg z-50 overflow-hidden ${animations.fadeIn}`}>
             <div className="p-4 border-b">
               <div className="flex items-center justify-between">
                 <h3 className="font-semibold text-gray-900">Notificações</h3>

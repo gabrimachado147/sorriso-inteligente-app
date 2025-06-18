@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { AppointmentRecord } from '@/services/supabase/appointments';
 import { EnhancedAppointmentsTable } from '@/components/Appointments/EnhancedAppointmentsTable';
 import { DashboardCharts } from './DashboardCharts';
@@ -33,41 +32,72 @@ export const ClinicDashboardContent: React.FC<ClinicDashboardContentProps> = ({
 }) => {
   const handleGenerateReport = async (config: any) => {
     console.log('Gerando relatório:', config);
-    // Implementar lógica de geração de relatório
+    
+    // Create CSV content based on config
+    const headers = ['Nome', 'Telefone', 'Data', 'Horário', 'Serviço', 'Status', 'Clínica'];
+    const csvContent = [
+      headers.join(','),
+      ...filteredAppointments.map(apt => [
+        apt.name,
+        apt.phone,
+        apt.date,
+        apt.time,
+        apt.service,
+        apt.status,
+        apt.clinic
+      ].join(','))
+    ].join('\n');
+
+    // Download the file
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `${config.name}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
-  const renderContent = (tabValue: string) => {
-    switch (tabValue) {
+  const renderContent = () => {
+    switch (activeTab) {
       case 'overview':
         return (
-          <DashboardCharts
-            monthlyData={dashboardData.monthlyData}
-            servicesData={dashboardData.servicesData}
-            statusData={dashboardData.statusData}
-            confirmedAppointments={dashboardData.confirmedAppointments}
-            completedAppointments={dashboardData.completedAppointments}
-            pendingAppointments={dashboardData.pendingAppointments}
-            cancelledAppointments={dashboardData.cancelledAppointments}
-          />
+          <div className="w-full overflow-hidden">
+            <DashboardCharts
+              monthlyData={dashboardData.monthlyData}
+              servicesData={dashboardData.servicesData}
+              statusData={dashboardData.statusData}
+              confirmedAppointments={dashboardData.confirmedAppointments}
+              completedAppointments={dashboardData.completedAppointments}
+              pendingAppointments={dashboardData.pendingAppointments}
+              cancelledAppointments={dashboardData.cancelledAppointments}
+            />
+          </div>
         );
       case 'analytics':
         return (
-          <AdvancedAnalytics 
-            appointments={filteredAppointments} 
-            clinicName={clinicName}
-          />
+          <div className="w-full overflow-hidden">
+            <AdvancedAnalytics 
+              appointments={filteredAppointments} 
+              clinicName={clinicName}
+            />
+          </div>
         );
       case 'reports':
         return (
-          <ReportGenerator
-            templates={defaultReportTemplates}
-            onGenerateReport={handleGenerateReport}
-            isGenerating={false}
-          />
+          <div className="w-full overflow-hidden">
+            <ReportGenerator
+              templates={defaultReportTemplates}
+              onGenerateReport={handleGenerateReport}
+              isGenerating={false}
+            />
+          </div>
         );
       case 'appointments':
         return (
-          <div className="w-full">
+          <div className="w-full overflow-hidden">
             <EnhancedAppointmentsTable
               appointments={filteredAppointments}
               onStatusChange={onStatusChange}
@@ -79,52 +109,35 @@ export const ClinicDashboardContent: React.FC<ClinicDashboardContentProps> = ({
           </div>
         );
       case 'messages':
-        return <MessageTemplates onSendMessage={onSendBulkMessage} appointments={filteredAppointments} />;
+        return (
+          <div className="w-full overflow-hidden">
+            <MessageTemplates 
+              onSendMessage={onSendBulkMessage} 
+              appointments={filteredAppointments} 
+            />
+          </div>
+        );
       default:
         return (
-          <DashboardCharts
-            monthlyData={dashboardData.monthlyData}
-            servicesData={dashboardData.servicesData}
-            statusData={dashboardData.statusData}
-            confirmedAppointments={dashboardData.confirmedAppointments}
-            completedAppointments={dashboardData.completedAppointments}
-            pendingAppointments={dashboardData.pendingAppointments}
-            cancelledAppointments={dashboardData.cancelledAppointments}
-          />
+          <div className="w-full overflow-hidden">
+            <DashboardCharts
+              monthlyData={dashboardData.monthlyData}
+              servicesData={dashboardData.servicesData}
+              statusData={dashboardData.statusData}
+              confirmedAppointments={dashboardData.confirmedAppointments}
+              completedAppointments={dashboardData.completedAppointments}
+              pendingAppointments={dashboardData.pendingAppointments}
+              cancelledAppointments={dashboardData.cancelledAppointments}
+            />
+          </div>
         );
     }
   };
 
   return (
-    <div className="w-full">
-      {/* Desktop Content */}
-      <div className="hidden md:block w-full">
-        <Tabs value={activeTab} className="w-full">
-          <div className="w-full">
-            <TabsContent value="overview" className="space-y-6 mt-0">
-              {renderContent('overview')}
-            </TabsContent>
-            <TabsContent value="analytics" className="space-y-6 mt-0">
-              {renderContent('analytics')}
-            </TabsContent>
-            <TabsContent value="reports" className="space-y-6 mt-0">
-              {renderContent('reports')}
-            </TabsContent>
-            <TabsContent value="appointments" className="space-y-6 mt-0">
-              {renderContent('appointments')}
-            </TabsContent>
-            <TabsContent value="messages" className="space-y-6 mt-0">
-              {renderContent('messages')}
-            </TabsContent>
-          </div>
-        </Tabs>
-      </div>
-
-      {/* Mobile Content */}
-      <div className="block md:hidden w-full">
-        <div className="space-y-6 mt-4">
-          {renderContent(activeTab)}
-        </div>
+    <div className="w-full overflow-hidden">
+      <div className="space-y-6 mt-0">
+        {renderContent()}
       </div>
     </div>
   );
