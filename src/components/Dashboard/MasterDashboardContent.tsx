@@ -38,68 +38,75 @@ export const MasterDashboardContent: React.FC<MasterDashboardContentProps> = ({
   isUpdating
 }) => {
   return (
-    <div className="space-y-6 max-w-full overflow-x-hidden">
-      {/* Cards de Estatísticas - Removida duplicação */}
-      <div className="w-full">
-        <MasterDashboardStats
-          totalAppointments={dashboardData.totalAppointments}
-          totalClinics={dashboardData.totalClinics}
-          totalRevenue={dashboardData.totalRevenue}
-          conversionRate={dashboardData.conversionRate}
-        />
-      </div>
+    <>
+      {/* Cards de Estatísticas */}
+      <MasterDashboardStats
+        totalAppointments={dashboardData.totalAppointments}
+        totalClinics={dashboardData.totalClinics}
+        totalRevenue={dashboardData.totalRevenue}
+        conversionRate={dashboardData.conversionRate}
+      />
 
-      {/* Tabs com layout responsivo e sem overflow */}
-      <div className={`${animations.fadeIn} w-full overflow-x-hidden`}>
+      {/* Tabs com layout responsivo e espaçamento melhorado */}
+      <div className={`${animations.fadeIn} w-full mt-6`}>
         <Tabs defaultValue="overview" className="w-full">
-          <div className="flex justify-center w-full mb-6 overflow-x-auto">
-            <TabsList className="inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground min-w-max">
-              <TabsTrigger value="overview" className="px-4 py-2 text-sm">Visão Geral</TabsTrigger>
-              <TabsTrigger value="analytics" className="px-4 py-2 text-sm">Analytics</TabsTrigger>
-              <TabsTrigger value="appointments" className="px-4 py-2 text-sm">Agendamentos</TabsTrigger>
+          <div className="flex flex-col items-center w-full mb-6">
+            <TabsList className="inline-flex h-12 items-center justify-center rounded-xl bg-gray-100 p-1 text-muted-foreground shadow-sm border w-auto min-w-[320px] sm:min-w-[400px] md:min-w-[480px]">
+              <TabsTrigger 
+                value="overview" 
+                className="inline-flex items-center justify-center whitespace-nowrap rounded-lg px-3 py-2.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-white data-[state=active]:text-foreground data-[state=active]:shadow-sm min-w-[90px] flex-1"
+              >
+                Visão Geral
+              </TabsTrigger>
+              <TabsTrigger 
+                value="analytics" 
+                className="inline-flex items-center justify-center whitespace-nowrap rounded-lg px-3 py-2.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-white data-[state=active]:text-foreground data-[state=active]:shadow-sm min-w-[90px] flex-1"
+              >
+                Analytics
+              </TabsTrigger>
+              <TabsTrigger 
+                value="appointments" 
+                className="inline-flex items-center justify-center whitespace-nowrap rounded-lg px-3 py-2.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-white data-[state=active]:text-foreground data-[state=active]:shadow-sm min-w-[90px] flex-1"
+              >
+                Agendamentos
+              </TabsTrigger>
             </TabsList>
           </div>
 
-          <TabsContent value="overview" className="space-y-6 mt-0 w-full overflow-x-hidden">
-            <div className="w-full">
-              <MasterDashboardCharts
-                clinicStats={dashboardData.clinicStats}
-                monthlyTrend={dashboardData.monthlyTrend}
-                serviceDistribution={dashboardData.serviceDistribution}
-                statusBreakdown={dashboardData.statusBreakdown}
-              />
-            </div>
+          <TabsContent value="overview" className="space-y-6 mt-0">
+            <MasterDashboardCharts
+              clinicStats={dashboardData.clinicStats}
+              monthlyTrend={dashboardData.monthlyTrend}
+              serviceDistribution={dashboardData.serviceDistribution}
+              statusBreakdown={dashboardData.statusBreakdown}
+            />
           </TabsContent>
 
-          <TabsContent value="analytics" className="space-y-6 mt-0 w-full overflow-x-hidden">
-            <div className="w-full">
-              <MasterDashboardCharts
-                clinicStats={dashboardData.clinicStats}
-                monthlyTrend={dashboardData.monthlyTrend}
-                serviceDistribution={dashboardData.serviceDistribution}
-                statusBreakdown={dashboardData.statusBreakdown}
-              />
-            </div>
+          <TabsContent value="analytics" className="space-y-6 mt-0">
+            <MasterDashboardCharts
+              clinicStats={dashboardData.clinicStats}
+              monthlyTrend={dashboardData.monthlyTrend}
+              serviceDistribution={dashboardData.serviceDistribution}
+              statusBreakdown={dashboardData.statusBreakdown}
+            />
           </TabsContent>
 
-          <TabsContent value="appointments" className="space-y-6 mt-0 w-full overflow-x-hidden">
-            <div className="w-full">
-              <EnhancedAppointmentsTable
-                appointments={finalFilteredAppointments}
-                onStatusChange={onStatusChange}
-                onServiceUpdate={onServiceUpdate}
-                onBulkStatusUpdate={(appointmentIds, status) => {
-                  appointmentIds.forEach(id => onStatusChange(id, status as 'confirmed' | 'cancelled' | 'completed' | 'no_show'));
-                }}
-                onSendBulkMessage={(appointmentIds, template) => {
-                  console.log('Enviando mensagem em lote:', { appointmentIds, template });
-                }}
-                isUpdating={isUpdating}
-              />
-            </div>
+          <TabsContent value="appointments" className="space-y-6 mt-0">
+            <EnhancedAppointmentsTable
+              appointments={finalFilteredAppointments}
+              onStatusChange={onStatusChange}
+              onServiceUpdate={onServiceUpdate}
+              onBulkStatusUpdate={(appointmentIds, status) => {
+                appointmentIds.forEach(id => onStatusChange(id, status as 'confirmed' | 'cancelled' | 'completed' | 'no_show'));
+              }}
+              onSendBulkMessage={(appointmentIds, template) => {
+                console.log('Enviando mensagem em lote:', { appointmentIds, template });
+              }}
+              isUpdating={isUpdating}
+            />
           </TabsContent>
         </Tabs>
       </div>
-    </div>
+    </>
   );
 };

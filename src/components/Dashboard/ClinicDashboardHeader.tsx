@@ -32,30 +32,13 @@ export const ClinicDashboardHeader: React.FC<ClinicDashboardHeaderProps> = ({
   onExportData,
   onRefresh
 }) => {
-  // Sample notifications for the clinic
-  const sampleNotifications = [
-    {
-      id: '1',
-      type: 'info' as const,
-      title: 'Novo agendamento',
-      message: 'Novo agendamento confirmado para hoje às 14:00',
-      timestamp: new Date(),
-      read: false
-    }
-  ];
-
   return (
     <div className={`${animations.fadeIn} w-full`}>
       {/* Header com sino de notificação */}
       <div className="flex items-center justify-between mb-6">
         <div></div> {/* Espaço vazio para balanceamento */}
         <div className="flex-shrink-0">
-          <RealtimeNotifications
-            notifications={sampleNotifications}
-            onMarkAsRead={() => {}}
-            onMarkAllAsRead={() => {}}
-            onDismiss={() => {}}
-          />
+          <RealtimeNotifications clinicName={clinicName} />
         </div>
       </div>
 
