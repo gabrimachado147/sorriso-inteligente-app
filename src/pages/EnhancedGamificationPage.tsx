@@ -1,163 +1,134 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { MainLayout } from '@/components/Layout/MainLayout';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PageHead } from '@/components/SEO/PageHead';
 import { EnhancedBreadcrumbs } from '@/components/ui/enhanced-breadcrumbs';
 import { FeedbackSystem } from '@/components/ui/feedback-system';
-import { MicroInteraction } from '@/components/ui/micro-interactions';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Trophy, Star, Target, Gift, Zap, Medal, Crown, Award } from 'lucide-react';
+import { GamificationStats } from '@/components/ui/gamification-elements';
+import { SuccessAnimation } from '@/components/ui/success-animation';
+import { 
+  Trophy,
+  Star,
+  Target,
+  Gift,
+  Crown,
+  Zap,
+  Users,
+  Calendar,
+  Award,
+  TrendingUp
+} from 'lucide-react';
 import { animations } from '@/lib/animations';
-import { useToast } from '@/hooks/use-toast';
-import { cn } from '@/lib/utils';
-
-interface Achievement {
-  id: string;
-  title: string;
-  description: string;
-  icon: React.ComponentType<{ className?: string }>;
-  points: number;
-  unlocked: boolean;
-  progress: number;
-  maxProgress: number;
-  rarity: 'common' | 'rare' | 'epic' | 'legendary';
-  category: 'engagement' | 'health' | 'social' | 'milestone';
-}
 
 const EnhancedGamificationPage = () => {
-  const [userLevel, setUserLevel] = useState(5);
-  const [currentXP, setCurrentXP] = useState(750);
-  const [nextLevelXP] = useState(1000);
-  const [totalPoints, setTotalPoints] = useState(2450);
-  const { toast } = useToast();
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const breadcrumbItems = [
     { label: 'Início', href: '/' },
-    { label: 'Gamificação', href: '/gamification', icon: Trophy }
+    { label: 'Gamificação', href: '/gamification', icon: Trophy, current: true }
   ];
 
-  const achievements: Achievement[] = [
+  const challenges = [
     {
-      id: 'first-appointment',
-      title: 'Primeiro Passo',
-      description: 'Agendou sua primeira consulta',
-      icon: Star,
-      points: 100,
-      unlocked: true,
-      progress: 1,
-      maxProgress: 1,
-      rarity: 'common',
-      category: 'milestone'
+      id: 1,
+      title: 'Primeira Consulta',
+      description: 'Complete sua primeira consulta odontológica',
+      reward: '50 pontos',
+      progress: 100,
+      total: 100,
+      completed: true,
+      icon: Star
     },
     {
-      id: 'dental-champion',
-      title: 'Campeão Dental',
-      description: 'Completou 10 consultas de rotina',
-      icon: Trophy,
-      points: 500,
-      unlocked: true,
-      progress: 10,
-      maxProgress: 10,
-      rarity: 'epic',
-      category: 'health'
-    },
-    {
-      id: 'social-butterfly',
-      title: 'Borboleta Social',
-      description: 'Compartilhou 5 experiências',
-      icon: Medal,
-      points: 250,
-      unlocked: false,
+      id: 2,
+      title: 'Pontualidade Master',
+      description: 'Chegue no horário em 5 consultas consecutivas',
+      reward: '100 pontos + Badge',
       progress: 3,
-      maxProgress: 5,
-      rarity: 'rare',
-      category: 'social'
+      total: 5,
+      completed: false,
+      icon: Target
     },
     {
-      id: 'chat-explorer',
-      title: 'Explorador do Chat',
-      description: 'Interagiu com a IA 20 vezes',
-      icon: Zap,
-      points: 300,
-      unlocked: true,
-      progress: 20,
-      maxProgress: 20,
-      rarity: 'rare',
-      category: 'engagement'
+      id: 3,
+      title: 'Cliente do Mês',
+      description: 'Realize 3 procedimentos em 30 dias',
+      reward: '200 pontos + Desconto',
+      progress: 1,
+      total: 3,
+      completed: false,
+      icon: Crown
     },
     {
-      id: 'loyalty-legend',
-      title: 'Lenda da Fidelidade',
-      description: 'Cliente há mais de 2 anos',
-      icon: Crown,
-      points: 1000,
-      unlocked: false,
-      progress: 18,
-      maxProgress: 24,
-      rarity: 'legendary',
-      category: 'milestone'
-    },
-    {
-      id: 'feedback-master',
-      title: 'Mestre do Feedback',
-      description: 'Avaliou 15 consultas',
-      icon: Award,
-      points: 400,
-      unlocked: false,
-      progress: 12,
-      maxProgress: 15,
-      rarity: 'epic',
-      category: 'engagement'
+      id: 4,
+      title: 'Embaixador Sorriso',
+      description: 'Indique 3 amigos que realizem consultas',
+      reward: '300 pontos + Brinde',
+      progress: 0,
+      total: 3,
+      completed: false,
+      icon: Users
     }
   ];
 
-  const rarityColors = {
-    common: 'bg-gray-100 text-gray-700 border-gray-300',
-    rare: 'bg-blue-100 text-blue-700 border-blue-300',
-    epic: 'bg-purple-100 text-purple-700 border-purple-300',
-    legendary: 'bg-yellow-100 text-yellow-700 border-yellow-300'
-  };
-
-  const categoryColors = {
-    engagement: 'bg-green-500',
-    health: 'bg-blue-500',
-    social: 'bg-pink-500',
-    milestone: 'bg-orange-500'
-  };
-
-  const progressPercentage = (currentXP / nextLevelXP) * 100;
-
-  const claimReward = (achievementId: string) => {
-    const achievement = achievements.find(a => a.id === achievementId);
-    if (achievement && achievement.unlocked) {
-      setTotalPoints(prev => prev + achievement.points);
-      toast({
-        title: "Recompensa coletada! 🎉",
-        description: `Você ganhou ${achievement.points} pontos!`,
-      });
+  const rewards = [
+    {
+      title: 'Desconto 10%',
+      cost: '500 pontos',
+      description: 'Desconto em qualquer procedimento',
+      category: 'Desconto',
+      available: true
+    },
+    {
+      title: 'Limpeza Grátis',
+      cost: '800 pontos',
+      description: 'Uma sessão de limpeza gratuita',
+      category: 'Serviço',
+      available: true
+    },
+    {
+      title: 'Kit Higiene Premium',
+      cost: '1000 pontos',
+      description: 'Kit completo com produtos premium',
+      category: 'Produto',
+      available: false
+    },
+    {
+      title: 'Consulta VIP',
+      cost: '1500 pontos',
+      description: 'Atendimento prioritário e diferenciado',
+      category: 'Experiência',
+      available: false
     }
-  };
+  ];
 
   const leaderboard = [
-    { name: 'Você', points: totalPoints, position: 3, avatar: '👤' },
-    { name: 'Maria Silva', points: 3200, position: 1, avatar: '👩' },
-    { name: 'João Santos', points: 2800, position: 2, avatar: '👨' },
-    { name: 'Ana Costa', points: 2100, position: 4, avatar: '👩' },
-    { name: 'Carlos Lima', points: 1950, position: 5, avatar: '👨' }
-  ].sort((a, b) => b.points - a.points);
+    { position: 1, name: 'Maria Silva', points: 2350, badge: 'Diamante' },
+    { position: 2, name: 'João Santos', points: 2100, badge: 'Ouro' },
+    { position: 3, name: 'Ana Costa', points: 1890, badge: 'Ouro' },
+    { position: 4, name: 'Pedro Lima', points: 1650, badge: 'Prata' },
+    { position: 5, name: 'Você', points: 750, badge: 'Bronze' }
+  ];
+
+  const handleClaimReward = (reward: any) => {
+    setShowSuccess(true);
+    setTimeout(() => setShowSuccess(false), 2000);
+  };
 
   return (
     <>
       <PageHead
-        title="Gamificação - Senhor Sorriso"
-        description="Acompanhe seu progresso, conquiste medalhas e ganhe recompensas pelo seu cuidado com a saúde bucal."
-        keywords="gamificação, conquistas, medalhas, pontos, recompensas, progresso, Senhor Sorriso"
+        title="Sistema de Gamificação - Senhor Sorriso"
+        description="Participe do nosso sistema de recompensas! Ganhe pontos, complete desafios e troque por benefícios exclusivos."
+        keywords="gamificação, pontos, recompensas, desafios, benefícios, programa fidelidade, Senhor Sorriso"
         url="https://senhorsorrisso.com.br/gamification"
       />
-      <div className="w-full min-h-screen bg-gradient-to-br from-yellow-50 via-white to-orange-50">
+      <div className="w-full min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50">
         <MainLayout>
           <div className={`w-full ${animations.pageEnter}`}>
             <div className="mobile-container px-4 py-6 max-w-7xl mx-auto">
@@ -168,186 +139,21 @@ const EnhancedGamificationPage = () => {
                 {/* Header */}
                 <div className="text-center">
                   <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2 flex items-center justify-center gap-3">
-                    <Trophy className="h-8 w-8 text-yellow-500" />
+                    <Trophy className="h-8 w-8 text-yellow-600" />
                     Sistema de Recompensas
                   </h1>
-                  <p className="text-muted-foreground max-w-2xl mx-auto">
-                    Ganhe pontos, desbloqueie conquistas e acompanhe seu progresso 
-                    no cuidado com a saúde bucal!
+                  <p className="text-muted-foreground max-w-3xl mx-auto">
+                    Complete desafios, ganhe pontos e troque por benefícios exclusivos! 
+                    Transforme sua jornada odontológica em uma experiência gamificada.
                   </p>
                 </div>
 
-                {/* Status do Usuário */}
-                <Card className="border-yellow-200 bg-gradient-to-r from-yellow-50 to-orange-50">
-                  <CardContent className="p-6">
-                    <div className="flex flex-col md:flex-row items-center gap-6">
-                      <div className="text-center md:text-left">
-                        <div className="flex items-center gap-3 justify-center md:justify-start mb-2">
-                          <div className="relative">
-                            <div className="w-16 h-16 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full flex items-center justify-center">
-                              <Crown className="h-8 w-8 text-white" />
-                            </div>
-                            <Badge className="absolute -top-1 -right-1 bg-purple-500 text-white">
-                              {userLevel}
-                            </Badge>
-                          </div>
-                          <div>
-                            <h2 className="text-xl font-bold">Nível {userLevel}</h2>
-                            <p className="text-gray-600">{totalPoints.toLocaleString()} pontos totais</p>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="flex-1 w-full">
-                        <div className="space-y-2">
-                          <div className="flex justify-between text-sm">
-                            <span>Progresso para o próximo nível</span>
-                            <span>{currentXP}/{nextLevelXP} XP</span>
-                          </div>
-                          <Progress value={progressPercentage} className="h-3" />
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
                 {/* Layout Principal */}
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                  {/* Conquistas */}
-                  <div className="lg:col-span-2">
-                    <Card>
-                      <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                          <Target className="h-5 w-5 text-primary" />
-                          Suas Conquistas
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          {achievements.map((achievement) => {
-                            const IconComponent = achievement.icon;
-                            const progressPercent = (achievement.progress / achievement.maxProgress) * 100;
-                            
-                            return (
-                              <MicroInteraction key={achievement.id} type="hover-lift" trigger="hover">
-                                <Card className={cn(
-                                  'p-4 transition-all duration-200',
-                                  achievement.unlocked 
-                                    ? 'border-green-300 bg-green-50 shadow-md' 
-                                    : 'border-gray-200 bg-gray-50'
-                                )}>
-                                  <div className="space-y-3">
-                                    <div className="flex items-center justify-between">
-                                      <div className="flex items-center gap-3">
-                                        <div className={cn(
-                                          'p-2 rounded-lg',
-                                          achievement.unlocked ? 'bg-green-200' : 'bg-gray-200'
-                                        )}>
-                                          <IconComponent className={cn(
-                                            'h-5 w-5',
-                                            achievement.unlocked ? 'text-green-700' : 'text-gray-500'
-                                          )} />
-                                        </div>
-                                        <div>
-                                          <h4 className="font-medium text-sm">{achievement.title}</h4>
-                                          <p className="text-xs text-gray-600">{achievement.description}</p>
-                                        </div>
-                                      </div>
-                                      
-                                      <div className="flex flex-col items-end gap-1">
-                                        <Badge className={cn('text-xs', rarityColors[achievement.rarity])}>
-                                          {achievement.rarity}
-                                        </Badge>
-                                        <span className="text-xs font-bold text-green-600">
-                                          +{achievement.points}
-                                        </span>
-                                      </div>
-                                    </div>
-
-                                    {!achievement.unlocked && (
-                                      <div className="space-y-1">
-                                        <div className="flex justify-between text-xs">
-                                          <span>Progresso</span>
-                                          <span>{achievement.progress}/{achievement.maxProgress}</span>
-                                        </div>
-                                        <Progress value={progressPercent} className="h-2" />
-                                      </div>
-                                    )}
-
-                                    {achievement.unlocked && (
-                                      <MicroInteraction type="click-ripple" trigger="click">
-                                        <Button 
-                                          size="sm" 
-                                          className="w-full"
-                                          onClick={() => claimReward(achievement.id)}
-                                        >
-                                          <Gift className="h-3 w-3 mr-1" />
-                                          Coletado ✓
-                                        </Button>
-                                      </MicroInteraction>
-                                    )}
-                                  </div>
-                                </Card>
-                              </MicroInteraction>
-                            );
-                          })}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-
-                  {/* Ranking e Feedback */}
-                  <div className="lg:col-span-2 space-y-6">
-                    {/* Ranking */}
-                    <Card>
-                      <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                          <Medal className="h-5 w-5 text-primary" />
-                          Ranking Mensal
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="space-y-3">
-                          {leaderboard.map((user, index) => (
-                            <MicroInteraction key={index} type="hover-lift" trigger="hover">
-                              <div className={cn(
-                                'flex items-center justify-between p-3 rounded-lg border',
-                                user.name === 'Você' 
-                                  ? 'bg-blue-50 border-blue-200' 
-                                  : 'bg-white border-gray-200'
-                              )}>
-                                <div className="flex items-center gap-3">
-                                  <div className={cn(
-                                    'w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold',
-                                    index === 0 ? 'bg-yellow-400 text-white' :
-                                    index === 1 ? 'bg-gray-400 text-white' :
-                                    index === 2 ? 'bg-orange-400 text-white' :
-                                    'bg-gray-200 text-gray-700'
-                                  )}>
-                                    {index + 1}
-                                  </div>
-                                  <div>
-                                    <p className="font-medium text-sm">{user.name}</p>
-                                    <p className="text-xs text-gray-600">{user.points} pontos</p>
-                                  </div>
-                                </div>
-                                {index < 3 && (
-                                  <Badge className={cn(
-                                    index === 0 ? 'bg-yellow-100 text-yellow-700' :
-                                    index === 1 ? 'bg-gray-100 text-gray-700' :
-                                    'bg-orange-100 text-orange-700'
-                                  )}>
-                                    {index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉'}
-                                  </Badge>
-                                )}
-                              </div>
-                            </MicroInteraction>
-                          ))}
-                        </div>
-                      </CardContent>
-                    </Card>
-
-                    {/* Feedback */}
+                  {/* Sidebar com Stats */}
+                  <div className="lg:col-span-1 space-y-6">
+                    <GamificationStats />
+                    
                     <FeedbackSystem 
                       pageContext="Sistema de Gamificação"
                       onSubmit={(feedback) => {
@@ -355,37 +161,241 @@ const EnhancedGamificationPage = () => {
                       }}
                     />
                   </div>
-                </div>
 
-                {/* Dicas de Gamificação */}
-                <Card className="border-green-200 bg-green-50">
-                  <CardContent className="p-6">
-                    <h3 className="font-medium text-green-900 mb-3">🎮 Como ganhar mais pontos:</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-green-800">
-                      <div>
-                        <h4 className="font-medium mb-2">📅 Agendamentos Regulares</h4>
-                        <p>Mantenha suas consultas em dia para ganhar pontos de consistência</p>
-                      </div>
-                      <div>
-                        <h4 className="font-medium mb-2">💬 Interaja com o Chat IA</h4>
-                        <p>Tire dúvidas e receba orientações para desbloquear conquistas</p>
-                      </div>
-                      <div>
-                        <h4 className="font-medium mb-2">⭐ Avalie suas Consultas</h4>
-                        <p>Compartilhe sua experiência para ajudar outros pacientes</p>
-                      </div>
-                      <div>
-                        <h4 className="font-medium mb-2">🔔 Configure Lembretes</h4>
-                        <p>Use o sistema de lembretes para não perder compromissos</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                  {/* Conteúdo Principal */}
+                  <div className="lg:col-span-3">
+                    <Tabs defaultValue="challenges" className="space-y-6">
+                      <TabsList className="grid w-full grid-cols-4">
+                        <TabsTrigger value="challenges" className="flex items-center gap-2">
+                          <Target className="h-4 w-4" />
+                          <span className="hidden sm:inline">Desafios</span>
+                        </TabsTrigger>
+                        <TabsTrigger value="rewards" className="flex items-center gap-2">
+                          <Gift className="h-4 w-4" />
+                          <span className="hidden sm:inline">Recompensas</span>
+                        </TabsTrigger>
+                        <TabsTrigger value="leaderboard" className="flex items-center gap-2">
+                          <Crown className="h-4 w-4" />
+                          <span className="hidden sm:inline">Ranking</span>
+                        </TabsTrigger>
+                        <TabsTrigger value="history" className="flex items-center gap-2">
+                          <TrendingUp className="h-4 w-4" />
+                          <span className="hidden sm:inline">Histórico</span>
+                        </TabsTrigger>
+                      </TabsList>
+
+                      {/* Desafios */}
+                      <TabsContent value="challenges">
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between">
+                            <h2 className="text-xl font-semibold">Desafios Ativos</h2>
+                            <Badge variant="secondary">
+                              {challenges.filter(c => !c.completed).length} ativos
+                            </Badge>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {challenges.map((challenge, index) => {
+                              const IconComponent = challenge.icon;
+                              
+                              return (
+                                <Card 
+                                  key={challenge.id}
+                                  className={`${animations.scaleIn} ${
+                                    challenge.completed 
+                                      ? 'border-green-200 bg-green-50' 
+                                      : 'border-primary/20 hover:shadow-lg transition-all duration-300'
+                                  }`}
+                                  style={{ animationDelay: `${index * 100}ms` }}
+                                >
+                                  <CardHeader className="pb-3">
+                                    <div className="flex items-start justify-between">
+                                      <div className="flex items-center gap-3">
+                                        <div className={`p-2 rounded-lg ${
+                                          challenge.completed 
+                                            ? 'bg-green-500 text-white' 
+                                            : 'bg-primary/10 text-primary'
+                                        }`}>
+                                          <IconComponent className="h-5 w-5" />
+                                        </div>
+                                        <div>
+                                          <CardTitle className="text-lg">{challenge.title}</CardTitle>
+                                          {challenge.completed && (
+                                            <Badge className="mt-1 bg-green-500">
+                                              ✓ Concluído
+                                            </Badge>
+                                          )}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </CardHeader>
+                                  <CardContent className="space-y-4">
+                                    <p className="text-gray-600 text-sm">
+                                      {challenge.description}
+                                    </p>
+                                    
+                                    <div className="space-y-2">
+                                      <div className="flex justify-between text-sm">
+                                        <span>Progresso</span>
+                                        <span>{challenge.progress}/{challenge.total}</span>
+                                      </div>
+                                      <Progress 
+                                        value={(challenge.progress / challenge.total) * 100} 
+                                        className="h-2"
+                                      />
+                                    </div>
+
+                                    <div className="flex items-center justify-between">
+                                      <div className="flex items-center gap-2">
+                                        <Zap className="h-4 w-4 text-yellow-600" />
+                                        <span className="font-medium text-yellow-700">
+                                          {challenge.reward}
+                                        </span>
+                                      </div>
+                                      
+                                      {challenge.completed && (
+                                        <Button size="sm" className="bg-green-600 hover:bg-green-700">
+                                          Resgatar
+                                        </Button>
+                                      )}
+                                    </div>
+                                  </CardContent>
+                                </Card>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </TabsContent>
+
+                      {/* Recompensas */}
+                      <TabsContent value="rewards">
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between">
+                            <h2 className="text-xl font-semibold">Loja de Recompensas</h2>
+                            <div className="flex items-center gap-2">
+                              <Zap className="h-5 w-5 text-yellow-600" />
+                              <span className="font-bold text-primary">750 pontos disponíveis</span>
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {rewards.map((reward, index) => (
+                              <Card 
+                                key={reward.title}
+                                className={`${animations.fadeInUp} ${
+                                  reward.available 
+                                    ? 'hover:shadow-lg transition-all duration-300' 
+                                    : 'opacity-60'
+                                }`}
+                                style={{ animationDelay: `${index * 100}ms` }}
+                              >
+                                <CardHeader className="pb-3">
+                                  <div className="flex items-start justify-between">
+                                    <div>
+                                      <CardTitle className="text-lg">{reward.title}</CardTitle>
+                                      <Badge variant="outline" className="mt-1">
+                                        {reward.category}
+                                      </Badge>
+                                    </div>
+                                    <div className="text-right">
+                                      <p className="font-bold text-primary">{reward.cost}</p>
+                                    </div>
+                                  </div>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                  <p className="text-gray-600 text-sm">
+                                    {reward.description}
+                                  </p>
+                                  
+                                  <Button 
+                                    className="w-full"
+                                    disabled={!reward.available}
+                                    onClick={() => handleClaimReward(reward)}
+                                  >
+                                    {reward.available ? 'Resgatar' : 'Pontos Insuficientes'}
+                                  </Button>
+                                </CardContent>
+                              </Card>
+                            ))}
+                          </div>
+                        </div>
+                      </TabsContent>
+
+                      {/* Ranking */}
+                      <TabsContent value="leaderboard">
+                        <Card className={animations.fadeInUp}>
+                          <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                              <Crown className="h-5 w-5 text-yellow-600" />
+                              Ranking dos Campeões
+                            </CardTitle>
+                            <p className="text-sm text-gray-600">
+                              Os usuários com mais pontos este mês
+                            </p>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="space-y-3">
+                              {leaderboard.map((user, index) => (
+                                <div 
+                                  key={user.position}
+                                  className={`flex items-center gap-4 p-3 rounded-lg transition-all duration-200 ${
+                                    user.name === 'Você' 
+                                      ? 'bg-primary/10 border border-primary/20' 
+                                      : 'bg-gray-50 hover:bg-gray-100'
+                                  } ${animations.slideInLeft}`}
+                                  style={{ animationDelay: `${index * 100}ms` }}
+                                >
+                                  <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${
+                                    user.position === 1 ? 'bg-yellow-500 text-white' :
+                                    user.position === 2 ? 'bg-gray-400 text-white' :
+                                    user.position === 3 ? 'bg-amber-600 text-white' :
+                                    'bg-gray-200 text-gray-700'
+                                  }`}>
+                                    {user.position}
+                                  </div>
+                                  
+                                  <div className="flex-1">
+                                    <h4 className="font-medium">{user.name}</h4>
+                                    <p className="text-sm text-gray-600">{user.points} pontos</p>
+                                  </div>
+                                  
+                                  <Badge variant="secondary">
+                                    {user.badge}
+                                  </Badge>
+                                </div>
+                              ))}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </TabsContent>
+
+                      {/* Histórico */}
+                      <TabsContent value="history">
+                        <Card className={animations.fadeInUp}>
+                          <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                              <TrendingUp className="h-5 w-5 text-primary" />
+                              Histórico de Atividades
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <p className="text-gray-600">Seu histórico de pontos e recompensas aparecerá aqui.</p>
+                          </CardContent>
+                        </Card>
+                      </TabsContent>
+                    </Tabs>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </MainLayout>
       </div>
+
+      <SuccessAnimation
+        show={showSuccess}
+        message="Recompensa resgatada com sucesso!"
+      />
     </>
   );
 };

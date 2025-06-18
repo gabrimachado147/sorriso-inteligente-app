@@ -1,132 +1,100 @@
 
 import React, { useState } from 'react';
 import { MainLayout } from '@/components/Layout/MainLayout';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
 import { PageHead } from '@/components/SEO/PageHead';
 import { EnhancedBreadcrumbs } from '@/components/ui/enhanced-breadcrumbs';
 import { FeedbackSystem } from '@/components/ui/feedback-system';
-import { AdvancedCharts } from '@/components/Dashboard/AdvancedCharts';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { BarChart3, TrendingUp, Users, Calendar, Download, Filter } from 'lucide-react';
+import { LoadingMicroInteraction } from '@/components/ui/loading-micro-interaction';
+import { 
+  BarChart3,
+  TrendingUp,
+  Users,
+  Calendar,
+  Download,
+  Share2,
+  Filter,
+  Eye,
+  Activity,
+  DollarSign
+} from 'lucide-react';
 import { animations } from '@/lib/animations';
-import { MicroInteraction } from '@/components/ui/micro-interactions';
 
 const EnhancedAnalyticsPage = () => {
+  const [loading, setLoading] = useState(false);
   const [selectedPeriod, setSelectedPeriod] = useState('30d');
-  const [selectedClinic, setSelectedClinic] = useState('all');
 
   const breadcrumbItems = [
     { label: 'Início', href: '/' },
-    { label: 'Relatórios', href: '/analytics', icon: BarChart3 }
+    { label: 'Analytics', href: '/analytics', icon: BarChart3, current: true }
   ];
 
-  // Dados mock para os gráficos
-  const chartConfigs = [
+  const kpis = [
     {
-      id: 'appointments',
-      title: 'Agendamentos por Período',
-      type: 'line' as const,
-      data: [
-        { name: 'Jan', agendamentos: 65, cancelamentos: 8 },
-        { name: 'Fev', agendamentos: 78, cancelamentos: 12 },
-        { name: 'Mar', agendamentos: 90, cancelamentos: 5 },
-        { name: 'Abr', agendamentos: 95, cancelamentos: 7 },
-        { name: 'Mai', agendamentos: 88, cancelamentos: 9 }
-      ],
-      dataKeys: ['agendamentos', 'cancelamentos'],
-      colors: ['#3b82f6', '#ef4444'],
-      description: 'Evolução de agendamentos e cancelamentos ao longo do tempo'
+      title: 'Consultas Realizadas',
+      value: '2,543',
+      change: '+15.3%',
+      period: 'vs. período anterior',
+      icon: Calendar,
+      trend: 'up'
     },
     {
-      id: 'services',
-      title: 'Serviços Mais Procurados',
-      type: 'bar' as const,
-      data: [
-        { name: 'Limpeza', quantidade: 145 },
-        { name: 'Ortodontia', quantidade: 89 },
-        { name: 'Implantes', quantidade: 67 },
-        { name: 'Clareamento', quantidade: 45 },
-        { name: 'Emergência', quantidade: 23 }
-      ],
-      dataKeys: ['quantidade'],
-      colors: ['#10b981'],
-      description: 'Distribuição dos serviços mais solicitados'
+      title: 'Novos Pacientes',
+      value: '487',
+      change: '+8.7%',
+      period: 'últimos 30 dias',
+      icon: Users,
+      trend: 'up'
     },
     {
-      id: 'clinics',
-      title: 'Performance por Clínica',
-      type: 'pie' as const,
-      data: [
-        { name: 'Campo Belo', valor: 45 },
-        { name: 'Formiga', valor: 35 },
-        { name: 'Itararé', valor: 20 }
-      ],
-      dataKeys: ['valor'],
-      colors: ['#3b82f6', '#10b981', '#f59e0b'],
-      description: 'Distribuição de atendimentos por unidade'
+      title: 'Taxa de Conversão',
+      value: '23.8%',
+      change: '+2.1%',
+      period: 'agendamentos/visitas',
+      icon: TrendingUp,
+      trend: 'up'
     },
     {
-      id: 'satisfaction',
-      title: 'Satisfação dos Pacientes',
-      type: 'area' as const,
-      data: [
-        { name: 'Sem', satisfacao: 4.2, nps: 85 },
-        { name: '2Sem', satisfacao: 4.4, nps: 88 },
-        { name: '3Sem', satisfacao: 4.6, nps: 92 },
-        { name: '4Sem', satisfacao: 4.8, nps: 95 }
-      ],
-      dataKeys: ['satisfacao', 'nps'],
-      colors: ['#8b5cf6', '#06b6d4'],
-      description: 'Evolução da satisfação e NPS dos pacientes'
+      title: 'Receita Média',
+      value: 'R$ 285',
+      change: '-1.2%',
+      period: 'por consulta',
+      icon: DollarSign,
+      trend: 'down'
     }
   ];
 
-  const kpiData = [
-    {
-      title: 'Total de Pacientes',
-      value: '1,247',
-      change: '+12%',
-      trend: 'up',
-      icon: Users
-    },
-    {
-      title: 'Consultas Este Mês',
-      value: '324',
-      change: '+8%',
-      trend: 'up',
-      icon: Calendar
-    },
-    {
-      title: 'Taxa de Satisfação',
-      value: '4.8/5',
-      change: '+0.2',
-      trend: 'up',
-      icon: TrendingUp
-    },
-    {
-      title: 'Receita Mensal',
-      value: 'R$ 89.5k',
-      change: '+15%',
-      trend: 'up',
-      icon: BarChart3
-    }
+  const topServices = [
+    { name: 'Limpeza Dental', sessions: 1234, percentage: 45 },
+    { name: 'Clareamento', sessions: 856, percentage: 31 },
+    { name: 'Ortodontia', sessions: 423, percentage: 15 },
+    { name: 'Implantes', sessions: 267, percentage: 9 }
   ];
 
-  const handleExportReport = () => {
-    console.log('Exportando relatório...', { selectedPeriod, selectedClinic });
+  const recentReports = [
+    { name: 'Relatório Mensal - Dezembro', date: '2024-01-02', type: 'Mensal' },
+    { name: 'Performance por Clínica', date: '2024-01-01', type: 'Operacional' },
+    { name: 'Análise de Satisfação', date: '2023-12-30', type: 'Qualidade' }
+  ];
+
+  const handleExport = () => {
+    setLoading(true);
+    setTimeout(() => setLoading(false), 2000);
   };
 
   return (
     <>
       <PageHead
         title="Analytics e Relatórios - Senhor Sorriso"
-        description="Acompanhe métricas de performance, satisfação dos pacientes e insights de negócio das clínicas Senhor Sorriso."
-        keywords="analytics, relatórios, métricas, dashboard, performance, satisfação pacientes, KPIs, Senhor Sorriso"
+        description="Dashboard analítico completo com métricas de performance, relatórios detalhados e insights para otimização do negócio."
+        keywords="analytics, relatórios, métricas, dashboard, performance, KPIs, Senhor Sorriso"
         url="https://senhorsorrisso.com.br/analytics"
       />
-      <div className="w-full min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50">
+      <div className="w-full min-h-screen bg-gradient-to-br from-indigo-50 via-white to-cyan-50">
         <MainLayout>
           <div className={`w-full ${animations.pageEnter}`}>
             <div className="mobile-container px-4 py-6 max-w-7xl mx-auto">
@@ -134,126 +102,248 @@ const EnhancedAnalyticsPage = () => {
                 {/* Breadcrumbs */}
                 <EnhancedBreadcrumbs items={breadcrumbItems} />
 
-                {/* Header */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                {/* Header com Controles */}
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                   <div>
-                    <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2 flex items-center gap-3">
+                    <h1 className="text-2xl md:text-3xl font-bold text-gray-900 flex items-center gap-3">
                       <BarChart3 className="h-8 w-8 text-primary" />
                       Analytics & Relatórios
                     </h1>
-                    <p className="text-muted-foreground">
-                      Insights detalhados sobre performance e satisfação dos pacientes
+                    <p className="text-muted-foreground mt-2">
+                      Métricas em tempo real e insights para otimização
                     </p>
                   </div>
-
-                  <div className="flex flex-col sm:flex-row gap-3">
-                    <Select value={selectedClinic} onValueChange={setSelectedClinic}>
-                      <SelectTrigger className="w-40">
-                        <Filter className="h-4 w-4 mr-2" />
+                  
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
+                      <SelectTrigger className="w-32">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all">Todas as Clínicas</SelectItem>
-                        <SelectItem value="campo-belo">Campo Belo</SelectItem>
-                        <SelectItem value="formiga">Formiga</SelectItem>
-                        <SelectItem value="itarare">Itararé</SelectItem>
+                        <SelectItem value="7d">7 dias</SelectItem>
+                        <SelectItem value="30d">30 dias</SelectItem>
+                        <SelectItem value="90d">90 dias</SelectItem>
+                        <SelectItem value="1y">1 ano</SelectItem>
                       </SelectContent>
                     </Select>
-
-                    <MicroInteraction type="click-ripple" trigger="click">
-                      <Button onClick={handleExportReport} variant="outline">
+                    
+                    <Button variant="outline" size="sm">
+                      <Filter className="h-4 w-4 mr-2" />
+                      Filtros
+                    </Button>
+                    
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={handleExport}
+                      disabled={loading}
+                    >
+                      {loading ? (
+                        <LoadingMicroInteraction size="sm" className="mr-2" />
+                      ) : (
                         <Download className="h-4 w-4 mr-2" />
-                        Exportar Relatório
-                      </Button>
-                    </MicroInteraction>
+                      )}
+                      Exportar
+                    </Button>
                   </div>
                 </div>
 
-                {/* KPIs */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {kpiData.map((kpi, index) => {
+                {/* KPIs Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+                  {kpis.map((kpi, index) => {
                     const IconComponent = kpi.icon;
+                    
                     return (
-                      <MicroInteraction key={index} type="hover-lift" trigger="hover">
-                        <Card>
-                          <CardContent className="p-6">
-                            <div className="flex items-center justify-between">
-                              <div>
-                                <p className="text-sm font-medium text-muted-foreground">
-                                  {kpi.title}
-                                </p>
-                                <p className="text-2xl font-bold">{kpi.value}</p>
-                                <div className="flex items-center mt-1">
-                                  <Badge 
-                                    className={`${
-                                      kpi.trend === 'up' 
-                                        ? 'bg-green-100 text-green-700' 
-                                        : 'bg-red-100 text-red-700'
-                                    }`}
-                                  >
-                                    {kpi.change}
-                                  </Badge>
-                                </div>
+                      <Card 
+                        key={kpi.title}
+                        className={`${animations.scaleIn} hover:shadow-lg transition-all duration-300 border-l-4 ${
+                          kpi.trend === 'up' ? 'border-l-green-500' : 'border-l-red-500'
+                        }`}
+                        style={{ animationDelay: `${index * 100}ms` }}
+                      >
+                        <CardContent className="p-6">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <p className="text-sm font-medium text-gray-600 mb-1">
+                                {kpi.title}
+                              </p>
+                              <p className="text-2xl font-bold text-gray-900 mb-1">
+                                {kpi.value}
+                              </p>
+                              <div className="flex items-center gap-2">
+                                <Badge 
+                                  variant={kpi.trend === 'up' ? 'default' : 'destructive'}
+                                  className="text-xs"
+                                >
+                                  {kpi.change}
+                                </Badge>
+                                <span className="text-xs text-gray-500">
+                                  {kpi.period}
+                                </span>
                               </div>
-                              <IconComponent className="h-8 w-8 text-primary" />
                             </div>
-                          </CardContent>
-                        </Card>
-                      </MicroInteraction>
+                            <div className={`p-3 rounded-lg ${
+                              kpi.trend === 'up' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'
+                            }`}>
+                              <IconComponent className="h-5 w-5" />
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
                     );
                   })}
                 </div>
 
                 {/* Layout Principal */}
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                  {/* Gráficos Principais */}
-                  <div className="lg:col-span-3">
-                    <AdvancedCharts charts={chartConfigs} />
-                  </div>
+                  {/* Sidebar com Relatórios Recentes */}
+                  <div className="lg:col-span-1 space-y-6">
+                    <Card className={animations.fadeInUp}>
+                      <CardHeader>
+                        <CardTitle className="text-lg flex items-center gap-2">
+                          <Eye className="h-5 w-5" />
+                          Relatórios Recentes
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        {recentReports.map((report, index) => (
+                          <div 
+                            key={index}
+                            className="p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer"
+                          >
+                            <h4 className="font-medium text-sm text-gray-900 mb-1">
+                              {report.name}
+                            </h4>
+                            <div className="flex items-center justify-between text-xs">
+                              <Badge variant="outline" className="text-xs">
+                                {report.type}
+                              </Badge>
+                              <span className="text-gray-500">{report.date}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </CardContent>
+                    </Card>
 
-                  {/* Sidebar com Feedback */}
-                  <div className="space-y-6">
                     <FeedbackSystem 
-                      pageContext="Analytics e Relatórios"
+                      pageContext="Dashboard de Analytics"
                       onSubmit={(feedback) => {
                         console.log('Feedback Analytics:', feedback);
                       }}
                     />
+                  </div>
 
-                    {/* Insights Rápidos */}
-                    <Card>
-                      <CardHeader>
-                        <CardTitle className="text-lg">💡 Insights</CardTitle>
-                      </CardHeader>
-                      <CardContent className="space-y-3">
-                        <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-                          <p className="text-sm font-medium text-green-800">
-                            📈 Crescimento Positivo
-                          </p>
-                          <p className="text-xs text-green-700 mt-1">
-                            Agendamentos aumentaram 12% este mês
-                          </p>
-                        </div>
-                        
-                        <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                          <p className="text-sm font-medium text-blue-800">
-                            ⭐ Alta Satisfação
-                          </p>
-                          <p className="text-xs text-blue-700 mt-1">
-                            NPS de 95 pontos - Excelente!
-                          </p>
-                        </div>
+                  {/* Conteúdo Principal */}
+                  <div className="lg:col-span-3">
+                    <Tabs defaultValue="overview" className="space-y-6">
+                      <TabsList className="grid w-full grid-cols-4">
+                        <TabsTrigger value="overview" className="flex items-center gap-2">
+                          <Activity className="h-4 w-4" />
+                          <span className="hidden sm:inline">Visão Geral</span>
+                        </TabsTrigger>
+                        <TabsTrigger value="traffic" className="flex items-center gap-2">
+                          <TrendingUp className="h-4 w-4" />
+                          <span className="hidden sm:inline">Tráfego</span>
+                        </TabsTrigger>
+                        <TabsTrigger value="conversion" className="flex items-center gap-2">
+                          <Users className="h-4 w-4" />
+                          <span className="hidden sm:inline">Conversão</span>
+                        </TabsTrigger>
+                        <TabsTrigger value="revenue" className="flex items-center gap-2">
+                          <DollarSign className="h-4 w-4" />
+                          <span className="hidden sm:inline">Receita</span>
+                        </TabsTrigger>
+                      </TabsList>
 
-                        <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                          <p className="text-sm font-medium text-yellow-800">
-                            🎯 Oportunidade
-                          </p>
-                          <p className="text-xs text-yellow-700 mt-1">
-                            Foque em reduzir cancelamentos
-                          </p>
+                      <TabsContent value="overview">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                          <Card className={animations.fadeInUp}>
+                            <CardHeader className="flex flex-row items-center justify-between">
+                              <CardTitle>Performance Geral</CardTitle>
+                              <Button variant="ghost" size="sm">
+                                <Share2 className="h-4 w-4" />
+                              </Button>
+                            </CardHeader>
+                            <CardContent>
+                              <div className="h-64 flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 rounded-lg">
+                                <div className="text-center">
+                                  <BarChart3 className="h-12 w-12 text-blue-500 mx-auto mb-2" />
+                                  <p className="text-gray-600">Gráfico de Performance</p>
+                                  <p className="text-sm text-gray-500">Dados em tempo real</p>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+
+                          <Card className={animations.fadeInUp}>
+                            <CardHeader>
+                              <CardTitle>Top Serviços</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                              <div className="space-y-4">
+                                {topServices.map((service, index) => (
+                                  <div 
+                                    key={service.name}
+                                    className={`${animations.slideInRight}`}
+                                    style={{ animationDelay: `${index * 100}ms` }}
+                                  >
+                                    <div className="flex items-center justify-between mb-2">
+                                      <span className="font-medium text-sm">{service.name}</span>
+                                      <span className="text-sm text-gray-600">{service.sessions}</span>
+                                    </div>
+                                    <div className="w-full bg-gray-200 rounded-full h-2">
+                                      <div 
+                                        className="bg-primary h-2 rounded-full transition-all duration-1000"
+                                        style={{ width: `${service.percentage}%` }}
+                                      />
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </CardContent>
+                          </Card>
                         </div>
-                      </CardContent>
-                    </Card>
+                      </TabsContent>
+
+                      <TabsContent value="traffic">
+                        <Card className={animations.fadeInUp}>
+                          <CardHeader>
+                            <CardTitle>Análise de Tráfego</CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
+                              <p className="text-gray-500">Gráfico de Tráfego</p>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </TabsContent>
+
+                      <TabsContent value="conversion">
+                        <Card className={animations.fadeInUp}>
+                          <CardHeader>
+                            <CardTitle>Funil de Conversão</CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
+                              <p className="text-gray-500">Análise de Conversão</p>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </TabsContent>
+
+                      <TabsContent value="revenue">
+                        <Card className={animations.fadeInUp}>
+                          <CardHeader>
+                            <CardTitle>Análise de Receita</CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
+                              <p className="text-gray-500">Relatório de Receita</p>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </TabsContent>
+                    </Tabs>
                   </div>
                 </div>
               </div>

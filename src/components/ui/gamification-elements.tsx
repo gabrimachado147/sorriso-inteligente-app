@@ -1,173 +1,168 @@
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+import React from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Star, Trophy, Zap, Target, Gift } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { MicroInteraction } from './micro-interactions';
+import { Trophy, Star, Target, Award, Clock } from 'lucide-react';
+import { animations } from '@/lib/animations';
 
 interface Achievement {
   id: string;
   title: string;
   description: string;
   icon: React.ComponentType<{ className?: string }>;
-  points: number;
   unlocked: boolean;
-  rarity: 'common' | 'rare' | 'epic' | 'legendary';
+  progress?: number;
+  total?: number;
 }
 
 interface GamificationStatsProps {
-  className?: string;
+  userLevel?: number;
+  userPoints?: number;
+  nextLevelPoints?: number;
+  achievements?: Achievement[];
 }
 
-export const GamificationStats: React.FC<GamificationStatsProps> = ({ className }) => {
-  const [userStats, setUserStats] = useState({
-    level: 1,
-    experience: 150,
-    experienceToNextLevel: 300,
-    totalPoints: 1250,
-    achievementsUnlocked: 3,
-    totalAchievements: 12
-  });
-
-  const progressPercentage = (userStats.experience / userStats.experienceToNextLevel) * 100;
-
-  const rarityColors = {
-    common: 'bg-gray-100 text-gray-700 border-gray-300',
-    rare: 'bg-blue-100 text-blue-700 border-blue-300',
-    epic: 'bg-purple-100 text-purple-700 border-purple-300',
-    legendary: 'bg-yellow-100 text-yellow-700 border-yellow-300'
-  };
-
-  const achievements: Achievement[] = [
+export const GamificationStats: React.FC<GamificationStatsProps> = ({
+  userLevel = 3,
+  userPoints = 750,
+  nextLevelPoints = 1000,
+  achievements = []
+}) => {
+  const defaultAchievements: Achievement[] = [
     {
       id: '1',
-      title: 'Primeiro Agendamento',
-      description: 'Fez seu primeiro agendamento!',
+      title: 'Primeira Consulta',
+      description: 'Complete sua primeira consulta',
       icon: Star,
-      points: 100,
-      unlocked: true,
-      rarity: 'common'
+      unlocked: true
     },
     {
       id: '2',
-      title: 'Explorador do Chat',
-      description: 'Usou o chat IA pela primeira vez',
-      icon: Zap,
-      points: 150,
+      title: 'Pontual',
+      description: 'Chegue no horário em 5 consultas',
+      icon: Clock,
       unlocked: true,
-      rarity: 'common'
+      progress: 5,
+      total: 5
     },
     {
       id: '3',
-      title: 'Navegador Expert',
-      description: 'Explorou todas as páginas principais',
-      icon: Target,
-      points: 200,
-      unlocked: true,
-      rarity: 'rare'
+      title: 'Cliente Fiel',
+      description: 'Complete 10 consultas',
+      icon: Trophy,
+      unlocked: false,
+      progress: 7,
+      total: 10
     },
     {
       id: '4',
-      title: 'Mestre do Feedback',
-      description: 'Forneceu feedback em 5 páginas diferentes',
-      icon: Trophy,
-      points: 500,
+      title: 'Recomendador',
+      description: 'Indique 3 amigos',
+      icon: Award,
       unlocked: false,
-      rarity: 'epic'
+      progress: 1,
+      total: 3
     }
   ];
 
+  const displayAchievements = achievements.length > 0 ? achievements : defaultAchievements;
+  const levelProgress = (userPoints / nextLevelPoints) * 100;
+
   return (
-    <Card className={cn('border-yellow-200 bg-gradient-to-r from-yellow-50 to-orange-50', className)}>
-      <CardContent className="p-4 space-y-4">
-        {/* Status do usuário */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="font-bold text-lg flex items-center gap-2">
-              <Trophy className="h-5 w-5 text-yellow-600" />
-              Nível {userStats.level}
-            </h3>
-            <p className="text-sm text-muted-foreground">
-              {userStats.totalPoints} pontos totais
-            </p>
+    <div className="space-y-4">
+      {/* Level and Points */}
+      <Card className={`border-primary/20 bg-gradient-to-r from-primary/5 to-blue/5 ${animations.scaleIn}`}>
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-primary">
+            <Target className="h-5 w-5" />
+            Seu Progresso
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600">Nível Atual</p>
+              <p className="text-2xl font-bold text-primary">{userLevel}</p>
+            </div>
+            <Badge variant="secondary" className="text-lg px-3 py-1">
+              {userPoints} pts
+            </Badge>
           </div>
-          <Badge className="bg-yellow-100 text-yellow-700 border-yellow-300">
-            {userStats.achievementsUnlocked}/{userStats.totalAchievements} conquistas
-          </Badge>
-        </div>
+          
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm">
+              <span>Progresso para o próximo nível</span>
+              <span>{userPoints}/{nextLevelPoints}</span>
+            </div>
+            <Progress value={levelProgress} className="h-2" />
+          </div>
+        </CardContent>
+      </Card>
 
-        {/* Barra de progresso */}
-        <div className="space-y-2">
-          <div className="flex justify-between text-sm">
-            <span>Experiência</span>
-            <span>{userStats.experience}/{userStats.experienceToNextLevel}</span>
-          </div>
-          <Progress value={progressPercentage} className="h-2" />
-        </div>
-
-        {/* Conquistas recentes */}
-        <div className="space-y-2">
-          <h4 className="font-medium text-sm flex items-center gap-2">
-            <Gift className="h-4 w-4" />
-            Conquistas Recentes
-          </h4>
-          <div className="grid grid-cols-2 gap-2">
-            {achievements.filter(a => a.unlocked).slice(0, 4).map((achievement) => {
-              const IconComponent = achievement.icon;
-              return (
-                <MicroInteraction key={achievement.id} type="hover-lift" trigger="hover">
-                  <div className={cn(
-                    'p-2 rounded-lg border text-center text-xs',
-                    rarityColors[achievement.rarity]
-                  )}>
-                    <IconComponent className="h-4 w-4 mx-auto mb-1" />
-                    <div className="font-medium">{achievement.title}</div>
-                    <div className="text-xs opacity-75">+{achievement.points} pts</div>
-                  </div>
-                </MicroInteraction>
-              );
-            })}
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+      {/* Achievements */}
+      <Card className={animations.fadeInUp}>
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2">
+            <Trophy className="h-5 w-5 text-yellow-600" />
+            Conquistas
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {displayAchievements.map((achievement, index) => {
+            const IconComponent = achievement.icon;
+            
+            return (
+              <div 
+                key={achievement.id}
+                className={`flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
+                  achievement.unlocked 
+                    ? 'bg-green-50 border border-green-200' 
+                    : 'bg-gray-50 border border-gray-200'
+                } ${animations.slideInLeft}`}
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                <div className={`p-2 rounded-full ${
+                  achievement.unlocked 
+                    ? 'bg-green-500 text-white' 
+                    : 'bg-gray-300 text-gray-500'
+                }`}>
+                  <IconComponent className="h-4 w-4" />
+                </div>
+                
+                <div className="flex-1 min-w-0">
+                  <h4 className={`font-medium text-sm ${
+                    achievement.unlocked ? 'text-green-900' : 'text-gray-700'
+                  }`}>
+                    {achievement.title}
+                  </h4>
+                  <p className="text-xs text-gray-600 truncate">
+                    {achievement.description}
+                  </p>
+                  
+                  {achievement.progress !== undefined && achievement.total && (
+                    <div className="mt-1">
+                      <Progress 
+                        value={(achievement.progress / achievement.total) * 100} 
+                        className="h-1"
+                      />
+                      <span className="text-xs text-gray-500">
+                        {achievement.progress}/{achievement.total}
+                      </span>
+                    </div>
+                  )}
+                </div>
+                
+                {achievement.unlocked && (
+                  <Badge variant="secondary" className="text-xs">
+                    ✓
+                  </Badge>
+                )}
+              </div>
+            );
+          })}
+        </CardContent>
+      </Card>
+    </div>
   );
-};
-
-// Hook para gerenciar pontuação de gamificação
-export const useGamification = () => {
-  const [points, setPoints] = useState(0);
-  const [achievements, setAchievements] = useState<string[]>([]);
-
-  const addPoints = (amount: number, reason: string) => {
-    setPoints(prev => prev + amount);
-    
-    // Salvar no localStorage
-    const currentPoints = parseInt(localStorage.getItem('user_points') || '0');
-    localStorage.setItem('user_points', (currentPoints + amount).toString());
-    
-    console.log(`🎮 Gamificação: +${amount} pontos por ${reason}`);
-  };
-
-  const unlockAchievement = (achievementId: string) => {
-    if (!achievements.includes(achievementId)) {
-      setAchievements(prev => [...prev, achievementId]);
-      
-      // Salvar no localStorage
-      const currentAchievements = JSON.parse(localStorage.getItem('user_achievements') || '[]');
-      currentAchievements.push(achievementId);
-      localStorage.setItem('user_achievements', JSON.stringify(currentAchievements));
-      
-      console.log(`🏆 Nova conquista desbloqueada: ${achievementId}`);
-    }
-  };
-
-  return {
-    points,
-    achievements,
-    addPoints,
-    unlockAchievement
-  };
 };
