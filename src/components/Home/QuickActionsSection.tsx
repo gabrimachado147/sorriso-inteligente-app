@@ -145,7 +145,7 @@ export const QuickActionsSection: React.FC = () => {
                 <CardContent className="p-6 text-center">
                   <div className="flex items-center justify-center gap-2 mb-2">
                     <Clock className="h-5 w-5 text-blue-500" />
-                    <span className="text-2xl font-bold text-gray-900">< 1h</span>
+                    <span className="text-2xl font-bold text-gray-900">&lt; 1h</span>
                   </div>
                   <p className="text-sm text-gray-600">Tempo médio de resposta</p>
                 </CardContent>
