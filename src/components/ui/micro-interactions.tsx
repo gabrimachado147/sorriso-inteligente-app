@@ -31,7 +31,7 @@ export const MicroInteraction: React.FC<MicroInteractionProps> = ({
     }
   }, [trigger, delay]);
 
-  const getAnimationClasses = () => {
+  const getAnimationClasses = (): string => {
     switch (type) {
       case 'hover-lift':
         return isActive 
@@ -110,19 +110,21 @@ export const LoadingMicroInteraction: React.FC<{
   children: React.ReactNode;
   loadingText?: string;
 }> = ({ loading, children, loadingText = "Carregando..." }) => {
-  return (
-    <div className="relative">
-      {loading && (
+  if (loading) {
+    return (
+      <div className="relative">
         <div className="absolute inset-0 bg-white/90 backdrop-blur-sm flex items-center justify-center z-10 rounded-lg">
           <div className="flex items-center gap-2">
             <Sparkles className="h-4 w-4 animate-spin text-primary" />
             <span className="text-sm text-muted-foreground">{loadingText}</span>
           </div>
         </div>
-      )}
-      <div className={cn(loading && 'opacity-50')}>
-        {children}
+        <div className="opacity-50">
+          {children}
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
+
+  return <>{children}</>;
 };
