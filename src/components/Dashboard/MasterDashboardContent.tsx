@@ -38,7 +38,7 @@ export const MasterDashboardContent: React.FC<MasterDashboardContentProps> = ({
   isUpdating
 }) => {
   return (
-    <>
+    <div className="space-y-6">
       {/* Cards de Estatísticas */}
       <MasterDashboardStats
         totalAppointments={dashboardData.totalAppointments}
@@ -47,29 +47,14 @@ export const MasterDashboardContent: React.FC<MasterDashboardContentProps> = ({
         conversionRate={dashboardData.conversionRate}
       />
 
-      {/* Tabs com layout responsivo e espaçamento melhorado */}
-      <div className={`${animations.fadeIn} w-full mt-6`}>
+      {/* Tabs com layout responsivo */}
+      <div className={`${animations.fadeIn} w-full`}>
         <Tabs defaultValue="overview" className="w-full">
-          <div className="flex flex-col items-center w-full mb-6">
-            <TabsList className="inline-flex h-12 items-center justify-center rounded-xl bg-gray-100 p-1 text-muted-foreground shadow-sm border w-auto min-w-[320px] sm:min-w-[400px] md:min-w-[480px]">
-              <TabsTrigger 
-                value="overview" 
-                className="inline-flex items-center justify-center whitespace-nowrap rounded-lg px-3 py-2.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-white data-[state=active]:text-foreground data-[state=active]:shadow-sm min-w-[90px] flex-1"
-              >
-                Visão Geral
-              </TabsTrigger>
-              <TabsTrigger 
-                value="analytics" 
-                className="inline-flex items-center justify-center whitespace-nowrap rounded-lg px-3 py-2.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-white data-[state=active]:text-foreground data-[state=active]:shadow-sm min-w-[90px] flex-1"
-              >
-                Analytics
-              </TabsTrigger>
-              <TabsTrigger 
-                value="appointments" 
-                className="inline-flex items-center justify-center whitespace-nowrap rounded-lg px-3 py-2.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-white data-[state=active]:text-foreground data-[state=active]:shadow-sm min-w-[90px] flex-1"
-              >
-                Agendamentos
-              </TabsTrigger>
+          <div className="flex justify-center w-full mb-6">
+            <TabsList className="grid w-full max-w-md grid-cols-3">
+              <TabsTrigger value="overview">Visão Geral</TabsTrigger>
+              <TabsTrigger value="analytics">Analytics</TabsTrigger>
+              <TabsTrigger value="appointments">Agendamentos</TabsTrigger>
             </TabsList>
           </div>
 
@@ -107,6 +92,6 @@ export const MasterDashboardContent: React.FC<MasterDashboardContentProps> = ({
           </TabsContent>
         </Tabs>
       </div>
-    </>
+    </div>
   );
 };

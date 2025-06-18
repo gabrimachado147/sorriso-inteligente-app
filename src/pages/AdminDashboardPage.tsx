@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { AdminDashboard } from '@/components/Dashboard/AdminDashboard';
@@ -50,7 +51,7 @@ const AdminDashboardPage = () => {
           keywords="dashboard administrativo, gestão agendamentos, painel admin, operações, Senhor Sorriso"
           url="https://senhorsorrisso.com.br/admin-dashboard"
         />
-        <div className="min-h-screen bg-background flex items-center justify-center overflow-x-hidden">
+        <div className="min-h-screen bg-background flex items-center justify-center">
           <div className="text-center px-4">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
             <p className="mobile-text-base">Carregando dashboard...</p>
@@ -76,7 +77,7 @@ const AdminDashboardPage = () => {
         keywords="dashboard administrativo, gestão agendamentos, painel admin, operações, Senhor Sorriso"
         url="https://senhorsorrisso.com.br/admin-dashboard"
       />
-      <div className="min-h-screen bg-background w-full overflow-x-hidden">
+      <div className="min-h-screen bg-background">
         {/* Header */}
         <div className="bg-white shadow-sm border-b w-full">
           <div className="mobile-container px-4 py-4 max-w-7xl mx-auto">
@@ -115,9 +116,9 @@ const AdminDashboardPage = () => {
         </div>
 
         {/* Dashboard Content */}
-        <main className="flex-1 w-full overflow-x-hidden">
+        <main className="flex-1">
           <div className="mobile-container px-4 py-6 max-w-7xl mx-auto">
-            <div className={`space-y-6 ${animations.pageEnter} overflow-x-hidden w-full`}>
+            <div className={`space-y-6 ${animations.pageEnter}`}>
               <AdminDashboard appointments={appointments} stats={stats} />
             </div>
           </div>
