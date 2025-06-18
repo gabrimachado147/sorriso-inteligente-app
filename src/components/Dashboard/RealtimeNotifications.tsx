@@ -70,6 +70,7 @@ export const RealtimeNotifications: React.FC<RealtimeNotificationsProps> = ({
       case 'error': 
         return 'text-red-600 bg-red-50 border-red-200';
       case 'info':
+        return 'text-blue-600 bg-blue-50 border-blue-200';
       default: 
         return 'text-blue-600 bg-blue-50 border-blue-200';
     }
