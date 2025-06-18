@@ -98,13 +98,16 @@ export const EnhancedMasterDashboard: React.FC<EnhancedMasterDashboardProps> = (
     }
   ];
 
-  // Gráficos avançados
+  // Gráficos avançados - fixing the data structure to match ChartData interface
   const advancedCharts = [
     {
       id: 'revenue-trend',
       title: 'Tendência de Receita',
       type: 'area' as const,
-      data: dashboardData.monthlyTrend,
+      data: dashboardData.monthlyTrend.map(item => ({
+        name: item.month,
+        receita: item.receita
+      })),
       dataKeys: ['receita'],
       colors: ['#8b5cf6'],
       description: 'Evolução da receita ao longo do tempo'
@@ -113,7 +116,11 @@ export const EnhancedMasterDashboard: React.FC<EnhancedMasterDashboardProps> = (
       id: 'appointments-trend',
       title: 'Agendamentos por Período',
       type: 'line' as const,
-      data: dashboardData.monthlyTrend,
+      data: dashboardData.monthlyTrend.map(item => ({
+        name: item.month,
+        agendamentos: item.agendamentos,
+        conversoes: item.conversoes
+      })),
       dataKeys: ['agendamentos', 'conversoes'],
       colors: ['#3b82f6', '#10b981'],
       description: 'Comparação entre agendamentos e conversões'

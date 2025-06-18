@@ -48,8 +48,6 @@ export const AdvancedCharts: React.FC<AdvancedChartsProps> = ({ charts, isLoadin
 
   const renderChart = (chart: ChartConfig) => {
     const commonProps = {
-      width: '100%',
-      height: 300,
       data: chart.data,
       margin: { top: 5, right: 30, left: 20, bottom: 5 }
     };
@@ -57,7 +55,7 @@ export const AdvancedCharts: React.FC<AdvancedChartsProps> = ({ charts, isLoadin
     switch (chart.type) {
       case 'line':
         return (
-          <ResponsiveContainer {...commonProps}>
+          <ResponsiveContainer width="100%" height={300}>
             <LineChart {...commonProps}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
@@ -81,7 +79,7 @@ export const AdvancedCharts: React.FC<AdvancedChartsProps> = ({ charts, isLoadin
 
       case 'area':
         return (
-          <ResponsiveContainer {...commonProps}>
+          <ResponsiveContainer width="100%" height={300}>
             <AreaChart {...commonProps}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
@@ -105,7 +103,7 @@ export const AdvancedCharts: React.FC<AdvancedChartsProps> = ({ charts, isLoadin
 
       case 'bar':
         return (
-          <ResponsiveContainer {...commonProps}>
+          <ResponsiveContainer width="100%" height={300}>
             <BarChart {...commonProps}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
@@ -126,7 +124,7 @@ export const AdvancedCharts: React.FC<AdvancedChartsProps> = ({ charts, isLoadin
 
       case 'pie':
         return (
-          <ResponsiveContainer {...commonProps}>
+          <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
                 data={chart.data}
