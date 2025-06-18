@@ -79,7 +79,7 @@ export const DevelopmentPanel: React.FC = () => {
   const projectInfo = getProjectInfo();
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 max-w-3xl">
+    <div className="fixed bottom-4 right-4 z-50 max-w-4xl">
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
         <CollapsibleTrigger asChild>
           <Button
@@ -98,7 +98,7 @@ export const DevelopmentPanel: React.FC = () => {
         </CollapsibleTrigger>
         
         <CollapsibleContent>
-          <Card className="w-full max-w-3xl border-purple-300 shadow-lg">
+          <Card className="w-full max-w-4xl border-purple-300 shadow-lg">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm flex items-center gap-2">
                 <Code className="h-4 w-4" />
@@ -148,15 +148,15 @@ export const DevelopmentPanel: React.FC = () => {
                 </Button>
               </div>
 
-              <div className="h-96">
+              <div className="min-h-96 max-h-none overflow-visible">
                 {activeTab === 'insights' && (
-                  <ScrollArea className="h-full">
+                  <div className="overflow-visible max-h-none">
                     <XAIInsightPanel />
-                  </ScrollArea>
+                  </div>
                 )}
 
                 {activeTab === 'project' && (
-                  <ScrollArea className="h-full p-4">
+                  <div className="overflow-visible max-h-none p-4">
                     <div className="text-sm text-gray-600 space-y-4">
                       <div>
                         <p className="font-semibold text-purple-700 mb-2">📊 Estatísticas do Projeto:</p>
@@ -211,11 +211,11 @@ export const DevelopmentPanel: React.FC = () => {
                         </div>
                       </div>
                     </div>
-                  </ScrollArea>
+                  </div>
                 )}
 
                 {activeTab === 'db' && (
-                  <ScrollArea className="h-full p-4">
+                  <div className="overflow-visible max-h-none p-4">
                     <div className="text-sm text-gray-600 space-y-2">
                       <p className="font-semibold">🗄️ Configuração do Banco de Dados:</p>
                       <div className="space-y-1 pl-2">
@@ -253,11 +253,11 @@ export const DevelopmentPanel: React.FC = () => {
                         </div>
                       </div>
                     </div>
-                  </ScrollArea>
+                  </div>
                 )}
 
                 {activeTab === 'debug' && (
-                  <ScrollArea className="h-full p-4">
+                  <div className="overflow-visible max-h-none p-4">
                     <div className="text-sm text-gray-600 space-y-2">
                       <p className="font-semibold">🐛 Informações de Debug:</p>
                       <div className="space-y-1 pl-2">
@@ -296,7 +296,7 @@ export const DevelopmentPanel: React.FC = () => {
                         </div>
                       </div>
                     </div>
-                  </ScrollArea>
+                  </div>
                 )}
               </div>
             </CardContent>
