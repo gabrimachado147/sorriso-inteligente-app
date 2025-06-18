@@ -23,6 +23,7 @@ serve(async (req) => {
   }
 
   if (!openAIApiKey) {
+    console.error('OpenAI API key not configured');
     return new Response(
       JSON.stringify({ error: 'OpenAI API key not configured' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -40,16 +41,20 @@ serve(async (req) => {
       headers: {
         'Authorization': `Bearer ${openAIApiKey}`,
         'Content-Type': 'application/json',
+        'OpenAI-Beta': 'assistants=v2',
       },
       body: JSON.stringify({}),
     });
 
     if (!threadResponse.ok) {
+      const errorText = await threadResponse.text();
+      console.error(`Failed to create thread: ${threadResponse.status} ${threadResponse.statusText}`, errorText);
       throw new Error(`Failed to create thread: ${threadResponse.statusText}`);
     }
 
     const thread = await threadResponse.json();
     const threadId = thread.id;
+    console.log(`Thread criada: ${threadId}`);
 
     // 2. Enviar mensagem com contexto da página
     const messageContent = `Analise a página "${route}" do projeto Sorriso Inteligente.
@@ -68,11 +73,12 @@ Por favor, forneça uma análise estratégica detalhada incluindo:
 4. Recomendações estratégicas
 5. Próximos passos prioritários`;
 
-    await fetch(`https://api.openai.com/v1/threads/${threadId}/messages`, {
+    const messageResponse = await fetch(`https://api.openai.com/v1/threads/${threadId}/messages`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${openAIApiKey}`,
         'Content-Type': 'application/json',
+        'OpenAI-Beta': 'assistants=v2',
       },
       body: JSON.stringify({
         role: 'user',
@@ -80,50 +86,85 @@ Por favor, forneça uma análise estratégica detalhada incluindo:
       }),
     });
 
+    if (!messageResponse.ok) {
+      const errorText = await messageResponse.text();
+      console.error(`Failed to create message: ${messageResponse.status}`, errorText);
+      throw new Error(`Failed to create message: ${messageResponse.statusText}`);
+    }
+
+    console.log('Mensagem enviada para o thread');
+
     // 3. Executar o Assistant
     const runResponse = await fetch(`https://api.openai.com/v1/threads/${threadId}/runs`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${openAIApiKey}`,
         'Content-Type': 'application/json',
+        'OpenAI-Beta': 'assistants=v2',
       },
       body: JSON.stringify({
         assistant_id: ASSISTANT_ID,
       }),
     });
 
+    if (!runResponse.ok) {
+      const errorText = await runResponse.text();
+      console.error(`Failed to create run: ${runResponse.status}`, errorText);
+      throw new Error(`Failed to create run: ${runResponse.statusText}`);
+    }
+
     const run = await runResponse.json();
     const runId = run.id;
+    console.log(`Run iniciada: ${runId}`);
 
     // 4. Aguardar conclusão da execução
     let runStatus = 'in_progress';
     let attempts = 0;
-    const maxAttempts = 30; // 30 segundos máximo
+    const maxAttempts = 60; // 60 segundos máximo
 
-    while (runStatus === 'in_progress' && attempts < maxAttempts) {
+    while (runStatus === 'in_progress' || runStatus === 'queued') {
+      if (attempts >= maxAttempts) {
+        throw new Error('Timeout: Run took too long to complete');
+      }
+
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       const statusResponse = await fetch(`https://api.openai.com/v1/threads/${threadId}/runs/${runId}`, {
         headers: {
           'Authorization': `Bearer ${openAIApiKey}`,
+          'OpenAI-Beta': 'assistants=v2',
         },
       });
+
+      if (!statusResponse.ok) {
+        throw new Error(`Failed to check run status: ${statusResponse.statusText}`);
+      }
 
       const statusData = await statusResponse.json();
       runStatus = statusData.status;
       attempts++;
+
+      console.log(`Status da run (tentativa ${attempts}): ${runStatus}`);
     }
 
     if (runStatus !== 'completed') {
-      throw new Error(`Run did not complete. Status: ${runStatus}`);
+      console.error(`Run failed with status: ${runStatus}`);
+      throw new Error(`Run did not complete successfully. Status: ${runStatus}`);
     }
+
+    console.log('Run completada com sucesso');
 
     // 5. Obter resposta
     const messagesResponse = await fetch(`https://api.openai.com/v1/threads/${threadId}/messages`, {
       headers: {
         'Authorization': `Bearer ${openAIApiKey}`,
+        'OpenAI-Beta': 'assistants=v2',
       },
     });
+
+    if (!messagesResponse.ok) {
+      throw new Error(`Failed to fetch messages: ${messagesResponse.statusText}`);
+    }
 
     const messages = await messagesResponse.json();
     const assistantMessage = messages.data.find((msg: any) => msg.role === 'assistant');
