@@ -5,6 +5,7 @@ import { EnhancedHeroSection } from './EnhancedHeroSection';
 import { EnhancedServicesSection } from './EnhancedServicesSection';
 import { EnhancedCTASection } from './EnhancedCTASection';
 import { QuickActionsSection } from './QuickActionsSection';
+import { PagePerformanceMonitor } from '@/components/Performance/PagePerformanceMonitor';
 
 export const EnhancedHomePage: React.FC = () => {
   return (
@@ -13,6 +14,9 @@ export const EnhancedHomePage: React.FC = () => {
       <QuickActionsSection />
       <EnhancedServicesSection />
       <EnhancedCTASection />
+      
+      {/* Monitor de performance (apenas em desenvolvimento) */}
+      <PagePerformanceMonitor />
     </div>
   );
 };
