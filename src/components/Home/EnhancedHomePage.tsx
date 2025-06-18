@@ -9,7 +9,7 @@ import { PagePerformanceMonitor } from '@/components/Performance/PagePerformance
 
 export const EnhancedHomePage: React.FC = () => {
   return (
-    <div className={`min-h-screen ${animations.pageEnter}`}>
+    <div className={`min-h-screen safe-container ${animations.pageEnter}`}>
       <EnhancedHeroSection />
       <QuickActionsSection />
       <EnhancedServicesSection />

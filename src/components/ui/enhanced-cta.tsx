@@ -1,21 +1,19 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
-import { InteractiveFeedback } from './interactive-feedback';
 import { LucideIcon } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface EnhancedCTAProps {
   title: string;
-  description?: string;
+  description: string;
   buttonText: string;
   onClick: () => void;
   icon?: LucideIcon;
-  variant?: 'primary' | 'secondary' | 'urgent';
+  variant?: 'primary' | 'secondary';
   badge?: string;
-  disabled?: boolean;
-  loading?: boolean;
   className?: string;
 }
 
@@ -27,86 +25,39 @@ export const EnhancedCTA: React.FC<EnhancedCTAProps> = ({
   icon: Icon,
   variant = 'primary',
   badge,
-  disabled = false,
-  loading = false,
   className
 }) => {
-  const getVariantStyles = () => {
-    switch (variant) {
-      case 'primary':
-        return 'bg-gradient-to-r from-primary to-blue-600 text-white border-0';
-      case 'secondary':
-        return 'bg-gradient-to-r from-gray-50 to-gray-100 text-gray-900 border border-gray-200';
-      case 'urgent':
-        return 'bg-gradient-to-r from-red-500 to-pink-600 text-white border-0 shadow-lg shadow-red-500/25';
-      default:
-        return 'bg-gradient-to-r from-primary to-blue-600 text-white border-0';
-    }
-  };
-
-  const getButtonVariant = () => {
-    switch (variant) {
-      case 'primary':
-        return 'default';
-      case 'secondary':
-        return 'outline';
-      case 'urgent':
-        return 'destructive';
-      default:
-        return 'default';
-    }
+  const variantStyles = {
+    primary: 'bg-gradient-to-br from-primary/10 via-blue-50 to-purple-50 border-primary/20',
+    secondary: 'bg-gradient-to-br from-gray-50 to-white border-gray-200'
   };
 
   return (
-    <InteractiveFeedback feedbackType="scale" disabled={disabled || loading}>
-      <div className={cn(
-        'rounded-xl p-6 text-center transition-all duration-300',
-        getVariantStyles(),
-        disabled && 'opacity-50',
-        className
-      )}>
+    <Card className={cn('border-0 shadow-xl', variantStyles[variant], className)}>
+      <CardContent className="p-8 text-center">
         {badge && (
-          <Badge className="mb-3 bg-white/20 text-current border-white/30">
+          <Badge className="mb-4 bg-primary/10 text-primary border-primary/30">
             {badge}
           </Badge>
         )}
         
         {Icon && (
-          <div className="flex justify-center mb-4">
-            <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-              <Icon className="h-6 w-6" />
-            </div>
+          <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+            <Icon className="h-8 w-8 text-white" />
           </div>
         )}
         
-        <h3 className="text-xl font-bold mb-2">{title}</h3>
+        <h2 className="text-3xl font-bold text-gray-900 mb-4">{title}</h2>
+        <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">{description}</p>
         
-        {description && (
-          <p className="text-sm opacity-90 mb-4">{description}</p>
-        )}
-        
-        <Button
+        <Button 
           onClick={onClick}
-          disabled={disabled || loading}
-          variant={getButtonVariant()}
           size="lg"
-          className={cn(
-            'w-full font-semibold shadow-lg',
-            variant === 'primary' && 'bg-white text-primary hover:bg-gray-100',
-            variant === 'secondary' && 'bg-primary text-white hover:bg-primary/90',
-            variant === 'urgent' && 'bg-white text-red-600 hover:bg-gray-100'
-          )}
+          className="bg-primary hover:bg-primary/90 text-white px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
         >
-          {loading ? (
-            <>
-              <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
-              Processando...
-            </>
-          ) : (
-            buttonText
-          )}
+          {buttonText}
         </Button>
-      </div>
-    </InteractiveFeedback>
+      </CardContent>
+    </Card>
   );
 };
