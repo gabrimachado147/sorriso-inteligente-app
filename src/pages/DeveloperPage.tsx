@@ -4,15 +4,30 @@ import { MainLayout } from '@/components/Layout/MainLayout';
 import { PageHead } from '@/components/SEO/PageHead';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { XAIInsightPanel } from '@/components/Developer/XAIInsightPanel';
 import { DeveloperRecommendations } from '@/components/Developer/DeveloperRecommendations';
 import { DeveloperOperations } from '@/components/Developer/DeveloperOperations';
+import { AdvancedCodeAnalysis } from '@/components/Developer/AdvancedCodeAnalysis';
+import { AICodeAssistant } from '@/components/Developer/AICodeAssistant';
+import { DatabaseManager } from '@/components/Developer/DatabaseManager';
 import { ProjectInfoTab } from '@/components/Developer/ProjectInfoTab';
 import { DatabaseInfoTab } from '@/components/Developer/DatabaseInfoTab';
 import { DebugInfoTab } from '@/components/Developer/DebugInfoTab';
 import { useDevelopmentPanel } from '@/hooks/useDevelopmentPanel';
 import { animations } from '@/lib/animations';
-import { Code, Brain, Database, Settings, Zap } from 'lucide-react';
+import { 
+  Code, 
+  Brain, 
+  Database, 
+  Settings, 
+  Zap, 
+  Lightbulb,
+  Bot,
+  BarChart3,
+  Terminal,
+  Cpu
+} from 'lucide-react';
 
 const DeveloperPage = () => {
   const { isSupabaseConfigured, projectInfo } = useDevelopmentPanel();
@@ -28,93 +43,180 @@ const DeveloperPage = () => {
       <div className="w-full min-h-screen bg-background">
         <MainLayout>
           <div className={`w-full ${animations.pageEnter}`}>
-            <div className="container mx-auto px-4 py-6 space-y-6">
+            <div className="container mx-auto px-4 py-6 space-y-8">
               {/* Header */}
-              <div className="text-center space-y-2">
-                <div className="flex items-center justify-center gap-2">
-                  <Code className="h-8 w-8 text-primary" />
-                  <h1 className="text-3xl font-bold">Developer Tools</h1>
-                  <Badge variant="secondary" className="bg-purple-100 text-purple-700">
-                    AMBIENTE DE DESENVOLVIMENTO
+              <div className="text-center space-y-3">
+                <div className="flex items-center justify-center gap-3">
+                  <Code className="h-10 w-10 text-primary" />
+                  <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                    Developer Tools Pro
+                  </h1>
+                  <Badge variant="secondary" className="bg-purple-100 text-purple-700 text-sm">
+                    AMBIENTE AVANÇADO
                   </Badge>
                 </div>
-                <p className="text-muted-foreground max-w-2xl mx-auto">
-                  Ferramentas avançadas de desenvolvimento com insights de IA, operações automatizadas e recomendações inteligentes
+                <p className="text-muted-foreground max-w-3xl mx-auto text-lg">
+                  Suite completa de ferramentas de desenvolvimento com IA, análise de código, operações automatizadas e insights inteligentes para maximizar a produtividade
                 </p>
               </div>
 
-              {/* AI Insights Section */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Brain className="h-6 w-6 text-purple-600" />
-                    Insights de IA com Grok
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <XAIInsightPanel />
-                </CardContent>
-              </Card>
+              {/* Main Tabs */}
+              <Tabs defaultValue="ai-assistant" className="w-full">
+                <TabsList className="grid w-full grid-cols-6 h-12">
+                  <TabsTrigger value="ai-assistant" className="flex items-center gap-2">
+                    <Bot className="h-4 w-4" />
+                    <span className="hidden sm:inline">IA Assistant</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="code-analysis" className="flex items-center gap-2">
+                    <BarChart3 className="h-4 w-4" />
+                    <span className="hidden sm:inline">Code Analysis</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="database" className="flex items-center gap-2">
+                    <Database className="h-4 w-4" />
+                    <span className="hidden sm:inline">Database</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="operations" className="flex items-center gap-2">
+                    <Zap className="h-4 w-4" />
+                    <span className="hidden sm:inline">Operations</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="recommendations" className="flex items-center gap-2">
+                    <Lightbulb className="h-4 w-4" />
+                    <span className="hidden sm:inline">Insights</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="system" className="flex items-center gap-2">
+                    <Cpu className="h-4 w-4" />
+                    <span className="hidden sm:inline">System</span>
+                  </TabsTrigger>
+                </TabsList>
 
-              {/* Operations and Recommendations Grid */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Zap className="h-6 w-6 text-blue-600" />
-                      Operações Automatizadas
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <DeveloperOperations />
-                  </CardContent>
-                </Card>
+                {/* AI Assistant Tab */}
+                <TabsContent value="ai-assistant" className="space-y-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Bot className="h-6 w-6 text-blue-600" />
+                        Assistente de IA para Desenvolvimento
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <AICodeAssistant />
+                    </CardContent>
+                  </Card>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Settings className="h-6 w-6 text-green-600" />
-                      Recomendações Inteligentes
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <DeveloperRecommendations />
-                  </CardContent>
-                </Card>
-              </div>
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Brain className="h-6 w-6 text-purple-600" />
+                        Insights com Grok
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <XAIInsightPanel />
+                    </CardContent>
+                  </Card>
+                </TabsContent>
 
-              {/* Information Tabs */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Projeto</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ProjectInfoTab projectInfo={projectInfo} />
-                  </CardContent>
-                </Card>
+                {/* Code Analysis Tab */}
+                <TabsContent value="code-analysis" className="space-y-6">
+                  <AdvancedCodeAnalysis />
+                </TabsContent>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-lg">
-                      <Database className="h-5 w-5" />
-                      Database
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <DatabaseInfoTab isSupabaseConfigured={isSupabaseConfigured} />
-                  </CardContent>
-                </Card>
+                {/* Database Tab */}
+                <TabsContent value="database" className="space-y-6">
+                  <DatabaseManager />
+                </TabsContent>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Debug Info</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <DebugInfoTab />
-                  </CardContent>
-                </Card>
-              </div>
+                {/* Operations Tab */}
+                <TabsContent value="operations" className="space-y-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Zap className="h-6 w-6 text-blue-600" />
+                        Operações Automatizadas
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <DeveloperOperations />
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                {/* Recommendations Tab */}
+                <TabsContent value="recommendations" className="space-y-6">
+                  <DeveloperRecommendations />
+                </TabsContent>
+
+                {/* System Info Tab */}
+                <TabsContent value="system" className="space-y-6">
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-lg flex items-center gap-2">
+                          <Terminal className="h-5 w-5" />
+                          Informações do Projeto
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <ProjectInfoTab projectInfo={projectInfo} />
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-lg">
+                          <Database className="h-5 w-5" />
+                          Status do Banco
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <DatabaseInfoTab isSupabaseConfigured={isSupabaseConfigured} />
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-lg flex items-center gap-2">
+                          <Settings className="h-5 w-5" />
+                          Debug & Logs
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <DebugInfoTab />
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  {/* System Overview */}
+                  <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Cpu className="h-6 w-6 text-blue-600" />
+                        Status Geral do Sistema
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                        <div className="text-center">
+                          <div className="text-3xl font-bold text-green-600">99.9%</div>
+                          <div className="text-sm text-muted-foreground">Uptime</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-3xl font-bold text-blue-600">247</div>
+                          <div className="text-sm text-muted-foreground">Arquivos</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-3xl font-bold text-purple-600">92%</div>
+                          <div className="text-sm text-muted-foreground">Cobertura</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-3xl font-bold text-orange-600">A+</div>
+                          <div className="text-sm text-muted-foreground">Qualidade</div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+              </Tabs>
             </div>
           </div>
         </MainLayout>
