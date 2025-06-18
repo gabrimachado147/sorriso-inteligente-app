@@ -5,12 +5,13 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { animations } from '@/lib/animations';
-import { Bot, Send, Calendar, MapPin, Clock, Phone } from 'lucide-react';
+import { Bot, Send, Calendar, MapPin, Clock, Phone, MessageCircle } from 'lucide-react';
 import { usePhoneValidation } from '@/hooks/usePhoneValidation';
 import { useChatLogic } from '@/hooks/useChatLogic';
 import ChatMessage from './ChatMessage';
 import QuickActionsGrid from './QuickActionsGrid';
 import TypingIndicator from './TypingIndicator';
+import { InteractiveFeedback } from '@/components/ui/interactive-feedback';
 import { Message } from './types';
 
 const ChatBot = () => {
@@ -40,7 +41,6 @@ const ChatBot = () => {
     scrollToBottom();
   }, [messages]);
 
-  // Quick actions atualizadas para focar no processo de agendamento
   const quickActions = [
     {
       text: "Quero agendar uma consulta",
@@ -79,66 +79,112 @@ const ChatBot = () => {
   };
 
   return (
-    <Card className={`h-full flex flex-col ${animations.fadeIn}`}>
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-lg text-center justify-center">
-          <Bot className="h-6 w-6 text-primary" />
-          Assistente Virtual
-          <Badge variant="secondary" className="ml-auto">
-            {chatLoading ? 'Processando...' : 'Online'}
-          </Badge>
-        </CardTitle>
-        <p className="text-sm text-gray-600 text-center">
-          Estou aqui para ajudar com seus agendamentos na Senhor Sorriso!
-        </p>
-      </CardHeader>
-
-      <CardContent className="flex-1 flex flex-col p-0">
-        <div className="flex-1 overflow-y-auto p-4 space-y-4 max-h-96">
-          {messages.map((message, index) => (
-            <ChatMessage
-              key={message.id}
-              message={message}
-              index={index}
-              onQuickAction={handleQuickAction}
-              disabled={chatLoading}
-              isPhoneCollected={true}
-            />
-          ))}
-
-          {chatLoading && <TypingIndicator />}
-          
-          <div ref={messagesEndRef} />
-        </div>
-
-        {messages.length <= 2 && (
-          <QuickActionsGrid 
-            onQuickAction={handleQuickAction}
-            disabled={chatLoading}
-          />
-        )}
-
-        <div className="p-4 border-t border-gray-200">
-          <div className="flex gap-2">
-            <Input
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Digite aqui para conversar"
-              className="flex-1"
-              disabled={chatLoading}
-            />
-            <Button
-              onClick={() => handleFormSubmit()}
-              disabled={!inputValue.trim() || chatLoading}
-              className={animations.buttonHover}
+    <div className="w-full h-full flex flex-col">
+      {/* Header melhorado */}
+      <Card className={`flex-none border-0 shadow-lg bg-gradient-to-r from-blue-50 to-green-50 ${animations.fadeIn}`}>
+        <CardHeader className="pb-4 pt-6">
+          <CardTitle className="flex items-center justify-center gap-3 text-xl lg:text-2xl">
+            <div className="relative">
+              <MessageCircle className="h-7 w-7 lg:h-8 lg:w-8 text-primary" />
+              <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+            </div>
+            <span className="font-bold text-gray-900">Assistente Virtual</span>
+            <Badge 
+              variant="secondary" 
+              className={`ml-2 ${chatLoading ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700'} transition-all duration-300`}
             >
-              <Send className="h-4 w-4" />
-            </Button>
+              {chatLoading ? 'Processando...' : 'Online'}
+            </Badge>
+          </CardTitle>
+          <p className="text-sm lg:text-base text-gray-600 text-center mt-2 max-w-2xl mx-auto">
+            Olá! Sou seu assistente especializado em odontologia. Estou aqui para ajudar com agendamentos, 
+            informações sobre tratamentos e orientações sobre nossa clínica.
+          </p>
+        </CardHeader>
+      </Card>
+
+      {/* Chat Container - Responsivo */}
+      <Card className="flex-1 flex flex-col mt-4 shadow-xl border-0 bg-white/80 backdrop-blur-sm">
+        <CardContent className="flex-1 flex flex-col p-0 h-full">
+          {/* Messages Area */}
+          <div className="flex-1 overflow-y-auto p-4 lg:p-6 space-y-4 bg-gradient-to-b from-gray-50/50 to-white min-h-0">
+            <div className="max-w-4xl mx-auto space-y-4">
+              {messages.map((message, index) => (
+                <div key={message.id} className={`${animations.fadeInUp}`} style={{ animationDelay: `${index * 100}ms` }}>
+                  <ChatMessage
+                    message={message}
+                    index={index}
+                    onQuickAction={handleQuickAction}
+                    disabled={chatLoading}
+                    isPhoneCollected={true}
+                  />
+                </div>
+              ))}
+
+              {chatLoading && (
+                <div className={animations.fadeIn}>
+                  <TypingIndicator />
+                </div>
+              )}
+              
+              <div ref={messagesEndRef} />
+            </div>
           </div>
-        </div>
-      </CardContent>
-    </Card>
+
+          {/* Quick Actions - Apenas para primeiras interações */}
+          {messages.length <= 2 && (
+            <div className="flex-none border-t border-gray-100 bg-white/90 backdrop-blur-sm">
+              <QuickActionsGrid 
+                onQuickAction={handleQuickAction}
+                disabled={chatLoading}
+              />
+            </div>
+          )}
+
+          {/* Input Area - Design melhorado */}
+          <div className="flex-none p-4 lg:p-6 border-t border-gray-200 bg-white">
+            <div className="max-w-4xl mx-auto">
+              <div className="flex gap-3 items-end">
+                <div className="flex-1 relative">
+                  <Input
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    placeholder="Digite sua mensagem aqui..."
+                    className="min-h-[48px] pr-4 pl-4 text-base lg:text-lg border-2 border-gray-200 focus:border-primary transition-all duration-300 rounded-2xl shadow-sm"
+                    disabled={chatLoading}
+                  />
+                  {inputValue.trim() && (
+                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                      <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                    </div>
+                  )}
+                </div>
+                
+                <InteractiveFeedback feedbackType="scale">
+                  <Button
+                    onClick={() => handleFormSubmit()}
+                    disabled={!inputValue.trim() || chatLoading}
+                    size="lg"
+                    className={`min-h-[48px] px-6 bg-primary hover:bg-primary/90 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 ${animations.buttonHover}`}
+                  >
+                    <Send className="h-5 w-5" />
+                    <span className="sr-only">Enviar mensagem</span>
+                  </Button>
+                </InteractiveFeedback>
+              </div>
+              
+              {/* Dica de uso */}
+              <div className="mt-3 text-center">
+                <p className="text-xs lg:text-sm text-gray-500">
+                  💡 Dica: Seja específico em suas perguntas para respostas mais precisas
+                </p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 

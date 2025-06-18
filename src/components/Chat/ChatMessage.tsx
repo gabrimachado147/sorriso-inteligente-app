@@ -3,6 +3,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Bot, User } from 'lucide-react';
 import { animations } from '@/lib/animations';
+import { InteractiveFeedback } from '@/components/ui/interactive-feedback';
 import { Message } from './types';
 
 interface ChatMessageProps {
@@ -27,57 +28,71 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
     });
   };
 
+  const isUser = message.sender === 'user';
+
   return (
-    <div
-      className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'} ${animations.fadeIn}`}
-      style={{ animationDelay: `${index * 50}ms` }}
-    >
-      <div className={`flex items-start gap-2 max-w-[80%] ${
-        message.sender === 'user' ? 'flex-row-reverse' : 'flex-row'
+    <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} w-full`}>
+      <div className={`flex items-start gap-3 max-w-[85%] lg:max-w-[70%] ${
+        isUser ? 'flex-row-reverse' : 'flex-row'
       }`}>
         
-        <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
-          message.sender === 'user' 
-            ? 'bg-primary text-white' 
-            : 'bg-gray-100 text-gray-600'
+        {/* Avatar com melhor contraste */}
+        <div className={`flex-shrink-0 w-10 h-10 lg:w-12 lg:h-12 rounded-full flex items-center justify-center shadow-md ${
+          isUser 
+            ? 'bg-gradient-to-br from-primary to-blue-600 text-white' 
+            : 'bg-gradient-to-br from-gray-100 to-gray-200 text-gray-700 border-2 border-white'
         }`}>
-          {message.sender === 'user' ? (
-            <User className="h-4 w-4" />
+          {isUser ? (
+            <User className="h-5 w-5 lg:h-6 lg:w-6" />
           ) : (
-            <Bot className="h-4 w-4" />
+            <Bot className="h-5 w-5 lg:h-6 lg:w-6" />
           )}
         </div>
 
-        <div className={`rounded-lg p-3 ${
-          message.sender === 'user'
-            ? 'bg-primary text-white'
-            : 'bg-gray-100 text-gray-900'
+        {/* Message bubble com melhor design */}
+        <div className={`rounded-2xl p-4 lg:p-5 shadow-md relative ${
+          isUser
+            ? 'bg-gradient-to-br from-primary to-blue-600 text-white'
+            : 'bg-white text-gray-900 border border-gray-200'
         } ${animations.scaleIn}`}>
-          <div className="whitespace-pre-wrap text-sm">
-            {message.text}
-          </div>
           
-          {message.quickReplies && (
-            <div className="flex flex-wrap gap-2 mt-3">
-              {message.quickReplies.map((reply, idx) => (
-                <Button
-                  key={idx}
-                  size="sm"
-                  variant="outline"
-                  className={`text-xs ${animations.buttonHover}`}
-                  onClick={() => onQuickAction(reply)}
-                  disabled={disabled || !isPhoneCollected}
-                >
-                  {reply}
-                </Button>
-              ))}
+          {/* Arrow indicator */}
+          <div className={`absolute top-4 w-3 h-3 transform rotate-45 ${
+            isUser 
+              ? 'right-[-6px] bg-gradient-to-br from-primary to-blue-600' 
+              : 'left-[-6px] bg-white border-l border-t border-gray-200'
+          }`}></div>
+          
+          <div className="relative z-10">
+            <div className="text-sm lg:text-base leading-relaxed whitespace-pre-wrap">
+              {message.text}
             </div>
-          )}
-          
-          <div className={`text-xs mt-2 ${
-            message.sender === 'user' ? 'text-primary-foreground/70' : 'text-gray-500'
-          }`}>
-            {formatTime(message.timestamp)}
+            
+            {/* Quick replies com melhor design */}
+            {message.quickReplies && (
+              <div className="flex flex-wrap gap-2 mt-4">
+                {message.quickReplies.map((reply, idx) => (
+                  <InteractiveFeedback key={idx} feedbackType="scale">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className={`text-xs lg:text-sm bg-white/90 hover:bg-white border-gray-300 text-gray-700 hover:text-gray-900 transition-all duration-200 ${animations.buttonHover}`}
+                      onClick={() => onQuickAction(reply)}
+                      disabled={disabled || !isPhoneCollected}
+                    >
+                      {reply}
+                    </Button>
+                  </InteractiveFeedback>
+                ))}
+              </div>
+            )}
+            
+            {/* Timestamp com melhor contraste */}
+            <div className={`text-xs mt-3 ${
+              isUser ? 'text-blue-100' : 'text-gray-500'
+            }`}>
+              {formatTime(message.timestamp)}
+            </div>
           </div>
         </div>
       </div>
