@@ -4,60 +4,60 @@ import { cn } from '@/lib/utils';
 
 interface InteractiveFeedbackProps {
   children: React.ReactNode;
+  feedbackType?: 'ripple' | 'scale' | 'glow' | 'bounce';
   className?: string;
-  feedbackType?: 'scale' | 'glow' | 'ripple';
   disabled?: boolean;
 }
 
 export const InteractiveFeedback: React.FC<InteractiveFeedbackProps> = ({
   children,
+  feedbackType = 'ripple',
   className,
-  feedbackType = 'scale',
   disabled = false
 }) => {
   const [isActive, setIsActive] = useState(false);
 
   const handleMouseDown = () => {
-    if (!disabled) setIsActive(true);
+    if (!disabled) {
+      setIsActive(true);
+    }
   };
 
   const handleMouseUp = () => {
-    if (!disabled) setIsActive(false);
+    setIsActive(false);
   };
 
   const handleMouseLeave = () => {
-    if (!disabled) setIsActive(false);
+    setIsActive(false);
   };
 
-  const getFeedbackClasses = () => {
+  const getFeedbackClasses = (): string => {
+    if (disabled) return 'opacity-50 cursor-not-allowed';
+
+    const baseClasses = 'transition-all duration-200 cursor-pointer';
+    
     switch (feedbackType) {
-      case 'scale':
-        return isActive 
-          ? 'transform scale-95 transition-transform duration-150' 
-          : 'transform scale-100 transition-transform duration-150 hover:scale-105';
-      case 'glow':
-        return isActive 
-          ? 'shadow-lg shadow-primary/25 transition-shadow duration-150' 
-          : 'hover:shadow-md hover:shadow-primary/15 transition-shadow duration-150';
       case 'ripple':
-        return isActive 
-          ? 'bg-primary/10 transition-colors duration-150' 
-          : 'hover:bg-primary/5 transition-colors duration-150';
+        return `${baseClasses} ${isActive ? 'transform scale-95' : 'hover:shadow-md'}`;
+      case 'scale':
+        return `${baseClasses} ${isActive ? 'transform scale-95' : 'hover:scale-105'}`;
+      case 'glow':
+        return `${baseClasses} ${isActive ? 'shadow-lg ring-2 ring-primary/20' : 'hover:shadow-md'}`;
+      case 'bounce':
+        return `${baseClasses} ${isActive ? 'animate-bounce' : 'hover:-translate-y-1'}`;
       default:
-        return '';
+        return baseClasses;
     }
   };
 
   return (
     <div
-      className={cn(
-        getFeedbackClasses(),
-        disabled && 'opacity-50 cursor-not-allowed',
-        className
-      )}
+      className={cn(getFeedbackClasses(), className)}
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseLeave}
+      onTouchStart={handleMouseDown}
+      onTouchEnd={handleMouseUp}
     >
       {children}
     </div>
